@@ -7,7 +7,6 @@ import com.amazonaws.services.elasticmapreduce.model.*;
 import org.systemsbiology.awscluster.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.hadoopgenerated.*;
-import org.systemsbiology.motif_locator.*;
 import org.systemsbiology.remotecontrol.*;
 import org.systemsbiology.xtandem.*;
 
@@ -1009,31 +1008,31 @@ public class AWSMapReduceLauncher implements IHadoopController {
         launcher.runJob(job);
     }
 
-
-    private static void runMotifLocator(final String[] args) {
-        Class<RunMotifLocator> mainClass = RunMotifLocator.class;
-        String jobName = mainClass.getSimpleName();
-        AWSMapReduceLauncher launcher = new AWSMapReduceLauncher(jobName);
-        launcher.setDefaultDirectory(MAIN_BUCKET_NAME);
-
-        launcher.setNumberInstances(1);
-        launcher.setSlaveSize(AWSInstanceSize.Small);
-        if (args.length > 0)
-            launcher.setNumberInstances(Integer.parseInt(args[0]));
-        if (args.length > 1)
-            launcher.setSlaveSize(AWSInstanceSize.parse(args[1]));
-
-
-        IHadoopJob job = HadoopJob.buildJob(
-                mainClass,
-                "SINGLE_format_mouse_matrices",     // data on hdfs
-                "jobs",      // jar location
-                "outputTheme"             // output location - will have outputN added
-
-        );
-        launcher.runJob(job);
-    }
-
+//
+//    private static void runMotifLocator(final String[] args) {
+//        Class<RunMotifLocator> mainClass = RunMotifLocator.class;
+//        String jobName = mainClass.getSimpleName();
+//        AWSMapReduceLauncher launcher = new AWSMapReduceLauncher(jobName);
+//        launcher.setDefaultDirectory(MAIN_BUCKET_NAME);
+//
+//        launcher.setNumberInstances(1);
+//        launcher.setSlaveSize(AWSInstanceSize.Small);
+//        if (args.length > 0)
+//            launcher.setNumberInstances(Integer.parseInt(args[0]));
+//        if (args.length > 1)
+//            launcher.setSlaveSize(AWSInstanceSize.parse(args[1]));
+//
+//
+//        IHadoopJob job = HadoopJob.buildJob(
+//                mainClass,
+//                "SINGLE_format_mouse_matrices",     // data on hdfs
+//                "jobs",      // jar location
+//                "outputTheme"             // output location - will have outputN added
+//
+//        );
+//        launcher.runJob(job);
+//    }
+//
 
     private static void runNShotTest(final String[] args) {
         Class<NShotTest> mainClass = NShotTest.class;
@@ -1084,84 +1083,10 @@ public class AWSMapReduceLauncher implements IHadoopController {
 
     public static final AWSInstanceSize DEFAULT_YEAST_SIZE = AWSInstanceSize.Small;
 
-    private static void runYeastProcess(final String[] args) {
-        Class<BreakRunner> mainClass = BreakRunner.class;
-        String jobName = mainClass.getSimpleName();
-        if (args.length > 0)
-            jobName = args[0];
-        final AWSMapReduceLauncher launcher = new AWSMapReduceLauncher(jobName);
-
-        launcher.setNumberInstances(DEFAULT_YEAST_INSTANCES);
-        launcher.setSlaveSize(DEFAULT_YEAST_SIZE);
-        if (args.length > 0)
-            launcher.setNumberInstances(Integer.parseInt(args[0]));
-        if (args.length > 1)
-            launcher.setSlaveSize(AWSInstanceSize.getInstanceSize(args[1]));
-
-        // if(true)
-        // throw new UnsupportedOperationException("Fix This"); // ToDo
-        // launcher.setMainClass();
-        launcher.setDefaultDirectory(MAIN_BUCKET_NAME);
-
-        IHadoopJob job = HadoopJob.buildJob(
-                mainClass,
-                "YeastData", // data on hdfs
-                "jobs", // jar location
-                "output", // output location - will have outputN added
-                "-D",
-                "org.systemsbiology.configfile=s3n://lordjoe/config/YeastBreaks.config", // COnfig
-                // file
-                "-D",
-                "org.systemsbiology.reportfile=s3n://lordjoe/YeastReports/yeastreport2.xml", // report
-                "-D",
-                "mapred.tasktracker.map.tasks.maximum=4", // report
-                "-D",
-                "mapred.tasktracker.reduce.tasks.maximum=2"
-
-        );
-        launcher.runJobInCluster(job);
-    }
 
     public static final int DEFAULT_HUMAN_INSTANCES = 100;
 
     public static final AWSInstanceSize DEFAULT_HUMAN_SIZE = AWSInstanceSize.Small;
-
-    private static void runHumanProcess(final String[] args) {
-        Class<BreakRunner> mainClass = BreakRunner.class;
-        String jobName = mainClass.getSimpleName();
-        if (args.length > 0)
-            jobName = args[0];
-        final AWSMapReduceLauncher launcher = new AWSMapReduceLauncher(jobName);
-
-        launcher.setNumberInstances(DEFAULT_HUMAN_INSTANCES);
-        launcher.setSlaveSize(DEFAULT_HUMAN_SIZE);
-        if (args.length > 0)
-            launcher.setNumberInstances(Integer.parseInt(args[0]));
-        if (args.length > 1)
-            launcher.setSlaveSize(AWSInstanceSize.getInstanceSize(args[1]));
-
-        // if(true)
-        // throw new UnsupportedOperationException("Fix This"); // ToDo
-        // launcher.setMainClass();
-        launcher.setDefaultDirectory(MAIN_BUCKET_NAME);
-
-        String dataFile = "NA19239"; // "HumanTestData";
-
-        IHadoopJob job = HadoopJob.buildJob(
-                mainClass,
-                dataFile, // data on hdfs
-                "jobs", // jar location
-                "human_output", // output location - will have outputN
-                // added
-                "-D",
-                "org.systemsbiology.configfile=s3n://lordjoe/config/HumanBreaks.config", // COnfig
-                // file
-                "-D",
-                "org.systemsbiology.reportfile=s3n://lordjoe/YeastReports/yeastreport.xml" // report
-                // file
-        );
-        launcher.runJob(job);
-    }
 
     public static final String WORD_COUNT_BUCKET_NAME = AWSUtilities.getDefaultBucketName(); //"moby50";
     public static final String MAIN_BUCKET_NAME = AWSUtilities.getDefaultBucketName();
