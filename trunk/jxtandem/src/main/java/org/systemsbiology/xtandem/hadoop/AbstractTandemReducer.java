@@ -4,11 +4,9 @@ import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
 import org.systemsbiology.hadoop.*;
-import org.systemsbiology.sam.*;
 import org.systemsbiology.xtandem.*;
 
 import java.io.*;
-import java.util.*;
 
 /**
  * org.systemsbiology.xtandem.hadoop.AbstractTandemReducer

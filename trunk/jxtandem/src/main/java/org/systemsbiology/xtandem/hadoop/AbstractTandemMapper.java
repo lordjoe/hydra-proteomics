@@ -4,9 +4,8 @@ import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
 import org.systemsbiology.hadoop.*;
-import org.systemsbiology.remotecontrol.*;
-import org.systemsbiology.sam.*;
 import org.systemsbiology.xtandem.*;
+import org.systemsbiology.hadoop.*;
 
 import java.io.*;
 import java.util.*;

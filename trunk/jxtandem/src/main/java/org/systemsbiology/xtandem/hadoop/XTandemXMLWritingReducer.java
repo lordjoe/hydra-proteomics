@@ -2,9 +2,8 @@ package org.systemsbiology.xtandem.hadoop;
 
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
-import org.systemsbiology.sam.*;
+import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
-import org.systemsbiology.xtandem.pepxml.*;
 import org.systemsbiology.xtandem.reporting.*;
 import org.systemsbiology.xtandem.scoring.*;
 
