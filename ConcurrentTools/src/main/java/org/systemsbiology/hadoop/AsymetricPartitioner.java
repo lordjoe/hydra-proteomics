@@ -1,11 +1,7 @@
 package org.systemsbiology.hadoop;
 
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Partitioner;
-import org.systemsbiology.chromosome.DefaultChromosome;
-import org.systemsbiology.chromosome.IChromosome;
-import org.systemsbiology.sam.AnalysisParameters;
-import org.systemsbiology.sam.IAnalysisParameters;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapreduce.*;
 
 import java.util.*;
 

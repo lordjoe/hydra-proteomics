@@ -1,6 +1,5 @@
 package org.systemsbiology.hadoop;
 
-import net.sf.samtools.*;
  import org.systemsbiology.data.*;
 
 import java.io.*;
@@ -33,9 +32,7 @@ public class AnalysisParameters implements IAnalysisParameters
     private String m_DefaultGenome;
     private String m_ChromosomeName;
     private IStreamFactory m_DefaultStreamFactory;
-    private SAMFileHeader m_LastHeader;
-    private String m_LastInputSource;
-    private SAMFileWriterFactory m_WriterFactory = new SAMFileWriterFactory();
+      private String m_LastInputSource;
 
     private AnalysisParameters() {}
 
@@ -74,16 +71,7 @@ public class AnalysisParameters implements IAnalysisParameters
     public void setLastInputSource(String pLastInputSource) {
         m_LastInputSource = pLastInputSource;
     }
-
-    public SAMFileHeader getLastHeader() {
-        return m_LastHeader;
-    }
-
-    public void setLastHeader(SAMFileHeader pLastHeader) {
-        m_LastHeader = pLastHeader;
-    }
-
-    public String getDefaultGenome() {
+     public String getDefaultGenome() {
         return m_DefaultGenome;
     }
 
