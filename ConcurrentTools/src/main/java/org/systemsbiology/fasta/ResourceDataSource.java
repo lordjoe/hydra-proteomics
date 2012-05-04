@@ -1,6 +1,5 @@
 package org.systemsbiology.fasta;
 
-import org.systemsbiology.chromosome.*;
 
 import java.io.*;
 
@@ -9,7 +8,7 @@ import java.io.*;
  * User: steven
  * Date: May 24, 2010
  */
-public class ResourceDataSource implements IFASTADataSource
+public class ResourceDataSource
 {
     public static final ResourceDataSource[] EMPTY_ARRAY = {};
 
@@ -28,13 +27,6 @@ public class ResourceDataSource implements IFASTADataSource
         return m_Postfix;
     }
 
-    @Override
-    public String getFASTAResource(final IChromosome chr) {
-        String chrStr = chr.toString();
-       // chrStr = mapChromosomes(chrStr);
-        String ResName = getPrefix() + chrStr + getPostfix();
-        return ResName;
-    }
 
     protected static String mapChromosomes(String s)
     {
