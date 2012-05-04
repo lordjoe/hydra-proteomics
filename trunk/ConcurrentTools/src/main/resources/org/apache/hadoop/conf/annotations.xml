@@ -1,0 +1,8 @@
+<root>
+    <item name='org.apache.hadoop.conf.Configuration void setStrings(java.lang.String, java.lang.String...)'>
+        <annotation name='java.lang.Override'/>
+    </item>
+    <item name='org.apache.hadoop.conf.Configuration java.lang.String[] getStrings(java.lang.String, java.lang.String...)'>
+        <annotation name='java.lang.Override'/>
+    </item>
+</root>
