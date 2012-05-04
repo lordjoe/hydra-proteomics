@@ -2,8 +2,6 @@ package org.systemsbiology.remotecontrol;
 
 import com.jcraft.jsch.*;
 import org.systemsbiology.hadoop.*;
-import org.systemsbiology.howdah.*;
-import org.systemsbiology.motif_locator.*;
 
 /**
  * org.systemsbiology.remotecontrol.RemoteSession
@@ -162,21 +160,21 @@ public class RemoteSession implements UserInfo {
 
         return pHc.runJob(job);
     }
-
-    private static boolean runStatisticalWordCount(final IHadoopController pHc) {
-     //   pHc.guaranteeFilesOnHDFS(new File("E:/data/Moby"), "/user/slewis/moby", "/user/slewis/moby");
-        IHadoopJob job = HadoopJob.buildJob(
-                HowdahStatisticalWordCount.class,
-                RemoteUtilities.getDefaultPath() + "/moby",     // data on hdfs
-                "/users/slewis/jobs",      // jar location
-                RemoteUtilities.getDefaultPath() ,             // output location - will have outputN added
-                "-D org.systemsbiology.configfile=" + RemoteUtilities.getDefaultPath() +  "/config/HowdahStatisticalWordCount.config"
-
-        );
-
-
-        return pHc.runJob(job);
-    }
+//
+//    private static boolean runStatisticalWordCount(final IHadoopController pHc) {
+//     //   pHc.guaranteeFilesOnHDFS(new File("E:/data/Moby"), "/user/slewis/moby", "/user/slewis/moby");
+//        IHadoopJob job = HadoopJob.buildJob(
+//                HowdahStatisticalWordCount.class,
+//                RemoteUtilities.getDefaultPath() + "/moby",     // data on hdfs
+//                "/users/slewis/jobs",      // jar location
+//                RemoteUtilities.getDefaultPath() ,             // output location - will have outputN added
+//                "-D org.systemsbiology.configfile=" + RemoteUtilities.getDefaultPath() +  "/config/HowdahStatisticalWordCount.config"
+//
+//        );
+//
+//
+//        return pHc.runJob(job);
+//    }
 
     private static boolean runProbes(final IHadoopController pHc) {
       //  pHc.guaranteeFilesOnHDFS(new File("E:/data/probes"), "/home/training/probes", "/home/training/hdfsprobes");
@@ -193,67 +191,7 @@ public class RemoteSession implements UserInfo {
         return pHc.runJob(job);
     }
 
-    private static boolean runYeastBreaks(final IHadoopController pHc) {
-     //   pHc.guaranteeFiles(new File("E:/Code/config"), "/user/howdah/config");
-     //   pHc.guaranteeFiles(new File("E:/Code/YeastReports"), "/user/howdah/YeastReports");
-     //   pHc.guaranteeFilesOnHDFS(new File("E:/Code/YeastData"), "/user/howdah/small_yeast", "/user/howdah/small_yeast");
-  //      pHc.guaranteeFilesOnHDFS(new File("E:/Code/YeastReports"), "/user/howdah/config", "/user/howdah/YeastReports");
 
-
-        IHadoopJob job = HadoopJob.buildJob(org.systemsbiology.hadoop.BreakRunner.class,
-                RemoteUtilities.getDefaultPath() + "/small_yeast",  // data on hdfs
-                RemoteUtilities.getDefaultPath() + "/jobs",          // jar location
-                RemoteUtilities.getDefaultPath() + "/yeast_out",               // output location - will have outputN added
-                  "-D org.systemsbiology.configfile=" + RemoteUtilities.getDefaultPath() +  "/config/YeastBreaks.config",
-                  "-D org.systemsbiology.reportfile=\" + RemoteUtilities.getDefaultPath() +  \"/YeastReports/yeastreport.xml"
-
-
-        );
-
-
-        return pHc.runJob(job);
-    }
-
-
-    private static boolean runClouderaYeastBreaks(final IHadoopController pHc) {
-      //   pHc.guaranteeFiles(new File("E:/Code/config"), "/user/howdah/config");
-      //   pHc.guaranteeFiles(new File("E:/Code/YeastReports"), "/user/howdah/YeastReports");
-      //   pHc.guaranteeFilesOnHDFS(new File("E:/Code/YeastData"), "/user/howdah/small_yeast", "/user/howdah/small_yeast");
-   //      pHc.guaranteeFilesOnHDFS(new File("E:/Code/YeastReports"), "/user/howdah/config", "/user/howdah/YeastReports");
-
-
-         IHadoopJob job = HadoopJob.buildJob(org.systemsbiology.hadoop.BreakRunner.class,
-                 "/user/jpatterson/input/YeastLargeData",  // data on hdfs
-                 "/home/jpatterson/jobs",          // jar location
-                 "/home/jpatterson",               // output location - will have outputN added
-                   "-D org.systemsbiology.configfile=/home/jpatterson/config/YeastBreaks.config",
-                   "-D org.systemsbiology.reportfile=/home/jpatterson/YeastReports/yeastreport.xml"
-
-
-         );
-
-
-         return pHc.runJob(job);
-     }
-
-
-    private static boolean runSimGenerator(final IHadoopController pHc) {
-       //   pHc.guaranteeFiles(new File("E:/Code/config"), "/user/howdah/config");
-       //   pHc.guaranteeFiles(new File("E:/Code/YeastReports"), "/user/howdah/YeastReports");
-       //   pHc.guaranteeFilesOnHDFS(new File("E:/Code/YeastData"), "/user/howdah/small_yeast", "/user/howdah/small_yeast");
-    //      pHc.guaranteeFilesOnHDFS(new File("E:/Code/YeastReports"), "/user/howdah/config", "/user/howdah/YeastReports");
-
-
-          IHadoopJob job = HadoopJob.buildJob(org.systemsbiology.simulation.ClusterLoadingJob.class,
-                  "/user/jpatterson/input/moby",  // data on hdfs
-                  "/home/jpatterson/jobs",          // jar location
-                  "/user/jpatterson/sim"               // output location - will have outputN added
-
-          );
-
-
-          return pHc.runJob(job);
-      }
 
 
     private static boolean runShakesphear(final IHadoopController pHc) {
@@ -276,21 +214,6 @@ public class RemoteSession implements UserInfo {
      }
 
 
-
-    private static boolean runMotifLocator(IHadoopController launcher) {
-        Class<RunMotifLocator> mainClass = RunMotifLocator.class;
-        String jobName = mainClass.getSimpleName();
-
-
-        IHadoopJob job = HadoopJob.buildJob(
-                mainClass,
-                 RemoteUtilities.getDefaultPath() +  "/MotifFiles/SINGLE_format_mouse_matrices",     // data on hdfs
-                "/users/slewis/jobs",      // jar location
-                 RemoteUtilities.getDefaultPath() +  "/MotifOutput"  // output location - will have outputN added
-
-        );
-        return launcher.runJob(job);
-    }
 
     /*
     private static void runYeastHowdahProcess(IHadoopController launcher) {
