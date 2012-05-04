@@ -1,6 +1,5 @@
 package org.systemsbiology.fasta;
 
-import org.systemsbiology.chromosome.*;
 
 import java.io.*;
 import java.net.*;
@@ -59,53 +58,53 @@ public class FASTAUtilities {
         }
     }
 
-    public static String getChromosomeSection(IChromosome chr, int start, int end) {
-        String url = buildURI(chr, start, end);
-        return doGet(url);
-    }
-
-
-    public static final int MAX_SEQUENCE_LENGTH = 10000000;
-    protected static String buildURI(IChromosome chr, int start, int end) {
-        StringBuilder sb = new StringBuilder();
-
-        if(end <= start)
-            throw new IllegalArgumentException("end must be >= start");
-        if(start < 0)
-            throw new IllegalArgumentException("start must be >= 0 ");
-        if(end > chr.getLength())
-            throw new IllegalArgumentException("end must be <= chromosome length " + chr.getLength());
-
-        if(end - start > MAX_SEQUENCE_LENGTH)
-            throw new IllegalArgumentException("Google app engine has a maximim download length of 10 million not  " + (end - start));
-
-
-        sb.append(chr);
-        sb.append("/");
-        sb.append(start);
-        sb.append("/");
-        sb.append(end);
-        sb.append("/");
-        sb.append("sequence");
-
-        return sb.toString();
-
-    }
-
-
-    public static String getGenome(IChromosome chr) {
-        Class chrClass = chr.getClass();
-        String className = chrClass.getSimpleName();
-        if("HumanChromosome".equals(className) )
-            return "hg18";
-        if("YeastChromosome".equals(className) )
-            return "yeast";
-        if("MouseChromosome".equals(className) )
-            return "mm9";
-        throw new IllegalArgumentException("cannot map chromosome " + className); // ToDo change
-    }
-
-
+//    public static String getChromosomeSection(IChromosome chr, int start, int end) {
+//        String url = buildURI(chr, start, end);
+//        return doGet(url);
+//    }
+//
+//
+//    public static final int MAX_SEQUENCE_LENGTH = 10000000;
+//    protected static String buildURI(IChromosome chr, int start, int end) {
+//        StringBuilder sb = new StringBuilder();
+//
+//        if(end <= start)
+//            throw new IllegalArgumentException("end must be >= start");
+//        if(start < 0)
+//            throw new IllegalArgumentException("start must be >= 0 ");
+//        if(end > chr.getLength())
+//            throw new IllegalArgumentException("end must be <= chromosome length " + chr.getLength());
+//
+//        if(end - start > MAX_SEQUENCE_LENGTH)
+//            throw new IllegalArgumentException("Google app engine has a maximim download length of 10 million not  " + (end - start));
+//
+//
+//        sb.append(chr);
+//        sb.append("/");
+//        sb.append(start);
+//        sb.append("/");
+//        sb.append(end);
+//        sb.append("/");
+//        sb.append("sequence");
+//
+//        return sb.toString();
+//
+//    }
+//
+//
+//    public static String getGenome(IChromosome chr) {
+//        Class chrClass = chr.getClass();
+//        String className = chrClass.getSimpleName();
+//        if("HumanChromosome".equals(className) )
+//            return "hg18";
+//        if("YeastChromosome".equals(className) )
+//            return "yeast";
+//        if("MouseChromosome".equals(className) )
+//            return "mm9";
+//        throw new IllegalArgumentException("cannot map chromosome " + className); // ToDo change
+//    }
+//
+//
     public static String doGet(String uri) {
         try {
             URL url = new URL("https://addama-systemsbiology-public.appspot.com/" + uri);

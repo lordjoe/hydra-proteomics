@@ -452,7 +452,53 @@ public class HadoopUtilities {
         final String headerText = headerTextBuffer.toString();
         return headerText;
     }
-//
+
+
+    public static String[] readConfigFileFS(String pArg) {
+        //   if (pArg.startsWith("s3n://"))
+        //       return AWSUtilities.readConfigFileS3(pArg);
+
+        File configuration = new File(pArg);
+        String[] pLines = null;
+        boolean exists = configuration.exists();
+        System.err.println("File " + pArg + " exists " + exists);
+        boolean isFile = configuration.isFile();
+        System.err.println("File " + pArg + " isFile " + isFile);
+        if (exists && isFile) {
+            List<String> holder = null;
+            String line = null;
+            try {
+                System.err.println("File " + pArg + " ready to open");
+                LineNumberReader nr = new LineNumberReader(new FileReader(pArg));
+                System.err.println("File " + pArg + "   open");
+                holder = new ArrayList<String>();
+                line = nr.readLine();
+                while (line != null) {
+                    System.err.println(line);
+                    holder.add(line);
+                    line = nr.readLine();
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace(System.err);
+                throw new RuntimeException(e);
+
+            }
+            String[] ret = new String[holder.size()];
+            pLines = holder.toArray(ret);
+            for (int i = 0; i < pLines.length; i++) {
+                line = pLines[i];
+                //   System.err.println("line " + i + " " + line);
+                // tell the system about the chromosome set
+              }
+
+        }
+        return pLines;
+    }
+
+
+
+  //
 //    private static final TextTagCodec tagCodec = new TextTagCodec();
 //    private static final SAMTagUtil tagUtil = new SAMTagUtil();
 
