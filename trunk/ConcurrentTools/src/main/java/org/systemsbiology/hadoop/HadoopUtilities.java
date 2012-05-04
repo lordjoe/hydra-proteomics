@@ -1,8 +1,8 @@
 package org.systemsbiology.hadoop;
 
 import com.lordjoe.utilities.*;
-import net.sf.samtools.*;
-import net.sf.samtools.util.*;
+//import net.sf.samtools.*;
+//import net.sf.samtools.util.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.filecache.*;
 import org.apache.hadoop.fs.*;
@@ -90,8 +90,8 @@ public class HadoopUtilities {
 
     public static final String STATISTICS_REPORT_KEY = SYSBIO_KEY_BASE + ".statistics";
 
-    private static SAMFileReader.ValidationStringency gValidationStringency =
-            SAMFileReader.ValidationStringency.LENIENT;
+//    private static SAMFileReader.ValidationStringency gValidationStringency =
+//            SAMFileReader.ValidationStringency.LENIENT;
 
     private HadoopUtilities() {
     } // do not construct
@@ -348,30 +348,30 @@ public class HadoopUtilities {
     public static final Text ONLY_KEY = new Text(); // avoid garbage collection
 
 
-
-    public static SAMFileReader.ValidationStringency getValidationStringency() {
-        return gValidationStringency;
-    }
-
-    public static void setValidationStringency(
-            SAMFileReader.ValidationStringency pValidationStringency) {
-        gValidationStringency = pValidationStringency;
-    }
-
-    /**
-     * read a SAM Header from a Text String
-     *
-     * @param text input text
-     * @return SAMFileHeader
-     */
-    public static SAMFileHeader headerFromText(String text) {
-        LineReader sr = new StringLineReader(text);
-        final SAMTextHeaderCodec headerCodec = new SAMTextHeaderCodec();
-        headerCodec.setValidationStringency(getValidationStringency());
-        SAMFileHeader ret = headerCodec.decode(sr, null);
-        return ret;
-
-    }
+//
+//    public static SAMFileReader.ValidationStringency getValidationStringency() {
+//        return gValidationStringency;
+//    }
+//
+//    public static void setValidationStringency(
+//            SAMFileReader.ValidationStringency pValidationStringency) {
+//        gValidationStringency = pValidationStringency;
+//    }
+//
+//    /**
+//     * read a SAM Header from a Text String
+//     *
+//     * @param text input text
+//     * @return SAMFileHeader
+//     */
+//    public static SAMFileHeader headerFromText(String text) {
+//        LineReader sr = new StringLineReader(text);
+//        final SAMTextHeaderCodec headerCodec = new SAMTextHeaderCodec();
+//        headerCodec.setValidationStringency(getValidationStringency());
+//        SAMFileHeader ret = headerCodec.decode(sr, null);
+//        return ret;
+//
+//    }
 
     public static final Text ONLY_KEY1 = new Text(); // avoid garbage collection
     public static final Text ONLY_VALUE = new Text(); // avoid garbage collection
@@ -440,18 +440,18 @@ public class HadoopUtilities {
 
     public static final String FIELD_SEPARATOR = "\t";
 
-    /**
-     * turn a SAM header into text
-     *
-     * @param header
-     * @return
-     */
-    public static String buildHeaderText(final SAMFileHeader header) {
-        final StringWriter headerTextBuffer = new StringWriter();
-        new SAMTextHeaderCodec().encode(headerTextBuffer, header);
-        final String headerText = headerTextBuffer.toString();
-        return headerText;
-    }
+//    /**
+//     * turn a SAM header into text
+//     *
+//     * @param header
+//     * @return
+//     */
+//    public static String buildHeaderText(final SAMFileHeader header) {
+//        final StringWriter headerTextBuffer = new StringWriter();
+//        new SAMTextHeaderCodec().encode(headerTextBuffer, header);
+//        final String headerText = headerTextBuffer.toString();
+//        return headerText;
+//    }
 
 
     public static String[] readConfigFileFS(String pArg) {
@@ -605,53 +605,53 @@ public class HadoopUtilities {
         setLastKeepAlive(now);
     }
 
-    /**
-     * Writes the record to disk.  Sort order has been taken care of by the time
-     * this method is called.
-     *
-     * @param alignment
-     */
-    public static String buildAlignmentText(final SAMRecord alignment) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(alignment.getReadName());
-        sb.append(FIELD_SEPARATOR);
-        sb.append(Integer.toString(alignment.getFlags()));
-        sb.append(FIELD_SEPARATOR);
-        sb.append(alignment.getReferenceName());
-        sb.append(FIELD_SEPARATOR);
-        sb.append(Integer.toString(alignment.getAlignmentStart()));
-        sb.append(FIELD_SEPARATOR);
-        sb.append(Integer.toString(alignment.getMappingQuality()));
-        sb.append(FIELD_SEPARATOR);
-        sb.append(alignment.getCigarString());
-        sb.append(FIELD_SEPARATOR);
-
-        //  == is OK here because these strings are interned
-        if (alignment.getReferenceName().equals(alignment.getMateReferenceName()) &&
-                !SAMRecord.NO_ALIGNMENT_REFERENCE_NAME.equals(alignment.getReferenceName())) {
-            sb.append("=");
-        }
-        else {
-            sb.append(alignment.getMateReferenceName());
-        }
-        sb.append(FIELD_SEPARATOR);
-        sb.append(Integer.toString(alignment.getMateAlignmentStart()));
-        sb.append(FIELD_SEPARATOR);
-        sb.append(Integer.toString(alignment.getInferredInsertSize()));
-        sb.append(FIELD_SEPARATOR);
-        sb.append(alignment.getReadString());
-        sb.append(FIELD_SEPARATOR);
-        sb.append(alignment.getBaseQualityString());
-        if(true)
-            throw new UnsupportedOperationException("Fix This"); // ToDo
-//        if (alignment.getBinaryAttributes() != null) {  // todo fix
-//            for (final SAMBinaryTagAndValue attribute : alignment.getBinaryAttributes()) {
-//                sb.append(FIELD_SEPARATOR);
-//                sb.append(tagCodec.encode(tagUtil.makeStringTag(attribute.tag), attribute.value));
-//            }
-//        }
+//    /**
+//     * Writes the record to disk.  Sort order has been taken care of by the time
+//     * this method is called.
+//     *
+//     * @param alignment
+//     */
+//    public static String buildAlignmentText(final SAMRecord alignment) {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append(alignment.getReadName());
+//        sb.append(FIELD_SEPARATOR);
+//        sb.append(Integer.toString(alignment.getFlags()));
+//        sb.append(FIELD_SEPARATOR);
+//        sb.append(alignment.getReferenceName());
+//        sb.append(FIELD_SEPARATOR);
+//        sb.append(Integer.toString(alignment.getAlignmentStart()));
+//        sb.append(FIELD_SEPARATOR);
+//        sb.append(Integer.toString(alignment.getMappingQuality()));
+//        sb.append(FIELD_SEPARATOR);
+//        sb.append(alignment.getCigarString());
+//        sb.append(FIELD_SEPARATOR);
 //
-        return sb.toString();
-    }
+//        //  == is OK here because these strings are interned
+//        if (alignment.getReferenceName().equals(alignment.getMateReferenceName()) &&
+//                !SAMRecord.NO_ALIGNMENT_REFERENCE_NAME.equals(alignment.getReferenceName())) {
+//            sb.append("=");
+//        }
+//        else {
+//            sb.append(alignment.getMateReferenceName());
+//        }
+//        sb.append(FIELD_SEPARATOR);
+//        sb.append(Integer.toString(alignment.getMateAlignmentStart()));
+//        sb.append(FIELD_SEPARATOR);
+//        sb.append(Integer.toString(alignment.getInferredInsertSize()));
+//        sb.append(FIELD_SEPARATOR);
+//        sb.append(alignment.getReadString());
+//        sb.append(FIELD_SEPARATOR);
+//        sb.append(alignment.getBaseQualityString());
+//        if(true)
+//            throw new UnsupportedOperationException("Fix This"); // ToDo
+////        if (alignment.getBinaryAttributes() != null) {  // todo fix
+////            for (final SAMBinaryTagAndValue attribute : alignment.getBinaryAttributes()) {
+////                sb.append(FIELD_SEPARATOR);
+////                sb.append(tagCodec.encode(tagUtil.makeStringTag(attribute.tag), attribute.value));
+////            }
+////        }
+////
+//        return sb.toString();
+//    }
 
 }

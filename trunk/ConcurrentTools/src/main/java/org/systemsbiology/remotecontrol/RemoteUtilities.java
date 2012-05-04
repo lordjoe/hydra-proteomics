@@ -1,7 +1,6 @@
 package org.systemsbiology.remotecontrol;
 
 import com.lordjoe.utilities.*;
-import org.systemsbiology.chromosome.*;
 
 import java.io.*;
 import java.util.*;
