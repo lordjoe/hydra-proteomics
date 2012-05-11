@@ -1,7 +1,6 @@
 package org.systemsbiology.hadoop;
 
-import net.sf.samtools.*;
- import org.systemsbiology.data.*;
+import org.systemsbiology.data.*;
 
 /**
  * org.systemsbiology.hadoop.IAnalysisParameters
