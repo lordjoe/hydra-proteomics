@@ -21,6 +21,7 @@
         <module>ConcurrentTools</module>
         <module>awshadoop</module>
         <module>JXTandem</module>
+        <module>proteos</module>
      </modules>
 
    
