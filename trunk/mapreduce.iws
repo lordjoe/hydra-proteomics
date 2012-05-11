@@ -87,24 +87,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="MzMLReader.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/xtandem/mzml/MzMLReader.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="54" column="7" selection-start="2109" selection-end="2109" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="XTandemMain.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/xtandem/XTandemMain.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="673" column="31" selection-start="20742" selection-end="20761" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="MessagingMzMLReader.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/xtandem/mzml/MessagingMzMLReader.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -150,10 +132,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="JXTantemPass1Runner.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="JXTantemPass1Runner.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/xtandem/hadoop/JXTantemPass1Runner.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="76" column="62" selection-start="2699" selection-end="2699" vertical-scroll-proportion="0.3277027">
+            <state line="66" column="110" selection-start="2291" selection-end="2291" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="IAnalysisParameters.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/IAnalysisParameters.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="2" column="0" selection-start="36" selection-end="36" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HadoopUtilities.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/HadoopUtilities.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="2" column="0" selection-start="36" selection-end="36" vertical-scroll-proportion="0.05862069">
               <folding />
             </state>
           </provider>
@@ -192,7 +192,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/xtandem/hadoop/AbstractTandemReducer.java" />
         <option value="$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/xtandem/hadoop/XTandemConcatenatingWritingReducer.java" />
         <option value="$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/xtandem/hadoop/BoimlWritingMapper.java" />
         <option value="$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/xtandem/hadoop/XTandemXMLWritingReducer.java" />
@@ -200,7 +199,6 @@
         <option value="$PROJECT_DIR$/awshadoop/src/main/java/org/systemsbiology/aws/AWSMapReduceLauncher.java" />
         <option value="$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/remotecontrol/RemoteUtilities.java" />
         <option value="$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/AsymetricPartitioner.java" />
-        <option value="$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/HadoopUtilities.java" />
         <option value="$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/AnalysisParameters.java" />
         <option value="$PROJECT_DIR$/ConcurrentTools/src/main/java/com/lordjoe/lib/xml/COMEnum.java" />
         <option value="$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/xtandem/mzml/MzMLReader.java" />
@@ -208,6 +206,8 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/jxtandem/pom.xml" />
         <option value="$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/xtandem/hadoop/JXTantemPass1Runner.java" />
+        <option value="$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/IAnalysisParameters.java" />
+        <option value="$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/HadoopUtilities.java" />
       </list>
     </option>
   </component>
@@ -610,28 +610,28 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="106" y="72" width="1582" height="1058" extended-state="0" />
+    <frame x="66" y="98" width="1582" height="1058" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="true" weight="0.6645885" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="-1094" y="130" width="853" height="775" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="true" weight="0.6645885" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="-1174" y="185" width="853" height="775" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32908705" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32870865" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.38582677" sideWeight="0.6709129" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.324147" sideWeight="0.6709129" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.324147" sideWeight="0.67129135" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32885212" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="EJB" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="JProfiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -720,20 +720,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/jxtandem/src/test/java/org/systemsbiology/hadoop/TestHadoopParser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="131" column="52" selection-start="4899" selection-end="4899" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jxtandem/src/test/java/org/systemsbiology/hadoop/FastaInputTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="17" selection-start="1617" selection-end="1617" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/jxtandem/src/test/java/org/systemsbiology/xtandem/hbase/IntegerTestBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="19" column="18" selection-start="540" selection-end="540" vertical-scroll-proportion="0.0">
@@ -827,7 +813,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/xtandem/hadoop/JXTantemPass1Runner.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="62" selection-start="2699" selection-end="2699" vertical-scroll-proportion="0.3277027">
+        <state line="66" column="110" selection-start="2291" selection-end="2291" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/IAnalysisParameters.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="0" selection-start="36" selection-end="36" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/HadoopUtilities.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="0" selection-start="36" selection-end="36" vertical-scroll-proportion="0.05862069">
           <folding />
         </state>
       </provider>
@@ -884,7 +884,7 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>jxtandem</last-edited>
+          <last-edited>awshadoop</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

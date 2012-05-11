@@ -1,15 +1,12 @@
 package org.systemsbiology.hadoop;
 
 import com.lordjoe.utilities.*;
-//import net.sf.samtools.*;
-//import net.sf.samtools.util.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.filecache.*;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.fs.FileSystem;
- import org.apache.hadoop.io.*;
+import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
-
 
 import java.io.*;
 import java.util.*;
@@ -490,15 +487,14 @@ public class HadoopUtilities {
                 line = pLines[i];
                 //   System.err.println("line " + i + " " + line);
                 // tell the system about the chromosome set
-              }
+            }
 
         }
         return pLines;
     }
 
 
-
-  //
+    //
 //    private static final TextTagCodec tagCodec = new TextTagCodec();
 //    private static final SAMTagUtil tagUtil = new SAMTagUtil();
 
