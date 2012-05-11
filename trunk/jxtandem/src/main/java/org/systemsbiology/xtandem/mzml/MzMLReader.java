@@ -51,8 +51,8 @@ public class MzMLReader implements TagEndListener<SpectrumInterface> {
      * @return !null spectrum
      */
     public static ExtendedSpectrumImpl spectrumFromFragment(String spectrumFragment) {
-        SpectrumImpl.setSpectrumClass(ExtendedSpectrumImpl.class); // force the generation of out spectrum
-        SpectrumPrecursor.setSpectrumPrecursorClass(ExtendedSpectrumPrecursor.class); // force the generation of out spectrum
+     //   SpectrumImpl.setSpectrumClass(ExtendedSpectrumImpl.class); // force the generation of out spectrum
+     //   SpectrumPrecursor.setSpectrumPrecursorClass(ExtendedSpectrumPrecursor.class); // force the generation of out spectrum
 
         StringBuilder sb = new StringBuilder(FRAGMENT_PREFIX);
         sb.append(spectrumFragment);

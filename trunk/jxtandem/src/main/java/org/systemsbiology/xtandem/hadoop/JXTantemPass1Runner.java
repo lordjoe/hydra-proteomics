@@ -74,7 +74,7 @@ public class JXTantemPass1Runner extends ConfiguredJobRunner implements IJobRunn
             XTandemHadoopUtilities.setInputArguments(otherArgs, job);
 
             String inputFile = otherArgs[0];
-            boolean inputFormatSet = false;
+ HelloWorldExecutableReducer I have yet as the price structure            boolean inputFormatSet = false;
             int beginIndex = inputFile.lastIndexOf(".");
             // this is a single file
             if (beginIndex > -1) {

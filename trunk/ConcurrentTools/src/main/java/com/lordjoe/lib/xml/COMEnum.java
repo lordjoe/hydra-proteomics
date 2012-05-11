@@ -1,9 +1,8 @@
 package com.lordjoe.lib.xml;
+
 import com.lordjoe.utilities.*;
-import org.systemsbiology.sam.*;
 
 import java.util.*;
-import java.io.*;
 /**{ class
 @name SerializerParseException
 @function thrown when XMLSerializer cannot parse
