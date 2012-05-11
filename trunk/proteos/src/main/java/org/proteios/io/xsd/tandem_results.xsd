@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="bioml">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="group" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="protein" minOccurs="0" maxOccurs="unbounded" />
+							<xs:element ref="group" minOccurs="0" maxOccurs="unbounded" />
+							<xs:element ref="note" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+						<xs:attribute name="id" />
+						<xs:attribute name="mh" />
+						<xs:attribute name="expect" />
+						<xs:attribute name="z" />
+						<xs:attribute name="rt" use="optional"/>
+						<xs:attribute name="label" />
+						<xs:attribute name="type" />
+						<xs:attribute name="sumI" />
+						<xs:attribute name="maxI" />
+						<xs:attribute name="fI" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="label" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="protein">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="note" />
+				<xs:element ref="file" />
+				<xs:element ref="peptide" />
+			</xs:choice>
+			<xs:attribute name="expect" />
+			<xs:attribute name="id" />
+			<xs:attribute name="uid" />
+			<xs:attribute name="label" />
+			<xs:attribute name="sumI" />
+			<xs:anyAttribute processContents="skip" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="peptide">
+		<xs:complexType mixed="true">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="domain" />
+			</xs:choice>
+			<xs:anyAttribute processContents="skip" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="domain">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="aa" />
+			</xs:choice>	
+			<xs:anyAttribute processContents="skip" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="name">
+		<xs:complexType>
+			<xs:anyAttribute processContents="skip" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="aa">
+		<xs:complexType>
+			<xs:anyAttribute processContents="skip" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="note">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="label" type="xs:string" />
+					<xs:attribute name="type" type="xs:string" use="optional" />
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="file">
+		<xs:complexType>
+			<xs:attribute name="type" />
+			<xs:attribute name="URL" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="group">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:anyAttribute processContents="skip" />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
