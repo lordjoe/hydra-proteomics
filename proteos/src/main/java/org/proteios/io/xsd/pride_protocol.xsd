@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="Protocol">
+		<xsd:annotation>
+			<xsd:documentation>The protocol element defines the sample processing steps that have been performed.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="ProtocolName">
+					<xsd:annotation>
+						<xsd:documentation>A descriptive name for the protocol</xsd:documentation>
+					</xsd:annotation>
+                          <xsd:simpleType>
+                            <xsd:restriction base="xsd:string">
+                              <xsd:minLength value="1"/>
+                            </xsd:restriction>
+                          </xsd:simpleType>
+                      </xsd:element>
+				<xsd:element name="ProtocolSteps" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation>Contains an ordered sequence of stepDescription elements that define this protocol.  The order of the stepDescription elements indicates the chronological order of steps in the protocol.</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="StepDescription" type="paramType" minOccurs="0" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation>Expansible description of the step in the protocol.</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="cvParamType">
+		<xsd:annotation>
+			<xsd:documentation>Parameters from a controlled vocbulary.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="cvLabel" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>The short tag for the resource as defined in cvLookupType.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="accession" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>The accession number of the referred-to term in the named resource.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>The actual name for the parameter, from the referred-to controlled vocabulary.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="value" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>The value for the parameter; may be absent if not appropriate, or a numeric or symbolic value, or may itself be CV (legal values for a parameter should be enumerated and defined in the ontology).</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>				<xsd:complexType name="paramType">
+		<xsd:annotation>
+			<xsd:documentation>Structure allowing the use of controlled or uncontrolled vocabulary</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="cvParam" type="cvParamType">
+				<xsd:annotation>
+					<xsd:documentation>This element holds additional data or annotation. Only controlled values are allowed here.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="userParam" type="userParamType">
+				<xsd:annotation>
+					<xsd:documentation>This element holds additional data or annotation. Uncontrolled, or user controlled values are allowed here.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="userParamType">
+		<xsd:annotation>
+			<xsd:documentation>Uncontrolled user parameters (vocabulary).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="name" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>The actual name for the parameter.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="value" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>The value for the parameter, where appropriate.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>	
+</xsd:schema>

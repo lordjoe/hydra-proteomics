@@ -1,0 +1,147 @@
+<?xml version="1.0" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
+	<xs:element name="matcher">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="version" minOccurs="0"/>
+				<xs:element name="registered_to" minOccurs="0"/>
+				<xs:element name="parameters" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="enzyme" minOccurs="0"/>
+							<xs:element name="fasta_file" minOccurs="0"/>
+							<xs:element name="peak_file_list" minOccurs="0">
+								<xs:complexType >
+									<xs:sequence>
+										<xs:element name="file" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="output_data_file" minOccurs="0"/>
+							<xs:element name="search_string_list" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="subtract_hydrogen_mass" minOccurs="0"/>
+							<xs:element name="maximum_mass" minOccurs="0"/>
+							<xs:element name="minimum_mass" minOccurs="0"/>
+							<xs:element name="missed_cleavages" minOccurs="0"/>
+							<xs:element name="static_ptms" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="variable_ptms" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="mass_tolerance" minOccurs="0"/>
+							<xs:element name="mass_tolerance_model" minOccurs="0"/>
+							<xs:element name="score_algorithm" minOccurs="0"/>
+							<xs:element name="random_dbase_size" minOccurs="0"/>
+							<xs:element name="top" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="matcher_status" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="status" minOccurs="0"/>
+							<xs:element name="message" minOccurs="0"/>
+							<xs:element name="entries_searched" minOccurs="0"/>
+							<xs:element name="entries_database" minOccurs="0"/>
+							<xs:element name="ptm_definitions" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="date_created" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="match_list">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="score_record" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="accession_number" type="xs:string"/>
+										<xs:element name="log_score" type="xs:decimal"/>
+										<xs:element name="log_Pvalue" type="xs:float"/>
+										<xs:element name="score_quality" type="xs:decimal"/>
+										<xs:element name="seq_coverage" type="xs:decimal"/>
+										<xs:element name="seq_length" type="xs:integer"/>
+										<xs:element name="no_of_peptides" type="xs:integer"/>
+										<xs:element name="sequence" type="xs:string"/>
+										<xs:element name="rank" type="xs:integer"/>
+										<xs:element name="matched_peaks">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="peak_list">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="peak" minOccurs="0" maxOccurs="unbounded">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="mass" type="xs:decimal"/>
+																			<xs:element name="intensity" type="xs:decimal"/>
+																			<xs:element name="ion_current" type="xs:string"/>
+																			<xs:element name="width" type="xs:decimal"/>
+																			<xs:element name="signal_noise_ratio" type="xs:decimal"/>
+																			<xs:element name="seq_start" type="xs:integer"/>
+																			<xs:element name="seq_end" type="xs:integer"/>
+																			<xs:element name="missed_cleav" type="xs:integer"/>
+																			<xs:element name="exp_mass" type="xs:decimal"/>
+																			<xs:element name="mod_aa" type="xs:string"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="unmatched_peaks">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="peak_list">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="peak" minOccurs="0" maxOccurs="unbounded">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="mass" type="xs:decimal"/>
+																			<xs:element name="intensity" type="xs:string"/>
+																			<xs:element name="ion_current" type="xs:string"/>
+																			<xs:element name="width" type="xs:decimal"/>
+																			<xs:element name="signal_noise_ratio" type="xs:decimal"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

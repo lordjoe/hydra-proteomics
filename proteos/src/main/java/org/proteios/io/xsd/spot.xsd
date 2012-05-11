@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- All classes are declared seperately, then referred to with 'ref' -->
+<!-- All choices are declared after classes, alphabetically, as seperate named groups, then referred to with 'ref' -->
+<!-- ClassNames have all words capitalised, with no underscores, field_names have all words in all lower case, with underscores -->
+<!-- All times are assumed to be in seconds, all dates as DDMMYYYY -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="EttanBatchInformation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="User" minOccurs="0"/>
+				<xs:element ref="GelList"/>
+				<xs:element ref="MPList"/>
+				<xs:element ref="TargetList" minOccurs="0"/>
+				<xs:element ref="TargetDefinition" minOccurs="0"/>
+				<xs:element ref="MPDefinition" minOccurs="0"/>
+				<xs:element ref="CalibrantLayout" minOccurs="0"/>
+				<xs:element ref="LoggedEventList" minOccurs="0"/>
+				<xs:element ref="SystemConfiguration" minOccurs="0"/>
+				<xs:element ref="ReagentConfiguration" minOccurs="0"/>
+				<xs:element ref="MethodReference" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="batchId" type="xs:string"/>
+			<xs:attribute name="batchName" type="xs:string"/>
+			<xs:attribute name="batchState" type="xs:string"/>
+			<xs:attribute name="date" type="xs:string"/>
+			<xs:attribute name="notes" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="User">
+		<xs:complexType>
+			<xs:attribute name="accessLevel" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GelList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="EttanPickGel" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EttanPickGel">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="SpotList"/>
+				<xs:element ref="ReferenceMarkerList" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="comment" type="xs:string" use="required"/>
+			<xs:attribute name="filePath" type="xs:string" use="required"/>
+			<xs:attribute name="gelId" type="xs:string" use="required"/>
+			<xs:attribute name="imageName" type="xs:string"/>
+			<xs:attribute name="material" type="xs:string"/>
+			<xs:attribute name="thickness" type="xs:decimal"/>
+			<xs:attribute name="trayId" type="xs:string"/>
+			<xs:attribute name="version" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SpotList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Spot" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Spot">
+		<xs:complexType>
+			<xs:attribute name="comment" type="xs:string"/>
+			<xs:attribute name="spotId" type="xs:positiveInteger" use="required"/>
+			<xs:attribute name="x" type="xs:decimal" use="required"/>
+			<xs:attribute name="y" type="xs:decimal" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ReferenceMarkerList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ReferenceMarker" minOccurs="2" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ReferenceMarker">
+		<xs:complexType>
+			<xs:attribute name="markerId" type="xs:string" use="required"/>
+			<xs:attribute name="x" type="xs:decimal" use="required"/>
+			<xs:attribute name="y" type="xs:decimal" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="MPList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="MicroPlate" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="MicroPlate">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="MPWellList"/>
+			</xs:sequence>
+			<xs:attribute name="MPId" type="xs:string" use="required"/>
+			<xs:attribute name="noOfWellsUsed" type="xs:positiveInteger"/>
+			<xs:attribute name="transferMPId" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="MPWellList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="MPWell" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="MPWell">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="PickingOrigin" maxOccurs="1"/>
+				<xs:element ref="DigestionOrigin" maxOccurs="1"/>
+			</xs:choice>
+			<xs:attribute name="index" type="xs:nonNegativeInteger" use="required"/>
+			<xs:attribute name="label" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PickingOrigin">
+		<xs:complexType>
+			<xs:attribute name="gelId" type="xs:string" use="required"/>
+			<xs:attribute name="spotId" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TargetList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Target" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Target">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="TargetPositionList" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="targetCarrierId" type="xs:string"/>
+			<xs:attribute name="targetId" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TargetPositionList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="TargetPosition" maxOccurs="1"/>
+				<xs:choice>
+					<xs:element ref="TargetPosition" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:sequence>
+						<xs:element ref="PickingOrigin" maxOccurs="1"/>
+						<xs:element ref="DigestionOrigin" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:choice>
+		</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TargetPosition">
+		<xs:complexType>
+			<xs:choice>
+				<!-- If only MPList with no Gel -->
+				<xs:element ref="DigestionOrigin" maxOccurs="1"/>
+				<xs:sequence>
+					<xs:element ref="PickingOrigin" maxOccurs="1"/>
+					<xs:element ref="DigestionOrigin" maxOccurs="1"/>
+				</xs:sequence>
+				<xs:element ref="Calibrant" maxOccurs="1"/>
+			</xs:choice>
+			<xs:attribute name="index" type="xs:string"/>
+			<xs:attribute name="invalidated" type="xs:string"/>
+			<xs:attribute name="label" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Calibrant">
+		<xs:complexType>
+			<xs:attribute name="calibrantId" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="DigestionOrigin">
+		<xs:complexType>
+			<xs:attribute name="MPId" type="xs:string" use="required"/>
+			<xs:attribute name="index" type="xs:string"/>
+			<xs:attribute name="label" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TargetDefinition">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="TargetLabelPositions" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="TargetSpotPositions" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="filePath" type="xs:string"/>
+			<xs:attribute name="heightOfTargetPlane" type="xs:decimal"/>
+			<xs:attribute name="instrumentType" type="xs:string"/>
+			<xs:attribute name="numberOfTargetWells" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="targetName" type="xs:string"/>
+			<xs:attribute name="targetRotation" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="targetTypeName" type="xs:string"/>
+			<xs:attribute name="targetVersion" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TargetLabelPositions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="TargetLabelPosition" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TargetLabelPosition">
+		<xs:complexType>
+			<xs:attribute name="label" type="xs:string"/>
+			<xs:attribute name="x" type="xs:decimal" use="required"/>
+			<xs:attribute name="y" type="xs:decimal" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TargetSpotPositions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="TargetSpotPosition" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TargetSpotPosition">
+		<xs:complexType>
+			<xs:attribute name="index" type="xs:string" use="required"/>
+			<xs:attribute name="label" type="xs:string" use="required"/>
+			<xs:attribute name="x" type="xs:decimal" use="required"/>
+			<xs:attribute name="y" type="xs:decimal" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="MPDefinition"/>
+	<xs:element name="CalibrantLayout">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+			</xs:sequence>
+			<xs:attribute name="calibrantA" type="xs:string" />
+			<xs:attribute name="calibrantB" type="xs:string"/>
+			<xs:attribute name="filePath" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string"/>
+			<xs:attribute name="targetType" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="LoggedEventList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="LoggedEvent" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="LoggedEvent">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="EventList" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="carrierID" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EventList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Event" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Event">
+		<xs:complexType>
+			<xs:attribute name="currentOperation" type="xs:string"/>
+			<xs:attribute name="endTime" type="xs:string"/>
+			<xs:attribute name="eventText" type="xs:string"/>
+			<xs:attribute name="eventType" type="xs:string"/>
+			<xs:attribute name="instrumentElapsedTime" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="instrumentEstimatedTime" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="instrumentLocationType" type="xs:string"/>
+			<xs:attribute name="instrumentLocationTypeIndex" type="xs:string"/>
+			<xs:attribute name="instrumentType" type="xs:string"/>
+			<xs:attribute name="instrumentTypeIndex" type="xs:string"/>
+			<xs:attribute name="methodProcessId" type="xs:string"/>
+			<xs:attribute name="methodSubIteration" type="xs:string"/>
+			<xs:attribute name="methodSubProcessId" type="xs:string"/>
+			<xs:attribute name="missedEvent" type="xs:string"/>
+			<xs:attribute name="startTime" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SystemConfiguration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="LiquidHandlerParameters"/>
+				<xs:element ref="PickerParameters"/>
+				<xs:element ref="ProSpotInstrument"/>
+				<xs:element ref="SpotterParameters"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="LiquidHandlerParameters">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ConnectedLiquidTypeList"/>
+			</xs:sequence>
+			<xs:attribute name="airGap" type="xs:decimal"/>
+			<xs:attribute name="enzymeDispensingFlowRate" type="xs:decimal"/>
+			<xs:attribute name="enzymeDispensingZOffset" type="xs:decimal"/>
+			<xs:attribute name="extractionAspirationFlowRate" type="xs:decimal"/>
+			<xs:attribute name="extractionAspirationZOffset" type="xs:decimal"/>
+			<xs:attribute name="nonEnzymeDispensingFlowRate" type="xs:decimal"/>
+			<xs:attribute name="nonEnzymeDispensingZOffset" type="xs:decimal"/>
+			<xs:attribute name="preparationAspirationFlowRate" type="xs:decimal"/>
+			<xs:attribute name="preparationAspirationZOffset" type="xs:decimal"/>
+			<xs:attribute name="primingVolume" type="xs:decimal"/>
+			<xs:attribute name="rinseFlowRate" type="xs:decimal"/>
+			<xs:attribute name="rinseVolumeDeep" type="xs:decimal"/>
+			<xs:attribute name="rinseVolumeShallow" type="xs:decimal"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ConnectedLiquidTypeList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ConnectedLiquidType" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ConnectedLiquidType">
+		<xs:complexType>
+			<xs:attribute name="connectedLiquidId" type="xs:string"/>
+			<xs:attribute name="connectedLiquidName" type="xs:string"/>
+			<xs:attribute name="connectedLiquidVolume" type="xs:string"/>
+			<xs:attribute name="position" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PickerParameters">
+		<xs:complexType>
+			<xs:attribute name="aspirationFlowRate" type="xs:decimal"/>
+			<xs:attribute name="cameraCalibrated" type="xs:string"/>
+			<xs:attribute name="currentlyActivePickingHead" type="xs:string"/>
+			<xs:attribute name="dispensingFlowRate" type="xs:decimal"/>
+			<xs:attribute name="dispensingZOffset" type="xs:decimal"/>
+			<xs:attribute name="jazzAmplitudeGlass" type="xs:decimal"/>
+			<xs:attribute name="jazzAmplitudePlastic" type="xs:decimal"/>
+			<xs:attribute name="pickingZOffset" type="xs:decimal"/>
+			<xs:attribute name="rinseFlowRate" type="xs:decimal"/>
+			<xs:attribute name="rinseVolume" type="xs:decimal"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ProSpotInstrument">
+		<xs:complexType>
+			<xs:attribute name="instrumentIdentity" type="xs:string"/>
+			<xs:attribute name="softwareVersion" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SpotterParameters">
+		<xs:complexType>
+			<xs:attribute name="airGap" type="xs:decimal"/>
+			<xs:attribute name="aspirationFlowRate" type="xs:decimal"/>
+			<xs:attribute name="dispensingFlowRate" type="xs:decimal"/>
+			<xs:attribute name="minDryingTime" type="xs:decimal"/>
+			<xs:attribute name="rinseFlowRate" type="xs:decimal"/>
+			<xs:attribute name="rinseVolumeDeep" type="xs:decimal"/>
+			<xs:attribute name="rinseVolumeShallow" type="xs:decimal"/>
+			<xs:attribute name="spotterMPAspirationZOffset" type="xs:decimal"/>
+			<xs:attribute name="spotterMPDispensingZOffset" type="xs:decimal"/>
+			<xs:attribute name="spotterTPAspirationZOffset" type="xs:decimal"/>
+			<xs:attribute name="spotterTPDispensingZOffset" type="xs:decimal"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ReagentConfiguration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ReagentConfigurationItem" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ReagentConfigurationItem">
+		<xs:complexType>
+			<xs:attribute name="barcodeForReagentInUse" type="xs:string"/>
+			<xs:attribute name="reagentSubclassName" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="MethodReference">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="MethodVersionSpecification"/>
+			</xs:sequence>
+			<xs:attribute name="methodName" type="xs:string"/>
+			<xs:attribute name="methodPath" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="MethodVersionSpecification">
+		<xs:complexType>
+			<xs:attribute name="methodState" type="xs:string"/>
+			<xs:attribute name="methodVersion" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<!-- Specific types for this schema go here -->
+	<!-- Named groups for choices go after here...-->
+</xs:schema>

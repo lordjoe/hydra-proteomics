@@ -1,0 +1,90 @@
+<?xml version="1.0" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
+	<xs:element name="pepfil3">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="version" minOccurs="0"/>
+				<xs:element name="registered_to" minOccurs="0"/>
+				<xs:element name="parameters" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="parameter_file" minOccurs="0"/>
+							<xs:element name="input_data_file" minOccurs="0"/>
+							<xs:element name="output_data_file" minOccurs="0"/>
+							<xs:element name="peak_masses_with_hydrogen" minOccurs="0"/>
+							<xs:element name="calibration" minOccurs="0"/>
+							<xs:element name="calibration_peaks" minOccurs="0"/>
+							<xs:element name="calibration_masses_with_hydrogen" minOccurs="0"/>
+							<xs:element name="calibration_quadric_start" minOccurs="0"/>
+							<xs:element name="calibration_window" minOccurs="0"/>
+							<xs:element name="max_allowed_calibration_adj" minOccurs="0"/>
+							<xs:element name="echoes" minOccurs="0"/>
+							<xs:element name="echoes_to_consider" minOccurs="0"/>
+							<xs:element name="bb_filter" minOccurs="0"/>
+							<xs:element name="bb_filter_window" minOccurs="0"/>
+							<xs:element name="bb_filter_ratio" minOccurs="0"/>
+							<xs:element name="minimum_mass" minOccurs="0"/>
+							<xs:element name="maximum_mass" minOccurs="0"/>
+							<xs:element name="exclude_peaks" minOccurs="0"/>
+							<xs:element name="peaks_to_exclude" minOccurs="0"/>
+							<xs:element name="exclude_masses_with_hydrogen" minOccurs="0"/>
+							<xs:element name="exclude_window" minOccurs="0"/>
+							<xs:element name="remove_quality" minOccurs="0"/>
+							<xs:element name="qualities_to_remove" minOccurs="0"/>
+							<xs:element name="width_cut_model" minOccurs="0"/>
+							<xs:element name="width_cut" minOccurs="0"/>
+							<xs:element name="signal_noise_cut" minOccurs="0"/>
+							<xs:element name="signal_noise_threshold" minOccurs="0"/>
+							<xs:element name="chemical_filter" minOccurs="0"/>
+							<xs:element name="max_forbidden_allowed" minOccurs="0"/>
+							<xs:element name="forbidden_region_file" minOccurs="0"/>
+							<xs:element name="remove_forbidden" minOccurs="0"/>
+							<xs:element name="keep_N_peaks" minOccurs="0"/>
+							<xs:element name="peaks_to_keep_" minOccurs="0"/>
+							<xs:element name="subtract_hydrogen_mass" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="pepfil3_status">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="filter_order">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="filter" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="minimum_mass" minOccurs="0"/>
+							<xs:element name="maximum_mass" minOccurs="0"/>
+							<xs:element name="subtract_hydrogen_mass" minOccurs="0"/>
+							<xs:element name="calibration_status" minOccurs="0"/>
+							<xs:element name="outlier_status" minOccurs="0"/>
+							<xs:element name="ref_match_list" minOccurs="0"/>
+							<xs:element name="pepex_match_list" minOccurs="0"/>
+							<xs:element name="date_created" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="peak_list">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="peak" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="mass" type="xs:decimal"/>
+										<xs:element name="intensity" type="xs:decimal"/>
+										<xs:element name="ion_current" type="xs:string"/>
+										<xs:element name="width" type="xs:decimal"/>
+										<xs:element name="signal_noise_ratio" type="xs:decimal"/>
+										<xs:element name="quality" type="xs:integer"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
