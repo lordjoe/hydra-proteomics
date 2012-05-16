@@ -1,5 +1,7 @@
 package org.systemsbiology.xtandem;
 
+import java.util.*;
+
 /**
  * org.systemsbiology.xtandem.FastaAminoAcid
  *
@@ -29,13 +31,13 @@ public enum FastaAminoAcid {
     W("tryptophan"),
     Y("tyrosine"),
     Z("glutamate or glutamine"),
-      X("any")
-    ;
+    X("any");
 
 
     /**
      * convert the first character of a string to an anminoacid - bad values are null
-       * @param in !null value
+     *
+     * @param in !null value
      * @return 0.. n - 1
      */
     public static FastaAminoAcid asAminoAcidOrNull(String s) {
@@ -44,7 +46,23 @@ public enum FastaAminoAcid {
         if (s.trim().length() != 1)
             return null;
         char in = s.charAt(0);
-         return asAminoAcidOrNull(in);
+        return asAminoAcidOrNull(in);
+    }
+
+    /**
+     * convert the first character of a string to an anminoacid - bad values are null
+     *
+     * @param in !null value
+     * @return 0.. n - 1
+     */
+    public static FastaAminoAcid[] asAminoAcids(String s) {
+        List<FastaAminoAcid> holder = new ArrayList<FastaAminoAcid>();
+        for(int i = 0; i < s.length(); i++) {
+             holder.add(FastaAminoAcid.fromChar(s.charAt(i)));
+        }
+        FastaAminoAcid[] ret = new FastaAminoAcid[holder.size()];
+        holder.toArray(ret);
+        return ret;
     }
 
     /**
@@ -105,6 +123,81 @@ public enum FastaAminoAcid {
 
     }
 
+    /**
+     * convert to an index
+     *
+     * @param in !null value
+     * @return 0.. n - 1
+     */
+    public static FastaAminoAcid fromAbbreviation(String in) {
+        char c = in.charAt(0);
+        switch (c) {
+            case 'A':
+                if ("ALA".equalsIgnoreCase(in))
+                    return A;
+                if ("ARG".equalsIgnoreCase(in))
+                    return R;
+                if ("ASP".equalsIgnoreCase(in))
+                     return D;
+                if ("ASN".equalsIgnoreCase(in))
+                     return N;
+                 throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+            case 'C':
+                if ("CYS".equalsIgnoreCase(in))
+                    return C;
+                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+            case 'G':  //"glycine"),
+                if ("GLY".equalsIgnoreCase(in))
+                    return G;
+                if ("GLU".equalsIgnoreCase(in))
+                    return E;
+                if ("GLN".equalsIgnoreCase(in))
+                    return Q;
+                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+            case 'H':  //"histidine"),
+                if ("HIS".equalsIgnoreCase(in))
+                    return H;
+                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+            case 'I':  //"isoleucine"),
+                if ("ILE".equalsIgnoreCase(in))
+                    return I;
+                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+            case 'L':  //"leucine"),
+                if ("LYS".equalsIgnoreCase(in))
+                    return K;
+                if ("LEU".equalsIgnoreCase(in))
+                    return L;
+                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+            case 'M':  //"methionine"),
+                if ("MET".equalsIgnoreCase(in))
+                    return M;
+                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+            case 'P':  //"proline"),
+                if ("PRO".equalsIgnoreCase(in))
+                    return P;
+                if ("PHE".equalsIgnoreCase(in))
+                    return F;
+                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+            case 'S':  //"serine"),
+                if ("SER".equalsIgnoreCase(in))
+                    return S;
+                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+            case 'T':  //"threonine"),
+                if ("THR".equalsIgnoreCase(in))
+                    return T;
+                if ("TRP".equalsIgnoreCase(in))
+                    return W;
+                if ("TYR".equalsIgnoreCase(in))
+                    return Y;
+                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+            case 'V':  //"valine"),
+                if ("VAL".equalsIgnoreCase(in))
+                    return V;
+                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+        }
+
+        throw new IllegalStateException("No Amino acid for string " + in);
+    }
 
     /**
      * convert to an index
@@ -276,5 +369,30 @@ public enum FastaAminoAcid {
 
     public String getName() {
         return m_Name;
+    }
+
+    /**
+     * three letter abbreviation
+     *
+     * @return
+     */
+    public String getAbbreviation() {
+        switch (this) {
+            case I:
+                return "ILE";
+            case N:
+                return "ASN";
+            case Q:
+                return "GLN";
+            case W:
+                return "TRP";
+            case B:
+                return "ASX";
+            case Z:
+                return "GLX";
+
+        }
+        // all others are first three letters
+        return getName().substring(0, 3).toUpperCase();
     }
 }

@@ -33,6 +33,14 @@ public class JXTandem_XTandemCrossValidator {
             throw new IllegalStateException("Bad JXTamdemFile");
     }
 
+    public JXTandem_XTandemCrossValidator(final String xtandemFileName) {
+
+        m_XTandemFile = new File(xtandemFileName);
+        if (!m_XTandemFile.exists() || m_XTandemFile.isDirectory())
+            throw new IllegalStateException("Bad XTamdemFile " + xtandemFileName);
+        m_JXTandemFile = null;
+     }
+
     public ScanScoringReport getXTandemReport() {
         return m_XTandemReport;
     }

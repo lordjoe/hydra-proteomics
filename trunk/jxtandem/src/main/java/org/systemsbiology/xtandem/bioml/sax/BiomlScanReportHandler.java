@@ -91,7 +91,8 @@ public class BiomlScanReportHandler extends AbstractElementSaxHandler<ScoredScan
         setLabel(lblstr);
         setCharge(XTandemSaxUtilities.getIntegerAttribute("z", attr, 0));
         setMassChargeRatio(XTandemSaxUtilities.getDoubleAttribute("mh", attr, 0));
-        setExpect(XTandemSaxUtilities.getDoubleAttribute("expect", attr, 0));
+        Double expect = XTandemSaxUtilities.getDoubleAttribute("expect", attr, 0);
+        setExpect(expect);
         // todo there's more
         //        setScanCount(XTandemSaxUtilities.getRequiredIntegerAttribute("scanCount", attr));
 //
@@ -166,6 +167,8 @@ public class BiomlScanReportHandler extends AbstractElementSaxHandler<ScoredScan
                   XTandemReportProtein prot = handler.getElementObject();
                   IMeasuredSpectrum measured = null;
                   ScoredScan scan = getElementObject();
+                Double expect = getExpect();
+                scan.setExpectedValue(expect);
                   if (scan != null)
                       measured = scan.getRaw();
 
@@ -207,5 +210,8 @@ public class BiomlScanReportHandler extends AbstractElementSaxHandler<ScoredScan
      */
     @Override
     public void finishProcessing() {
+        ScoredScan scan = getElementObject();
+        Double expect = getExpect();
+        scan.setExpectedValue(expect);
     }
 }
