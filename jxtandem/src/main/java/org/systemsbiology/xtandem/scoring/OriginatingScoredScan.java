@@ -455,6 +455,8 @@ public class OriginatingScoredScan implements IScoredScan, IAddable<IScoredScan>
     @Override
     public double getExpectedValue() {
         HyperScoreStatistics hyperScores = getHyperScores();
+        if(m_ExpectedValue != 0 && !Double.isNaN(m_ExpectedValue))
+            return m_ExpectedValue;
         ISpectralMatch bestMatch = getBestMatch();
         if (!hyperScores.isEmpty()) {
             if (bestMatch == null)

@@ -17,17 +17,16 @@ public class TaxonHandler extends AbstractElementSaxHandler<String[]> {
 
     private String m_Label;
     private final String m_AcceptableLabel;
-      private final String m_OnlyAcceptableFormat;
+    private final String m_OnlyAcceptableFormat;
     private final List<String> m_Files = new ArrayList<String>();
 
-    public TaxonHandler(IElementHandler parent,String fileType,String acceptableLabel) {
+    public TaxonHandler(IElementHandler parent, String fileType, String acceptableLabel) {
         super("taxon", parent);
-        m_AcceptableLabel =  acceptableLabel;
+        m_AcceptableLabel = acceptableLabel;
         m_OnlyAcceptableFormat = fileType;
     }
 
-    public String getAcceptableLabel()
-    {
+    public String getAcceptableLabel() {
         return m_AcceptableLabel;
     }
 
@@ -48,7 +47,7 @@ public class TaxonHandler extends AbstractElementSaxHandler<String[]> {
             throws SAXException {
 
         setLabel(attr.getValue("label"));
-          return;
+        return;
     }
 
     /**
@@ -77,40 +76,40 @@ public class TaxonHandler extends AbstractElementSaxHandler<String[]> {
     @Override
     public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
         // ignore all entried but mine
-        if(!getLabel().equals(getAcceptableLabel()))
+        if (!getLabel().equals(getAcceptableLabel()))
             return;
         if ("file".equals(qName)) {
-             String format = attributes.getValue("format");
-             if( !getOnlyAcceptableFormat().equals(format)) {
-                 return;
+            String format = attributes.getValue("format");
+            String onlyAcceptableFormat = getOnlyAcceptableFormat();
+            if (!onlyAcceptableFormat.equalsIgnoreCase(format)) {
+                return;
                 // throw new IllegalStateException("cannot support format " + format + " only " + getOnlyAcceptableFormat());
-             }
+            }
 
             String url = attributes.getValue("URL");
             m_Files.add(url);
 
             return;
-         }
+        }
         super.startElement(uri, localName, qName, attributes);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
     @Override
-    public void endElement(String elx, String localName, String el) throws SAXException
-    {
-          // we handle this tag internally
+    public void endElement(String elx, String localName, String el) throws SAXException {
+        // we handle this tag internally
         if ("file".equals(el)) {
-             return;
+            return;
         }
         // added slewis
-          if (getInitiatingTag().equals(el)) {
-              finishProcessing();
+        if (getInitiatingTag().equals(el)) {
+            finishProcessing();
 
-              final IElementHandler parent = getParent();
-              if (parent != null)
-                  parent.endElement(elx, localName, el);
-              return;
-          }
-        super.endElement(  elx,   localName,   el);
+            final IElementHandler parent = getParent();
+            if (parent != null)
+                parent.endElement(elx, localName, el);
+            return;
+        }
+        super.endElement(elx, localName, el);
     }
 
     /**
