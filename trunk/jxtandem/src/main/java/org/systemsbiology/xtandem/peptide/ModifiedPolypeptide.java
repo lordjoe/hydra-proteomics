@@ -1,6 +1,5 @@
 package org.systemsbiology.xtandem.peptide;
 
-import org.apache.openjpa.persistence.criteria.*;
 import org.systemsbiology.xtandem.*;
 
 import java.util.*;

@@ -364,8 +364,8 @@ public class KScoreTest
         XTandemMain main = new XTandemMain(
                 XTandemUtilities.getResourceStream("largeSample/tandem.params"),
                 "largeSample/tandem.params");
-        if(!JXTandemTestConfiguration.isDatabaseAccessible(main))
-            return;
+//        if(!JXTandemTestConfiguration.isDatabaseAccessible(main))
+//            return;
         main.loadScoringTest();
         main.loadSpectra();
         XTandemDebugging.setDebugging(true, main);

@@ -1,7 +1,7 @@
 package org.systemsbiology.xtandem.hadoop;
 
-import com.sun.org.apache.bcel.internal.generic.*;
-import org.apache.commons.net.io.*;
+//import com.sun.org.apache.bcel.internal.generic.*;
+//import org.apache.commons.net.io.*;
 import org.junit.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.ionization.*;
@@ -645,57 +645,57 @@ public class FullMapReduceTest {
 
     }
 
-    protected int validateSamePeptides(ScanScoringReport sr, final FragmentHoldingFastaHandler pHandler, final IMainData pTandem) {
-        Set<Integer> handledItems = new HashSet<Integer>();
-        JDBCTaxonomy otherTaxonomy = null;
-        try {
-// NOTE only do this with a populated local database
-            otherTaxonomy = buildJDBCDatabase(pHandler);
-        }
-        catch (Exception e) { // this is the case where the database is not available
-            otherTaxonomy = null;
-
-        }
-
-        int totalVerified = 0;
-        int totalDBVerified = 0;
-        RawPeptideScan[] rawScans = pTandem.getRawScans();
-        Arrays.sort(rawScans);
-        for (int i = 0; i < rawScans.length; i++) {
-            RawPeptideScan rawScan = rawScans[i];
-            String id = rawScan.getId();
-            IScanScoring sm = sr.getScanScoringMap(id);
-            int charge = rawScan.getPrecursorCharge();
-            if (charge == 0) { // unknown charge
-                for (int k = 1; k <= 3; k++) {
-                    double mass = rawScan.getPrecursorMass(i);
-                    // NOTE only do this with a populated local database
-                    validateFragmentsAtMassAgainstDatabase(pHandler, otherTaxonomy, sm, mass, handledItems,pTandem);
-                    if (otherTaxonomy != null)
-                        totalDBVerified += validateFragmentsAtMassAgainstDatabase(pHandler, otherTaxonomy, sm, mass, handledItems,pTandem);
-                    totalVerified += validateFragmentsAtMass(pHandler, sm, mass, handledItems,pTandem);
-                }
-            }
-            else {
-                double mass = rawScan.getPrecursorMass(charge);
-                // NOTE only do this with a populated local database
-                if (otherTaxonomy != null)
-                    totalDBVerified += validateFragmentsAtMassAgainstDatabase(pHandler, otherTaxonomy, sm, mass, handledItems,pTandem);
-
-                totalVerified += validateFragmentsAtMass(pHandler, sm, mass, handledItems,pTandem);
-
-            }
-
-        }
-        int totalScores = sr.getTotalScoreCount();
-        Assert.assertTrue(totalVerified >= totalScores);
-        if (otherTaxonomy != null) {
-            Assert.assertTrue(totalDBVerified >= totalScores);
-            Assert.assertTrue(totalDBVerified >= totalVerified);
-        }
-        return totalVerified;
-    }
-
+//    protected int validateSamePeptides(ScanScoringReport sr, final FragmentHoldingFastaHandler pHandler, final IMainData pTandem) {
+//        Set<Integer> handledItems = new HashSet<Integer>();
+//        JDBCTaxonomy otherTaxonomy = null;
+//        try {
+//// NOTE only do this with a populated local database
+//            otherTaxonomy = buildJDBCDatabase(pHandler);
+//        }
+//        catch (Exception e) { // this is the case where the database is not available
+//            otherTaxonomy = null;
+//
+//        }
+//
+//        int totalVerified = 0;
+//        int totalDBVerified = 0;
+//        RawPeptideScan[] rawScans = pTandem.getRawScans();
+//        Arrays.sort(rawScans);
+//        for (int i = 0; i < rawScans.length; i++) {
+//            RawPeptideScan rawScan = rawScans[i];
+//            String id = rawScan.getId();
+//            IScanScoring sm = sr.getScanScoringMap(id);
+//            int charge = rawScan.getPrecursorCharge();
+//            if (charge == 0) { // unknown charge
+//                for (int k = 1; k <= 3; k++) {
+//                    double mass = rawScan.getPrecursorMass(i);
+//                    // NOTE only do this with a populated local database
+//                    validateFragmentsAtMassAgainstDatabase(pHandler, otherTaxonomy, sm, mass, handledItems,pTandem);
+//                    if (otherTaxonomy != null)
+//                        totalDBVerified += validateFragmentsAtMassAgainstDatabase(pHandler, otherTaxonomy, sm, mass, handledItems,pTandem);
+//                    totalVerified += validateFragmentsAtMass(pHandler, sm, mass, handledItems,pTandem);
+//                }
+//            }
+//            else {
+//                double mass = rawScan.getPrecursorMass(charge);
+//                // NOTE only do this with a populated local database
+//                if (otherTaxonomy != null)
+//                    totalDBVerified += validateFragmentsAtMassAgainstDatabase(pHandler, otherTaxonomy, sm, mass, handledItems,pTandem);
+//
+//                totalVerified += validateFragmentsAtMass(pHandler, sm, mass, handledItems,pTandem);
+//
+//            }
+//
+//        }
+//        int totalScores = sr.getTotalScoreCount();
+//        Assert.assertTrue(totalVerified >= totalScores);
+//        if (otherTaxonomy != null) {
+//            Assert.assertTrue(totalDBVerified >= totalScores);
+//            Assert.assertTrue(totalDBVerified >= totalVerified);
+//        }
+//        return totalVerified;
+//    }
+//
 
     public static int getMaxNotHandled(int total) {
         // return 1 + (int)(total * 0.05);
@@ -787,25 +787,25 @@ public class FullMapReduceTest {
      * @return total peptides tested
      */
 
-    private int validateFragmentsAtMassAgainstDatabase(final FragmentHoldingFastaHandler pHandler, JDBCTaxonomy otherTaxonomy, final IScanScoring pSm, final double pMass, Set<Integer> handledItems,IMainData tandem) {
-        int[] limits = tandem.getScorer().allSearchedMasses(pMass);
-
-        int totalVerified = 0;
-        for (int j = 0; j < limits.length; j++) {
-            int iMass = limits[j];
-            IPolypeptide[] fragmentsAtMass = pHandler.getFragmentsAtMass(iMass);
-            IPolypeptide[] dbPeptides = otherTaxonomy.findPeptidesOfMassIndex(iMass, true);
-
-            Assert.assertNotNull(fragmentsAtMass);
-            Assert.assertNotNull(dbPeptides);
-            IPolypeptide[] diff = XTandemUtilities.buildDifferencePeptideLists(dbPeptides, fragmentsAtMass);
-            Assert.assertEquals(fragmentsAtMass.length, dbPeptides.length);
-            totalVerified += fragmentsAtMass.length;
-
-            validateSameSequenceSets(fragmentsAtMass, dbPeptides);
-        }
-        return totalVerified;
-    }
+//    private int validateFragmentsAtMassAgainstDatabase(final FragmentHoldingFastaHandler pHandler, JDBCTaxonomy otherTaxonomy, final IScanScoring pSm, final double pMass, Set<Integer> handledItems,IMainData tandem) {
+//        int[] limits = tandem.getScorer().allSearchedMasses(pMass);
+//
+//        int totalVerified = 0;
+//        for (int j = 0; j < limits.length; j++) {
+//            int iMass = limits[j];
+//            IPolypeptide[] fragmentsAtMass = pHandler.getFragmentsAtMass(iMass);
+//            IPolypeptide[] dbPeptides = otherTaxonomy.findPeptidesOfMassIndex(iMass, true);
+//
+//            Assert.assertNotNull(fragmentsAtMass);
+//            Assert.assertNotNull(dbPeptides);
+//            IPolypeptide[] diff = XTandemUtilities.buildDifferencePeptideLists(dbPeptides, fragmentsAtMass);
+//            Assert.assertEquals(fragmentsAtMass.length, dbPeptides.length);
+//            totalVerified += fragmentsAtMass.length;
+//
+//            validateSameSequenceSets(fragmentsAtMass, dbPeptides);
+//        }
+//        return totalVerified;
+//    }
 
     /**
      * asserts that the two sets of peptids arrays contain the same set of sequences
@@ -842,19 +842,19 @@ public class FullMapReduceTest {
     public static final String DATA_BASE_USER = "proteomics";
     public static final String DATA_BASE_PASSWORD = "tandem";
     public static final String DATA_BASE_DRIVER = "com.mysql.jdbc.Driver";
-
-    public static JDBCTaxonomy buildJDBCDatabase(final FragmentHoldingFastaHandler pHandler) {
-        XTandemMain tandem = (XTandemMain) pHandler.getTandem();
-        return buildJDBCDatabase(tandem);
-    }
-
-    public static JDBCTaxonomy buildJDBCDatabase(final XTandemMain pTandem) {
-        pTandem.setParameter(SpringJDBCUtilities.DATA_HOST_PARAMETER, DATA_BASE_HOST);
-        pTandem.setParameter(SpringJDBCUtilities.DATA_DATABASE_PARAMETER, DATA_BASE_NAME);
-        pTandem.setParameter(SpringJDBCUtilities.DATA_USER_PARAMETER, DATA_BASE_USER);
-        pTandem.setParameter(SpringJDBCUtilities.DATA_PASSWORD_PARAMETER, DATA_BASE_PASSWORD);
-        pTandem.setParameter(SpringJDBCUtilities.DATA_DRIVER_CLASS_PARAMETER, DATA_BASE_DRIVER);
-        return new JDBCTaxonomy(pTandem);
-    }
+//
+//    public static JDBCTaxonomy buildJDBCDatabase(final FragmentHoldingFastaHandler pHandler) {
+//        XTandemMain tandem = (XTandemMain) pHandler.getTandem();
+//        return buildJDBCDatabase(tandem);
+//    }
+//
+//    public static JDBCTaxonomy buildJDBCDatabase(final XTandemMain pTandem) {
+//        pTandem.setParameter(SpringJDBCUtilities.DATA_HOST_PARAMETER, DATA_BASE_HOST);
+//        pTandem.setParameter(SpringJDBCUtilities.DATA_DATABASE_PARAMETER, DATA_BASE_NAME);
+//        pTandem.setParameter(SpringJDBCUtilities.DATA_USER_PARAMETER, DATA_BASE_USER);
+//        pTandem.setParameter(SpringJDBCUtilities.DATA_PASSWORD_PARAMETER, DATA_BASE_PASSWORD);
+//        pTandem.setParameter(SpringJDBCUtilities.DATA_DRIVER_CLASS_PARAMETER, DATA_BASE_DRIVER);
+//        return new JDBCTaxonomy(pTandem);
+//    }
 
 }

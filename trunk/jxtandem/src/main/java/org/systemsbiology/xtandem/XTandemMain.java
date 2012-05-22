@@ -77,7 +77,8 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
     private Scorer m_ScoreRunner;
     private final SequenceUtilities[] m_SequenceUtilitiesByMasssType = new SequenceUtilities[2];
     private ElapsedTimer m_Elapsed = new ElapsedTimer();
-     private Map<String, IScoredScan> m_Scorings = new HashMap<String, IScoredScan>();
+
+    private Map<String, IScoredScan> m_Scorings = new HashMap<String, IScoredScan>();
     private Map<String, RawPeptideScan> m_RawScans = new HashMap<String, RawPeptideScan>();
     private final Map<String, String> m_PerformanceParameters = new HashMap<String, String>();
     private final DelegatingFileStreamOpener m_Openers = new DelegatingFileStreamOpener();
@@ -879,16 +880,16 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         final String descriptiveFile = getTaxonomyInfo();
 
         // Database version
-        String hostname = getParameter(SpringJDBCUtilities.DATA_HOST_PARAMETER);
-        if (hostname != null) {
-            // using files
-            m_Taxonomy = new JDBCTaxonomy(this);
-        }
-        else {
+//        String hostname = getParameter(SpringJDBCUtilities.DATA_HOST_PARAMETER);
+//        if (hostname != null) {
+//            // using files
+//            m_Taxonomy = new JDBCTaxonomy(this);
+//        }
+//        else {
             // using files
             m_Taxonomy = new Taxonomy(this, taxonomyName, descriptiveFile);
 
-        }
+ //      }
 
 
         strKey = "org.systemsbiology.xtandem.TaxonomyTranch";

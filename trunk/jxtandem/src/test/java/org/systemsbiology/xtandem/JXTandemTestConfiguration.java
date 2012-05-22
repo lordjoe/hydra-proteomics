@@ -46,21 +46,21 @@ public class JXTandemTestConfiguration {
     }
 
 
-    public static boolean isDatabaseAccessible(IParameterHolder data) {
-        String connStr = SpringJDBCUtilities.buildConnectionString(data);
-        Boolean ret = gConditionToAvailability.get(connStr);
-        if (ret == null) {
-            try {
-                SpringJDBCUtilities.buildDataSource(data);
-                ret = Boolean.TRUE;
-            }
-            catch (Exception e) {
-                ret = Boolean.FALSE;
-
-            }
-            gConditionToAvailability.put(connStr, ret);
-        }
-        return ret;
-    }
+//    public static boolean isDatabaseAccessible(IParameterHolder data) {
+//        String connStr = SpringJDBCUtilities.buildConnectionString(data);
+//        Boolean ret = gConditionToAvailability.get(connStr);
+//        if (ret == null) {
+//            try {
+//                SpringJDBCUtilities.buildDataSource(data);
+//                ret = Boolean.TRUE;
+//            }
+//            catch (Exception e) {
+//                ret = Boolean.FALSE;
+//
+//            }
+//            gConditionToAvailability.put(connStr, ret);
+//        }
+//        return ret;
+//    }
 
 }

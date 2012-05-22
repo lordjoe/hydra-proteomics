@@ -5,23 +5,14 @@ import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.*;
-import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.mapreduce.*;
-import org.apache.hadoop.mapreduce.Counters;
-import org.apache.hadoop.mapreduce.lib.input.*;
 import org.apache.hadoop.mapreduce.lib.output.*;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.*;
-import org.apache.openjpa.persistence.criteria.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.peptide.*;
 
-import javax.imageio.*;
 import java.io.*;
-import java.util.*;
 
 
 /**
@@ -31,7 +22,6 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 
     public static final int MAX_TEST_PROTEINS = 0; // 2000;
     public static final int REPORT_INTERVAL_PROTEINS = 10000; // 2000;
-
 
 
     public static class ProteinMapper extends AbstractTandemMapper<Text> {
@@ -78,8 +68,8 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             label = XTandemUtilities.conditionProteinLabel(label);
             String sequence = value.toString();
             // drop terminating *
-            if(sequence.endsWith("*"))
-                sequence = sequence.substring(0,sequence.length() - 1);
+            if (sequence.endsWith("*"))
+                sequence = sequence.substring(0, sequence.length() - 1);
 
             if (label.toUpperCase().contains("DECOY"))
                 incrementNumberDecoysProteins(context);
@@ -90,7 +80,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 
             if (m_Proteins++ % REPORT_INTERVAL_PROTEINS == 0) {
                 showStatistics();
-              }
+            }
         }
 
         private void showStatistics() {
@@ -130,7 +120,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
         public void reduceNormal(Text key, Iterable<Text> values,
                                  Context context) throws IOException, InterruptedException {
 
-           String sequence = key.toString();
+            String sequence = key.toString();
             StringBuilder sb = new StringBuilder();
             for (Text val : values) {
                 if (sb.length() > 0)
@@ -151,7 +141,8 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             Counter counter = context.getCounter("Parser", "NumberUniqueFragments");
             counter.increment(1);
             m_NumberUniquePeptides++;
-          }
+        }
+
         /**
          * Called once at the beginning of the task.
          */
@@ -188,8 +179,8 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 //                    )
 //                XTandemUtilities.breakHere();
 //
-            if(sequence.startsWith("AVLEFTPETPSPLIGILENK"))
-                 XTandemUtilities.breakHere();
+            if (sequence.startsWith("AVLEFTPETPSPLIGILENK"))
+                XTandemUtilities.breakHere();
 
             StringBuilder sb = new StringBuilder();
             // should work even if we use a combiner
@@ -226,7 +217,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 
             }
             incrementNumberReducedFragments(context);
-             context.write(onlyKey, onlyValue);
+            context.write(onlyKey, onlyValue);
             if (m_NumberUniquePeptides % REPORT_INTERVAL_PROTEINS == 0) {
                 showReduceStatistics();
             }
@@ -324,7 +315,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
                     if (remoteDirectory != null && !inputFile.startsWith(remoteDirectory))
                         inputFile = remoteDirectory + "/" + inputFile;
 
-                    XTandemHadoopUtilities.setInputPath(  job, inputFile);
+                    XTandemHadoopUtilities.setInputPath(job, inputFile);
                 }
             }
 
@@ -332,8 +323,8 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             String athString = otherArgs[otherArgs.length - 1];
 
 
-            if(athString.startsWith("s3n://"))
-               athString = athString.substring(athString.lastIndexOf("s3n://"));
+            if (athString.startsWith("s3n://"))
+                athString = athString.substring(athString.lastIndexOf("s3n://"));
             Path outputDir = new Path(athString);
             System.err.println("Output path Parser  " + athString);
 
@@ -343,8 +334,8 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 
 
             boolean ans = job.waitForCompletion(true);
-            if(ans)
-                XTandemHadoopUtilities.saveCounters(fileSystem,  XTandemHadoopUtilities.buildCounterFileName(this,conf),job);
+            if (ans)
+                XTandemHadoopUtilities.saveCounters(fileSystem, XTandemHadoopUtilities.buildCounterFileName(this, conf), job);
 
 
             int ret = ans ? 0 : 1;
@@ -371,6 +362,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 
         }
     }
+
     /**
      * Execute the command with the given arguments.
      *
