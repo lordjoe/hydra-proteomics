@@ -1,7 +1,7 @@
 package org.systemsbiology.xtandem.taxonomy;
 
-import org.springframework.dao.*;
-import org.springframework.jdbc.core.simple.*;
+//import org.springframework.dao.*;
+//import org.springframework.jdbc.core.simple.*;
 import org.systemsbiology.common.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.peptide.*;
@@ -21,7 +21,7 @@ public class FastaLoader implements IFastaHandler {
     public static final FastaLoader[] EMPTY_ARRAY = {};
 
     // sometimes annotation gets REALLY long this limits length
-    public static final int MAX_ANNOTATION_LENGTH = TaxonomyDatabase.MAX_KEY_LENGTH;
+    public static final int MAX_ANNOTATION_LENGTH = 767;
 
     public static final int NUMBER_MISSED_CLEAVAGES = 2;
     public static final int MAX_CHARGE = 3;
@@ -314,245 +314,6 @@ public class FastaLoader implements IFastaHandler {
 //        XTandemUtilities.outputLine("Parsed " + fs.getProteinIndex() + " and " + fs.getFragmentIndex() + " fragments ");
 //        et.showElapsed("Parsed in ");
 //    }
-
-    public void loadDatabase(SimpleJdbcTemplate db) {
-
-        boolean usingMono = true;
-        if (MassType.average == getApplication().getMassType())
-            usingMono = false;
-//        BasicDataSource ds = (BasicDataSource) XTandemUtilities.getDataSource();
-//
-//        if (ds == null)
-//            throw new IllegalStateException("You have not created a data source");
-        //boolean oldAutoCommit = ds.getDefaultAutoCommit();
-        try {
-//            ds.setDefaultAutoCommit(false);
-
-            ElapsedTimer et = new ElapsedTimer();
-            int numberProteins = db.queryForInt("select count(*) from proteins");
-            if (numberProteins == 0) {
-                SpringJDBCUtilities.loadTable(db, getProteinLoadFile(), "proteins");
-                et.showElapsed("Loaded Proteins in ");
-            }
-
-            String load_Table = "load_fragments";
-            int numberFragments = db.queryForInt("select count(*) from " + load_Table);
-            if (numberFragments == 0) {
-                et.reset();
-                File fragmentLoadFile = getFragmentLoadFile();
-                SpringJDBCUtilities.loadTable(db, fragmentLoadFile, load_Table);
-                et.showElapsed("Loaded Fragments in ");
-                et.reset();
-                if (usingMono)
-                    db.update("create index load_fragments_imono_idx on  " + load_Table + "(imono_mass,sequence) ");
-                else
-                    db.update("create index load_fragments_average_idx on  " + load_Table + "(iaverage_mass,sequence) ");
-                et.showElapsed("Created indices");
-            }
-
-            if (usingMono) {
-                int numberMono = db.queryForInt("select count(*) from mono_mz_to_fragments");
-                if (numberMono == 0) {
-                    et.reset();
-                    db.update("insert into mono_mz_to_fragments (select  imono_mass, sequence,max(mono_mass),missed_cleavages from  " + load_Table + " where imono_mass  is not null  group by imono_mass, sequence  ) ");
-                    et.showElapsed("Loaded   mono in ");
-                }
-            }
-            else {
-                int numberAverage = db.queryForInt("select count(*) from average_mz_to_fragments");
-                if (numberAverage == 0) {
-
-                    et.reset();
-                    db.update("insert into average_mz_to_fragments (select  iaverage_mass, sequence,max(average_mass),missed_cleavages from   " + load_Table + " where iaverage_mass  is not null  group by iaverage_mass, sequence ) ");
-                    et.showElapsed("Loaded   average in ");
-                }
-            }
-
-            load_Table = "semi_load_fragments";
-
-            numberFragments = db.queryForInt("select count(*) from " + load_Table);
-            if (numberFragments == 0) {
-                et.reset();
-                File fragmentLoadFile = getSemiFragmentLoadFile();
-                SpringJDBCUtilities.loadTable(db, fragmentLoadFile, load_Table);
-                et.showElapsed("Loaded Semi Fragments in ");
-
-                /*
-                et.reset();
-                db.update("create index load_fragments_imono_idx on  " + load_Table + "(imono_mass,sequence) ");
-                db.update("create index load_fragments_average_idx on  " + load_Table + "(iaverage_mass,sequence) ");
-                et.showElapsed("Created indices");
-                */
-            }
-
-
-            if (usingMono) {
-                int numberMono = db.queryForInt("select count(*) from semi_mono_mz_to_fragments");
-                if (numberMono == 0) {
-                    et.reset();
-                    // insert into semi_mono_mz_to_fragments (select  imono_mass, sequence,max(mono_mass),missed_cleavages from  semi_load_fragments where imono_mass is not null group by imono_mass, sequence
-                    db.update("insert into semi_mono_mz_to_fragments (select  imono_mass, sequence,max(mono_mass),missed_cleavages from  " + load_Table + " where imono_mass is not null group by imono_mass, sequence  ) ");
-                    et.showElapsed("Loaded mono in ");
-                }
-            }
-            else {
-                int numberAverage = db.queryForInt("select count(*) from semi_average_mz_to_fragments");
-                if (numberAverage == 0) {
-                    et.reset();
-                    // insert into semi_average_mz_to_fragments (select  iaverage_mass, sequence,max(average_mass),missed_cleavages from   semi_load_fragments where iaverage_mass  is not null  group by iaverage_mass, sequence )
-                    db.update("insert into semi_average_mz_to_fragments (select  iaverage_mass, sequence,max(average_mass),missed_cleavages from   " + load_Table + " where iaverage_mass  is not null  group by iaverage_mass, sequence ) ");
-                    et.showElapsed("Loaded average in ");
-                }
-            }
-
-          // We are handling modifications in line
-          //  PeptideModification[] pms = getModifications();
-          //  guaranteeModifications(db, pms);
-        }
-        finally {
-            //          ds.setDefaultAutoCommit(oldAutoCommit);
-
-        }
-    }
-
-    public static final int MAX_ONE_SHOT_RESULTS = 10 * 1000;
-
-    protected void guaranteeModifications(final SimpleJdbcTemplate pDb, final PeptideModification[] pPms) {
-        pDb.update("DELETE FROM semi_mono_modified_mz_to_fragments");
-        pDb.update("DELETE FROM semi_average_modified_mz_to_fragments");
-        int count = pDb.queryForInt("select count(*) from  semi_mono_mz_to_fragments");
-        int start = 0;
-        int end = start + MAX_ONE_SHOT_RESULTS;
-        // do multiple queries to not run out of memory
-        int passes = 0;
-        while (count > 0) {
-            List<IPolypeptide> peptides = pDb.query("select * from  semi_mono_mz_to_fragments LIMIT " + start + " , " + end, SpringJDBCUtilities.PEPTIDE_MAPPER);
-            guaranteeModifications(pDb, pPms, peptides);
-
-            peptides = pDb.query("select * from  semi_average_mz_to_fragments LIMIT " + start + " , " + end, SpringJDBCUtilities.PEPTIDE_MAPPER);
-            guaranteeModifications(pDb, pPms, peptides);
-
-            count -= MAX_ONE_SHOT_RESULTS;
-            start += MAX_ONE_SHOT_RESULTS;
-            end = start + MAX_ONE_SHOT_RESULTS;
-
-            if (passes > 0 && passes % 10 == 0) {
-                XTandemUtilities.outputText(".");
-                if (passes % 800 == 0)
-                    XTandemUtilities.outputLine();
-            }
-            passes++;
-
-        }
-    }
-
-    protected void guaranteeModifications(final SimpleJdbcTemplate pDb, final PeptideModification[] pPms, List<IPolypeptide> peptides) {
-        int count = 0;
-        List<Object[]> holder = new ArrayList<Object[]>();
-        for (IPolypeptide peptide : peptides) {
-            int thisCount = count++;
-
-            if ("EQEVR".equals(peptide.getSequence()))
-                XTandemUtilities.breakHere();
-            if ("FRTTQLNMRFR".equals(peptide.getSequence()))
-                XTandemUtilities.breakHere();
-
-            IModifiedPeptide[] modifications = ModifiedPolypeptide.buildModifications(peptide, pPms);
-            for (int i = 0; i < modifications.length; i++) {
-                IModifiedPeptide modification = modifications[i];
-                handleIndividualModifiedPeptides2(modification, holder);
-            }
-        }
-        if (holder.size() == 0)
-            return;
-        String query = buildModifiedInsertQuery(1);
-        pDb.batchUpdate(query, holder);
-    }
-
-    private void handleIndividualModifiedPeptides2(final IModifiedPeptide mod, final List<Object[]> pHolder) {
-        Object[] values = {
-                new Integer((int) (mod.getMass() + XTandemUtilities.getAddedMass() + ADDED_MODIFIED_MASS)),
-                mod.getModificationString(),
-                mod.getSequence(),
-                mod.getModifiedSequence(),
-                new Double(mod.getMass() + XTandemUtilities.getAddedMass()),
-                new Integer(mod.getMissedCleavages())
-
-        };
-        pHolder.add(values);
-    }
-
-    protected void handleModifiedPeptides(final IModifiedPeptide[] pModifications, final SimpleJdbcTemplate pDb) {
-        switch (pModifications.length) {
-            case 1:
-                handleModifiedPeptides1(pModifications[0], pDb);
-                break;
-            case 2:
-                handleModifiedPeptides2(pModifications, pDb);
-                break;
-            case 3:
-                handleModifiedPeptides2(pModifications, pDb);
-                break;
-            default:
-                handleIndividualModifiedPeptides(pModifications, pDb);
-        }
-    }
-
-    private void handleIndividualModifiedPeptides(final IModifiedPeptide[] pModifications, final SimpleJdbcTemplate pDb) {
-        for (int i = 0; i < pModifications.length; i++) {
-            IModifiedPeptide modification = pModifications[i];
-            handleModifiedPeptides1(modification, pDb);
-
-        }
-    }
-
-    private static String buildModifiedInsertQuery(int numberRows) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO semi_mono_modified_mz_to_fragments (mz,modification,sequence,modified_sequence,real_mass,missed_cleavages)  VALUES ");
-        for (int i = 0; i < numberRows; i++) {
-            if (i > 0)
-                sb.append(",");
-            sb.append("(?,?,?,?,?,?)");
-        }
-        return sb.toString();
-    }
-
-    public static final double ADDED_MODIFIED_MASS = 0; // 0.5 Do we want rounding or noe
-
-    private void handleModifiedPeptides1(final IModifiedPeptide mod, final SimpleJdbcTemplate db) {
-        String query = buildModifiedInsertQuery(1);
-        db.update(query,
-                new Integer((int) (mod.getMass() + XTandemUtilities.getAddedMass() + ADDED_MODIFIED_MASS)),
-                mod.getModificationString(),
-                mod.getSequence(),
-                mod.getModifiedSequence(),
-                new Double(mod.getMass() + XTandemUtilities.getAddedMass()),
-                new Integer(mod.getMissedCleavages()));
-
-    }
-
-    private void handleModifiedPeptides2(final IModifiedPeptide pModification[], final SimpleJdbcTemplate db) {
-        String query = buildModifiedInsertQuery(2);
-        IModifiedPeptide mod = pModification[0];
-        IModifiedPeptide mod2 = pModification[1];
-        db.update(query,
-                new Integer((int) (mod.getMass() + XTandemUtilities.getAddedMass() + ADDED_MODIFIED_MASS)),
-                mod.getModificationString(),
-                mod.getSequence(),
-                mod.getModifiedSequence(),
-                new Double(mod.getMass() + XTandemUtilities.getAddedMass()),
-                new Integer(mod.getMissedCleavages()),
-
-                new Integer((int) (mod2.getMass() + XTandemUtilities.getAddedMass() + ADDED_MODIFIED_MASS)),
-                mod2.getModificationString(),
-                mod2.getSequence(),
-                mod2.getModifiedSequence(),
-                new Double(mod2.getMass() + XTandemUtilities.getAddedMass()),
-                new Integer(mod2.getMissedCleavages())
-        );
-
-    }
-
 //    private void handleModifiedPeptides3(final IModifiedPeptide pModification[], final SimpleJdbcTemplate db) {
 //        String query = buildModifiedInsertQuery(3);
 //        IModifiedPeptide mod = pModification[0];
@@ -583,18 +344,18 @@ public class FastaLoader implements IFastaHandler {
 //
 //    }
 
-
-    protected static TestMain buildMain(String host, String database) {
-        TestMain main = new TestMain();
-
-        main.setParameter(SpringJDBCUtilities.DATA_HOST_PARAMETER, host);
-        main.setParameter(SpringJDBCUtilities.DATA_DATABASE_PARAMETER, database);
-        main.setParameter(SpringJDBCUtilities.DATA_USER_PARAMETER, "proteomics");
-        main.setParameter(SpringJDBCUtilities.DATA_PASSWORD_PARAMETER, "tandem");
-        main.setParameter(SpringJDBCUtilities.DATA_DRIVER_CLASS_PARAMETER, "com.mysql.jdbc.Driver");
-        return main;
-    }
-
+//
+//    protected static TestMain buildMain(String host, String database) {
+//        TestMain main = new TestMain();
+//
+//        main.setParameter(SpringJDBCUtilities.DATA_HOST_PARAMETER, host);
+//        main.setParameter(SpringJDBCUtilities.DATA_DATABASE_PARAMETER, database);
+//        main.setParameter(SpringJDBCUtilities.DATA_USER_PARAMETER, "proteomics");
+//        main.setParameter(SpringJDBCUtilities.DATA_PASSWORD_PARAMETER, "tandem");
+//        main.setParameter(SpringJDBCUtilities.DATA_DRIVER_CLASS_PARAMETER, "com.mysql.jdbc.Driver");
+//        return main;
+//    }
+//
     /*
     select count(*) FROM  proteomics.proteins
 
@@ -605,86 +366,87 @@ LOAD Data LOCAL INFILE 'E:/Concurrent/JXTandem/fasta/uniprothumproteins.sql' int
     public static void main(String[] args) {
         String paramsFileName = args[0];
         boolean isCompleteLoad = args.length > 1 && "clean".equals(args[1]);
-
-
-        File paramsFile = new File(paramsFileName);
-        if (!paramsFile.exists() || !paramsFile.canRead() || !paramsFile.isFile())
-            throw new IllegalStateException("bad params file " + paramsFile);
-        IMainData main = new XTandemMain(paramsFile);
-
-        String taxonomyFile = main.getParameter("list path, taxonomy information"); //, "taxonomy.xml");
-        String taxonomyName = main.getParameter("protein, taxon");
-
-        Taxonomy oldTax = new Taxonomy(main, taxonomyName, taxonomyFile);
-
-        String host = main.getParameter("org.systemsbiology.xtandem.Datasource.Host");
-        String database = main.getParameter("org.systemsbiology.xtandem.Datasource.Database");
-
-        JDBCTaxonomy tax = new JDBCTaxonomy(main);
-        SimpleJdbcTemplate template = tax.getTemplate();
-        try {
-            int count = template.queryForInt("select count(*) from  proteins");
-            if (count == 0)
-                isCompleteLoad = true; // better rebuild all
-        }
-        catch (DataAccessException e) {
-            isCompleteLoad = true; // better rebuild all
-
-        }
-
-        /**
-         * specify clean to reload the database
-         */
-        if (isCompleteLoad)
-            SpringJDBCUtilities.dropDatabase(host, database);
-
-        IPeptideDigester digester = main.getDigester();
-
-        String taxonomyBase = database;
-        if (taxonomyBase == null || taxonomyBase.isEmpty())
-            taxonomyBase = taxonomyFile.replace(".fasta", "");
-        File proteins = new File(taxonomyBase + ".proteins.sql");
-        File fragments = new File(taxonomyBase + ".fragments.sql");
-        File semifragments = new File(taxonomyBase + ".semifragments.sql");
-        String path = semifragments.getAbsolutePath();
-
-        if (isCompleteLoad) {
-            proteins.delete();
-            fragments.delete();
-            semifragments.delete();
-            if (proteins.exists() || fragments.exists() || semifragments.exists())
-                throw new IllegalStateException("cannot clean files ");
-        }
-
-        FastaLoader fs = new FastaLoader(main, proteins, fragments, semifragments);
-
-        SpringJDBCUtilities.guaranteeDatabase(host, database);
-        TaxonomyDatabase tdb = new TaxonomyDatabase(template);
-        tdb.createDatabase();
-        ElapsedTimer et = new ElapsedTimer();
-        String[] taxomonyFiles = oldTax.getTaxomonyFiles();
-        File theFile = new File(taxomonyFiles[0]);
-        if (!theFile.exists())
-            throw new IllegalArgumentException("file " + theFile + " does not exist");
-
-        if (!fragments.exists()) {
-            fs.parse(theFile);
-            et.showElapsed(System.out);
-            et.reset();
-        }
-
-        if (isCompleteLoad) {
-            fs.loadDatabase(template);
-        }
-        else {
-            PeptideModification[] pms = fs.getModifications();
-            if (pms.length > 0)
-                fs.guaranteeModifications(template, pms);
-        }
-
-        et.showElapsed(System.out);
-
-
+        throw new UnsupportedOperationException("Dropped database stuff for now"); // Dropped database stuff for now
+//
+//
+//        File paramsFile = new File(paramsFileName);
+//        if (!paramsFile.exists() || !paramsFile.canRead() || !paramsFile.isFile())
+//            throw new IllegalStateException("bad params file " + paramsFile);
+//        IMainData main = new XTandemMain(paramsFile);
+//
+//        String taxonomyFile = main.getParameter("list path, taxonomy information"); //, "taxonomy.xml");
+//        String taxonomyName = main.getParameter("protein, taxon");
+//
+//        Taxonomy oldTax = new Taxonomy(main, taxonomyName, taxonomyFile);
+//
+//        String host = main.getParameter("org.systemsbiology.xtandem.Datasource.Host");
+//        String database = main.getParameter("org.systemsbiology.xtandem.Datasource.Database");
+//
+//        JDBCTaxonomy tax = new JDBCTaxonomy(main);
+//        SimpleJdbcTemplate template = tax.getTemplate();
+//        try {
+//            int count = template.queryForInt("select count(*) from  proteins");
+//            if (count == 0)
+//                isCompleteLoad = true; // better rebuild all
+//        }
+//        catch (DataAccessException e) {
+//            isCompleteLoad = true; // better rebuild all
+//
+//        }
+//
+//        /**
+//         * specify clean to reload the database
+//         */
+//        if (isCompleteLoad)
+//            SpringJDBCUtilities.dropDatabase(host, database);
+//
+//        IPeptideDigester digester = main.getDigester();
+//
+//        String taxonomyBase = database;
+//        if (taxonomyBase == null || taxonomyBase.isEmpty())
+//            taxonomyBase = taxonomyFile.replace(".fasta", "");
+//        File proteins = new File(taxonomyBase + ".proteins.sql");
+//        File fragments = new File(taxonomyBase + ".fragments.sql");
+//        File semifragments = new File(taxonomyBase + ".semifragments.sql");
+//        String path = semifragments.getAbsolutePath();
+//
+//        if (isCompleteLoad) {
+//            proteins.delete();
+//            fragments.delete();
+//            semifragments.delete();
+//            if (proteins.exists() || fragments.exists() || semifragments.exists())
+//                throw new IllegalStateException("cannot clean files ");
+//        }
+//
+//        FastaLoader fs = new FastaLoader(main, proteins, fragments, semifragments);
+//
+//        SpringJDBCUtilities.guaranteeDatabase(host, database);
+//        TaxonomyDatabase tdb = new TaxonomyDatabase(template);
+//        tdb.createDatabase();
+//        ElapsedTimer et = new ElapsedTimer();
+//        String[] taxomonyFiles = oldTax.getTaxomonyFiles();
+//        File theFile = new File(taxomonyFiles[0]);
+//        if (!theFile.exists())
+//            throw new IllegalArgumentException("file " + theFile + " does not exist");
+//
+//        if (!fragments.exists()) {
+//            fs.parse(theFile);
+//            et.showElapsed(System.out);
+//            et.reset();
+//        }
+//
+//        if (isCompleteLoad) {
+//            fs.loadDatabase(template);
+//        }
+//        else {
+//            PeptideModification[] pms = fs.getModifications();
+//            if (pms.length > 0)
+//                fs.guaranteeModifications(template, pms);
+//        }
+//
+//        et.showElapsed(System.out);
+//
+//
     }
 
 

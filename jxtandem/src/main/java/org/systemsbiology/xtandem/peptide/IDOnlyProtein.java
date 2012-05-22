@@ -1,8 +1,6 @@
 package org.systemsbiology.xtandem.peptide;
 
-import org.springframework.scripting.support.*;
 import org.systemsbiology.xtandem.*;
-import org.systemsbiology.xtandem.hadoop.*;
 
 import java.util.*;
 

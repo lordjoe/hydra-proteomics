@@ -218,7 +218,7 @@ public class FragmentHoldingFastaHandler implements IFastaHandler {
                 XTandemUtilities.breakHere();
 
             double mass = fragment.getMatchingMass();
-            double addedMass = FastaLoader.ADDED_MODIFIED_MASS; // XTandemUtilities.getAddedMass();
+            double addedMass =   XTandemUtilities.getAddedMass();
             int IMass = new Integer((int) (mass + addedMass ));
             addFragmentAtMass(IMass, fragment);
 

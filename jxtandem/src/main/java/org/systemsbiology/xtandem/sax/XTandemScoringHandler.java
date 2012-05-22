@@ -6,12 +6,9 @@ import org.systemsbiology.xtandem.bioml.sax.*;
 import org.systemsbiology.xtandem.scoring.*;
 import org.systemsbiology.xtandem.testing.*;
 import org.xml.sax.*;
-import sun.reflect.*;
 
-import javax.persistence.*;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.*;
 
 /**
  * org.systemsbiology.xtandem.sax.XTandemScoringHandler

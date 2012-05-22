@@ -3,7 +3,7 @@ package org.systemsbiology.xtandem.hadoop;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
-import org.springframework.jdbc.core.simple.*;
+//import org.springframework.jdbc.core.simple.*;
 import org.systemsbiology.common.*;
 import org.systemsbiology.hadoop.*;
 
@@ -64,7 +64,6 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
     private long m_MaxPeptides;
     private PrintWriter m_LogJamSpectra;
     private int m_Notifications;
-    private IPeptideDigester m_Digester;
     private Set<PeptideModification> m_Modifications;
 
 
@@ -129,11 +128,11 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         }
         else {
             // make sure the latest table is present
-            guaranteeModifiedPeptideTable();
+            throw new UnsupportedOperationException("we dropped databases for now"); // ToDo
+            //guaranteeModifiedPeptideTable();
         }
         int task_number = XTandemHadoopUtilities.getTaskNumber(context.getConfiguration());
-        m_Digester = application.getDigester();
-        ScoringModifications scoringMods = application.getScoringMods();
+         ScoringModifications scoringMods = application.getScoringMods();
         PeptideModification[] modifications = scoringMods.getModifications();
         m_Modifications = new HashSet<PeptideModification>(Arrays.asList(modifications));
     }
@@ -142,16 +141,16 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
     /**
      * the table is new and we need it even if we don't use it
      */
-    private void guaranteeModifiedPeptideTable() {
-        if (m_Taxonomy instanceof JDBCTaxonomy) {
-            JDBCTaxonomy tax = (JDBCTaxonomy) m_Taxonomy;
-            SimpleJdbcTemplate template = tax.getTemplate();
-
-            TaxonomyDatabase db = new TaxonomyDatabase(template);
-
-            db.guaranteeTable("semi_mono_modified_mz_to_fragments");
-        }
-    }
+//    private void guaranteeModifiedPeptideTable() {
+//        if (m_Taxonomy instanceof JDBCTaxonomy) {
+//            JDBCTaxonomy tax = (JDBCTaxonomy) m_Taxonomy;
+//            SimpleJdbcTemplate template = tax.getTemplate();
+//
+//            TaxonomyDatabase db = new TaxonomyDatabase(template);
+//
+//            db.guaranteeTable("semi_mono_modified_mz_to_fragments");
+//        }
+//    }
 
     /**
      * we may refactor the key in different ways int mass will always be encoded

@@ -2,7 +2,6 @@ package org.systemsbiology.xtandem;
 
 
 import com.lordjoe.utilities.*;
-import org.springframework.jdbc.core.simple.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.bioml.*;
 import org.systemsbiology.xtandem.bioml.sax.*;
@@ -10,7 +9,8 @@ import org.systemsbiology.xtandem.hadoop.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.sax.*;
 import org.systemsbiology.xtandem.scoring.*;
-import org.systemsbiology.xtandem.taxonomy.*;
+//import org.systemsbiology.xtandem.taxonomy.*;
+//import org.springframework.jdbc.core.simple.*;
 
 import javax.sql.*;
 import java.io.*;
@@ -487,14 +487,14 @@ public class XTandemUtilities {
         return gDataSource;
     }
 
-    public static SimpleJdbcTemplate templateFromParameters(IParameterHolder holder) {
-        gDataSource = SpringJDBCUtilities.buildDataSource(holder);
-        if (gDataSource == null)
-            return null;
-        SimpleJdbcTemplate ret = new SimpleJdbcTemplate(gDataSource);
-
-        return ret;
-    }
+//    public static SimpleJdbcTemplate templateFromParameters(IParameterHolder holder) {
+//        gDataSource = SpringJDBCUtilities.buildDataSource(holder);
+//        if (gDataSource == null)
+//            return null;
+//        SimpleJdbcTemplate ret = new SimpleJdbcTemplate(gDataSource);
+//
+//        return ret;
+//    }
 
     /**
      * true if the sequence has no ambiguous amino acids

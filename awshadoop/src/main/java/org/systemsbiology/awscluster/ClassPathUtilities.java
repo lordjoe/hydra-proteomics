@@ -107,10 +107,10 @@ public class ClassPathUtilities
 
 
     public static final String[] SERVER_SPEC = { "jetty-6","servlet-api", "jetty-util"};
-    public static void main(String[] args)
-    {
-        final String cp = getClasspath();
-        final String cls = ClusterServer.class.getName();
-        Process p = launchProcess(cp, cls);
-    }
+//    public static void main(String[] args)
+//    {
+//        final String cp = getClasspath();
+//        final String cls = ClusterServer.class.getName();
+//        Process p = launchProcess(cp, cls);
+//    }
 }
