@@ -5,6 +5,7 @@ import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.sax.*;
 
 import java.util.*;
+import java.util.zip.*;
 
 /**
  * org.systemsbiology.xtandem.mzml.MzMlUtilities
@@ -25,6 +26,7 @@ public class MzMlUtilities {
          
         RawPeptideScan ret = new RawPeptideScan(inp.getId(), null);
         ret.setScanNumber(inp.getScanNumber());
+        ret.setMsLevel(inp.getMSLevel());
   //      ret.setScanNumber(inp.);
         double[] masses = inp.listMass();
         double[] intensities = inp.listIntensities();
@@ -42,12 +44,11 @@ public class MzMlUtilities {
              SpectrumPrecursor pre = pcrs[0];
              double precursorIntensity = pre.getIntensity() != null ? pre.getIntensity() : ret.getBasePeakIntensity();
              int pPrecursorCharge = pre.getCharge();
-             double precursorMassChargeRatio = pre.getMassToChargeRatio();
+             double precursorMassChargeRatio =   pre.getMassToChargeRatio() != null ? pre.getMassToChargeRatio() : getScanPrecursorMZ_2(pre);
              FragmentationMethod method = fromFragmentationType(pre.getFragmentationType());
              IScanPrecursorMZ precursor = new ScanPrecursorMz(precursorIntensity, pPrecursorCharge, precursorMassChargeRatio, method);
              ret.setPrecursorMz(precursor);
             ret.setActivationMethod(fromFragmentationType(pre.getFragmentationType()));
-
         }
         else {
             double precursorIntensity = ret.getBasePeakIntensity();
@@ -62,6 +63,20 @@ public class MzMlUtilities {
         }
 
          return ret;
+    }
+
+    protected static double getScanPrecursorMZ_2( SpectrumPrecursor pre)      {
+        List<StringPairInterface> ed   = pre.getExtraDataList();
+        double mz = 0;
+        for(StringPairInterface sp  : ed)  {
+            if("m/z".equals(sp.getName())) {
+                double ret = Double.parseDouble(sp.getValue());
+                pre.setMassToChargeRatio(ret);
+                return ret;
+            }
+
+        }
+        throw new IllegalStateException("no m/z set");
     }
 
     public static void setRawScanPeaks(final RawPeptideScan pRet, final double[] pMasses, final double[] pIntensity) {
@@ -101,27 +116,46 @@ public class MzMlUtilities {
 
     public static final String DEFAULT_CV_LABEL = "MS";
     public static final String CV_PARAM_TAG = "cvParam";
+    public static final String USER_PARAM_TAG = "userParam";
 
     /**
-     * special adder for cvParam does this
-     *     <cvParam cvLabel=\"MS\" accession=\"MS:1000127\" name=\"centroid mass spectrum\" value=\"\"/>\n
+      * special adder for cvParam does this
+      *     <cvParam cvLabel=\"MS\" accession=\"MS:1000127\" name=\"centroid mass spectrum\" value=\"\"/>\n
 
-     * @param accession
-     * @param name
-     * @param value
-     * @param cvLabel
-     */
-    public static void appendCVParam(IXMLAppender appender, String accession, String name, String value, String cvLabel) {
-        appender.openTag(CV_PARAM_TAG);
-        appender.appendAttribute("cvLabel", cvLabel);
-        appender.appendAttribute("accession", accession);
-        appender.appendAttribute("name", name);
-        if(value == null)
-            value = "";
-        appender.appendAttribute("value", value);
-        appender.closeTag(CV_PARAM_TAG);
-      //  appender.cr();
-    }
+      * @param accession
+      * @param name
+      * @param value
+      * @param cvLabel
+      */
+     public static void appendCVParam(IXMLAppender appender, String accession, String name, String value, String cvLabel) {
+         appender.openTag(CV_PARAM_TAG);
+         appender.appendAttribute("cvLabel", cvLabel);
+         appender.appendAttribute("accession", accession);
+         appender.appendAttribute("name", name);
+         if(value == null)
+             value = "";
+         appender.appendAttribute("value", value);
+         appender.closeTag(CV_PARAM_TAG);
+       //  appender.cr();
+     }
+    /**
+      * special adder for cvParam does this
+      *     <cvParam cvLabel=\"MS\" accession=\"MS:1000127\" name=\"centroid mass spectrum\" value=\"\"/>\n
+
+      * @param accession
+      * @param name
+      * @param value
+      * @param cvLabel
+      */
+     public static void appendUserParam(IXMLAppender appender,   String name, String value ) {
+         appender.openTag(USER_PARAM_TAG);
+          appender.appendAttribute("name", name);
+         if(value == null)
+             value = "";
+         appender.appendAttribute("value", value);
+         appender.closeTag(USER_PARAM_TAG);
+       //  appender.cr();
+     }
 
 
     /**

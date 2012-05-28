@@ -24,8 +24,11 @@ public class XTandemXMLWritingReducer extends AbstractTandemReducer {
 
     private PrintWriter m_Writer;
     private PrintWriter m_ScansWriter;
-     private BiomlReporter m_Reporter;
+    private BiomlReporter m_Reporter;
     private int m_NumberScoredScans;
+    private String m_OutputFile;
+    private String[] m_OutputFiles;
+    private boolean m_UseMultipleOutputFiles;
 
     public XTandemXMLWritingReducer() {
     }
@@ -62,6 +65,16 @@ public class XTandemXMLWritingReducer extends AbstractTandemReducer {
 
 
         HadoopTandemMain application = getApplication();
+        String muliple = conf.get(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY);
+        m_UseMultipleOutputFiles = "yes".equals(muliple);
+        if(m_UseMultipleOutputFiles) {
+            String files = conf.get(JXTandemLauncher.INPUT_FILES_PROPERTY);
+             if (files != null) {
+                 String[] items = files.split(",");
+                 m_OutputFiles = items;
+              }
+
+        }
 
         String fileName = conf.get(BiomlReporter.FORCED_OUTPUT_NAME_PARAMETER);
         if (fileName != null) {
@@ -71,10 +84,12 @@ public class XTandemXMLWritingReducer extends AbstractTandemReducer {
                 fileName = path + "/" + fileName;
             }
             application.setParameter(BiomlReporter.FORCED_OUTPUT_NAME_PARAMETER, fileName);
+            m_OutputFile = fileName;
         }
         else {
             String paramsFile = XTandemHadoopUtilities.buildOutputFileName(context, application);
             System.err.println("Writing output to file " + paramsFile);
+            m_OutputFile = paramsFile;
         }
 
         m_Writer = XTandemHadoopUtilities.buildWriter(context, application);
@@ -93,6 +108,12 @@ public class XTandemXMLWritingReducer extends AbstractTandemReducer {
     protected void reduceNormal(final Text key, final Iterable<Text> values, final Context context)
             throws IOException, InterruptedException {
         String keyStr = key.toString().trim();
+        int fileIndex = -1;
+        int index = keyStr.indexOf("|");
+        if(index > -1)    {
+           fileIndex = Integer.parseInt(keyStr.substring(0,index));
+           keyStr = keyStr.substring(index + 1);
+        }
         String scanXML = null;
         int id = 0;
         try {

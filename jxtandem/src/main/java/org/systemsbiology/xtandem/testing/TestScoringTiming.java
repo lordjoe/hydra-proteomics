@@ -105,7 +105,7 @@ public class TestScoringTiming {
             specTine.showElapsed("Generated  " + st.length + " spectra");
              while (scan != null) {
                  ElapsedTimer scanTine = new ElapsedTimer();
-                RawPeptideScan rscan = XTandemHadoopUtilities.readScan(scan);
+                RawPeptideScan rscan = XTandemHadoopUtilities.readScan(scan,null);
                  IScoredScan iScoredScan = handleScan(rscan, scorer);
                  scan = XTandemHadoopUtilities.readNextScan(rdr);
                 scanTine.showElapsed("Handled scan " + rscan.getId());

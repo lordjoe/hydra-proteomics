@@ -99,7 +99,7 @@ public class SmallSampleBuilder implements IFastaHandler {
         try {
             m_Output = new PrintWriter(new FileWriter(m_MzXMLFileOut));
             is = new FileReader(m_MzXMLFileIn);
-            LineNumberReader rdr = new LineNumberReader(is);
+            BufferedReader rdr = new BufferedReader(is);
             String line = copyHeader(rdr);
             line = copyProperScans(rdr, line);
             writeFooter();
@@ -112,7 +112,7 @@ public class SmallSampleBuilder implements IFastaHandler {
         }
     }
 
-    protected String copyHeader(LineNumberReader rdr) {
+    protected String copyHeader(BufferedReader rdr) {
         try {
             String line = rdr.readLine();
             while (!line.contains("<scan ")) {
@@ -133,10 +133,10 @@ public class SmallSampleBuilder implements IFastaHandler {
         m_Output.println("</mzXML>");
     }
 
-    protected void skipToScanLine(LineNumberReader rdr) {
+    protected void skipToScanLine(BufferedReader rdr) {
         try {
             String line = rdr.readLine();
-            while (!line.contains(" </scan>")) {
+            while (!line.contains("</scan>")) {
                 line = rdr.readLine();
             }
         }
@@ -147,7 +147,7 @@ public class SmallSampleBuilder implements IFastaHandler {
 
     }
 
-    protected void copyScan(LineNumberReader rdr, String line) {
+    protected void copyScan(BufferedReader rdr, String line) {
         try {
             while (!line.contains("</scan>")) {
                 m_Output.println(line);
@@ -163,9 +163,9 @@ public class SmallSampleBuilder implements IFastaHandler {
     }
 
 
-    protected String copyProperScans(LineNumberReader rdr, String line) {
+    protected String copyProperScans(BufferedReader rdr, String line) {
         try {
-            while (line.contains("<scan ")) {
+            while (line.contains("<scan ") ) {
                 if (isInterestingScan(line)) {
                     copyScan(rdr, line);
                 }
@@ -173,6 +173,8 @@ public class SmallSampleBuilder implements IFastaHandler {
                     skipToScanLine(rdr);
                 }
                 line = rdr.readLine();
+                if(line.contains("</scan>"))
+                    line = rdr.readLine();
 
             }
             return line;
@@ -189,7 +191,10 @@ public class SmallSampleBuilder implements IFastaHandler {
         line = line.trim();
         line = line.replace("<scan num=\"", "");
         line = line.replace("\"", "");
-        return m_Ids.contains(line);
+        if(m_Ids.contains(line))
+            return true;
+        else
+            return false;
     }
 
     protected void handleLine(String line) {

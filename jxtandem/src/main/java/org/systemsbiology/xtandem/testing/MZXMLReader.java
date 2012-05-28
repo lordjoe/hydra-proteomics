@@ -93,7 +93,7 @@ public class MZXMLReader {
     private static void handleScan(final StringBuilder pSb, final int pScanLevel) {
         String scn = pSb.toString().trim();
         if (scn.startsWith("<scan")) {
-            RawPeptideScan scan = XTandemHadoopUtilities.readScan(scn);
+            RawPeptideScan scan = XTandemHadoopUtilities.readScan(scn,null);
             gTotalScans++;
         }
         else {

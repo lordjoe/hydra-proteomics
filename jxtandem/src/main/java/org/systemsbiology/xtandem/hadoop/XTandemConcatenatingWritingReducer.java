@@ -29,6 +29,9 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
     private BiomlReporter m_Reporter;
     private PepXMLWriter[] m_pepXMLWriter;
     private PrintWriter[] m_PepXmlsOutWriter;
+    private String m_OutputFile;
+    private String[] m_OutputFiles;
+    private boolean m_UseMultipleOutputFiles;
 
 
     public XTandemConcatenatingWritingReducer() {
@@ -52,8 +55,8 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
     }
 
     public PepXMLWriter getPepXMLWriter(int index) {
-         return m_pepXMLWriter[index];
-     }
+        return m_pepXMLWriter[index];
+    }
 
     public PrintWriter getPepXmlsOutWriter(int index) {
         return m_PepXmlsOutWriter[index];
@@ -94,6 +97,16 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
         if ("yes".equals(application.getParameter(JXTandemLauncher.TURN_ON_SCAN_OUTPUT_PROPERTY)))
             setWriteScans(true);
 
+        String muliple = conf.get(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY);
+        m_UseMultipleOutputFiles = "yes".equals(muliple);
+        if (m_UseMultipleOutputFiles) {
+            String files = conf.get(JXTandemLauncher.INPUT_FILES_PROPERTY);
+            if (files != null) {
+                String[] items = files.split(",");
+                m_OutputFiles = items;
+            }
+
+        }
         String fileName = conf.get(BiomlReporter.FORCED_OUTPUT_NAME_PARAMETER);
         if (fileName != null) {
             if (fileName.contains(":") || fileName.charAt(0) != '/') {
@@ -108,9 +121,20 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
             System.err.println("Writing output to file " + paramsFile);
         }
 
-        m_Writer = XTandemHadoopUtilities.buildWriter(context, application);
+        setWriters(context, application, fileName);
+
+    }
+
+
+    protected void setWriters(Context context, HadoopTandemMain application, String inputFileName) {
+        String s = XTandemHadoopUtilities.dropExtension(inputFileName);
+        if(s.equals(m_OutputFile))
+            return;
+        m_OutputFile = s;
+        cleanupWriters();
+        m_Writer = XTandemHadoopUtilities.buildPrintWriter(context, inputFileName, ".hydra");
         if (isWriteScans()) {
-            m_ScansWriter = XTandemHadoopUtilities.buildWriter(context, application, ".scans");
+            m_ScansWriter = XTandemHadoopUtilities.buildPrintWriter(context, inputFileName, ".scans");
             m_ScansWriter.println("<scans>");
         }
         m_Reporter = new BiomlReporter(application, null);
@@ -119,20 +143,19 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
 
         if ("yes".equals(application.getParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY))) {
             m_WritePepXML = true;
-              ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
+            ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
             m_pepXMLWriter = new PepXMLWriter[algorithms.length];
             m_PepXmlsOutWriter = new PrintWriter[algorithms.length];
-              for (int i = 0; i <  algorithms.length  ; i++) {
+            for (int i = 0; i < algorithms.length; i++) {
                 ITandemScoringAlgorithm algorithm = algorithms[i];
-                m_PepXmlsOutWriter[i] = XTandemHadoopUtilities.buildWriter(context, application, "." + algorithm.getName() + ".pep.xml");
-                 m_pepXMLWriter[i] = new PepXMLWriter(application);
+                m_PepXmlsOutWriter[i] = XTandemHadoopUtilities.buildPrintWriter(context, inputFileName, "." + algorithm.getName() + ".pep.xml");
+                m_pepXMLWriter[i] = new PepXMLWriter(application);
                 String spectrumPath = application.getParameter("spectrum, path");
                 getPepXMLWriter(i).writePepXMLHeader(spectrumPath, getPepXmlsOutWriter(i));
 
             }
 
         }
-
     }
 
 
@@ -141,11 +164,22 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
         String keyStr = key.toString().trim();
         String scanXML = null;
         String id = "";
+        int fileIndex = -1;
+        final HadoopTandemMain app = getApplication();
         try {
 // Debug stuff
             id = keyStr; // key includes charge
+            String usedFileName = null;
+            int index = keyStr.indexOf("|");
+            if (index > -1) {
+                fileIndex = Integer.parseInt(keyStr.substring(0, index));
+                if (fileIndex >= 0 && fileIndex < m_OutputFiles.length)    {
+                    usedFileName = m_OutputFiles[fileIndex];
+                    setWriters(  context, app,usedFileName);
+                }
+                keyStr = keyStr.substring(index + 1);
+            }
 
-            final HadoopTandemMain app = getApplication();
             //        final Scorer scorer = app.getScoreRunner();
             Iterator<Text> textIterator = values.iterator();
             Text first = textIterator.next();
@@ -166,7 +200,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
                 MultiScorer multiScorer = XTandemHadoopUtilities.readMultiScoredScan(scanXML, getApplication());
                 IScoredScan[] scoredScans = multiScorer.getScoredScans();
                 // todo support multiple
-                for (int i = 0; i <  scoredScans.length ; i++) {
+                for (int i = 0; i < scoredScans.length; i++) {
                     IScoredScan scan = scoredScans[i];
                     getPepXMLWriter(i).writePepXML(scan, getPepXmlsOutWriter(i));
 
@@ -232,6 +266,14 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
 
     @Override
     protected void cleanup(final Context context) throws IOException, InterruptedException {
+        cleanupWriters();
+
+        System.err.println(getElapsed().formatElapsed("Finished with Consolidation"));
+
+        super.cleanup(context);
+    }
+
+    protected void cleanupWriters() {
         if (m_Writer != null) {
             m_Reporter.writeReportEnd(m_Writer);
             m_Writer.close();
@@ -254,9 +296,5 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
             }
             m_PepXmlsOutWriter = null;
         }
-
-        System.err.println(getElapsed().formatElapsed("Finished with Consolidation"));
-
-        super.cleanup(context);
     }
 }

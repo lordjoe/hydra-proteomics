@@ -255,7 +255,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
                 String textStr = text.toString();
 
 
-                RawPeptideScan scan = XTandemHadoopUtilities.readScan(textStr);
+                RawPeptideScan scan = XTandemHadoopUtilities.readScan(textStr,null);
                 if (scan == null)
                     return; // todo or is an exception proper
                 numberScans++;
@@ -598,7 +598,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         while (textIterator.hasNext()) {
             Text text = textIterator.next();
             String textStr = text.toString();
-            RawPeptideScan scan = XTandemHadoopUtilities.readScan(textStr);
+            RawPeptideScan scan = XTandemHadoopUtilities.readScan(textStr,null);
             if (scan == null)
                 return true;
 

@@ -19,6 +19,7 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
     public static final String TAG = "scan";
 
     private String m_Id;
+    private String m_URL;
     private int m_MsLevel;
     private int m_ScanEvent;
     private ScanTypeEnum m_ScanType;
@@ -36,6 +37,8 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
     private String m_InstrumentId;
     private ISpectrumPeak[] m_Peaks;
     private IScanPrecursorMZ m_PrecursorMz;
+    private String m_DefaultURL;
+
 
     // scans can be nested
     private final List<RawPeptideScan> m_EmbeddedScan = new ArrayList<RawPeptideScan>();
@@ -70,6 +73,22 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
     public void setId(final String pId)
     {
         m_Id = pId;
+    }
+
+    public String getURL() {
+        return m_URL;
+    }
+
+    public void setURL(final String URL) {
+        m_URL = URL;
+    }
+
+    public String getDefaultURL() {
+        return m_DefaultURL;
+    }
+
+    public void setDefaultURL(final String defaultURL) {
+        m_DefaultURL = defaultURL;
     }
 
     public String getFilterLine() {
@@ -225,6 +244,8 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
             throws SAXException
     {
         setId(XTandemSaxUtilities.getRequiredAttribute("num", attr)); // num="1"
+        String url = attr.getValue("url");
+        setURL(url);
         setMsLevel(XTandemSaxUtilities.getRequiredIntegerAttribute("msLevel", attr)); // msLevel="2"
         setScanEvent(
                 XTandemSaxUtilities.getIntegerAttribute("scanEvent", attr, 0)); // scanEvent="0"
@@ -286,13 +307,22 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
     public void startElement(String uri, String localName, String el, Attributes attributes)
             throws SAXException
     {
+        if ("nameValue".equals(el)) {
+            String value = attributes.getValue("value");
+            String name = attributes.getValue("name");
+            if("url".equals(name))    {
+                setURL(value);
+                return;
+            }
+            throw new IllegalStateException("canot handle nameValue " + name + " " + value);
+         }
         if ("precursorMz".equals(el)) {
-            MzXMLPrecursorMzHandler handler = new MzXMLPrecursorMzHandler(this);
-            getHandler().pushCurrentHandler(handler);
-            handler.handleAttributes(uri, localName, el, attributes);
-            return;
-        }
-        if ("peaks".equals(el)) {
+             MzXMLPrecursorMzHandler handler = new MzXMLPrecursorMzHandler(this);
+             getHandler().pushCurrentHandler(handler);
+             handler.handleAttributes(uri, localName, el, attributes);
+             return;
+         }
+         if ("peaks".equals(el)) {
             MzXMLPeaksHandler handler = new MzXMLPeaksHandler(this);
             getHandler().pushCurrentHandler(handler);
             handler.handleAttributes(uri, localName, el, attributes);
@@ -305,7 +335,10 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
     @Override
     public void endElement(String elx, String localName, String el) throws SAXException
     {
-        if ("peaks".equals(el)) {
+        if ("nameValue".equals(el)) {
+                   return;
+            }
+         if ("peaks".equals(el)) {
             MzXMLPeaksHandler handler = (MzXMLPeaksHandler) getHandler().popCurrentHandler();
             setPeaks(handler.getElementObject());
             return;
@@ -346,7 +379,9 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
     @Override
     public void finishProcessing()
     {
-        RawPeptideScan scan = new RawPeptideScan(getId(),null);  // todo fix
+        RawPeptideScan scan = new RawPeptideScan(getId(),getDefaultURL());
+        if(getURL() != null)
+            scan.setUrl(getURL());
         scan.setActivationMethod(getActivationMethod());
         scan.setBasePeakIntensity(getBasePeakIntensity());
         scan.setBasePeakMz(getBasePeakMz());
