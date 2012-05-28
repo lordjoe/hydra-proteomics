@@ -23,7 +23,7 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
 
     private String m_Id;
     private int m_ScanNumber;
-    private final String m_Url;
+    private String m_Url;
     private String m_Label;
     private String m_FilterLine;
     private int m_MsLevel;
@@ -52,12 +52,13 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
 
     public RawPeptideScan(final String pId, String url) {
 
-        if(pId != null && !"".equals(pId))    {
+        if (pId != null && !"".equals(pId)) {
             setId(pId);
             m_Label = fromRestOfId(pId);
         }
         m_Url = url;
-     }
+    }
+
 
     public int getScanNumber() {
         return m_ScanNumber;
@@ -86,9 +87,9 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
     }
 
     public void setId(final String pId) {
-        if(m_Id != null)
+        if (m_Id != null)
             throw new IllegalStateException("id can only be set once");
-        if("".equals(pId))
+        if ("".equals(pId))
             return; // do nit try with empty string
         m_Id = toNumericId(pId);
         m_Label = fromRestOfId(pId);
@@ -99,7 +100,7 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
      *
      * @return !null fragment
      */
-    public String toMzMLFragmant() {
+    public String toMzMLFragment() {
         StringBuilder sb = new StringBuilder();
         XMLAppender appender = new XMLAppender(sb);
         serializeAsMzMLString(appender);
@@ -122,6 +123,8 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         adder.endTag();
         adder.cr();
         MzMlUtilities.appendCVParam(adder, "MS:1000580", "MSn spectrum");
+        if (getUrl() != null)
+            MzMlUtilities.appendUserParam(adder, "url", getUrl());
         appendBaseParams(adder);
         appendPeaks(adder);
 //        adder.appendAttribute("peaksCount", getPeaksCount());
@@ -303,7 +306,7 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         double pm2 = test.getPrecursorMass();
         if (!XTandemUtilities.equivalentDouble(pm1, pm2))
             return false;
-          return true;
+        return true;
     }
 
     /*
@@ -339,8 +342,12 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
     public void serializeAsString(IXMLAppender adder) {
         int indent = 0;
         String tag = TAG;
+        String url = getUrl();
         adder.openTag(tag);
         adder.appendAttribute("num", getId());
+        if (url != null) {
+            adder.appendAttribute("url", url);
+         }
         adder.appendAttribute("mslevel", getMsLevel());
         adder.appendAttribute("peaksCount", getPeaksCount());
         adder.appendAttribute("polarity", getPolarity());
@@ -359,6 +366,12 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         adder.appendAttribute("collisionEnergy", getCompensationVoltage());
         adder.endTag();
 
+//        if (url != null) {
+//            adder.openTag("nameValue");
+//            adder.appendAttribute("name", "url");
+//            adder.appendAttribute("value", url);
+//            adder.closeTag("nameValue");
+//        }
         getPrecursorMz().serializeAsString(adder);
 
         adder.openTag("peaks");
@@ -381,6 +394,10 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
 
     public String getUrl() {
         return m_Url;
+    }
+
+    public void setUrl(String url) {
+        m_Url = url;
     }
 
     public double getSumIntensity() {
@@ -457,9 +474,9 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
      * @param mass positive testMass
      * @return as above
      */
-    public boolean isMassWithinRange(double mass,IScoringAlgorithm scorer) {
+    public boolean isMassWithinRange(double mass, IScoringAlgorithm scorer) {
         final IScanPrecursorMZ mz = getPrecursorMz();
-        return mz.isMassWithinRange(mass,scorer);
+        return mz.isMassWithinRange(mass, scorer);
     }
 
 
@@ -709,7 +726,7 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         ISpectrumPeak[] peaks = getPeaks();
         for (int i = 0; i < peaks.length; i++) {
             ISpectrumPeak peak = peaks[i];
-            if(peak.getPeak() > 0)
+            if (peak.getPeak() > 0)
                 holder.add(peak);
         }
         ISpectrumPeak[] ret = new ISpectrumPeak[holder.size()];

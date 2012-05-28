@@ -96,6 +96,8 @@ public class XTandemHadoopUtilities {
         return gMaxScoredPeptides;
     }
 
+
+
     public static void setMaxScoredPeptides(final int pMaxScoredPeptides) {
         gMaxScoredPeptides = pMaxScoredPeptides;
     }
@@ -118,7 +120,7 @@ public class XTandemHadoopUtilities {
         gHadoopProperties.setProperty(pProp, pValue);
     }
 
-    public static Properties getgHadoopProperties() {
+    public static Properties getHadoopProperties() {
         return gHadoopProperties;
     }
 
@@ -655,13 +657,15 @@ public class XTandemHadoopUtilities {
      * @param text !null xml fragment
      * @return !null scan
      */
-    public static RawPeptideScan readScan(String text) {
+    public static RawPeptideScan readScan(String text,String url) {
         text = text.trim();
         if (text.startsWith("<scan")) {
             // ignore level 1 scans
             if (text.contains("msLevel=\"1\""))
                 return null;
             TopLevelScanHandler handler = new TopLevelScanHandler();
+            if(url != null)
+                handler.setDefaultURL(url);
             RawPeptideScan rawPeptideScan = null;
             try {
                 rawPeptideScan = parseXMLString(text, handler);
@@ -910,6 +914,14 @@ public class XTandemHadoopUtilities {
         return ret;
     }
 
+
+    public static String dropExtension(String filename) {
+         int index = filename.lastIndexOf(".");
+         if(index == -1)
+             return filename;
+        return filename.substring(0,index);
+     }
+
     public static PrintWriter buildWriter(final TaskInputOutputContext context,
                                           HadoopTandemMain data) {
         return buildWriter(context, data, null);
@@ -926,6 +938,30 @@ public class XTandemHadoopUtilities {
         return ret;
     }
 
+    public static OutputStream buildOutputStream(TaskInputOutputContext context,String paramsFile,String added) {
+        final Configuration configuration = context.getConfiguration();
+        // note we are reading from hdsf
+        HDFSStreamOpener opener = new HDFSStreamOpener(configuration);
+
+           String filePath = opener.buildFilePath(paramsFile);
+         if (added != null)
+            paramsFile += added;
+           XTandemMain.addPreLoadOpener(opener);
+        // note we are reading from hdsf
+        safeWrite(context, "Output File", paramsFile);
+        HDFSAccessor accesor = opener.getAccesor();
+        OutputStream os = accesor.openFileForWrite(paramsFile);
+
+        return os;
+     }
+
+    public static PrintWriter buildPrintWriter(TaskInputOutputContext context, String paramsFile, String added) {
+        OutputStream out = buildOutputStream(context, paramsFile, added);
+        PrintWriter ret = new PrintWriter(out);
+        return ret;
+     }
+
+
     public static OutputStream buildOutputStream(TaskInputOutputContext context,
                                                  HadoopTandemMain data, String added) {
         final Configuration configuration = context.getConfiguration();
@@ -941,19 +977,7 @@ public class XTandemHadoopUtilities {
         OutputStream os = accesor.openFileForWrite(paramsFile);
 
         return os;
-//        }
-//        else {
-//            try {
-//                FileOutputStream os = new FileOutputStream(paramsFile);
-//                return os;
-//            }
-//            catch (FileNotFoundException e) {
-//                throw new RuntimeException(e);
-//
-//            }
-//        }
-
-    }
+     }
 
 
     public static void setInputPath(final Job pJob, String pInputFile) throws IOException {

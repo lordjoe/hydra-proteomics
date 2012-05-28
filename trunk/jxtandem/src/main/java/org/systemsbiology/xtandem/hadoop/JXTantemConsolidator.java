@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem.hadoop;
 
 import org.apache.hadoop.conf.*;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
@@ -86,21 +87,31 @@ public class JXTantemConsolidator extends ConfiguredJobRunner implements IJobRun
             job.setOutputValueClass(Text.class);
 
             // this is important - we are generating a single output file
-            job.setNumReduceTasks(1);
+            int numberReduceTasks = 1;
+            String muliple = conf.get(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY);
+            if ("yes".equals(muliple)) {
+                String files = conf.get(JXTandemLauncher.INPUT_FILES_PROPERTY);
+                if (files != null) {
+                    String[] items = files.split(",");
+                    numberReduceTasks = items.length;
+                    job.setPartitionerClass(OutputFilePartitionerClass.class);
+                }
+            }
+            job.setNumReduceTasks(numberReduceTasks);
 
             XTandemHadoopUtilities.setInputArguments(otherArgs, job);
 
             String athString = otherArgs[otherArgs.length - 1];
-            if(athString.startsWith("s3n://"))
+            if (athString.startsWith("s3n://"))
                 athString = athString.substring(athString.lastIndexOf("s3n://"));
-             Path outputDir = new Path(athString);
-             System.err.println("Consolidator Output path " + athString);
+            Path outputDir = new Path(athString);
+            System.err.println("Consolidator Output path " + athString);
             XTandemHadoopUtilities.setOutputDirecctory(outputDir, job);
             FileSystem fileSystem = outputDir.getFileSystem(conf);
 
-              boolean ans = job.waitForCompletion(true);
-            if(ans)
-                   XTandemHadoopUtilities.saveCounters(fileSystem,  XTandemHadoopUtilities.buildCounterFileName(this,conf),job);
+            boolean ans = job.waitForCompletion(true);
+            if (ans)
+                XTandemHadoopUtilities.saveCounters(fileSystem, XTandemHadoopUtilities.buildCounterFileName(this, conf), job);
             int ret = ans ? 0 : 1;
             if (!ans)
                 throw new IllegalStateException("Job Failed");
@@ -121,6 +132,32 @@ public class JXTantemConsolidator extends ConfiguredJobRunner implements IJobRun
         catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
 
+        }
+    }
+
+    public static class OutputFilePartitionerClass extends Partitioner<Text,Text>
+    {
+        /**
+         * Get the partition number for a given key (hence record) given the total
+         * number of partitions i.e. number of reduce-tasks for the job.
+         * <p/>
+         * <p>Typically a hash function on a all or a subset of the key.</p>
+         *
+         * @param key           the key to be partioned.
+         * @param value         the entry value.
+         * @param numPartitions the total number of partitions.
+         * @return the partition number for the <code>key</code>.
+         */
+        @Override
+        public int getPartition(final Text key, final Text value, final int numPartitions) {
+            if(numPartitions <= 1)
+                return 0;
+            String s = key.toString();
+            int index = s.indexOf("|");
+            if(index < 2)
+                return 0; // only one output
+            int fileIndex = Integer.parseInt(s.substring(0,index));
+            return fileIndex % numPartitions;
         }
     }
 

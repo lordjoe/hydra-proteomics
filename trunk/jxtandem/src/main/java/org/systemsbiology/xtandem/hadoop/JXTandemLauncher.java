@@ -1,7 +1,7 @@
 package org.systemsbiology.xtandem.hadoop;
 
 import com.lordjoe.utilities.*;
- import org.apache.hadoop.conf.*;
+import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.*;
 import org.systemsbiology.common.*;
@@ -29,7 +29,10 @@ import java.util.prefs.*;
 public class JXTandemLauncher implements IStreamOpener { //extends AbstractParameterHolder implements IParameterHolder {
     public static final JXTandemLauncher[] EMPTY_ARRAY = {};
 
+    public static final String USE_SEPARATE_FILES_STRING = "full_tandem_output_path";
     public static final String TURN_ON_SCAN_OUTPUT_PROPERTY = "org.systemsbiology.xtandem.SaveScansData";
+    public static final String MULTIPLE_OUTPUT_FILES_PROPERTY = "org.systemsbiology.xtandem.MultipleOutputFiles";
+    public static final String INPUT_FILES_PROPERTY = "org.systemsbiology.xtandem.InputFiles";
     public static final int MAX_DISPLAY_LENGTH = 4 * 1000 * 1000;
     public static final int NUMBER_STAGES = 3;
     public static final boolean BUILD_DATABASE = true;
@@ -116,6 +119,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     private Taxonomy m_Taxonomy;
     private String m_JarFile;
     private String m_OutputFileName;
+    private String m_InputFiles;
 
 
     private final DelegatingFileStreamOpener m_Openers = new DelegatingFileStreamOpener();
@@ -188,6 +192,14 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
     public void setPerformanceParameter(String key, String value) {
         m_PerformanceParameters.put(key, value);
+    }
+
+    public String getInputFiles() {
+        return m_InputFiles;
+    }
+
+    public void setInputFiles(final String inputFiles) {
+        m_InputFiles = inputFiles;
     }
 
     /**
@@ -339,10 +351,10 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         if (value != null && "yes".equals(value))
             setReadScanFile(true);
 
-        Properties properties = XTandemHadoopUtilities.getgHadoopProperties();
-        for(String key : properties.stringPropertyNames())  {
+        Properties properties = XTandemHadoopUtilities.getHadoopProperties();
+        for (String key : properties.stringPropertyNames()) {
             String val = properties.getProperty(key);
-            m_Application.setParameter(key,val);
+            m_Application.setParameter(key, val);
         }
 
     }
@@ -600,6 +612,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         String parameter = application.getParameter("spectrum, path");
         if (parameter != null)
             statistics.setData("Input file", parameter);
+        buildInputFilesString(parameter);
         ITaxonomy taxonomy = application.getTaxonomy();
         String organism = taxonomy.getOrganism();
         if (organism != null)
@@ -631,7 +644,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             handleCounters(job);
 
 
-            IHadoopJob[] jobs = { job };
+            IHadoopJob[] jobs = {job};
 
             elapsed.showElapsed("Finished MassFinder");
             saveDatabaseSizes(jobs);
@@ -697,6 +710,30 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         statistics.endJob("Total Scoring");
 
         // runJob(hc);
+    }
+
+    protected void buildInputFilesString(final String inputFileName) {
+        File input = new File(inputFileName);
+        if (input.exists()) {
+            if (input.isFile()) {
+                setInputFiles(input.getName());
+                return;
+            }
+            if (input.isDirectory()) {
+                String[] subfiles = input.list();
+                if (subfiles == null)
+                    return;
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < subfiles.length; i++) {
+                    String subfile = subfiles[i];
+                    if (sb.length() > 0)
+                        sb.append(",");
+                    sb.append(subfile);
+                }
+
+                setInputFiles(sb.toString());
+            }
+        }
     }
 
     public static final int MAX_JOBS = 6;
@@ -865,8 +902,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 File f = new File(value);
                 value = f.getName();
                 String prefix = XTandemMain.getRequiredPathPrefix();
-                if(prefix != null && !value.startsWith(prefix))
-                     value =  prefix + value;
+                if (prefix != null && !value.startsWith(prefix))
+                    value = prefix + value;
             }
             out.println("\t<note type=\"input\" label=\"" + key +
                     "\">" + value + "</note>");
@@ -894,9 +931,9 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             String s = taxomonyFiles[i];
             File f = new File(s);
             String value = f.getName();
-            if(prefix != null && !value.startsWith(prefix))
-                 value =  prefix + value;
-             out.println("          <file format=\"peptide\" URL=\"" + value +
+            if (prefix != null && !value.startsWith(prefix))
+                value = prefix + value;
+            out.println("          <file format=\"peptide\" URL=\"" + value +
                     "\" />");
 
         }
@@ -922,18 +959,18 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
 
     protected void saveDatabaseSizes(final IHadoopJob[] jobs) {
-          Map<String, Long> counters;
+        Map<String, Long> counters;
         for (int i = 0; i < jobs.length; i++) {
             IHadoopJob job = jobs[i];
-            if(!job.getMainClass().equals(JXTandemMassHandler.class.getName()))
+            if (!job.getMainClass().equals(JXTandemMassHandler.class.getName()))
                 continue;
             counters = job.getAllCounterValues();
-             String sizeText = buildSizeText(counters);
-             HadoopTandemMain application = (HadoopTandemMain) getApplication();
-             XTandemHadoopUtilities.writeDatabaseSizes(application, sizeText);
+            String sizeText = buildSizeText(counters);
+            HadoopTandemMain application = (HadoopTandemMain) getApplication();
+            XTandemHadoopUtilities.writeDatabaseSizes(application, sizeText);
 
         }
-     }
+    }
 
     protected String buildSizeText(final Map<String, Long> pCounters) {
         long total = 0;
@@ -943,8 +980,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         for (String key : pCounters.keySet()) {
             if (key.startsWith("M0") && key.endsWith(".peptide")) {
                 sb.append(key.substring(1).replace(".peptide", ""));
-               long value = pCounters.get(key);
-                  total += value;
+                long value = pCounters.get(key);
+                total += value;
                 max = Math.max(value, max);
                 sb.append("\t" + value);
                 sb.append("\n");
@@ -990,7 +1027,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         HadoopTandemMain application = (HadoopTandemMain) getApplication();
         boolean buildDatabase;
         // Validate build parameters
-         DigesterDescription dd = null;
+        DigesterDescription dd = null;
         try {
             dd = readDigesterDescription(application);
         }
@@ -1042,8 +1079,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         return m_Application;
     }
 
-    protected String getHostPrefix()
-    {
+    protected String getHostPrefix() {
         return "";
     }
 
@@ -1063,31 +1099,18 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 //        if(files != null && files.length > 0)
 //            spectumFile = files[0];
         Class<JXTandemParser> mainClass = JXTandemParser.class;
-        File taskFile = getTaskFile();
         String outputLocation = getOutputLocation();
-        String taskParamsPath = getTaskParamsPath();
         String remoteBaseDirectory = getRemoteBaseDirectory();
-        if(!spectumFile.startsWith(remoteBaseDirectory))
-             spectumFile =  remoteBaseDirectory + "/"  + spectumFile;
+        if (!spectumFile.startsWith(remoteBaseDirectory))
+            spectumFile = remoteBaseDirectory + "/" + spectumFile;
+        String[] added = buildJobStrings();
 
         IHadoopJob job = HadoopJob.buildJob(
                 mainClass,
                 spectumFile,     // data on hdfs
                 "jobs",      // jar location
                 outputLocation,
-                "-D",
-                XTandemHadoopUtilities.PARAMS_KEY + "=" + taskParamsPath,
-                "-D",
-                XTandemHadoopUtilities.PATH_KEY + "=" + remoteBaseDirectory,
-                "-D",
-                XTandemHadoopUtilities.HOST_KEY + "=" + remoteHost,
-                "-D",
-                    XTandemHadoopUtilities.HOST_PORT_KEY + "=" + p,
-                "-D",
-                    XTandemHadoopUtilities.HOST_PREFIX_KEY + "=" + getHostPrefix()
-
-//                  "-D",
-//                  "org.systemsbiology.reportfile=YeastReports/yeastreport.xml"  // report file
+                added
         );
         String jarFile = job.getJarFile();
         setJarFile(jarFile);
@@ -1095,38 +1118,71 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         return job;
     }
 
+    /**
+     * build definitions to pass to Hadoop jobs
+     *
+     * @param addedDefinitions all strings o f the form name=value - will be preceeded with a -D
+     * @return
+     */
+    protected String[] buildJobStrings(String... addedDefinitions) {
+        String taskParamsPath = getTaskParamsPath();
+        String remoteBaseDirectory = getRemoteBaseDirectory();
+        String remoteHost = getRemoteHost();
+        int p = getRemoteHostPort();
+        List<String> holder = new ArrayList<String>();
+        holder.add("-D");
+        holder.add(XTandemHadoopUtilities.PARAMS_KEY + "=" + taskParamsPath);
+        holder.add("-D");
+        holder.add(XTandemHadoopUtilities.PATH_KEY + "=" + remoteBaseDirectory);
+        holder.add("-D");
+        holder.add(XTandemHadoopUtilities.HOST_KEY + "=" + remoteHost);
+        holder.add("-D");
+        holder.add(XTandemHadoopUtilities.HOST_PORT_KEY + "=" + p);
+//        Properties properties = XTandemHadoopUtilities.getHadoopProperties();
+//        for (String key : properties.stringPropertyNames()) {
+//            holder.add("-D");
+//            String val = properties.getProperty(key);
+//            holder.add(key + "=" + val);
+//        }
+
+        String inputFiles = getInputFiles();
+        if (inputFiles != null) {
+            holder.add("-D");
+            holder.add(JXTandemLauncher.INPUT_FILES_PROPERTY + "=" + inputFiles);
+
+        }
+        for (int i = 0; i < addedDefinitions.length; i++) {
+            String addedDefinition = addedDefinitions[i];
+            if (addedDefinition.contains("="))
+                holder.add("-D");
+            holder.add(addedDefinition);
+
+        }
+        String[] ret = new String[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
 
     protected IHadoopJob buildJobMassFinder() {
 
         // jar is same as parser
         HadoopJob.setJarRequired(false);
+        File taskFile = getTaskFile();
 
 //         Taxonomy taxonomy = getTaxonomy();
 //        String[] files = taxonomy.getTaxomonyFiles();
 //        if(files != null && files.length > 0)
 //            spectumFile = files[0];
         Class<JXTandemMassHandler> mainClass = JXTandemMassHandler.class;
-        String remoteHost = getRemoteHost();
-        int p = getRemoteHostPort();
-        File taskFile = getTaskFile();
-        String taskParamsPath = getTaskParamsPath();
-        String remoteBaseDirectory = getRemoteBaseDirectory();
         String lastOutputLocation = getLastOutputLocation();
         String outputLocation = getOutputLocation();
+        String[] added = buildJobStrings();
         IHadoopJob job = HadoopJob.buildJob(
                 mainClass,
                 lastOutputLocation,     // data on hdfs
                 "jobs",      // jar location
                 outputLocation,
-                "-D",
-                XTandemHadoopUtilities.PARAMS_KEY + "=" + taskParamsPath,
-                "-D",
-                XTandemHadoopUtilities.PATH_KEY + "=" + remoteBaseDirectory,
-                "-D",
-                XTandemHadoopUtilities.HOST_KEY + "=" + remoteHost,
-                "-D",
-                XTandemHadoopUtilities.HOST_PORT_KEY + "=" + p
-
+                added
 //                  "-D",
 //                  "org.systemsbiology.reportfile=YeastReports/yeastreport.xml"  // report file
         );
@@ -1154,6 +1210,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         String inputPath = getRemoteBaseDirectory() + "/" + spectrumFileName;
         String jobDirectory = "jobs";
         int p = getRemoteHostPort();
+        String[] added = buildJobStrings(XTandemHadoopUtilities.MAX_SCORED_PEPTIDES_KEY + "=" + XTandemHadoopUtilities.getMaxScoredPeptides());
+
         //    if (p <= 0)
         //         throw new IllegalStateException("bad remote host port " + p);
         IHadoopJob job = HadoopJob.buildJob(
@@ -1161,19 +1219,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 inputPath,     // data on hdfs
                 jobDirectory,      // jar location
                 outputLocation,
-                "-D",
-                XTandemHadoopUtilities.MAX_SCORED_PEPTIDES_KEY + "=" + XTandemHadoopUtilities.getMaxScoredPeptides(),
-                "-D",
-                XTandemHadoopUtilities.PARAMS_KEY + "=" + getTaskParamsPath(),
-                "-D",
-                XTandemHadoopUtilities.HOST_KEY + "=" + remoteHost,
-                "-D",
-                XTandemHadoopUtilities.HOST_PORT_KEY + "=" + p,
-                "-D",
-                XTandemHadoopUtilities.PATH_KEY + "=" + getRemoteBaseDirectory() //remoteBaseDirectory
-
-//                  "-D",
-//                  "org.systemsbiology.reportfile=YeastReports/yeastreport.xml"  // report file
+                added
         );
 
         if (getJarFile() != null)
@@ -1195,20 +1241,14 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
         // jar is same as pass1
         HadoopJob.setJarRequired(false);
+        String[] added = buildJobStrings();
 
         IHadoopJob job = HadoopJob.buildJob(
                 mainClass,
                 getLastOutputLocation(),
                 getRemoteBaseDirectory() + "/jobs",      // jar location
                 getOutputLocation(),
-                "-D",
-                XTandemHadoopUtilities.PARAMS_KEY + "=" + getTaskParamsPath(),
-                "-D",
-                XTandemHadoopUtilities.HOST_KEY + "=" + getRemoteHost(),
-                "-D",
-                XTandemHadoopUtilities.HOST_PORT_KEY + "=" + p,
-                "-D",
-                XTandemHadoopUtilities.PATH_KEY + "=" + getRemoteBaseDirectory()
+                added
 
 //                  "-D",
 //                  "org.systemsbiology.reportfile=YeastReports/yeastreport.xml"  // report file
@@ -1227,30 +1267,18 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         // jar is same as pass1
         HadoopJob.setJarRequired(false);
 
-        String s = getRemoteHost();
-        int p = getRemoteHostPort();
+        String outputFileName = getOutputFileName();
+        String inputFiles = getInputFiles();
+        String[] added = buildJobStrings(BiomlReporter.FORCED_OUTPUT_NAME_PARAMETER + "=" + outputFileName,
+                JXTandemLauncher.INPUT_FILES_PROPERTY + "=" + inputFiles);
         //  if (p <= 0)
         //      throw new IllegalStateException("bad remote host port " + p);
-        String outputFileName = getOutputFileName();
         IHadoopJob job = HadoopJob.buildJob(
                 mainClass,
                 getLastOutputLocation(),
                 getRemoteBaseDirectory() + "/jobs",      // jar location
                 getOutputLocation(),     // data on hdfs
-                //          getOutputLocation(3),
-                "-D",
-                XTandemHadoopUtilities.PARAMS_KEY + "=" + getTaskParamsPath(),
-                "-D",
-                XTandemHadoopUtilities.HOST_KEY + "=" + s,
-                "-D",
-                XTandemHadoopUtilities.HOST_PORT_KEY + "=" + p,
-                "-D",
-                XTandemHadoopUtilities.PATH_KEY + "=" + getRemoteBaseDirectory(),
-                "-D",
-                BiomlReporter.FORCED_OUTPUT_NAME_PARAMETER + "=" + outputFileName
-
-//                  "-D",
-//                  "org.systemsbiology.reportfile=YeastReports/yeastreport.xml"  // report file
+                added
         );
 
         // reuse the only jar file
@@ -1560,9 +1588,9 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
             if (isRemote) {
                 if (isAmazon) {
-                    Object[] cargs = { "MyJobName"};
+                    Object[] cargs = {"MyJobName"};
                     Class lClass = Class.forName("org.systemsbiology.aws.AWSMapReduceLauncher");
-                    launcher = (IHadoopController )lClass.newInstance( );
+                    launcher = (IHadoopController) lClass.newInstance();
                 }
                 else {
                     String host = RemoteUtilities.getHost();

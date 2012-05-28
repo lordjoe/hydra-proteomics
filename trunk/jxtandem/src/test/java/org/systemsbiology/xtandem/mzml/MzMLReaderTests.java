@@ -116,10 +116,10 @@ public class MzMLReaderTests {
      {
          // test that to xml write and decode is idempotent
          RawPeptideScan pepScan = MzMLReader.scanFromFragment(SAMPLE_SPECTRUM_FRAGMENT);
-         String mzml = pepScan.toMzMLFragmant();
+         String mzml = pepScan.toMzMLFragment();
       //   System.out.println(mzml);
          RawPeptideScan pepScan2 = MzMLReader.scanFromFragment(mzml);
-         String mzml2 = pepScan2.toMzMLFragmant();
+         String mzml2 = pepScan2.toMzMLFragment();
          if(!mzml.equals(mzml2)) {
              System.out.println(mzml);
              System.out.println(mzml2);
@@ -137,10 +137,10 @@ public class MzMLReaderTests {
          sb.append(SPECTRUM2_3);
              // test that to xml write and decode is idempotent
          RawPeptideScan pepScan = MzMLReader.scanFromFragment(sb.toString());
-         String mzml = pepScan.toMzMLFragmant();
+         String mzml = pepScan.toMzMLFragment();
       //   System.out.println(mzml);
          RawPeptideScan pepScan2 = MzMLReader.scanFromFragment(mzml);
-         String mzml2 = pepScan2.toMzMLFragmant();
+         String mzml2 = pepScan2.toMzMLFragment();
          if(!mzml.equals(mzml2)) {
              System.out.println(mzml);
              System.out.println(mzml2);
@@ -171,7 +171,7 @@ public class MzMLReaderTests {
     {
         // test that to xml write and decode is idempotent
         RawPeptideScan pepScan = MzMLReader.scanFromFragment(SAMPLE_SPECTRUM_FRAGMENT);
-        String mzml = pepScan.toMzMLFragmant();
+        String mzml = pepScan.toMzMLFragment();
      //   System.out.println(mzml);
         RawPeptideScan pepScan2 = MzMLReader.scanFromFragment(mzml);
 

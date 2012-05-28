@@ -14,6 +14,7 @@ public class ExtendedSpectrumImpl extends SpectrumImpl
 
     private String m_Id;
     private int m_ScanNumber;
+    private int m_MSLevel;
 
     public ExtendedSpectrumImpl() {
     }
@@ -32,5 +33,13 @@ public class ExtendedSpectrumImpl extends SpectrumImpl
 
     public void setScanNumber(final int pScanNumber) {
         m_ScanNumber = pScanNumber;
+    }
+
+    public int getMSLevel() {
+        return m_MSLevel;
+    }
+
+    public void setMSLevel(final int MSLevel) {
+        m_MSLevel = MSLevel;
     }
 }

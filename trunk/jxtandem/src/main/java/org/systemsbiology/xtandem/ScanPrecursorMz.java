@@ -101,9 +101,13 @@ public class ScanPrecursorMz implements IScanPrecursorMZ {
             if (alg.isWithinLimits(test1, mass))
                 return true;
             // try charge 3
-            double test2 = (getMassChargeRatio() - XTandemUtilities.getProtonMass()) * 3 + XTandemUtilities.getProtonMass();
-            if (alg.isWithinLimits(test2, mass))
-                return true;
+              double test2 = (getMassChargeRatio() - XTandemUtilities.getProtonMass()) * 3 + XTandemUtilities.getProtonMass();
+              if (alg.isWithinLimits(test2, mass))
+                  return true;
+            // try charge 1 -NOTE THIS IS NEW
+              double test3 =  getMassChargeRatio() ;
+              if (alg.isWithinLimits(test3, mass))
+                  return true;
             return false; // give up
         }
         else {

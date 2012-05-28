@@ -37,7 +37,7 @@ public class IntegerTestBuilder {
         try {
             String scanText = getScanString(rdr);
             while (scanText != null) {
-                RawPeptideScan scan = XTandemHadoopUtilities.readScan(scanText);
+                RawPeptideScan scan = XTandemHadoopUtilities.readScan(scanText,null);
                 m_Main.addRawScan(scan);
                 String id = scan.getId();
                 IScoredScan scoring = m_Main.getScoring(id);
@@ -70,7 +70,7 @@ public class IntegerTestBuilder {
         try {
             String scanText = getScanString(rdr);
             while (scanText != null) {
-                RawPeptideScan scan = XTandemHadoopUtilities.readScan(scanText);
+                RawPeptideScan scan = XTandemHadoopUtilities.readScan(scanText,null);
                 m_Main.addRawScan(scan);
                 String id = scan.getId();
                 IScoredScan scoring = m_Main.getScoring(id);

@@ -38,10 +38,23 @@ public class MzMLReader implements TagEndListener<SpectrumInterface> {
      */
     public static RawPeptideScan scanFromFragment(String spectrumFragment) {
 
-
+        String url = urlFromFragment(spectrumFragment);
         ExtendedSpectrumImpl  spectrum = (ExtendedSpectrumImpl)spectrumFromFragment(spectrumFragment);
         RawPeptideScan ret = MzMlUtilities.buildSpectrum(spectrum);
+        if(url != null && ret.getUrl() == null)
+              ret.setUrl(url);
         return ret;
+    }
+
+    public static final String URL_PARAM = "<userParam  name=\"url\" value=\"";
+    protected static String urlFromFragment(final String spectrumFragment) {
+        int index = spectrumFragment.indexOf(URL_PARAM);
+        if(index == -1)
+            return null;
+        index += URL_PARAM.length();
+        int index2 = spectrumFragment.indexOf("\"",index);
+        String url = spectrumFragment.substring(index,index2);
+        return url;
     }
 
     /**
@@ -59,11 +72,13 @@ public class MzMLReader implements TagEndListener<SpectrumInterface> {
         sb.append(FRAGMENT_POSTFIX);
 
         String id = XTandemUtilities.extractTag("id", spectrumFragment);
+        int level  = Integer.parseInt(XTandemUtilities.extractTag("mslevel", spectrumFragment));
 
         InputStream inp = XTandemUtilities.stringToInputStream(sb.toString());
         MzMLReader rdr = new MzMLReader(inp);
         ExtendedSpectrumImpl  spectrum = (ExtendedSpectrumImpl)rdr.getSpectrumWithId(id);
-           return spectrum;
+        spectrum.setMSLevel(level);
+        return spectrum;
     }
 
     private final MessagingMzMLReader m_Reader = new MessagingMzMLReader();
