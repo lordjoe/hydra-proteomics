@@ -63,9 +63,14 @@ public class BiomlReporter {
         if (absoluteName != null)
             return absoluteName;
 
+         String name = pParameters.getParameter("output, path");
+        if("full_tandem_output_path".equals(name)) {
+            System.err.println("output matches input file");
+            return name;
+        }
+
         System.err.println("No File name forced building file name");
-        String name = pParameters.getParameter("output, path");
-        if ("yes".equals(pParameters.getParameter("output, path hashing"))) {
+          if ("yes".equals(pParameters.getParameter("output, path hashing"))) {
             final int index = name.lastIndexOf(".");
             String extension = name.substring(index);
             String dataHash = getDateHash();

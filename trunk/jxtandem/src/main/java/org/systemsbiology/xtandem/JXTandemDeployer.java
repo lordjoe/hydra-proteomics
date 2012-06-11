@@ -78,7 +78,7 @@ public class JXTandemDeployer extends Deployer {
          for (int i = 2; i < args.length; i++) {
              pSb.append(" " + args[i]);
          }
-         pSb.append(" config=%JXTANDEM_HOME%/data/Launcher.properties jar=%JXTANDEM_HOME%/data/JXTandem.jar params=%1 %2 %3 %4 \n");
+         pSb.append(" config=%HYDRA_HOME%/data/Launcher.properties jar=%HYDRA_HOME%/data/Hydra.jar params=%1 %2 %3 %4 \n");
 
 
     }
@@ -94,7 +94,7 @@ public class JXTandemDeployer extends Deployer {
         for (int i = 2; i < args.length; i++) {
             pSb.append(" " + args[i].replace('%', '$'));
         }
-        pSb.append("config=$JXTANDEM_HOME/data/Launcher.properties jar=$JXTANDEM_HOME/data/JXTandem.jar  params=$1 $2 $3 $4 $5 $6 $7 $8\n");
+        pSb.append("config=$HYDRA_HOME/data/Launcher.properties jar=$HYDRA_HOME/data/Hydra.jar  params=$1 $2 $3 $4 $5 $6 $7 $8\n");
         return pSb.toString();
      }
 
@@ -104,13 +104,15 @@ public class JXTandemDeployer extends Deployer {
         super.deploy(pDeployDir, mainClass, pRightArgs);
         String deployPath = pDeployDir.getAbsolutePath();
         File[] data = new File("installer").listFiles();
+        if(data == null)
+            throw new IllegalStateException("installer must be a subdirectory of user.dir and hold Launcher.properties");
         File datadir = new File(pDeployDir,"data");
         datadir.mkdirs();
         for (int i = 0; i < data.length; i++) {
             File file = data[i];
             FileUtilities.copyFile(file,new File(datadir,file.getName()));
         }
-         HadoopDeployer.makeHadoopJar(datadir.getAbsolutePath() + "/JXTandem.jar");
+         HadoopDeployer.makeHadoopJar(datadir.getAbsolutePath() + "/Hydra.jar");
     }
 
     public static void main(String[] args) {
