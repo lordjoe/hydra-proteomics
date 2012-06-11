@@ -248,14 +248,14 @@ public class ScanTagMapper extends AbstractTandemMapper<Writable> {
         int[] limits = scorer.allSearchedMasses(mass);
         for (int j = 0; j < limits.length; j++) {
             int limit = limits[j];
-            writeScanToMassAtCharge(limit, pId, value, charge, context);
+            writeScanToMassAtCharge(limit, pId, value, charge,filename, context);
         }
     }
 
     public static final String CHARGE_0_STRING = "precursorCharge=\"0\"";
     public static final String PRECURSOR_MZ_TAG_STRING = "<precursorMz ";
 
-    protected void writeScanToMassAtCharge(int mass, String id, String value, int charge, Context context)
+    protected void writeScanToMassAtCharge(int mass, String id, String value, int charge,String filename, Context context)
             throws IOException, InterruptedException {
 
        // Special code to store scans at mass for timing studies
@@ -357,7 +357,7 @@ public class ScanTagMapper extends AbstractTandemMapper<Writable> {
         String keyStr = String.format("%06d", mass);
         int maxScored = getMaxScoredPeptides();
         final Text onlyKey = getOnlyKey();
-        final Text onlyValue = getOnlyKey();
+        final Text onlyValue = getOnlyValue();
          long startTime = System.currentTimeMillis();
         if (numberEntries < maxScored) {    // few entries score in one task
 

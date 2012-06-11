@@ -302,7 +302,7 @@ public class Deployer {
     public String buildBatchFile(File[] pathLibs, File deployDir, final Class mainClass, String[] args) {
         StringBuffer sb = new StringBuffer();
         sb.append("ECHO OFF\n");
-        sb.append("set JAR_PATH=%JXTANDEM_HOME%/lib\n");
+        sb.append("set JAR_PATH=%HYDRA_HOME%/lib\n");
         sb.append("set q4path=%JAR_PATH%/" + pathLibs[0].getName() + "\n");
         for (int i = 1; i < pathLibs.length; i++) {
             File athLib = pathLibs[i];
@@ -335,9 +335,9 @@ public class Deployer {
                     "#export PATH=/hpc/java/jdk1.6.0_24/bin:$PATH\n" +
                     "#\n" +
                     "\n" +
-                    "# add a line like the following to define JXTANDEM_HOME where JXTANDEM_HOME if the directory \n" +
+                    "# add a line like the following to define HYDRA_HOME where HYDRA_HOME if the directory \n" +
                     "# where the code is installed - it will have bin,lib and data subdirectories \n" +
-                    "#export JXTANDEM_HOME=/users/slewis/JXTandem\n" +
+                    "#export HYDRA_HOME=/users/slewis/Hydra\n" +
                     "\n";
 
     public static final String LIST_JAVA_VERSION =
@@ -354,7 +354,7 @@ public class Deployer {
 
         sb.append(SHELL_FILE_HEADER);
 
-        sb.append("JAR_PATH=$JXTANDEM_HOME/lib\n");
+        sb.append("JAR_PATH=$HYDRA_HOME/lib\n");
         sb.append("q4path=$JAR_PATH/" + pathLibs[0].getName() + "\n");
         for (int i = 1; i < pathLibs.length; i++) {
             File athLib = pathLibs[i];
@@ -381,17 +381,17 @@ public class Deployer {
         }
         pSb.append(" $1 $2 $3 $4 $5 $6 $7 $8\n");
         return pSb.toString();
-        //  config=%JXTANDEM_HOME%/Launcher.properties config=%JXTANDEM_HOME%/data/JXTandem.jar
+        //  config=%HYDRA_HOME%/Launcher.properties config=%HYDRA_HOME%/data/JXTandem.jar
     }
 
     public void makeRunners(File[] pathLibs, File deployDir, final Class mainClass, String[] args) {
         File binDir = new File(deployDir, "bin");
         binDir.mkdirs();
         String bf = buildBatchFile(pathLibs, deployDir, mainClass, args);
-        File rb = new File(binDir, "jxtandem.bat");
+        File rb = new File(binDir, "hydra.bat");
         writeFile(rb, bf);
         String sf = buildShellFile(pathLibs, deployDir, mainClass, args);
-        File rs = new File(binDir, "jxtandem.sh");
+        File rs = new File(binDir, "hydra.sh");
         writeFile(rs, sf);
     }
 
