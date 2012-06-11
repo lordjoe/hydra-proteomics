@@ -730,8 +730,9 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                         sb.append(",");
                     sb.append(subfile);
                 }
-
-                setInputFiles(sb.toString());
+                String inputFiles = sb.toString();
+                 getApplication().setParameter(INPUT_FILES_PROPERTY,inputFiles);
+                 setInputFiles(inputFiles);
             }
         }
     }
@@ -1515,6 +1516,85 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         throw new UnsupportedOperationException("Property " + pProperty + " with value " + pValue + " Not handled");
     }
 
+    public void copyCreaterdFiles(String passedBaseDirctory ,String outFile)
+    {
+        HadoopTandemMain application =  getApplication();
+        String[] outputFiles = null;
+        String muliple = application.getParameter(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY);
+         boolean multipleFiles = "yes".equals(muliple);
+         if (multipleFiles) {
+             String files = application.getParameter(JXTandemLauncher.INPUT_FILES_PROPERTY);
+             if (files != null) {
+                 System.err.println("Input files " + files);
+                  String[] items = files.split(",");
+                 outputFiles = items;
+             }
+
+         }
+
+        File f = null;
+        if (!isDatabaseBuildOnly() && passedBaseDirctory != null) {
+            String hdfsPath = passedBaseDirctory + "/" + XTandemUtilities.asLocalFile(outFile);
+            //       String asLocal = XTandemUtilities.asLocalFile("/user/howdah/JXTandem/data/SmallSample/yeast_orfs_all_REV01_short.2011_11_325_10_35_19.t.xml");
+            //       String hdfsPathEric = passedBaseDirctory + "/" + "yeast_orfs_all_REV01_short.2011_11_325_10_35_19.t.xml";
+
+
+            try {
+                if(outputFiles == null) {
+                    outFile = copyOutputFile(outFile, application, hdfsPath);
+
+                }
+                else {
+                    for (int i = 0; i < outputFiles.length; i++) {
+                        outFile = outputFiles[i];
+                        outFile = copyOutputFile(outFile, application, hdfsPath);
+
+                    }
+                }
+                //          f = main.readRemoteFile(hdfsPathEric, outFile);
+
+            }
+            catch (IllegalArgumentException e) {
+                XTandemUtilities.outputLine("Cannot copy remote file " + hdfsPath + " to local file " + outFile +
+                        " because " + e.getMessage());
+                e.printStackTrace();
+                throw e;
+
+            }
+        }
+    }
+
+    private String copyOutputFile(String outFile, HadoopTandemMain application, String hdfsPath) {
+        File f;
+        f =  readRemoteFile(hdfsPath, outFile);
+        if (f.length() < MAX_DISPLAY_LENGTH) {
+            String s = FileUtilities.readInFile(f);
+            XTandemUtilities.outputLine(s);
+        }
+        // read in the larger scans file
+        if (isReadScanFile()) {  // todo add a way to turn this on
+            IFileSystem acc = getAccessor();
+            if (acc.exists(hdfsPath)) {
+                outFile += ".scans";
+                f =  readRemoteFile(hdfsPath, outFile);
+                XTandemUtilities.outputLine("Created output file " + f.getAbsolutePath());
+            }
+        }
+        String parameter = application.getParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY);
+        if ("yes".equals(parameter)) {
+           ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
+           for (int i = 0; i < algorithms.length; i++) {
+               ITandemScoringAlgorithm algorithm = algorithms[i];
+               String fileName = hdfsPath + "." + algorithm.getName() + ".pep.xml";
+               String outFile2 =  getOutputFileName() + "." + algorithm.getName() + ".pep.xml";
+                readRemoteFile(fileName, outFile2);
+           }
+
+       }
+        return outFile;
+    }
+
+
     public static InputStream buildInputStream(String paramsFile) {
         XTandemUtilities.outputLine("reading params file " + paramsFile);
         if (paramsFile.startsWith("res://"))
@@ -1645,53 +1725,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             }
             main.runJobs(launcher);
 
-            //   XTandemDebugging.loadXTandemValues("log1.txt");
-
-            File f = null;
-            if (!isDatabaseBuildOnly() && passedBaseDirctory != null) {
-                String hdfsPath = passedBaseDirctory + "/" + XTandemUtilities.asLocalFile(outFile);
-                //       String asLocal = XTandemUtilities.asLocalFile("/user/howdah/JXTandem/data/SmallSample/yeast_orfs_all_REV01_short.2011_11_325_10_35_19.t.xml");
-                //       String hdfsPathEric = passedBaseDirctory + "/" + "yeast_orfs_all_REV01_short.2011_11_325_10_35_19.t.xml";
-
-
-                try {
-                    //          f = main.readRemoteFile(hdfsPathEric, outFile);
-                    f = main.readRemoteFile(hdfsPath, outFile);
-                    if (f.length() < MAX_DISPLAY_LENGTH) {
-                        String s = FileUtilities.readInFile(f);
-                        XTandemUtilities.outputLine(s);
-                    }
-                    // read in the larger scans file
-                    if (isReadScanFile()) {  // todo add a way to turn this on
-                        IFileSystem acc = main.getAccessor();
-                        if (acc.exists(hdfsPath)) {
-                            outFile += ".scans";
-                            f = main.readRemoteFile(hdfsPath, outFile);
-                            XTandemUtilities.outputLine("Created output file " + f.getAbsolutePath());
-                        }
-                    }
-                    HadoopTandemMain application = main.getApplication();
-                    if ("yes".equals(application.getParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY))) {
-                        ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
-                        for (int i = 0; i < algorithms.length; i++) {
-                            ITandemScoringAlgorithm algorithm = algorithms[i];
-                            String fileName = hdfsPath + "." + algorithm.getName() + ".pep.xml";
-                            String outFile2 = main.getOutputFileName() + "." + algorithm.getName() + ".pep.xml";
-                            main.readRemoteFile(fileName, outFile2);
-                        }
-
-                    }
-
-                }
-                catch (IllegalArgumentException e) {
-                    XTandemUtilities.outputLine("Cannot copy remote file " + hdfsPath + " to local file " + outFile +
-                            " because " + e.getMessage());
-                    e.printStackTrace();
-                    throw e;
-
-                }
-            }
-
+            main.copyCreaterdFiles(passedBaseDirctory, outFile);
 
             XTandemUtilities.outputLine("Fragment Database Size " + main.getTotalFragments());
 

@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem;
 
 import org.systemsbiology.hadoop.*;
+import org.systemsbiology.xtandem.hadoop.*;
 import org.systemsbiology.xtandem.mzml.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.reporting.*;
@@ -95,6 +96,10 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         m_TaskFile = pTaskFile.getAbsolutePath();
   //      Protein.resetNextId();
         initOpeners();
+        Properties predefined = XTandemHadoopUtilities.getHadoopProperties();
+        for(String key : predefined.stringPropertyNames())  {
+             setPredefinedParameter(key, predefined.getProperty(key));
+        }
         try {
             InputStream is = new FileInputStream(m_TaskFile);
             handleInputs(is, pTaskFile.getName());
@@ -107,10 +112,22 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         //           throw new IllegalStateException("Only one XTandemMain allowed");
     }
 
+    private void setPredefinedParameter(  String key,String value) {
+        setParameter(key,value);
+        if(key.equals("org.systemsbiology.algorithms"))  {
+                   addAlternateParameters(value );
+
+        }
+    }
+
     public XTandemMain(final InputStream is, String url) {
         m_TaskFile = null;
    //     Protein.resetNextId();
         initOpeners();
+        Properties predefined = XTandemHadoopUtilities.getHadoopProperties();
+        for(String key : predefined.stringPropertyNames())  {
+            setPredefinedParameter(key, predefined.getProperty(key));
+        }
         handleInputs(is, url);
         //     if (gInstance != null)
         //        throw new IllegalStateException("Only one XTandemMain allowed");
@@ -351,7 +368,7 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
             Class<?> cls = Class.forName(pItem);
             ITandemScoringAlgorithm algorithm = (ITandemScoringAlgorithm)cls.newInstance();
             algorithm.configure(this);
-            m_Algorithms.add(algorithm);
+            addAlgorithm(algorithm);
         }
         catch (RuntimeException e) {
             throw e;
@@ -390,6 +407,9 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
     @Override
     public ITandemScoringAlgorithm[] getAlgorithms()
     {
+        if(m_Algorithms.size() == 0)    {
+             return TandemKScoringAlgorithm.DEFAULT_ALGORITHMS;
+        }
         return m_Algorithms.toArray(ITandemScoringAlgorithm.EMPTY_ARRAY);
     }
 
