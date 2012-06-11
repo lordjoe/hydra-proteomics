@@ -18,6 +18,8 @@ public class TandemKScoringAlgorithm extends TandemScoringAlgorithm {
 
     public static final double MONOISOTOPIC_CORRECTION = 1.0005;
     public static final double AVERAGE_CORRECTION = 1.0011;
+    public static final ITandemScoringAlgorithm DEFAULT_ALGORITHM = new TandemKScoringAlgorithm();
+    public static final ITandemScoringAlgorithm[] DEFAULT_ALGORITHMS = { DEFAULT_ALGORITHM };
 
 
     protected static final IMZToInteger K_SCORING_CONVERTER = new KScoringConverter();

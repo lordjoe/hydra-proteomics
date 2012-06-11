@@ -102,7 +102,8 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
         if (m_UseMultipleOutputFiles) {
             String files = conf.get(JXTandemLauncher.INPUT_FILES_PROPERTY);
             if (files != null) {
-                String[] items = files.split(",");
+                System.err.println("Input files " + files);
+                 String[] items = files.split(",");
                 m_OutputFiles = items;
             }
 
@@ -128,10 +129,11 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
 
     protected void setWriters(Context context, HadoopTandemMain application, String inputFileName) {
         String s = XTandemHadoopUtilities.dropExtension(inputFileName);
-        if(s.equals(m_OutputFile))
+          if(s.equals(m_OutputFile))
             return;
         m_OutputFile = s;
-        cleanupWriters();
+        System.err.println("Setting writer to " + m_OutputFile);
+         cleanupWriters();
         m_Writer = XTandemHadoopUtilities.buildPrintWriter(context, inputFileName, ".hydra");
         if (isWriteScans()) {
             m_ScansWriter = XTandemHadoopUtilities.buildPrintWriter(context, inputFileName, ".scans");
@@ -171,11 +173,14 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
             id = keyStr; // key includes charge
             String usedFileName = null;
             int index = keyStr.indexOf("|");
-            if (index > -1) {
-                fileIndex = Integer.parseInt(keyStr.substring(0, index));
-                if (fileIndex >= 0 && fileIndex < m_OutputFiles.length)    {
+            System.err.println("key " + keyStr + " index " + index + " m_OutputFiles.length " + m_OutputFiles.length);
+              if (index > -1) {
+                  fileIndex = Integer.parseInt(keyStr.substring(0, index));
+                  System.err.println("fileIndex " + fileIndex  );
+                  if (fileIndex >= 0 && fileIndex < m_OutputFiles.length)    {
                     usedFileName = m_OutputFiles[fileIndex];
-                    setWriters(  context, app,usedFileName);
+                      System.err.println("usedFileName " + usedFileName  );
+                      setWriters(  context, app,usedFileName);
                 }
                 keyStr = keyStr.substring(index + 1);
             }
