@@ -475,7 +475,15 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
         final String taxonomyName = getTaxonomyName();
         final String descriptiveFile = getTaxonomyInfo();
-        m_Taxonomy = new Taxonomy(getApplication(), taxonomyName, descriptiveFile);
+        try {
+            m_Taxonomy = new Taxonomy(getApplication(), taxonomyName, descriptiveFile);
+        }
+        catch (IllegalArgumentException e) {
+             if("InputStream cannot be null".equals(e.getMessage()))
+                 throw new IllegalStateException("The taxonomy file listed in params under the key \"list path, taxonomy information\" cannot be found");
+            throw new RuntimeException(e);
+
+        }
 
         TaxonHandler taxonHandler = new TaxonHandler(null, "peptide", taxonomyName);
 
@@ -785,7 +793,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             guaranteeRemoteFilePath(spectrumFile, pRbase);
         }
         else {
-            guaranteExistanceofRemoteFile(spectrumFile, pRbase, "Spectrum file ");
+            guaranteExistanceofRemoteFile(spectrumFile, pRbase, "the Spectrum file designated by \"spectrum, path\" ");
         }
 
         XTandemUtilities.outputLine("Writing Taxonomy database");
@@ -820,7 +828,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         if (accessor.exists(remotepath)) {
             return 2;
         }
-        throw new IllegalStateException("message " + remotepath + "does not exist");
+        throw new IllegalStateException(message + "  " + remotepath + "does not exist");
     }
 
     protected int guaranteeRemoteFilePath(final File pFile1, final String pRemotePath) {
@@ -1354,7 +1362,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 String paramsFile = getParamsFile();
                 InputStream is = buildInputStream(paramsFile);
                 if (is == null)
-                    throw new IllegalStateException("params file " + gParamsFile + " does not exist");
+                    throw new IllegalStateException("params file " + gParamsFile + " does not exist - in the command line you must say params=<paramsFile> and that file MUST exist");
                 is.close();
             }
             catch (IOException e) {
