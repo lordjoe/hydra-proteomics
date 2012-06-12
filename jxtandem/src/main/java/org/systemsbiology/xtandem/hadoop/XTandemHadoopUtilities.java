@@ -990,6 +990,17 @@ public class XTandemHadoopUtilities {
         FileInputFormat.addInputPath(pJob, ath);
     }
 
+    public static PrintWriter buildPrintWriter(TaskInputOutputContext context,HadoopTandemMain data) {
+           return buildPrintWriter(  context,  data,null);
+      }
+
+
+    public static PrintWriter buildPrintWriter(TaskInputOutputContext context,HadoopTandemMain data, String added) {
+         OutputStream out = buildOutputStream(context, data, added);
+         PrintWriter ret = new PrintWriter(out);
+         return ret;
+      }
+
 
     public static OutputStream buildOutputStream(TaskInputOutputContext context,
                                                  HadoopTandemMain data) {

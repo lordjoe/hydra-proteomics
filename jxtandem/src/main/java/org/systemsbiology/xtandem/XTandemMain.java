@@ -996,6 +996,9 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
                 is = open(paramName);
             }
             }
+            if(is == null) {
+                throw new IllegalArgumentException("the default input file designated by \"list path, default parameters\" " + m_DefaultParameters + "  does not exist"); // ToDo change
+            }
             Map<String, String> map = XTandemUtilities.readNotes(is, paramName);
             for(String key : map.keySet())  {
                 if(key.startsWith("spectrum, parent monoisotopic mass error"))
