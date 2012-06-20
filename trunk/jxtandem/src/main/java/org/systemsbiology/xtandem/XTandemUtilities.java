@@ -2,6 +2,7 @@ package org.systemsbiology.xtandem;
 
 
 import com.lordjoe.utilities.*;
+import org.systemsbiology.common.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.bioml.*;
 import org.systemsbiology.xtandem.bioml.sax.*;
@@ -34,7 +35,6 @@ public class XTandemUtilities {
     // do not plan to deal with larger charges
     public static final int MAX_CHARGE = 4;
 
-
     public static final int INTEGER_SIZE = 4; // bytes per integer
     public static final int FLOAT_SIZE = 4; // bytes per float
     public static final int FLOAT64_SIZE = 8; // bytes per float 64
@@ -59,6 +59,7 @@ public class XTandemUtilities {
         String sequence = pPp.getSequence();
         return !sequence.endsWith("R") && !sequence.endsWith("K");
     }
+
 
     /**
      * are all observed modifications in the set
