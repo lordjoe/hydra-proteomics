@@ -35,6 +35,8 @@ public class XTandemHadoopUtilities {
     public static XTandemHadoopUtilities[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = XTandemHadoopUtilities.class;
 
+
+    public static final String[] EXTENSIONS_TO_CLEAN = { ".scans",".pep.xml",".counters",".hydra",".crc"};
     // sequence files are faster but harder to read - change to true
     // when things word well
     public static final boolean USE_SEQUENCE_INTERMEDIATE_FILES = true;
@@ -57,6 +59,43 @@ public class XTandemHadoopUtilities {
     public static boolean isCounterHadoopInternal(String name) {
         return HADOOP_INTERNAL_COUNTER_SET.contains(name);
     }
+
+
+    /**
+     * delete all files with extensions in  EXTENSIONS_TO_CLEAN
+     * @param fs
+     * @param directory
+     */
+    public static void cleanFileSystem( FileSystem fs,Path directory)
+    {
+        try {
+            FileStatus[] files = fs.listStatus(directory);
+            if(files == null)
+                return;
+            for (int i = 0; i < files.length; i++) {
+                FileStatus file = files[i];
+                Path testPath = file.getPath();
+                String name =  testPath.getName();
+                for (int j = 0; j < EXTENSIONS_TO_CLEAN.length; j++) {
+                    if(name.endsWith(EXTENSIONS_TO_CLEAN[j]))  {
+                        fs.delete(testPath,true);
+                        break;
+                    }
+
+                }
+            }
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
+
+    public static void cleanFile(FileSystem fs,Path directory,String file)
+     {
+          throw new UnsupportedOperationException("Fix This"); // ToDo
+     }
+
 
 //    public static final String[] MEANINGFUL_COUNTERS =
 //            {
@@ -193,6 +232,9 @@ public class XTandemHadoopUtilities {
         else
             return new Path(gDefaultPath, s);
     }
+
+
+
 
     /**
      * return all counters in the job
@@ -956,6 +998,9 @@ public class XTandemHadoopUtilities {
      }
 
     public static PrintWriter buildPrintWriter(TaskInputOutputContext context, String paramsFile, String added) {
+//        String paramsFile = buildOutputFileName(context, data);
+//        if (added != null)
+//            paramsFile += added;
         OutputStream out = buildOutputStream(context, paramsFile, added);
         PrintWriter ret = new PrintWriter(out);
         return ret;

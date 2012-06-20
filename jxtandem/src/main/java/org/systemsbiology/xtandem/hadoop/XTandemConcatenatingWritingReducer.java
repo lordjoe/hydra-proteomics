@@ -126,7 +126,8 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
             System.err.println("Writing output to file " + paramsFile);
         }
 
-        setWriters(context, application, fileName);
+        if(!isUseMultipleOutputFiles())
+            setWriters(context, application, fileName);
 
     }
 
