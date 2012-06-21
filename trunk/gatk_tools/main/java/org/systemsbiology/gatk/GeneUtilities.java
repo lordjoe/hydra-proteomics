@@ -1,8 +1,7 @@
 package org.systemsbiology.gatk;
 
-import org.apache.poi.openxml4j.opc.internal.unmarshallers.*;
-
 import java.io.*;
+import java.net.*;
 import java.util.*;
 
 /**
@@ -24,26 +23,64 @@ public class GeneUtilities {
      * @function reads all the data in a file into an array of strings - one per line
      */
     public static String[] readInLines(String TheFile) {
-          return readInLines(new File(TheFile));
-     }
+        return readInLines(new File(TheFile));
+    }
 
     public static String[] readInLines(File TheFile) {
-         try {
-             LineNumberReader r = new LineNumberReader(new FileReader(TheFile));
-             List<String> holder = new ArrayList<String>();
-             String s = r.readLine();
-             while (s != null) {
-                 holder.add(s);
-                 s = r.readLine();
+        try {
+            return readInLines(new FileReader(TheFile));
+        }
+        catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
+
+
+    public static String[] readInLines(URL url) {
+         InputStream inp = null;
+        try {
+            inp = url.openStream();
+            return readInLines(inp);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+        finally {
+             if(inp != null)  {
+                 try {
+                     inp.close();
+                 }
+                 catch (IOException e) {
+
+                 }
              }
-             String[] ret = holder.toArray(new String[0]);
-             r.close();
-             return (ret);
-         }
-         catch (IOException ex) {
-             throw new IllegalStateException(ex.getMessage());
-         }
-     }
+        }
+    }
+
+
+    public static String[] readInLines(Reader in) {
+        try {
+            LineNumberReader r = new LineNumberReader(in);
+            List<String> holder = new ArrayList<String>();
+            String s = r.readLine();
+            while (s != null) {
+                holder.add(s);
+                s = r.readLine();
+            }
+            String[] ret = holder.toArray(new String[0]);
+            r.close();
+            return (ret);
+        }
+        catch (IOException ex) {
+            throw new IllegalStateException(ex.getMessage());
+        }
+    }
+
+    public static String[] readInLines(InputStream inp) {
+        return readInLines(new InputStreamReader(inp));
+    }
 
 
     public static GeneVariant[] variantsFromLines(String[] lines) {
@@ -72,56 +109,55 @@ public class GeneUtilities {
         String annotation = items[7];
         if (original.length() == 1) {
             if (changedTo.length() == 1) {
-                 return new SNPVariation(loc, score, DNABase.valueOf(original), DNABase.valueOf(changedTo), annotation);
-             }
+                return new SNPVariation(loc, score, DNABase.valueOf(original), DNABase.valueOf(changedTo), annotation);
+            }
             else {
-                if(original.contains(",")) //deal with  	A,AT
-                    original = changedTo.substring(0,1);
-                 return new InsertionVariation(loc, score, DNABase.valueOf(original),DNABase.fromString(changedTo), annotation);
-             }
-         }
+                if (original.contains(",")) //deal with  	A,AT
+                    original = changedTo.substring(0, 1);
+                return new InsertionVariation(loc, score, DNABase.valueOf(original), DNABase.fromString(changedTo), annotation);
+            }
+        }
         else {
-            if(changedTo.contains(",")) //deal with  ATT	A,AT
-                changedTo = changedTo.substring(0,1);
+            if (changedTo.contains(",")) //deal with  ATT	A,AT
+                changedTo = changedTo.substring(0, 1);
             return new DeletionVariation(loc, score, DNABase.fromString(original), DNABase.valueOf(changedTo), annotation);
         }
 
     }
 
 
-
     public static MapToGeneRegion readGeneMap(final String geneFile) {
-          return readGeneMap(new File(geneFile));
-     }
+        return readGeneMap(new File(geneFile));
+    }
 
     /**
      * fins all varaints common in the list
+     *
      * @param samples
      * @param numberCases
      * @return
      */
-    public static GeneVariant[] commonVariants( GeneVariant[] samples,int numberCases)
-    {
+    public static GeneVariant[] commonVariants(GeneVariant[] samples, int numberCases) {
         Arrays.sort(samples);
-        if(numberCases == 1)
+        if (numberCases == 1)
             return samples;
-  //     System.out.println("Looking for common in " + samples.length);
+        //     System.out.println("Looking for common in " + samples.length);
         int commonCount = 0;
-        if(samples.length == 0)
-            return  GeneVariant.EMPTY_ARRAY;
+        if (samples.length == 0)
+            return GeneVariant.EMPTY_ARRAY;
         GeneVariant lastSample = null;
         List<GeneVariant> holder = new ArrayList<GeneVariant>();
         for (int i = 0; i < samples.length; i++) {
             GeneVariant sample = samples[i];
-            if(lastSample != null && lastSample.equivalent(sample)) {
+            if (lastSample != null && lastSample.equivalent(sample)) {
                 commonCount++;
-                if(commonCount  >=  numberCases) {
-                     holder.add(lastSample);
-                     lastSample = null;
+                if (commonCount >= numberCases) {
+                    holder.add(lastSample);
+                    lastSample = null;
                 }
             }
             else {
-                 commonCount = 1;
+                commonCount = 1;
                 lastSample = sample.asSample();
             }
         }
@@ -132,10 +168,10 @@ public class GeneUtilities {
     }
 
     public static MapToGeneRegion readGeneMap(final File geneFile) {
-         String[] lines = GeneUtilities.readInLines(geneFile);
-         GeneRegion[] regions = regionsFromLines(lines);
-         return new MapToGeneRegion(regions);
-     }
+        String[] lines = GeneUtilities.readInLines(geneFile);
+        GeneRegion[] regions = regionsFromLines(lines);
+        return new MapToGeneRegion(regions);
+    }
 
 
     public static GeneRegion[] regionsFromLines(String[] lines) {
@@ -166,15 +202,15 @@ public class GeneUtilities {
         List<KnownGene> holder = new ArrayList<KnownGene>();
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
-            if(line.startsWith("#"))
-                 continue;
-            if(line.length( ) == 0)
-                 continue;
+            if (line.startsWith("#"))
+                continue;
+            if (line.length() == 0)
+                continue;
             KnownGene gene = new KnownGene(line);
             holder.add(gene);
-         }
+        }
         KnownGene[] ret = new KnownGene[holder.size()];
         holder.toArray(ret);
         return ret;
-     }
+    }
 }
