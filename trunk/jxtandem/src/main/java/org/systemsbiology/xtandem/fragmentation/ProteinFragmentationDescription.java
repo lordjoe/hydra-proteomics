@@ -17,16 +17,25 @@ public class ProteinFragmentationDescription {
 
     public static final int MINIMUM_LENGTH = 20;
 
-     private final String m_UniprotId;
+    private final ProteinCollection m_Parent;
+    private final String m_UniprotId;
     private Protein m_Protein;
     private final List<ProteinFragment> m_Fragments = new ArrayList<ProteinFragment>();
+    private short[] m_Coverage;
+    private double m_FractionalCoverage; // fraction of amino acids in any fragment
 
-    public ProteinFragmentationDescription(final String uniprotId) {
+    public ProteinFragmentationDescription(final String uniprotId, ProteinCollection parent) {
         m_UniprotId = uniprotId;
+        m_Parent = parent;
+        m_Protein = parent.getProtein(uniprotId);
     }
 
     public String getUniprotId() {
         return m_UniprotId;
+    }
+
+    public ProteinCollection getParent() {
+        return m_Parent;
     }
 
     public Protein getProtein() {
@@ -55,7 +64,7 @@ public class ProteinFragmentationDescription {
     }
 
     protected void buildFragments(String[] lines) {
-         m_Fragments.clear();
+        m_Fragments.clear();
         // first line is titles
         for (int i = 1; i < lines.length; i++) {
             String line = lines[i];
@@ -65,17 +74,23 @@ public class ProteinFragmentationDescription {
 
     private void buildFragment(final String line) {
         Protein protein = getProtein();
-         String[] items = line.split(",");
+        String[] items = line.split(",");
         String sequence = items[1].trim();
 
         Polypeptide fragment = new Polypeptide(sequence);
-        ProteinFragment pf = new ProteinFragment(protein,fragment);
+        ProteinFragment pf = new ProteinFragment(protein, fragment);
         m_Fragments.add(pf);
 
     }
 
-    public void guaranteeFragments(File fragmentsDirectory) {
-        if(!m_Fragments.isEmpty())
+    public ProteinFragment[] getFragments() {
+        ProteinFragment[] proteinFragments = m_Fragments.toArray(ProteinFragment.EMPTY_ARRAY);
+        return proteinFragments;
+    }
+
+    public void guaranteeFragments() {
+        File fragmentsDirectory = getParent().getFragmentDirectory();
+        if (!m_Fragments.isEmpty())
             return;
         File fragmentsFile = new File(fragmentsDirectory, getUniprotId() + ".fragments");
         if (fragmentsFile.exists() && fragmentsFile.length() > MINIMUM_LENGTH) {
@@ -84,14 +99,67 @@ public class ProteinFragmentationDescription {
             return;
         }
         String[] lines = downloadProteinFragments();
-        if (lines.length < 2)     {
+        if (lines.length < 2) {
             System.out.println("No fragments for " + getUniprotId());
-         }
+        }
         FileUtilities.writeFileLines(fragmentsFile, lines);
         buildFragments(lines);
         System.out.println(" wrote " + (lines.length - 1) + " fragments for " + getUniprotId());
 
     }
+
+    public void guaranteeCoverage() {
+        if (m_Coverage != null)
+            return;
+        buildCoverage();
+    }
+
+    public int getCoverage(int index) {
+       guaranteeCoverage();
+        if(index < 0 || index >= m_Coverage.length)
+            return 0;
+        return m_Coverage[index];
+    }
+
+    public short[] getAllCoverage()
+    {
+        guaranteeCoverage();
+           return m_Coverage ;
+
+    }
+
+    public double getFractionalCoverage() {
+        guaranteeCoverage();
+        return m_FractionalCoverage;
+    }
+
+    public void buildCoverage() {
+        ProteinFragment[] fragments = getFragments();
+        Protein protein = getProtein();
+        int length = protein.getSequence().length();
+        m_Coverage = new short[length];
+        int nCovered = 0;
+        for (int i = 0; i < m_Coverage.length; i++) {
+            short i1 = computeCoverage(i, fragments);
+            if(i1 > 0)
+                nCovered++;
+            m_Coverage[i] = i1;
+
+        }
+        m_FractionalCoverage = (double)nCovered / (double )length;
+
+    }
+
+    private short computeCoverage(int i,ProteinFragment[] fragments) {
+        short ret = 0;
+        for (int j = 0; j < fragments.length; j++) {
+            ProteinFragment fragment = fragments[j];
+            if(fragment.containsPosition(i))
+                ret++;
+        }
+        return ret;
+    }
+
 
 //    public static void main(String[] args) throws Exception {
 //        downloadProteinFragments(args[0]);

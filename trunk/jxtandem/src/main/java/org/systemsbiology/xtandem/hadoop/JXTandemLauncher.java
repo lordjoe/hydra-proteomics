@@ -1045,6 +1045,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         Path dpath = XTandemHadoopUtilities.getRelativePath(".");
             try {
             FileSystem fs = dpath.getFileSystem(application.getContext());
+            fs.delete(new Path(dpath,"full_tandem_output"),true);
             XTandemHadoopUtilities.cleanFileSystem(fs, dpath);
         }
         catch (IOException e) {
@@ -1557,8 +1558,11 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             String files = application.getParameter(JXTandemLauncher.INPUT_FILES_PROPERTY);
             if (files != null) {
                 System.err.println("Input files " + files);
-                String[] items = files.split(",");
-                outputFiles = items;
+                outputFiles = files.split(",");
+              }
+            for (int i = 0; i < outputFiles.length; i++) {
+                outputFiles[i] += ".hydra";
+
             }
 
         }
@@ -1580,8 +1584,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                         outFile = outputFiles[i];
                         hdfsPath = passedBaseDirctory + "/" + XTandemUtilities.asLocalFile(outFile);
                         if( isUseMultipleFiles() )  {
-                            String path =
-                            outFile = copyOutputFile(outFile, application, hdfsPath);
+                            outFile = copyOutputFile(outFile, application, outFile);
 
                         }
                         else {
@@ -1611,6 +1614,9 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             String s = FileUtilities.readInFile(f);
             XTandemUtilities.outputLine(s);
         }
+        if(outFile.endsWith(".hydra"))
+            outFile = outFile.substring(0,outFile.length() - ".hydra".length()) ;
+
         // read in the larger scans file
         if (isReadScanFile()) {  // todo add a way to turn this on
             IFileSystem acc = getAccessor();
@@ -1622,6 +1628,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         }
         String parameter = application.getParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY);
         if ("yes".equals(parameter)) {
+            if(hdfsPath.endsWith(".hydra"))
+                 hdfsPath = hdfsPath.substring(0,hdfsPath.length() - ".hydra".length()) ;
             ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
             for (int i = 0; i < algorithms.length; i++) {
                 ITandemScoringAlgorithm algorithm = algorithms[i];
