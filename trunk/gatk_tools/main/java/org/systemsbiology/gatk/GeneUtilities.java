@@ -37,8 +37,34 @@ public class GeneUtilities {
     }
 
 
+    public static String extractQuotedText(String xml, String beforeQuote) {
+        int loc = xml.indexOf(beforeQuote);
+        if (loc == -1)
+            return null;
+        loc++;
+        int end = xml.indexOf("\"", loc + 1);
+        return xml.substring(loc, end);
+    }
+
+
+    public static String[] extractQuotedTextItems(String xml, String beforeQuote) {
+        List<String> holder = new ArrayList<String>();
+        int end = 0;
+        int loc = xml.indexOf(beforeQuote, end);
+        while (loc != -1) {
+             loc++;
+             end = xml.indexOf("\"", loc + 1);
+            if (end > -1)
+                holder.add(xml.substring(loc, end));
+        }
+        String[] ret = new String[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
+
+
     public static String[] readInLines(URL url) {
-         InputStream inp = null;
+        InputStream inp = null;
         try {
             inp = url.openStream();
             return readInLines(inp);
@@ -48,14 +74,14 @@ public class GeneUtilities {
 
         }
         finally {
-             if(inp != null)  {
-                 try {
-                     inp.close();
-                 }
-                 catch (IOException e) {
+            if (inp != null) {
+                try {
+                    inp.close();
+                }
+                catch (IOException e) {
 
-                 }
-             }
+                }
+            }
         }
     }
 
