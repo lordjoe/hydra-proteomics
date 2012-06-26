@@ -10,8 +10,11 @@ import java.io.*;
  * User: Steve
  * Date: 6/25/12
  */
-public class CoverageFragment extends AbstractHtmlFragmentHolder {
+public class CoverageFragment extends SVGFragmentBuilder {
     public static final CoverageFragment[] EMPTY_ARRAY = {};
+
+    public static final String TAG = "svg";
+
 
     public static final String[] COVERAGE_COLORS =
             {
@@ -64,9 +67,10 @@ public class CoverageFragment extends AbstractHtmlFragmentHolder {
     private final ProteinFragmentLine[] m_Lines;
 
     public CoverageFragment(final HTMLPageBuillder page, ProteinFragmentationDescription fragments) {
-        super(page);
+        super(page,null,TAG);
         page.getHeader().addString(CSS_TEXT);
         m_Fragments = fragments;
+        setWidth((AMINO_ACID_LINE_WIDTH + 1) * AMINO_ACID_WIDTH);
         Protein protein = fragments.getProtein();
         HTMLBodyBuillder body = page.getBody();
         body.addString("<h1>" + page.getTitle() + "</h1>\n");
@@ -75,13 +79,13 @@ public class CoverageFragment extends AbstractHtmlFragmentHolder {
         ProteinFragment[] fragments1 = fragments.getFragments();
         for (int i = 0; i < m_Lines.length; i++) {
             ProteinFragmentLine coverageFragment = m_Lines[i];
-            AminoAcidTextLine aminoAcidTextLine = new AminoAcidTextLine(page, coverageFragment, i);
+            AminoAcidTextLine aminoAcidTextLine = new AminoAcidTextLine(page,this, coverageFragment, i);
             addBuilder(aminoAcidTextLine);
             int displapedFragments = 0;
             for (int j = 0; j < fragments1.length; j++) {
                 ProteinFragment test = fragments1[j];
                 if(coverageFragment.containsFragent(test)) {
-                    aminoAcidTextLine.addBuilder(new DetectedFragmentBuillder(page,test, coverageFragment, ++displapedFragments  ));
+                    aminoAcidTextLine.addBuilder(new DetectedFragmentBuillder(page, this, test, coverageFragment, ++displapedFragments));
                  }
             }
         }
@@ -108,12 +112,11 @@ public class CoverageFragment extends AbstractHtmlFragmentHolder {
         return m_Fragments;
     }
 
-    public int getWidth() {
-        return (AMINO_ACID_LINE_WIDTH + 1) * AMINO_ACID_WIDTH;
-    }
-
-    public int getHeight() {
-         return getLineHeight() * getNumberLines();
+    @Override
+    public Integer getHeight() {
+        if(super.getHeight() == null)
+            setHeight(getLineHeight() * getNumberLines());
+         return super.getHeight() ;
     }
 
 
@@ -122,24 +125,15 @@ public class CoverageFragment extends AbstractHtmlFragmentHolder {
     }
 
     @Override
-    public void addStartText(final Appendable out, final Object... data) {
-        try {
-            indent(out, 1);
-            out.append("<svg width=\"" + getWidth() + "\" height=\"" + getHeight() + "\" >\n");
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    protected String getTagAttributes() {
+        StringBuilder sb = new StringBuilder(super.getTagAttributes());
+        sb.append(" width =\"" + getWidth() + "\" height=\"" + getHeight() + "\"");
+        return sb.toString();
+      }
 
-    }
 
-    @Override
-    public void addEndText(final Appendable out, final Object... data) {
-        try {
-            out.append("</svg>\n");
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
+
+
+
 }

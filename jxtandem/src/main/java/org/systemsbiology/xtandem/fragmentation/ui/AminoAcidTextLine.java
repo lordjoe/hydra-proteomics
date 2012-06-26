@@ -10,22 +10,21 @@ import java.io.*;
  * User: Steve
  * Date: 6/25/12
  */
-public class AminoAcidTextLine extends AbstractHtmlFragmentHolder {
+public class AminoAcidTextLine extends SVGFragmentBuilder {
     public static final AminoAcidTextLine[] EMPTY_ARRAY = {};
 
-    private final int m_Index;
-    private final ProteinFragmentLine m_LineFragment;
 
-    public AminoAcidTextLine(final HTMLPageBuillder page, ProteinFragmentLine coverageFragment,int index) {
-        super(page);
-        m_Index = index;
+    public static final String TAG = "g";
+
+     private final ProteinFragmentLine m_LineFragment;
+
+    public AminoAcidTextLine(final HTMLPageBuillder page,SVGFragmentBuilder parent, ProteinFragmentLine coverageFragment,int index) {
+        super(page,parent, TAG);
+        setIndex(index);
         m_LineFragment = coverageFragment;
-        addBuilder(new ProteinLineBuillder(page,m_LineFragment));
+        addBuilder(new ProteinLineBuillder(page,this,m_LineFragment));
      }
 
-    public int getIndex() {
-        return m_Index;
-    }
 
     public ProteinFragmentLine getLineFragment() {
         return m_LineFragment;
@@ -46,28 +45,36 @@ public class AminoAcidTextLine extends AbstractHtmlFragmentHolder {
     }
 
     @Override
-    public void addStartText(final Appendable out, final Object... data) {
-        try {
-            indent(out,2);
-            out.append("<g id=\"" + getUniqueId() + "\"  transform=\"translate(0," +
-                    ( getLineHeight() * getIndex()) + ")\" >\n");
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    protected String getTagAttributes() {
+        StringBuilder sb = new StringBuilder(super.getTagAttributes());
+        sb.append("  transform=\"translate(0," +
+                    ( getLineHeight() * getIndex()) + ")\" ");
+        return sb.toString();
+      }
 
-    }
-
-    @Override
-    public void addEndText(final Appendable out, final Object... data) {
-        try {
-            indent(out,2);
-            out.append("</g>\n");
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-
-        }
-    }
+//    @Override
+//    public void addStartText(final Appendable out, final Object... data) {
+//        try {
+//            indent(out,2);
+//            out.append("<g id=\"" + getUniqueId() + "\"  transform=\"translate(0," +
+//                    ( getLineHeight() * getIndex()) + ")\" >\n");
+//        }
+//        catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
+//
+//    @Override
+//    public void addEndText(final Appendable out, final Object... data) {
+//        try {
+//            indent(out,2);
+//            out.append("</g>\n");
+//        }
+//        catch (IOException e) {
+//            throw new RuntimeException(e);
+//
+//        }
+//    }
 
 }
