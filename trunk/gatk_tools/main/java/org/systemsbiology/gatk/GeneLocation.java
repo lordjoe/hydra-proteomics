@@ -1,6 +1,6 @@
 package org.systemsbiology.gatk;
 
-import scala.io.*;
+
 
 /**
  * org.systemsbiology.gatk.GeneRegion

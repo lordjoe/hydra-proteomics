@@ -1,6 +1,5 @@
 package org.systemsbiology.gatk;
 
-import ca.mcgill.mcb.pcingola.interval.codonChange.*;
 
 import java.util.*;
 
