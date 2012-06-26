@@ -38,6 +38,7 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
     private double m_Mass;
     private double m_MatchingMass;
     private String m_Sequence;
+    private int m_SequenceLength;
     private PeptideValidity m_Validity;
     //    private IProtein m_ParentProtein;   // not final since proteins need to set later
     //   private   int m_StartPosition = -1;
@@ -49,6 +50,7 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
 
     public Polypeptide(String pSequence,/* int startPos, IProtein m_ParentStream, */int missedCleavages) {
         m_Sequence = pSequence;
+        m_SequenceLength = m_Sequence.length();
          m_MissedCleavages = missedCleavages;
     }
 
@@ -209,7 +211,8 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
             throw new IllegalStateException("cannot reset pSequence");
         }
         m_Sequence = pSequence;
-    }
+        m_SequenceLength = m_Sequence.length();
+     }
 
 //    public void setParentProtein(final IProtein pParentProtein) {
 //        if(m_ParentProtein != null )  {
@@ -395,7 +398,7 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
      */
     @Override
     public int getSequenceLength() {
-        return m_Sequence.length();
+        return m_SequenceLength;
     }
 
     /**

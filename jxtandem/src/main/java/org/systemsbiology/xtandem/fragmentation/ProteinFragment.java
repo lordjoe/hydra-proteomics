@@ -29,7 +29,12 @@ public class ProteinFragment {
         return m_Peptide;
     }
 
-    public int getStartLocation() {
+
+    public String getSequence() {
+        return getPeptide().getSequence();
+    }
+
+     public int getStartLocation() {
         guaranteeStartLocation();
         if(m_StartLocations.length == 0)
             return -1;

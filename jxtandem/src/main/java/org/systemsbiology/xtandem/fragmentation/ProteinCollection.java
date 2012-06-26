@@ -2,6 +2,7 @@ package org.systemsbiology.xtandem.fragmentation;
 
 import com.lordjoe.utilities.*;
 import org.systemsbiology.fasta.*;
+import org.systemsbiology.xtandem.fragmentation.ui.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.taxonomy.*;
 
@@ -246,13 +247,26 @@ public class ProteinCollection implements IFastaHandler {
 
     }
 
+    protected void showCoveragePage(String id){
+        ProteinFragmentationDescription pfd =  getProteinFragmentationDescription(id);
+        HTMLPageBuillder pb = new HTMLPageBuillder("Coverage for " + id);
+        CoverageFragment cf = new CoverageFragment(pb,pfd);
+        pb.getBody().addBuilder(cf);
+
+        String page = pb.buildPage();
+        FileUtilities.writeFile("TestPage1.html",page);
+    }
+
+
     public static void main(String[] args) {
         ProteinCollection pc = new ProteinCollection();
         pc.loadData();
         String[] ids = pc.getProteinIds();
         for (int i = 0; i < SPECIAL_TEST_PROTEINS.length; i++) {
             String id = SPECIAL_TEST_PROTEINS[i];
-            pc.showCoverage(id);
+            pc.showCoveragePage(id);
+            if(true)
+                break;
         }
 
     }

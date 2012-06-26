@@ -2,6 +2,7 @@ package org.systemsbiology.gatk;
 
 /**
  * org.systemsbiology.gatk.Rectangle1
+ * Implementation of the original Rectangle and Square class in the Substitution paper
  * User: steven
  * Date: 6/18/12
  */
