@@ -24,6 +24,7 @@ public abstract class AbstractHtmlFragmentHolder implements IHtmlFragmentHolder 
     }
 
 
+    private String m_UniqueId;
     private final HTMLPageBuillder m_Page;
     private final List<IHtmlFragmentBuilder>  m_Builders = new ArrayList<IHtmlFragmentBuilder>();
 
@@ -36,10 +37,12 @@ public abstract class AbstractHtmlFragmentHolder implements IHtmlFragmentHolder 
     }
 
 
-    public String getUniqueId() {
-        return getPage().getUniqueId();
+      public String getUniqueId() {
+        if(m_UniqueId == null)   {
+            m_UniqueId = getPage().getUniqueId();
+        }
+        return m_UniqueId;
     }
-
 
 
     public abstract void addStartText(final Appendable out, final Object... data);
