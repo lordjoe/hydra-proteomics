@@ -1,7 +1,6 @@
 package org.systemsbiology.gatk;
 
-import org.apache.poi.ss.formula.functions.*;
-import org.broadinstitute.sting.gatk.walkers.genotyper.*;
+
 
 import java.io.*;
 import java.util.*;
