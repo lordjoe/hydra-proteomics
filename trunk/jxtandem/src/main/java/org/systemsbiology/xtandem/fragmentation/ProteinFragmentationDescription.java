@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem.fragmentation;
 
 import com.lordjoe.utilities.*;
+import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.peptide.*;
 
 import java.io.*;
@@ -23,6 +24,7 @@ public class ProteinFragmentationDescription {
     private final List<ProteinFragment> m_Fragments = new ArrayList<ProteinFragment>();
     private short[] m_Coverage;
     private double m_FractionalCoverage; // fraction of amino acids in any fragment
+    private PDBObject m_Model;
 
     public ProteinFragmentationDescription(final String uniprotId, ProteinCollection parent) {
         m_UniprotId = uniprotId;
@@ -44,6 +46,14 @@ public class ProteinFragmentationDescription {
 
     public void setProtein(final Protein protein) {
         m_Protein = protein;
+    }
+
+    public PDBObject getModel() {
+        return m_Model;
+    }
+
+    public void setModel(PDBObject model) {
+        m_Model = model;
     }
 
     public static final String ID_STRING = "%UNIPROT_ID%";
@@ -106,6 +116,24 @@ public class ProteinFragmentationDescription {
         buildFragments(lines);
         System.out.println(" wrote " + (lines.length - 1) + " fragments for " + getUniprotId());
 
+    }
+
+
+    public  Map<ProteinFragment,AminoAcidAtLocation[]> getAminoAcidLocations()
+    {
+        PDBObject model = getModel();
+        Map<ProteinFragment,AminoAcidAtLocation[]> ret = new HashMap<ProteinFragment, AminoAcidAtLocation[]>();
+         if(model == null)
+             return ret;
+         ProteinFragment[] frage = getFragments();
+        for (int i = 0; i < frage.length; i++) {
+            ProteinFragment pf = frage[i];
+            AminoAcidAtLocation[] aas = model.getAminoAcidsForSequence(pf.getSequence());
+            if(aas == null || aas.length == 0)
+                continue;
+            ret.put(pf,aas);
+        }
+        return ret;
     }
 
     public void guaranteeCoverage() {

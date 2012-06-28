@@ -1,7 +1,10 @@
 package org.systemsbiology.xtandem.fragmentation;
 
 import com.lordjoe.utilities.*;
+import org.apache.hadoop.record.*;
 import org.systemsbiology.fasta.*;
+import org.systemsbiology.hadoop.consolidator.*;
+import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.ui.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.taxonomy.*;
@@ -17,7 +20,7 @@ import java.util.*;
 public class ProteinCollection implements IFastaHandler {
     public static final ProteinCollection[] EMPTY_ARRAY = {};
 
- //   public static final String SPECIAL_TEST_PROTEIN = "Q9Y6X3";
+    //   public static final String SPECIAL_TEST_PROTEIN = "Q9Y6X3";
     public static final String[] SPECIAL_TEST_PROTEINS = {
             "O14773",
             "P29144",
@@ -41,9 +44,9 @@ public class ProteinCollection implements IFastaHandler {
             "Q9Y4K3",
             "Q9UPV9",
             "Q9Y6X3",
-       };
+    };
 
-    public static final Set<String>  SPECIAL_ID_SET = new HashSet<String>(Arrays.asList(SPECIAL_TEST_PROTEINS));
+    public static final Set<String> SPECIAL_ID_SET = new HashSet<String>(Arrays.asList(SPECIAL_TEST_PROTEINS));
 
     public static final String PROPERTY_FILE_NAME = "FragmentationStudy.properties";
     //
@@ -66,11 +69,12 @@ public class ProteinCollection implements IFastaHandler {
     private final Map<String, ProteinFragmentationDescription> m_UniProtIdToDescription = new HashMap<String, ProteinFragmentationDescription>();
     private final Map<String, Protein> m_Proteins = new HashMap<String, Protein>();
     private final Map<String, String> m_UniProtIdToPeptideAtlasId = new HashMap<String, String>();
+    private final Map<String, File> m_UniProtIdToPDBFile = new HashMap<String, File>();
 
     @Override
     public void handleProtein(final String annotation, final String sequence) {
         String uniprotId = parseAnnotation(annotation);
-        if(!isUniprotIdUsed(uniprotId))
+        if (!isUniprotIdUsed(uniprotId))
             return;
         Protein prot = Protein.buildProtein(annotation, sequence, null);
         m_Proteins.put(uniprotId, prot);
@@ -95,6 +99,14 @@ public class ProteinCollection implements IFastaHandler {
         File ret = new File(name);
         if (!ret.exists() || !ret.isFile())
             throw new IllegalArgumentException("cannot find UniprotTranslationFile file " + name);
+        return ret;
+    }
+
+    protected File getPDBMappingFile() {
+        String name = getProperty(MODEL_LIST_PROPERTY);
+        File ret = new File(name);
+        if (!ret.exists() || !ret.isFile())
+            throw new IllegalArgumentException("cannot find PDBMappingFile file " + name);
         return ret;
     }
 
@@ -125,19 +137,25 @@ public class ProteinCollection implements IFastaHandler {
         return m_Proteins.get(id);
     }
 
-    
 
     public ProteinFragmentationDescription getProteinFragmentationDescription(String id) {
         ProteinFragmentationDescription ret = m_UniProtIdToDescription.get(id);
         if (ret == null) {
-            ret = new ProteinFragmentationDescription(id,this);
+            ret = new ProteinFragmentationDescription(id, this);
             m_UniProtIdToDescription.put(id, ret);
-            if(SPECIAL_ID_SET.contains(id))  // temporary for now
-                ret.guaranteeFragments( );
-         }
+            if (SPECIAL_ID_SET.contains(id))  // temporary for now
+                ret.guaranteeFragments();
+        }
         if (ret.getProtein() == null)
             ret.setProtein(getProtein(id));
+        maybeAd3DModel(ret);
         return ret;
+    }
+
+    protected void maybeAd3DModel(ProteinFragmentationDescription ret) {
+        Protein protein = ret.getProtein();
+        String id = protein.getId();
+
     }
 
 
@@ -156,17 +174,37 @@ public class ProteinCollection implements IFastaHandler {
             throw new RuntimeException(e);
 
         }
-     }
+    }
 
-    protected void loadPeptideAtlasTranslationList()
-    {
+    protected void loadPeptideAtlasTranslationList() {
         File translations = this.getUniprotTranslationFile();
         String[] lines = FileUtilities.readInLines(translations);
         for (int i = 1; i < lines.length; i++) {
             String line = lines[i];
             String[] items = line.split("\t");
-            m_UniProtIdToPeptideAtlasId.put(items[1],items[0]);
+            m_UniProtIdToPeptideAtlasId.put(items[1], items[0]);
         }
+    }
+
+    protected void loadPDBTranslationList() {
+        File translations = this.getPDBMappingFile();
+        String[] lines = FileUtilities.readInLines(translations);
+        for (int i = 1; i < lines.length; i++) {
+            String line = lines[i];
+            String[] items = line.split("\t");
+            String modelid = items[1].split(",")[0];
+            String uniProtId = items[0];
+            File modelFile = new File("Models3d/" + modelid + ".pdb");
+            if (!modelFile.exists()) {
+                System.out.println("no file " + modelFile);
+                continue;
+            }
+            m_UniProtIdToPDBFile.put(uniProtId, modelFile);
+        }
+    }
+
+    public File getPDBModelFile(String uniprotId) {
+        return m_UniProtIdToPDBFile.get(uniprotId);
     }
 
     public boolean isUniprotIdUsed(String id) {
@@ -206,14 +244,15 @@ public class ProteinCollection implements IFastaHandler {
     protected void loadData() {
         guaranteeProperties();
         loadPeptideAtlasTranslationList();
+        loadPDBTranslationList();
         loadProteins();
 
     }
 
-    protected void showCoverage(String id){
-        ProteinFragmentationDescription pfd =  getProteinFragmentationDescription(id);
-         Protein prot = pfd.getProtein();
-         ProteinFragment[] fragments = pfd.getFragments();
+    protected void showCoverage(String id) {
+        ProteinFragmentationDescription pfd = getProteinFragmentationDescription(id);
+        Protein prot = pfd.getProtein();
+        ProteinFragment[] fragments = pfd.getFragments();
 //         for (int i = 0; i < fragments.length; i++) {
 //             ProteinFragment fragment = fragments[i];
 //             int start = fragment.getStartLocation();
@@ -227,47 +266,88 @@ public class ProteinCollection implements IFastaHandler {
 //             }
 //
 //         }
-         short[] allCoverage = pfd.getAllCoverage();
-         int lastCoverage = -1;
-         int lastIndex = -1;
-         int totalCoverage = 0;
-         for (int i = 0; i < allCoverage.length; i++) {
-             int thisCoverage = allCoverage[i];
-             if(thisCoverage > 0)
-                 totalCoverage++;
-             if(thisCoverage != lastCoverage) {
-                 if(lastIndex != -1) {
-                     System.out.println("coverage " + lastCoverage + " " + lastIndex + "-" + i);
-                 }
-                 lastIndex = i;
-                 lastCoverage = thisCoverage;
-             }
-         }
-         System.out.println("Fraction Coverage " + String.format("%5.3f",pfd.getFractionalCoverage()));
+        short[] allCoverage = pfd.getAllCoverage();
+        int lastCoverage = -1;
+        int lastIndex = -1;
+        int totalCoverage = 0;
+        for (int i = 0; i < allCoverage.length; i++) {
+            int thisCoverage = allCoverage[i];
+            if (thisCoverage > 0)
+                totalCoverage++;
+            if (thisCoverage != lastCoverage) {
+                if (lastIndex != -1) {
+                    System.out.println("coverage " + lastCoverage + " " + lastIndex + "-" + i);
+                }
+                lastIndex = i;
+                lastCoverage = thisCoverage;
+            }
+        }
+        System.out.println("Fraction Coverage " + String.format("%5.3f", pfd.getFractionalCoverage()));
 
     }
 
-    protected void showCoveragePage(String id){
-        ProteinFragmentationDescription pfd =  getProteinFragmentationDescription(id);
+    protected String showCoveragePage(String id) {
+        ProteinFragmentationDescription pfd = getProteinFragmentationDescription(id);
+        PDBObject model = null;
+        File model3d = getPDBModelFile(id);
+          if (model3d != null) {
+              model = new PDBObject(model3d);
+              pfd.setModel(model);
+          }
+
         HTMLPageBuillder pb = new HTMLPageBuillder("Coverage for " + id);
-        CoverageFragment cf = new CoverageFragment(pb,pfd);
-        pb.getBody().addBuilder(cf);
+        HTMLBodyBuillder body = pb.getBody();
+        Protein protein = pfd.getProtein();
+        body.addString("<a href=\"../Index.html\" >Home</a>\n");
+        body.addString("<h1>" + pb.getTitle() + "</h1>\n");
+        body.addString("<h3>" + protein.getAnnotation() + "</h3>\n");
+        if (model == null) {
+            new HTMLHeaderHolder(body,"No 3D Model Found",1);
+        }
+
+        CoverageFragment cf = new CoverageFragment(body, pfd);
+
+          SingleTagBuillder st = new SingleTagBuillder(body,"p");
+
+         if (model != null) {
+            ThreeDModelBuillder tm = new ThreeDModelBuillder(body, pfd);
+
+        }
+        else {
+            new HTMLHeaderHolder(body,"No 3D Model Found",1);
+        }
 
         String page = pb.buildPage();
-        FileUtilities.writeFile("TestPage1.html",page);
+        String fileName = "pages/" + id + ".html";
+        FileUtilities.writeFile(fileName, page);
+        return fileName;
     }
 
+    protected String showPages(String[] ids,String[] pages) {
+           HTMLPageBuillder pb = new HTMLPageBuillder("Protein Coverage ");
+        HTMLBodyBuillder body = pb.getBody();
+        new ReferenceTableBuillder(body,ids,pages,12);
+        String page = pb.buildPage();
+        String fileName = "Index.html";
+        FileUtilities.writeFile(fileName, page);
+        return fileName;
+    }
 
     public static void main(String[] args) {
         ProteinCollection pc = new ProteinCollection();
         pc.loadData();
         String[] ids = pc.getProteinIds();
-        for (int i = 0; i < SPECIAL_TEST_PROTEINS.length; i++) {
+        pc.showCoveragePage("Q9UPV9");
+        List<String> holder = new ArrayList<String>();
+
+         for (int i = 0; i < SPECIAL_TEST_PROTEINS.length; i++) {
             String id = SPECIAL_TEST_PROTEINS[i];
-            pc.showCoveragePage(id);
-            if(true)
-                break;
-        }
+            String page = pc.showCoveragePage(id);
+            holder.add(page);
+          }
+        String[] pages = new String[holder.size()];
+        holder.toArray(pages);
+        pc.showPages(ids, pages);
 
     }
 

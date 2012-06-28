@@ -1,7 +1,6 @@
 package org.systemsbiology.jmol;
 
-import org.systemsbiology.xtandem.hadoop.*;
-
+import java.io.*;
 import java.util.*;
 
 /**
@@ -14,15 +13,14 @@ public class ScriptWriter {
 
     public static final String[] COLOR_NAMES = {"red", "yellow", "orange", "green", "blue"};
 
-    public static String buildTranslucentString(int used)
-    {
-        int val = Math.min(128 * used,255);
+    public static String buildTranslucentString(int used) {
+        int val = Math.min(128 * used, 255);
         StringBuilder sb = new StringBuilder();
         sb.append("translucent[" + val + "," + val + "," + val + "]");
         return sb.toString();
     }
 
-    private final Map<AminoAcidAtLocation,Integer> m_UsedPositions = new HashMap<AminoAcidAtLocation,Integer>();
+    private final Map<AminoAcidAtLocation, Integer> m_UsedPositions = new HashMap<AminoAcidAtLocation, Integer>();
 
     public String writeScript(PDBObject original, String[] foundSequences) {
         m_UsedPositions.clear();
@@ -38,36 +36,75 @@ public class ScriptWriter {
         return sb.toString();
     }
 
-    public int getHilight(AminoAcidAtLocation loc)  {
+    public String writeScript(PDBObject original, AminoAcidAtLocation[][] foundSequences) {
+        m_UsedPositions.clear();
+        StringBuilder sb = new StringBuilder();
+        appendScriptHeader(original, sb);
+        for (int i = 0; i < foundSequences.length; i++) {
+            AminoAcidAtLocation[] highlited = foundSequences[i];
+            appendScriptHilight(highlited, COLOR_NAMES[i & COLOR_NAMES.length], sb);
+
+        }
+
+        return sb.toString();
+    }
+
+
+    public String writeScript(PDBObject original, AminoAcidAtLocation[] highlited,int index) {
+        m_UsedPositions.clear();
+        StringBuilder sb = new StringBuilder();
+        appendScriptHeader(original, sb);
+        appendScriptHilight(highlited, COLOR_NAMES[index % COLOR_NAMES.length], sb);
+        return sb.toString();
+    }
+
+    public int getHilight(AminoAcidAtLocation loc) {
         int ret = 1;
         Integer val = m_UsedPositions.get(loc);
-        if(val != null)  {
+        if (val != null) {
             ret = val + 1;
         }
-        m_UsedPositions.put(loc,ret);
+        m_UsedPositions.put(loc, ret);
         return ret;
     }
 
-    private void appendScriptHilight(AminoAcidAtLocation[] hilighted, String colorName, StringBuilder sb) {
+    private void appendScriptHilight(AminoAcidAtLocation[] hilighted, String colorName, Appendable sb) {
         for (int i = 0; i < hilighted.length; i++) {
             AminoAcidAtLocation aa = hilighted[i];
             appendScriptHilight(aa, colorName, sb);
         }
     }
 
-    private void appendScriptHilight(AminoAcidAtLocation aa, String colorName, StringBuilder sb) {
+    private void appendScriptHilight(AminoAcidAtLocation aa, String colorName, Appendable sb) {
         int used = getHilight(aa);
-        sb.append("select " + aa.toString() + ";");
-     //   sb.append("color " + buildTranslucentString(used) + " " +  colorName);
-        sb.append("color " +    colorName);
-          sb.append("\n");
+        try {
+            sb.append("select " + aa.toString() + ";");
+            //   sb.append("color " + buildTranslucentString(used) + " " +  colorName);
+            sb.append("color " + colorName);
+            sb.append(";\n");
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
     }
 
-    private void appendScriptHeader(PDBObject original, StringBuilder sb) {
-        sb.append("select all;color translucent[80,80,80] white");
-        sb.append("\n");
-        sb.append("select all ;ribbon off");
-          sb.append("\n");
+    private void appendScriptHeader(PDBObject original, Appendable sb) {
+        try {
+            File file = original.getFile();
+            String fileName = file.getName();
+            String parentName = file.getParentFile().getName();
+            sb.append("load ../" + parentName + "/" + fileName);
+            sb.append(";\n");
+             sb.append("select all;color translucent[80,80,80] white");
+            sb.append(";\n");
+            sb.append("select all ;ribbon off");
+            sb.append(";\n");
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
 
     }
 

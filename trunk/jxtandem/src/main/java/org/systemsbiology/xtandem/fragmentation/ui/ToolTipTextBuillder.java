@@ -18,9 +18,9 @@ public class ToolTipTextBuillder extends SVGFragmentBuilder {
 
     private final SVGFragmentBuilder m_Target;
 
-    public ToolTipTextBuillder(final HTMLPageBuillder page, SVGFragmentBuilder parent, SVGFragmentBuilder target) {
+    public ToolTipTextBuillder( SVGFragmentBuilder parent, SVGFragmentBuilder target) {
 
-        super(page, parent, TAG);
+        super(  parent, TAG);
         m_Target = target;
     }
 

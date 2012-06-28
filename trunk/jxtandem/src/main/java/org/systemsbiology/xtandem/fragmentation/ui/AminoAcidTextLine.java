@@ -18,11 +18,11 @@ public class AminoAcidTextLine extends SVGFragmentBuilder {
 
      private final ProteinFragmentLine m_LineFragment;
 
-    public AminoAcidTextLine(final HTMLPageBuillder page,SVGFragmentBuilder parent, ProteinFragmentLine coverageFragment,int index) {
-        super(page,parent, TAG);
+    public AminoAcidTextLine( SVGFragmentBuilder parent, ProteinFragmentLine coverageFragment,int index) {
+        super( parent, TAG);
         setIndex(index);
         m_LineFragment = coverageFragment;
-        addBuilder(new ProteinLineBuillder(page,this,m_LineFragment));
+         new ProteinLineBuillder( this,m_LineFragment) ;
      }
 
 
@@ -34,14 +34,15 @@ public class AminoAcidTextLine extends SVGFragmentBuilder {
 
     protected int getLineHeight()
     {
-        int coverageDepth = 0;
-          ProteinFragmentationDescription fragments = getLineFragment().getFragments();
-         short[] allCoverage = fragments.getAllCoverage();
-        for (int i = 0; i < allCoverage.length; i++) {
-            short i1 = allCoverage[i];
-            coverageDepth = Math.max(coverageDepth,Math.min(i1,CoverageFragment.MAX_COVERAGE_DEPTH));
-        }
-        return CoverageFragment.AMINO_ACID_HEIGHT + coverageDepth * CoverageFragment.RECTANGLE_HEIGHT;
+         return ((CoverageFragment)getParent()).getLineHeight();
+//        int coverageDepth = 0;
+//          ProteinFragmentationDescription fragments = getLineFragment().getFragments();
+//         short[] allCoverage = fragments.getAllCoverage();
+//        for (int i = 0; i < allCoverage.length; i++) {
+//            short i1 = allCoverage[i];
+//            coverageDepth = Math.max(coverageDepth,Math.min(i1,CoverageFragment.MAX_COVERAGE_DEPTH));
+//        }
+//        return CoverageFragment.AMINO_ACID_HEIGHT + ( 1 + coverageDepth)  * ( 2 + CoverageFragment.RECTANGLE_HEIGHT);
     }
 
     @Override

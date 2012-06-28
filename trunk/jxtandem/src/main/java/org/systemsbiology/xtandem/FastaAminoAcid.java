@@ -141,24 +141,28 @@ public enum FastaAminoAcid {
                      return D;
                 if ("ASN".equalsIgnoreCase(in))
                      return N;
-                 throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+                return null;
+              //  throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
             case 'C':
                 if ("CYS".equalsIgnoreCase(in))
                     return C;
-                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
-            case 'G':  //"glycine"),
+                return null;
+              //  throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+             case 'G':  //"glycine"),
                 if ("GLY".equalsIgnoreCase(in))
                     return G;
                 if ("GLU".equalsIgnoreCase(in))
                     return E;
                 if ("GLN".equalsIgnoreCase(in))
                     return Q;
-                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
-            case 'H':  //"histidine"),
+                 return null;
+               //  throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+             case 'H':  //"histidine"),
                 if ("HIS".equalsIgnoreCase(in))
                     return H;
-                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
-            case 'I':  //"isoleucine"),
+                return null;
+              //  throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+             case 'I':  //"isoleucine"),
                 if ("ILE".equalsIgnoreCase(in))
                     return I;
                 throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
@@ -167,21 +171,25 @@ public enum FastaAminoAcid {
                     return K;
                 if ("LEU".equalsIgnoreCase(in))
                     return L;
-                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+                return null;
+              //  throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
             case 'M':  //"methionine"),
                 if ("MET".equalsIgnoreCase(in))
                     return M;
-                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
-            case 'P':  //"proline"),
+                return null;
+              //  throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+             case 'P':  //"proline"),
                 if ("PRO".equalsIgnoreCase(in))
                     return P;
                 if ("PHE".equalsIgnoreCase(in))
                     return F;
-                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+                return null;
+              //  throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
             case 'S':  //"serine"),
                 if ("SER".equalsIgnoreCase(in))
                     return S;
-                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+                return null;
+              //  throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
             case 'T':  //"threonine"),
                 if ("THR".equalsIgnoreCase(in))
                     return T;
@@ -189,14 +197,19 @@ public enum FastaAminoAcid {
                     return W;
                 if ("TYR".equalsIgnoreCase(in))
                     return Y;
-                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+                return null;
+              //  throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
             case 'V':  //"valine"),
                 if ("VAL".equalsIgnoreCase(in))
                     return V;
-                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+                return null;
+              //  throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+            default:
+                return null;
+
         }
 
-        throw new IllegalStateException("No Amino acid for string " + in);
+    //    throw new IllegalStateException("No Amino acid for string " + in);
     }
 
     /**

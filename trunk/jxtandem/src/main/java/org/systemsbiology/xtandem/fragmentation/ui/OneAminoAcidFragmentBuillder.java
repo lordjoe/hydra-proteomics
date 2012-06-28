@@ -24,9 +24,9 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     private final String m_AminoAcid;
     private final int m_Coverage;
 
-    public OneAminoAcidFragmentBuillder(final HTMLPageBuillder page, ProteinLineBuillder parent, int xpos, String aminoAcid, int coverage) {
+    public OneAminoAcidFragmentBuillder(  ProteinLineBuillder parent, int xpos, String aminoAcid, int coverage) {
 
-        super(page, parent, TAG);
+        super(  parent, TAG);
         m_AminoAcid = new String(aminoAcid);
         m_Coverage = coverage;
         setX(xpos);

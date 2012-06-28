@@ -13,9 +13,29 @@ import java.util.*;
 public class PDBObject {
     public static final PDBObject[] EMPTY_ARRAY = {};
 
+    private File m_File;
     private final List<AminoAcidAtLocation>  m_DisplayedAminoAcids = new ArrayList<AminoAcidAtLocation>();
 
+    public PDBObject(File file) {
+        m_File = file;
+        try {
+            LineNumberReader rdr = new LineNumberReader(new FileReader(m_File))  ;
+            readFromReader(rdr) ;
+        }
+        catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
 
+        }
+
+    }
+
+    public File getFile() {
+        return m_File;
+    }
+
+    public void setFile(File file) {
+        m_File = file;
+    }
 
     public void readFromReader(LineNumberReader rdr)  {
         try {
@@ -48,6 +68,8 @@ public class PDBObject {
          line = line.replace(" ","\t");
         String[] items = line.split("\t");
         FastaAminoAcid aa =  FastaAminoAcid.fromAbbreviation(items[3]);
+        if(aa == null)
+            return here;
         String chain = items[4];
         int position = Integer.parseInt(items[5]);
         AminoAcidAtLocation now = new AminoAcidAtLocation(aa,position);
@@ -99,9 +121,8 @@ public class PDBObject {
      };
 
     public static void main(String[] args) throws Exception {
-        PDBObject obj = new PDBObject();
-        LineNumberReader rdr = new LineNumberReader(new FileReader(args[0]))  ;
-        obj.readFromReader(rdr) ;
+        File f = new File(args[0]);
+        PDBObject obj = new PDBObject(f);
         List<AminoAcidAtLocation[]> holder = new ArrayList<AminoAcidAtLocation[]>();
 
         for (int i = 0; i < SOUGHT_SEQUENCES.length; i++) {
