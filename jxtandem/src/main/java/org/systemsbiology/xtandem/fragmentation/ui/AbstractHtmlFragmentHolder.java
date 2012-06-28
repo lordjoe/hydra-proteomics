@@ -39,6 +39,17 @@ public abstract class AbstractHtmlFragmentHolder implements IHtmlFragmentHolder 
         return m_Parent;
     }
 
+    public <T extends IHtmlFragmentHolder>  T getParentOfType(Class<T> requested)
+    {
+         IHtmlFragmentHolder test = getParent();
+        while(test != null) {
+            if (requested.isInstance(test))
+                return (T)test;
+             test = test.getParent();
+          }
+        return null;
+      }
+
     @Override
     public HTMLPageBuillder getPage() {
         return getParent().getPage();

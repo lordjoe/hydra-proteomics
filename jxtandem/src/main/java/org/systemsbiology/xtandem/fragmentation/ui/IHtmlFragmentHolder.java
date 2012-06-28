@@ -16,7 +16,7 @@ public interface IHtmlFragmentHolder extends  IHtmlFragmentBuilder {
 
     public HTMLPageBuillder getPage();
 
-    public IHtmlFragmentBuilder getParent();
+    public IHtmlFragmentHolder getParent();
 
      public String getUniqueId();
 

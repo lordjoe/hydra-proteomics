@@ -29,7 +29,7 @@ public class CoverageFragment extends SVGFragmentBuilder {
     public static final int AMINO_ACID_HEIGHT = 20;
     public static final int RECTANGLE_HEIGHT = 10;
 
-    public static final int MAX_COVERAGE_DEPTH = 5;
+    private static final int MAX_COVERAGE_DEPTH = 8;
 
     public static final int AMINO_ACID_LINE_WIDTH = 60;
 
@@ -62,6 +62,8 @@ public class CoverageFragment extends SVGFragmentBuilder {
 
     private final ProteinFragmentationDescription m_Fragments;
     private final ProteinFragmentLine[] m_Lines;
+    private Integer m_LineHeight;
+    private Integer m_CoverageDepth;
 
     public CoverageFragment(final IHtmlFragmentHolder parent, ProteinFragmentationDescription fragments) {
         super(parent, TAG);
@@ -78,13 +80,23 @@ public class CoverageFragment extends SVGFragmentBuilder {
             for (int j = 0; j < fragments1.length; j++) {
                 ProteinFragment test = fragments1[j];
                 if (coverageFragment.containsFragent(test)) {
-                    new DetectedFragmentBuillder(aminoAcidTextLine, test, coverageFragment, ++displapedFragments);
+                    new DetectedFragmentBuillder(aminoAcidTextLine, test, coverageFragment, displapedFragments++);
                 }
             }
         }
     }
 
-    protected int getLineHeight() {
+    public int getLineHeight() {
+        guaranteeCoverageDepth();
+        return m_LineHeight;
+    }
+
+    public int getCoverageDepth() {
+        guaranteeCoverageDepth();
+        return m_CoverageDepth;
+    }
+
+    private void guaranteeCoverageDepth() {
         int coverageDepth = 0;
         ProteinFragmentationDescription fragments = getFragments();
         short[] allCoverage = fragments.getAllCoverage();
@@ -92,7 +104,8 @@ public class CoverageFragment extends SVGFragmentBuilder {
             short i1 = allCoverage[i];
             coverageDepth = Math.max(coverageDepth, Math.min(i1, CoverageFragment.MAX_COVERAGE_DEPTH));
         }
-        return CoverageFragment.AMINO_ACID_HEIGHT + ( coverageDepth + 1) * (2 + CoverageFragment.RECTANGLE_HEIGHT);
+        m_LineHeight = CoverageFragment.AMINO_ACID_HEIGHT + (coverageDepth + 1) * (2 + CoverageFragment.RECTANGLE_HEIGHT);
+        m_CoverageDepth = coverageDepth;
     }
 
 
