@@ -28,7 +28,7 @@ public class ProteinLineBuillder extends SVGFragmentBuilder {
         int start = line.getStart();
         ProteinFragmentationDescription fragments = line.getFragments();
         short[] allCoverage = fragments.getAllCoverage();
-        int height = getLineHeight();
+    //    int height = getLineHeight();
         String sequence = line.getSequence();
         for (int i = 0; i < sequence.length(); i++) {
             String c = sequence.substring(i, i + 1);
@@ -43,82 +43,25 @@ public class ProteinLineBuillder extends SVGFragmentBuilder {
         return m_Line;
     }
 
-
-    public int getLineHeight() {
-         if(m_LineHeight == null)
-             m_LineHeight = buildLineHeight();
-        return m_LineHeight;
-    }
-
-
-    public int buildLineHeight() {
-        int coverageDepth = 0;
-        ProteinFragmentLine line = getLine();
-        ProteinFragmentationDescription fragments = line.getFragments();
-        short[] allCoverage = fragments.getAllCoverage();
-        for (int i = 0; i < allCoverage.length; i++) {
-            short i1 = allCoverage[i];
-            coverageDepth = Math.max(coverageDepth, Math.min(i1, CoverageFragment.MAX_COVERAGE_DEPTH));
-        }
-        return CoverageFragment.AMINO_ACID_HEIGHT + coverageDepth * CoverageFragment.RECTANGLE_HEIGHT;
-    }
-
 //
-//     ProteinFragment[] getDetectedFragments() {
-//         ProteinFragmentLine line = getLine();
-//         int start = line.getStart();
-//         int end = line.getEnd();
-//         ProteinFragmentationDescription pfd = line.getFragments();
-//         ProteinFragment[] fragments = pfd.getFragments();
-//         List<ProteinFragment> holder = new ArrayList<ProteinFragment>();
-//         for (int i = 0; i < fragments.length; i++) {
-//             ProteinFragment fragment = fragments[i];
-//             int fStart = fragment.getStartLocation();
-//             int fEnd = fragment.getSequence().length();
-//             if(fStart > end)
-//                 continue;
-//             if(fEnd < start)
-//                 continue;
-//             holder.add(fragment);
-//         }
-//         ProteinFragment[] ret = new ProteinFragment[holder.size()];
-//         holder.toArray(ret);
-//         return ret;
-//
-//     }
-//
-//    @Override
-//    protected void appendAllBuilders(final Appendable out, final Object[] data) {
-//        try {
-//
-//            ProteinFragmentLine line = getLine();
-//            int start = line.getStart();
-//            ProteinFragmentationDescription fragments = line.getFragments();
-//            short[] allCoverage = fragments.getAllCoverage();
-//            int height = getLineHeight();
-//            String sequence = line.getSequence();
-//            super.appendAllBuilders(out, data);
-//            for (int i = 0; i < sequence.length(); i++) {
-//                char c = sequence.charAt(i);
-//                indent(out, 4);
-//                int xPosition = CoverageFragment.AMINO_ACID_WIDTH * (i + 1);
-//                String textId = getPage().getUniqueId();
-//                short textCoverage = allCoverage[start + i];
-//                out.append("<text id=\"" + textId +
-//                        "\" style=\"fill:" + getCoverageColor(textCoverage) + ";\" " +
-//                        " transform=\"translate(" + xPosition + "," + height + ")" +
-//                        "\" >");
-//                //  <text id="1" transform="translate(20,20)">A</text>
-//                out.append(c);
-//                out.append("</text>");
-//                out.append("\n");
-//            }
-//        }
-//        catch (IOException e) {
-//            throw new RuntimeException(e);
-//
-//        }
+//    public int getLineHeight() {
+//         if(m_LineHeight == null)
+//             m_LineHeight = buildLineHeight();
+//        return m_LineHeight;
 //    }
-
+//
+//
+//    public int buildLineHeight() {
+//        int coverageDepth = 0;
+//        ProteinFragmentLine line = getLine();
+//        ProteinFragmentationDescription fragments = line.getFragments();
+//        short[] allCoverage = fragments.getAllCoverage();
+//        for (int i = 0; i < allCoverage.length; i++) {
+//            short i1 = allCoverage[i];
+//            coverageDepth = Math.max(coverageDepth, Math.min(i1, CoverageFragment.MAX_COVERAGE_DEPTH));
+//        }
+//        return CoverageFragment.AMINO_ACID_HEIGHT + coverageDepth * CoverageFragment.RECTANGLE_HEIGHT;
+//    }
+//
 
 }

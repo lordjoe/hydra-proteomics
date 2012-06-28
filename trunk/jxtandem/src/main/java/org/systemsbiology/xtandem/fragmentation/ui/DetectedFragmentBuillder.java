@@ -30,23 +30,25 @@ public class DetectedFragmentBuillder extends SVGFragmentBuilder {
         String sequence = frag.getSequence();
 //        if(sequence.startsWith("GCHESC"))
 //               sequence = frag.getSequence(); // break here
-
+        CoverageFragment cf = getParentOfType(CoverageFragment.class);
+        int coverageDapth = cf.getCoverageDepth();
         int fragmentLength = sequence.length();
         int lineLength = fragmentLength;
         if (fragmentLineStart > lineStart)
             lineLength -= (fragmentLineStart - lineStart);
         lineLength = Math.min(CoverageFragment.AMINO_ACID_LINE_WIDTH - lineAminoAcid + 1, lineLength);
-          String coverageColor = CoverageFragment.COVERAGE_COLORS[getIndex() % CoverageFragment.COVERAGE_COLORS.length];
+        String coverageColor = CoverageFragment.COVERAGE_COLORS[frag.getIndex() % CoverageFragment.COVERAGE_COLORS.length];
         RectFragmentBuillder rf = new RectFragmentBuillder( this,coverageColor);
         rf.setWidth(lineLength * CoverageFragment.AMINO_ACID_WIDTH);
         rf.setHeight(CoverageFragment.RECTANGLE_HEIGHT);
         rf.setX(lineAminoAcid * CoverageFragment.AMINO_ACID_WIDTH + (CoverageFragment.AMINO_ACID_WIDTH / 2));
 
-        int displayIndex = CoverageFragment.MAX_COVERAGE_DEPTH  - (index % CoverageFragment.MAX_COVERAGE_DEPTH) - 1;
-        if(displayIndex >= 4)
-               displayIndex = 3; //CoverageFragment.MAX_COVERAGE_DEPTH  - (index % CoverageFragment.MAX_COVERAGE_DEPTH) - 1; // break here
+        int displayIndex = coverageDapth  - (index %coverageDapth) ;
+  //      if(displayIndex >= 4)
+  //             displayIndex = 3; //CoverageFragment.MAX_COVERAGE_DEPTH  - (index % CoverageFragment.MAX_COVERAGE_DEPTH) - 1; // break here
         rf.setY( displayIndex * CoverageFragment.RECTANGLE_HEIGHT);
         rf.setPopupText(sequence);
+        new ToolTipTextBuillder(this, rf);
      }
 
 

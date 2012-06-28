@@ -35,14 +35,6 @@ public class AminoAcidTextLine extends SVGFragmentBuilder {
     protected int getLineHeight()
     {
          return ((CoverageFragment)getParent()).getLineHeight();
-//        int coverageDepth = 0;
-//          ProteinFragmentationDescription fragments = getLineFragment().getFragments();
-//         short[] allCoverage = fragments.getAllCoverage();
-//        for (int i = 0; i < allCoverage.length; i++) {
-//            short i1 = allCoverage[i];
-//            coverageDepth = Math.max(coverageDepth,Math.min(i1,CoverageFragment.MAX_COVERAGE_DEPTH));
-//        }
-//        return CoverageFragment.AMINO_ACID_HEIGHT + ( 1 + coverageDepth)  * ( 2 + CoverageFragment.RECTANGLE_HEIGHT);
     }
 
     @Override
@@ -52,30 +44,5 @@ public class AminoAcidTextLine extends SVGFragmentBuilder {
                     ( getLineHeight() * getIndex()) + ")\" ");
         return sb.toString();
       }
-
-//    @Override
-//    public void addStartText(final Appendable out, final Object... data) {
-//        try {
-//            indent(out,2);
-//            out.append("<g id=\"" + getUniqueId() + "\"  transform=\"translate(0," +
-//                    ( getLineHeight() * getIndex()) + ")\" >\n");
-//        }
-//        catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//    }
-//
-//    @Override
-//    public void addEndText(final Appendable out, final Object... data) {
-//        try {
-//            indent(out,2);
-//            out.append("</g>\n");
-//        }
-//        catch (IOException e) {
-//            throw new RuntimeException(e);
-//
-//        }
-//    }
 
 }

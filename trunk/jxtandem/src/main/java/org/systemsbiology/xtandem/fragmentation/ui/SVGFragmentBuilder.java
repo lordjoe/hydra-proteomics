@@ -23,7 +23,7 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
     protected SVGFragmentBuilder(IHtmlFragmentHolder parent, final String tag) {
         super(parent);
         m_Tag = tag;
-        SVGFragmentBuilder svgParent = getSVGParent();
+        SVGFragmentBuilder svgParent = getParentOfType(SVGFragmentBuilder.class);
         if (svgParent != null) {
             m_Indent = svgParent.getIndent() + 1;
         }
@@ -35,14 +35,6 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
 
     public String getTag() {
         return m_Tag;
-    }
-
-    public SVGFragmentBuilder getSVGParent() {
-        IHtmlFragmentHolder parent = getParent();
-        if (parent instanceof SVGFragmentBuilder) {
-            return (SVGFragmentBuilder) parent;
-        }
-        return null;
     }
 
     public String getPopupText() {
@@ -115,18 +107,18 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
     }
 
 
-    @Override
-    public void addBuilder(final IHtmlFragmentBuilder added) {
-        super.addBuilder(added);
-        if (added instanceof SVGFragmentBuilder) {
-            SVGFragmentBuilder addedSVG = (SVGFragmentBuilder) added;
-            String tooltip = addedSVG.getPopupText();
-            if (tooltip != null) {
-                ToolTipTextBuillder tb = new ToolTipTextBuillder(this, addedSVG);
-            }
-
-        }
-    }
+//    @Override
+//    public void addBuilder(final IHtmlFragmentBuilder added) {
+//        super.addBuilder(added);
+//        if (added instanceof SVGFragmentBuilder) {
+//            SVGFragmentBuilder addedSVG = (SVGFragmentBuilder) added;
+//            String tooltip = addedSVG.getPopupText();
+//            if (tooltip != null) {
+//                ToolTipTextBuillder tb = new ToolTipTextBuillder(this, addedSVG);
+//            }
+//
+//        }
+//    }
 
     /**
      * override if you do not want the start tag on a new line

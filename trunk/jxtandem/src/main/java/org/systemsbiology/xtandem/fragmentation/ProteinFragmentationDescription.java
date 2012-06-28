@@ -76,21 +76,22 @@ public class ProteinFragmentationDescription {
     protected void buildFragments(String[] lines) {
         m_Fragments.clear();
         // first line is titles
+        int index = 0;
         for (int i = 1; i < lines.length; i++) {
             String line = lines[i];
-            buildFragment(line);
+            index = buildFragment(line,index);
         }
     }
 
-    private void buildFragment(final String line) {
+    private int buildFragment(final String line,int index) {
         Protein protein = getProtein();
         String[] items = line.split(",");
         String sequence = items[1].trim();
 
         Polypeptide fragment = new Polypeptide(sequence);
-        ProteinFragment pf = new ProteinFragment(protein, fragment);
+        ProteinFragment pf = new ProteinFragment(protein, fragment,index++);
         m_Fragments.add(pf);
-
+        return index;
     }
 
     public ProteinFragment[] getFragments() {

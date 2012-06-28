@@ -30,7 +30,8 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
         m_AminoAcid = new String(aminoAcid);
         m_Coverage = coverage;
         setX(xpos);
-        setHeight(parent.getLineHeight());
+        CoverageFragment cf = getParentOfType(CoverageFragment.class);
+        setHeight(cf.getLineHeight());
     }
 
     public String getAminoAcid() {

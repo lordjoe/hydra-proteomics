@@ -15,10 +15,16 @@ public class ProteinFragment {
     private final Protein m_ParentProtein;
     private final Polypeptide m_Peptide;
     private int[] m_StartLocations;
+    private final int m_Index;
 
-    public ProteinFragment(final Protein parentProtein, final Polypeptide peptide) {
+    public ProteinFragment(final Protein parentProtein, final Polypeptide peptide, int index) {
         m_ParentProtein = parentProtein;
         m_Peptide = peptide;
+        m_Index = index;
+    }
+
+    public int getIndex() {
+        return m_Index;
     }
 
     public Protein getParentProtein() {
