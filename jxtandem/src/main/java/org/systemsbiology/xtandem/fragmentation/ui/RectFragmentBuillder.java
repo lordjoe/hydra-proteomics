@@ -12,9 +12,9 @@ public class RectFragmentBuillder extends SVGFragmentBuilder {
 
     private final String m_CoverageColor;
 
-    public RectFragmentBuillder(final HTMLPageBuillder page, SVGFragmentBuilder parent, String coverageColor) {
+    public RectFragmentBuillder( SVGFragmentBuilder parent, String coverageColor) {
 
-        super(page, parent, TAG);
+        super(  parent, TAG);
         m_CoverageColor = coverageColor;
     }
 

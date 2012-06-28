@@ -17,8 +17,8 @@ public class ProteinLineBuillder extends SVGFragmentBuilder {
     private final ProteinFragmentLine m_Line;
     private Integer m_LineHeight;
 
-    public ProteinLineBuillder(final HTMLPageBuillder page, SVGFragmentBuilder parent, final ProteinFragmentLine line) {
-        super(page, parent, TAG);
+    public ProteinLineBuillder(  SVGFragmentBuilder parent, final ProteinFragmentLine line) {
+        super(  parent, TAG);
         m_Line = line;
          buildAminoAcidBuilders();
     }
@@ -34,9 +34,8 @@ public class ProteinLineBuillder extends SVGFragmentBuilder {
             String c = sequence.substring(i, i + 1);
             int xPosition = CoverageFragment.AMINO_ACID_WIDTH * (i + 1);
             short textCoverage = allCoverage[start + i];
-            OneAminoAcidFragmentBuillder aa = new OneAminoAcidFragmentBuillder(getPage(), this, xPosition, c, textCoverage);
-            addBuilder(aa);
-        }
+            OneAminoAcidFragmentBuillder aa = new OneAminoAcidFragmentBuillder(  this, xPosition, c, textCoverage);
+          }
 
     }
 

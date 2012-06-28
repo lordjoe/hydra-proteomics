@@ -1,6 +1,5 @@
 package org.systemsbiology.xtandem.fragmentation.ui;
 
-import javax.crypto.*;
 import java.io.*;
 
 /**
@@ -12,10 +11,8 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
     public static final SVGFragmentBuilder[] EMPTY_ARRAY = {};
 
 
-
     private final int m_Indent;
     private final String m_Tag;
-    private final SVGFragmentBuilder m_Parent;
     private Integer m_Index;
     private Integer m_X;
     private Integer m_Y;
@@ -23,12 +20,12 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
     private Integer m_Height;
     private String m_PopupText;
 
-    protected SVGFragmentBuilder(final HTMLPageBuillder page,SVGFragmentBuilder parent, final String tag) {
-        super(page);
+    protected SVGFragmentBuilder(IHtmlFragmentHolder parent, final String tag) {
+        super(parent);
         m_Tag = tag;
-        m_Parent = parent;
-        if(parent != null)  {
-            m_Indent = parent.getIndent() + 1;
+        SVGFragmentBuilder svgParent = getSVGParent();
+        if (svgParent != null) {
+            m_Indent = svgParent.getIndent() + 1;
         }
         else {
             m_Indent = 1;
@@ -40,8 +37,12 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
         return m_Tag;
     }
 
-    public SVGFragmentBuilder getParent() {
-        return m_Parent;
+    public SVGFragmentBuilder getSVGParent() {
+        IHtmlFragmentHolder parent = getParent();
+        if (parent instanceof SVGFragmentBuilder) {
+            return (SVGFragmentBuilder) parent;
+        }
+        return null;
     }
 
     public String getPopupText() {
@@ -109,8 +110,7 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
         }
     }
 
-    protected boolean isTagOnSeparateLine()
-    {
+    protected boolean isTagOnSeparateLine() {
         return true;
     }
 
@@ -118,12 +118,11 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
     @Override
     public void addBuilder(final IHtmlFragmentBuilder added) {
         super.addBuilder(added);
-        if(added instanceof SVGFragmentBuilder) {
+        if (added instanceof SVGFragmentBuilder) {
             SVGFragmentBuilder addedSVG = (SVGFragmentBuilder) added;
             String tooltip = addedSVG.getPopupText();
-            if(tooltip != null)   {
-                ToolTipTextBuillder tb = new  ToolTipTextBuillder(getPage(),this,addedSVG);
-                addBuilder(tb);
+            if (tooltip != null) {
+                ToolTipTextBuillder tb = new ToolTipTextBuillder(this, addedSVG);
             }
 
         }
@@ -147,7 +146,8 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
 
     /**
      * do not override = override getTagAttributes() and
-     *   getTagStartEndCharacter() for whether to end in a newline
+     * getTagStartEndCharacter() for whether to end in a newline
+     *
      * @param out
      * @param data
      */
@@ -161,7 +161,7 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
             out.append(getTagAttributes());
             out.append(" ");
             out.append(">");
-            if(isTagOnSeparateLine())
+            if (isTagOnSeparateLine())
                 out.append("\n");
         }
         catch (IOException e) {
@@ -174,8 +174,8 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
     @Override
     public final void addEndText(final Appendable out, final Object... data) {
         try {
-            if(isTagOnSeparateLine())
-                 indent(out);
+            if (isTagOnSeparateLine())
+                indent(out);
             out.append("</");
             out.append(getTag());
             out.append(">\n");

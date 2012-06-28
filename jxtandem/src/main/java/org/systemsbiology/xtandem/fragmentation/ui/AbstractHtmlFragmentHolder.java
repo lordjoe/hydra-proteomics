@@ -25,15 +25,23 @@ public abstract class AbstractHtmlFragmentHolder implements IHtmlFragmentHolder 
 
 
     private String m_UniqueId;
-    private final HTMLPageBuillder m_Page;
+    private final IHtmlFragmentHolder m_Parent;
     private final List<IHtmlFragmentBuilder>  m_Builders = new ArrayList<IHtmlFragmentBuilder>();
 
-    protected AbstractHtmlFragmentHolder(final HTMLPageBuillder page) {
-        m_Page = page;
+    protected AbstractHtmlFragmentHolder(final IHtmlFragmentHolder parent) {
+        m_Parent = parent;
+        if(parent instanceof AbstractHtmlFragmentHolder)
+            ((AbstractHtmlFragmentHolder)parent).addBuilder(this);
     }
 
+    @Override
+    public IHtmlFragmentHolder getParent() {
+        return m_Parent;
+    }
+
+    @Override
     public HTMLPageBuillder getPage() {
-        return m_Page;
+        return getParent().getPage();
     }
 
 
@@ -49,15 +57,15 @@ public abstract class AbstractHtmlFragmentHolder implements IHtmlFragmentHolder 
 
     public abstract void addEndText(final Appendable out, final Object... data);
 
-    @Override
-    public void addBuilder(final IHtmlFragmentBuilder added) {
+   // @Override
+    protected void addBuilder(final IHtmlFragmentBuilder added) {
         m_Builders.add(added);
 
     }
 
     @Override
     public void addString(final String added) {
-        addBuilder(new HTMLTextHolder(added));
+         new HTMLTextHolder(this,added);
 
     }
 

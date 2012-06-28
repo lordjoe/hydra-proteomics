@@ -23,8 +23,6 @@ public class HTMLPageBuillder   extends AbstractHtmlFragmentHolder {
         m_Title = title;
         m_Header = new HTMLHeaderBuillder(this);
         m_Body = new HTMLBodyBuillder(this);
-        addBuilder(getHeader());
-        addBuilder(getBody());
         HTMLHeaderBuillder header = getHeader();
         header.addString(META_INFO);
         header.addString("<title>" + getTitle() + "</title>");
