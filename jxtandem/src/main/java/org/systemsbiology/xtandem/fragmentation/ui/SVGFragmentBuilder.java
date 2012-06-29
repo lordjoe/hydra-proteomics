@@ -164,7 +164,7 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
     }
 
     @Override
-    public final void addEndText(final Appendable out, final Object... data) {
+    public void addEndText(final Appendable out, final Object... data) {
         try {
             if (isTagOnSeparateLine())
                 indent(out);

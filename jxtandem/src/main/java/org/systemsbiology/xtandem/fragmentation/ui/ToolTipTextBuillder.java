@@ -32,13 +32,15 @@ public class ToolTipTextBuillder extends SVGFragmentBuilder {
     protected String getTagAttributes() {
         StringBuilder sb = new StringBuilder(super.getTagAttributes());
         SVGFragmentBuilder target = getTarget();
-        sb.append(" x=\"" + (target.getX() + target.getWidth() / 2) + "\"");
+    //    sb.append(" x=\"" + (target.getX() + target.getWidth() / 2) + "\"");
+        sb.append(" x=\"" + (target.getX()) + "\"");
         sb.append(" y=\"" + target.getY() + "\"");
         sb.append(" font-size=\"" + POPUP_FONT_SIZE + "\"");
         sb.append(" fill=\"black\" ");
         sb.append(" stroke=\"black\" ");
         sb.append(" stroke-width=\".5px\" ");
-        sb.append(" visibility=\"hidden\" ");
+        sb.append(" text-anchor=\"start\" ");
+         sb.append(" visibility=\"hidden\" ");
         return sb.toString();
 
     }
@@ -47,6 +49,26 @@ public class ToolTipTextBuillder extends SVGFragmentBuilder {
     protected boolean isTagOnSeparateLine() {
         return false;
     }
+
+    /**
+     * break the rule and indenx end text
+     * @param out
+     * @param data
+     */
+    @Override
+    public void addEndText(final Appendable out, final Object... data) {
+        try {
+            indent(out);
+            out.append("</");
+            out.append(getTag());
+            out.append(">\n");
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
+
 
     @Override
     protected void appendAllBuilders(final Appendable out, final Object[] data) {
@@ -57,6 +79,7 @@ public class ToolTipTextBuillder extends SVGFragmentBuilder {
             out.append(target.getPopupText());
             out.append("\n");
             indent(out);
+            out.append("    ");
             out.append(mouseOver);
         }
         catch (IOException e) {

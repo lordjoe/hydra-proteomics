@@ -11,7 +11,9 @@ import java.util.*;
 public class ScriptWriter {
     public static final ScriptWriter[] EMPTY_ARRAY = {};
 
-    public static final String[] COLOR_NAMES = {"red", "yellow", "orange", "green", "blue"};
+    public static final String[] DEFAULT_COLOR_NAMES = {"red", "yellow", "orange", "green", "blue"};
+
+    public static String[] COLOR_NAMES = DEFAULT_COLOR_NAMES;
 
     public static String buildTranslucentString(int used) {
         int val = Math.min(128 * used, 255);

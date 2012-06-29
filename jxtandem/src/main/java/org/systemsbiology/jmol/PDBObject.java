@@ -15,6 +15,7 @@ public class PDBObject {
 
     private File m_File;
     private final List<AminoAcidAtLocation>  m_DisplayedAminoAcids = new ArrayList<AminoAcidAtLocation>();
+    private String m_Sequence;
 
     public PDBObject(File file) {
         m_File = file;
@@ -37,17 +38,25 @@ public class PDBObject {
         m_File = file;
     }
 
+    public String getSequence() {
+        return m_Sequence;
+    }
+
     public void readFromReader(LineNumberReader rdr)  {
         try {
             AminoAcidAtLocation here = null;
-            String line = rdr.readLine();
+            StringBuilder sb = new StringBuilder();
+              String line = rdr.readLine();
             while(line != null)   {
                 AminoAcidAtLocation now = handleLine(line,here);
-                if(now != null && !now.equals(here))
+                if(now != null && !now.equals(here)) {
                     m_DisplayedAminoAcids.add(now);
+                    sb.append(now.getAminoAcid());
+                }
                 here = now;
                 line = rdr.readLine();
             }
+            m_Sequence = sb.toString();
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -90,6 +99,8 @@ public class PDBObject {
             }
 
         }
+        String modelSequence = getSequence();
+        String soughtSequence = foundSequence;
         return null;
 
     }
