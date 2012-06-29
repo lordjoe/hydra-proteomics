@@ -1,5 +1,6 @@
 package org.systemsbiology.xtandem.fragmentation.ui;
 
+import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 
 /**
@@ -49,7 +50,7 @@ public class CoverageFragment extends SVGFragmentBuilder {
                     "        font-family: helvetica;\n" +
                     //        "        stroke:black;\n" +
                     "        fill:black;\n" +
-                    "        text-anchor: middle;\n" +
+                   // "        text-anchor: middle;\n" +
                     "        dy:.35em;\n" +
                     "    } \n" +
                     "    svg rect {\n" +
@@ -67,6 +68,7 @@ public class CoverageFragment extends SVGFragmentBuilder {
 
     public CoverageFragment(final IHtmlFragmentHolder parent, ProteinFragmentationDescription fragments) {
         super(parent, TAG);
+        ScriptWriter.COLOR_NAMES = COVERAGE_COLORS;
         HTMLPageBuillder page = getPage();
         page.getHeader().addString(CSS_TEXT);
         m_Fragments = fragments;

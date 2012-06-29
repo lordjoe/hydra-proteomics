@@ -250,10 +250,10 @@ public class ProteinCollection implements IFastaHandler {
 
     // Only one amino acid - look at rectangle placement
     public static final String[] ONE_INTERESTING = {"O00300"};
-    // Fragmented 3d model
+    // Fragmented 3d model code if fine model is bad
     public static final String[] TWO_INTERESTING = {"Q9Y296"};
     // says 3d model but nothing shown
-    public static final String[] Three_INTERESTING = {"Q13114"};
+    public static final String[] THREE_INTERESTING = {"Q13114"};
 
 
 
@@ -262,7 +262,7 @@ public class ProteinCollection implements IFastaHandler {
         pc.loadData();
         String[] ids = pc.getProteinIds();
         ids = SPECIAL_TEST_PROTEINS; // use only a few
-     //   ids = ONE_INTERESTING; // look at only one case
+    //    ids = THREE_INTERESTING; // look at only one case
         ProteinCoveragePageBuilder pb = new ProteinCoveragePageBuilder(pc);
         pb.buildPages(ids);
 

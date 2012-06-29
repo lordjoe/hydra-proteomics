@@ -21,6 +21,10 @@ public class HTMLTextHolder implements IHtmlFragmentBuilder {
      }
 
 
+    public IHtmlFragmentHolder getParent() {
+        return m_Parent;
+    }
+
     public String getText() {
         return m_Text;
     }
@@ -28,7 +32,7 @@ public class HTMLTextHolder implements IHtmlFragmentBuilder {
     @Override
     public void appendFragment(final Appendable out, final Object... data) {
         try {
-            out.append( getText());
+             out.append( getText());
             out.append("\n");
          }
         catch (IOException e) {

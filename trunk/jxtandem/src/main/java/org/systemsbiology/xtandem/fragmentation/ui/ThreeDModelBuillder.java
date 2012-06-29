@@ -25,11 +25,21 @@ public class ThreeDModelBuillder extends AbstractHtmlFragmentHolder {
         m_Model = pfd.getModel();
         if (m_Model == null)
             throw new IllegalArgumentException("no 3d model");
+        ProteinFragment[] frags = pfd.getFragments();
         m_FragmentLocations = pfd.getAminoAcidLocations();
         int index = 0;
-        for(ProteinFragment pf : m_FragmentLocations.keySet())  {
-            ThreeDModelAppletBuillder mf = new ThreeDModelAppletBuillder(this,pfd,pf,m_FragmentLocations.get(pf),index++);
-          }
+        if(m_FragmentLocations.isEmpty())   {
+            new HTMLHeaderHolder(this,"No Fragments found in 3D model",1);
+        }
+        else {
+            new HTMLHeaderHolder(this,"Using Model " + getModel().getFile() +
+                    " modeled  " +  m_FragmentLocations.size() + " of " +  frags.length + " fragments "
+                    ,1);
+            new SingleTagBuillder(this,"p");
+            for(ProteinFragment pf : m_FragmentLocations.keySet())  {
+                ThreeDModelAppletBuillder mf = new ThreeDModelAppletBuillder(this,pfd,pf,m_FragmentLocations.get(pf),index++);
+              }
+         }
     }
 
 
