@@ -25,8 +25,9 @@ public class RectFragmentBuillder extends SVGFragmentBuilder {
     @Override
     protected String getTagAttributes() {
         StringBuilder sb = new StringBuilder(super.getTagAttributes());
+        sb.append(getTransformText());
         sb.append(" style=\"fill:" + getCoverageColor() + ";\" ");
-        sb.append(" transform=\"translate(" + getX() + "," + getY() + ")\" ");
+    //    sb.append(" transform=\"translate(" + getX() + "," + getY() + ")\" ");
         sb.append(" width=\"" + getWidth() + "\"");
         sb.append(" height=\"" + getHeight() + "\"");
         return sb.toString();

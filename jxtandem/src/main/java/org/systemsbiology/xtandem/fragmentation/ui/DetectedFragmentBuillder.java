@@ -46,7 +46,8 @@ public class DetectedFragmentBuillder extends SVGFragmentBuilder {
         int displayIndex = coverageDapth  - (index %coverageDapth) ;
   //      if(displayIndex >= 4)
   //             displayIndex = 3; //CoverageFragment.MAX_COVERAGE_DEPTH  - (index % CoverageFragment.MAX_COVERAGE_DEPTH) - 1; // break here
-        rf.setY( displayIndex * CoverageFragment.RECTANGLE_HEIGHT);
+        Offset totalOffset = getTotalOffset();
+        rf.setY(  displayIndex * CoverageFragment.RECTANGLE_HEIGHT);
         rf.setPopupText(sequence);
         new ToolTipTextBuillder(this, rf);
      }

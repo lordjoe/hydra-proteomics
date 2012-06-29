@@ -9,7 +9,6 @@ package org.systemsbiology.xtandem.fragmentation;
  */
 
 
-import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -20,7 +19,8 @@ import java.util.ArrayList;
 
 public class SmithWaterman {
 
-    private final double scoreThreshold = 19.9;
+    public static final double DEFAULT_SCORE_THRESHOLD = 49.9;
+    private final double scoreThreshold; // was 19.9
 
 	/**
      * The first input string
@@ -76,7 +76,7 @@ public class SmithWaterman {
      */
     private int[][] prevCells;
 
-    public SmithWaterman(String str1, String str2) {
+    public SmithWaterman(String str1, String str2, double threshold) {
 		this.str1 = str1;
 		this.str2 = str2;
 		length1 = str1.length();
@@ -84,8 +84,13 @@ public class SmithWaterman {
 
 		score = new double[length1+1][length2+1];
 		prevCells = new int[length1+1][length2+1];
+        scoreThreshold = threshold;
 
 		buildMatrix();
+    }
+
+    public SmithWaterman(String str1, String str2) {
+		this(str1, str2,DEFAULT_SCORE_THRESHOLD);
     }
 
     /**
@@ -305,9 +310,9 @@ public class SmithWaterman {
 	 * A match is a pair of subsequences whose score is higher than the
 	 * preset scoreThreshold
 	 **/
-	public List getMatches()
+	public List<SimpleChainingMatch> getMatches()
 	{
-		ArrayList matchList = new ArrayList();
+		ArrayList<SimpleChainingMatch> matchList = new ArrayList<SimpleChainingMatch>();
 		int fA=0, fB=0;
 		//	skip the first row and column, find the next maxScore after prevmaxScore
 			for (int i = 1; i <= length1; i++) {
@@ -321,7 +326,7 @@ public class SmithWaterman {
 						fA = i;
 						fB = j;
 						int [] f=traceback(fA, fB); // sets the x, y to startAlignment coordinates
-						matchList.add(new SimpleChaining.Match(f[0], i, f[1], j, score[i][j]/ NORM_FACTOR));
+						matchList.add(new SimpleChainingMatch(f[0], i, f[1], j, score[i][j]/ NORM_FACTOR));
 					  }
 					}
 			    }

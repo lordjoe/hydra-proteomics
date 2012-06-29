@@ -1,5 +1,7 @@
 package org.systemsbiology.xtandem.fragmentation.ui;
 
+import com.sun.org.apache.bcel.internal.generic.*;
+
 import java.io.*;
 
 /**
@@ -14,11 +16,12 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
     private final int m_Indent;
     private final String m_Tag;
     private Integer m_Index;
-    private Integer m_X;
-    private Integer m_Y;
+//    private Integer m_X;
+//    private Integer m_Y;
     private Integer m_Width;
     private Integer m_Height;
     private String m_PopupText;
+    private Offset m_Offset = Offset.ZERO_OFFSET;
 
     protected SVGFragmentBuilder(IHtmlFragmentHolder parent, final String tag) {
         super(parent);
@@ -31,6 +34,40 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
             m_Indent = 1;
 
         }
+    }
+
+    @Override
+    protected void addBuilder(final IHtmlFragmentBuilder added) {
+        if (added instanceof ToolTipTextBuillder) {
+            ToolTipTextBuillder tt = (ToolTipTextBuillder) added;
+            getRoot().addToolTip(tt);
+            return;
+
+        }
+        super.addBuilder(added);
+    }
+
+    public SVGRootBuilder getRoot()
+    {
+        return ((SVGFragmentBuilder)getParent()).getRoot();
+    }
+
+
+    public Offset getOffset() {
+        return m_Offset;
+    }
+
+    public Offset getTotalOffset() {
+        SVGFragmentBuilder svgParent = (SVGFragmentBuilder)getParent();
+        return getOffset().add(svgParent.getTotalOffset());
+     }
+
+    protected String getTransformText()
+    {
+        Offset offset = getOffset();
+        if(offset.isZero())
+            return "";
+        return " transform=\"translate(" + offset.toString() + ")\" ";
     }
 
     public String getTag() {
@@ -46,11 +83,11 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
     }
 
     public int getX() {
-        return m_X;
+        return getOffset().getX();
     }
 
     public int getY() {
-        return m_Y;
+        return getOffset().getY();
     }
 
     public Integer getWidth() {
@@ -65,12 +102,12 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
         return m_Indent;
     }
 
-    public void setX(final Integer x) {
-        m_X = x;
+    public void setX(final int x) {
+       m_Offset = m_Offset.setX(x);
     }
 
-    public void setY(final Integer y) {
-        m_Y = y;
+    public void setY(final int y) {
+        m_Offset = m_Offset.setY(y);
     }
 
     public void setWidth(final Integer width) {

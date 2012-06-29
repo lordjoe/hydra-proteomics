@@ -31,7 +31,7 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
         m_Coverage = coverage;
         setX(xpos);
         CoverageFragment cf = getParentOfType(CoverageFragment.class);
-        setHeight(cf.getLineHeight());
+        setY(cf.getLineHeight());
     }
 
     public String getAminoAcid() {
@@ -57,7 +57,8 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
         int textCoverage = getCoverage();
         sb.append(" style=\"fill:" + getCoverageColor(textCoverage) + ";\" ");
         sb.append(" text-anchor=\"middle\" "  );
-         sb.append(" transform=\"translate(" + getX() + "," + getHeight() + ")\" ");
+        sb.append(getTransformText());
+    //     sb.append(" transform=\"translate(" + getX() + "," + getHeight() + ")\" ");
         return sb.toString();
 
     }

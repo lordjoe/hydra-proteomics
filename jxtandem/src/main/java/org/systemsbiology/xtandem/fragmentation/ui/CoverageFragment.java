@@ -8,10 +8,8 @@ import org.systemsbiology.xtandem.fragmentation.*;
  * User: Steve
  * Date: 6/25/12
  */
-public class CoverageFragment extends SVGFragmentBuilder {
+public class CoverageFragment extends SVGRootBuilder {
     public static final CoverageFragment[] EMPTY_ARRAY = {};
-
-    public static final String TAG = "svg";
 
 
     public static final String[] COVERAGE_COLORS =
@@ -67,7 +65,7 @@ public class CoverageFragment extends SVGFragmentBuilder {
     private Integer m_CoverageDepth;
 
     public CoverageFragment(final IHtmlFragmentHolder parent, ProteinFragmentationDescription fragments) {
-        super(parent, TAG);
+        super(parent );
         ScriptWriter.COLOR_NAMES = COVERAGE_COLORS;
         HTMLPageBuillder page = getPage();
         page.getHeader().addString(CSS_TEXT);

@@ -22,6 +22,7 @@ public class AminoAcidTextLine extends SVGFragmentBuilder {
         super( parent, TAG);
         setIndex(index);
         m_LineFragment = coverageFragment;
+        setY( getLineHeight() * getIndex());
          new ProteinLineBuillder( this,m_LineFragment) ;
      }
 
@@ -40,8 +41,9 @@ public class AminoAcidTextLine extends SVGFragmentBuilder {
     @Override
     protected String getTagAttributes() {
         StringBuilder sb = new StringBuilder(super.getTagAttributes());
-        sb.append("  transform=\"translate(0," +
-                    ( getLineHeight() * getIndex()) + ")\" ");
+        sb.append(getTransformText());
+     //   sb.append("  transform=\"translate(0," +
+     //               ( getLineHeight() * getIndex()) + ")\" ");
         return sb.toString();
       }
 
