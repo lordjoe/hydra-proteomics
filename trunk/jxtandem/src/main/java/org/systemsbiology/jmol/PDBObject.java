@@ -1,6 +1,7 @@
 package org.systemsbiology.jmol;
 
 import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.fragmentation.*;
 
 import java.io.*;
 import java.util.*;
@@ -14,14 +15,14 @@ public class PDBObject {
     public static final PDBObject[] EMPTY_ARRAY = {};
 
     private File m_File;
-    private final List<AminoAcidAtLocation>  m_DisplayedAminoAcids = new ArrayList<AminoAcidAtLocation>();
+    private final List<AminoAcidAtLocation> m_DisplayedAminoAcids = new ArrayList<AminoAcidAtLocation>();
     private String m_Sequence;
 
     public PDBObject(File file) {
         m_File = file;
         try {
-            LineNumberReader rdr = new LineNumberReader(new FileReader(m_File))  ;
-            readFromReader(rdr) ;
+            LineNumberReader rdr = new LineNumberReader(new FileReader(m_File));
+            readFromReader(rdr);
         }
         catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -42,14 +43,14 @@ public class PDBObject {
         return m_Sequence;
     }
 
-    public void readFromReader(LineNumberReader rdr)  {
+    public void readFromReader(LineNumberReader rdr) {
         try {
             AminoAcidAtLocation here = null;
             StringBuilder sb = new StringBuilder();
-              String line = rdr.readLine();
-            while(line != null)   {
-                AminoAcidAtLocation now = handleLine(line,here);
-                if(now != null && !now.equals(here)) {
+            String line = rdr.readLine();
+            while (line != null) {
+                AminoAcidAtLocation now = handleLine(line, here);
+                if (now != null && !now.equals(here)) {
                     m_DisplayedAminoAcids.add(now);
                     sb.append(now.getAminoAcid());
                 }
@@ -64,54 +65,89 @@ public class PDBObject {
         }
     }
 
-    private AminoAcidAtLocation handleLine(String line,AminoAcidAtLocation here) {
-        if(line.startsWith("ATOM")) {
-            return handleAtom(line,here);
+    private AminoAcidAtLocation handleLine(String line, AminoAcidAtLocation here) {
+        if (line.startsWith("ATOM")) {
+            return handleAtom(line, here);
         }
         return here;
     }
 
     private AminoAcidAtLocation handleAtom(String line, AminoAcidAtLocation here) {
-        while(line.contains("  "))
-            line = line.replace("  "," ");
-         line = line.replace(" ","\t");
+        while (line.contains("  "))
+            line = line.replace("  ", " ");
+        line = line.replace(" ", "\t");
         String[] items = line.split("\t");
-        FastaAminoAcid aa =  FastaAminoAcid.fromAbbreviation(items[3]);
-        if(aa == null)
+        FastaAminoAcid aa = FastaAminoAcid.fromAbbreviation(items[3]);
+        if (aa == null)
             return here;
         String chain = items[4];
         int position = Integer.parseInt(items[5]);
-        AminoAcidAtLocation now = new AminoAcidAtLocation(aa,position);
-        if(now.equals(here))
+        AminoAcidAtLocation now = new AminoAcidAtLocation(aa, position);
+        if (now.equals(here))
             return here;
         return now;
     }
 
-
     public AminoAcidAtLocation[] getAminoAcidsForSequence(String foundSequence) {
-        FastaAminoAcid[] aas =  FastaAminoAcid.asAminoAcids(foundSequence);
+        AminoAcidAtLocation[] ret = internalAminoAcidsForSequence(  foundSequence);
+        if(ret != null)
+            return ret;
+        return getAminoAcidsForCloseSequence (  foundSequence);
+    }
+
+    protected AminoAcidAtLocation[] internalAminoAcidsForSequence(String foundSequence) {
+        FastaAminoAcid[] aas = FastaAminoAcid.asAminoAcids(foundSequence);
         for (int i = 0; i < m_DisplayedAminoAcids.size() - aas.length; i++) {
             AminoAcidAtLocation aminoAcidAtLocation = m_DisplayedAminoAcids.get(i);
-            if(aminoAcidAtLocation.getAminoAcid() == aas[0]) {
-                 AminoAcidAtLocation[] ret = maybeBuildSequence(aas,i);
-                if(ret != null)
+            if (aminoAcidAtLocation.getAminoAcid() == aas[0]) {
+                AminoAcidAtLocation[] ret = maybeBuildSequence(aas, i);
+                if (ret != null)
                     return ret;
             }
 
         }
-        String modelSequence = getSequence();
-        String soughtSequence = foundSequence;
-        return null;
+           return null;
 
     }
+
+    /**
+     *
+     * @param foundSequence
+     * @return
+     */
+    protected AminoAcidAtLocation[] getAminoAcidsForCloseSequence(String foundSequence) {
+        String modelSequence = getSequence();
+        SmithWaterman sw = new SmithWaterman(modelSequence, foundSequence);
+        List<SimpleChainingMatch> matches = sw.getMatches();
+        if(matches.size() == 0)  {
+            // try again
+//            sw = new SmithWaterman(modelSequence, foundSequence,SmithWaterman.DEFAULT_SCORE_THRESHOLD / 3);
+//            matches = sw.getMatches();
+//            for (Iterator<SimpleChainingMatch> iterator = matches.iterator(); iterator.hasNext(); ) {
+//                SimpleChainingMatch best =  iterator.next();
+//                String sequenceInTarget = modelSequence.substring(best.getFromA(),best.getToA());
+//                System.out.println(sequenceInTarget);
+//            }
+//            System.out.println(foundSequence + " sought");
+//            System.out.println(modelSequence);
+//            System.out.println();
+              return null;
+        }
+        SimpleChainingMatch best = matches.get(0);
+        String sequenceInTarget = modelSequence.substring(best.getFromA(),best.getToA());
+        return  internalAminoAcidsForSequence(sequenceInTarget);
+
+
+    }
+
 
     private AminoAcidAtLocation[] maybeBuildSequence(FastaAminoAcid[] aas, int start) {
         List<AminoAcidAtLocation> holder = new ArrayList<AminoAcidAtLocation>();
         holder.add(m_DisplayedAminoAcids.get(start));
         for (int i = 1; i < aas.length; i++) {
-            AminoAcidAtLocation aminoAcidAtLocation = m_DisplayedAminoAcids.get( start + i);
-            if(aminoAcidAtLocation.getAminoAcid() == aas[i]) {
-                 holder.add(aminoAcidAtLocation);
+            AminoAcidAtLocation aminoAcidAtLocation = m_DisplayedAminoAcids.get(start + i);
+            if (aminoAcidAtLocation.getAminoAcid() == aas[i]) {
+                holder.add(aminoAcidAtLocation);
             }
             else {
                 return null; // bad
@@ -121,7 +157,7 @@ public class PDBObject {
         AminoAcidAtLocation[] ret = new AminoAcidAtLocation[holder.size()];
         holder.toArray(ret);
         return ret;
-     }
+    }
 
     public static final String[] SOUGHT_SEQUENCES = {
             "HMDLCLTVVDR",
@@ -129,7 +165,7 @@ public class PDBObject {
             "HMDLCLTVVDRAPGSLIK",
             "VLTFLDSHCECNEHWLEPLLER",
             "HMDLCLTVVDRAPGSLIK",
-     };
+    };
 
     public static void main(String[] args) throws Exception {
         File f = new File(args[0]);
@@ -138,12 +174,12 @@ public class PDBObject {
 
         for (int i = 0; i < SOUGHT_SEQUENCES.length; i++) {
             String foundSequence = SOUGHT_SEQUENCES[i];
-            AminoAcidAtLocation[] locs =  obj.getAminoAcidsForSequence( foundSequence);
+            AminoAcidAtLocation[] locs = obj.getAminoAcidsForSequence(foundSequence);
             holder.add(locs);
         }
         AminoAcidAtLocation[][] ret = new AminoAcidAtLocation[holder.size()][];
         holder.toArray(ret);
-        ScriptWriter sw  = new ScriptWriter();
+        ScriptWriter sw = new ScriptWriter();
         String script = sw.writeScript(obj, SOUGHT_SEQUENCES);
         System.out.println(script);
     }

@@ -11,89 +11,10 @@ import java.io.*;
 public class SimpleChaining
 {
 
-	public static Comparator FROMA_COMPARATOR = new Comparator() {public int compare(Object o1, Object o2) { return ((Match) o1).getFromA()-((Match) o2).getFromA();}};
-
-     /**
-     *  Match class defintion
-     *
-     */
-     public static class Match
-     {
-		int fromA;
-		int fromB;
-		int toA;
-		int toB;
-		double score;
+	public static Comparator FROMA_COMPARATOR = new Comparator() {public int compare(Object o1, Object o2) { return ((SimpleChainingMatch) o1).getFromA()-((SimpleChainingMatch) o2).getFromA();}};
 
 
-	public Match(int fA, int tA, int fB, int tB, double s)
-	{
-		fromA=fA;
-		fromB=fB;
-		toA=tA;
-		toB=tB;
-		score =s;
-	}/**
-	 * Returns the value of fromA.
-	 */
-	public int getFromA()
-	{
-		return fromA;
-	}
-
-	/**
-	 * Returns the value of fromB.
-	 */
-	public int getFromB()
-	{
-		return fromB;
-	}
-
-	/**
-	 * Returns the value of toA.
-	 */
-	public int getToA()
-	{
-		return toA;
-	}
-
-	/**
-	 * Returns the value of toB.
-	 */
-	public int getToB()
-	{
-		return toB;
-	}
-
-	/**
-	 * Returns the value of score.
-	 */
-	public double getScore()
-	{
-		return score;
-	}
-
-	//check whether this Match onecjt overlap with input Match m;
-	//return true if two objects do not overlap
-	public boolean notOverlap(Match m)
-	{
-		return  (m.getFromA()>toA || fromA>m.getToA()) && ( m.getFromB()>toB || fromB>m.getToB());
-	}
-
-	public boolean isChainable(Match m)
-	{
-		return (m.getFromA()>toA && m.getFromB()> toB );
-	}
-	public String toString()
-	{
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("["+fromA+", "+ toA+", "+ fromB+",  "+toB+", "+ score+",]");
-		return buffer.toString();
-	}
-     }
-
-
-   /**
+    /**
     * Identify the best chain from given list of match
     *
     * @param matches a list of match
@@ -124,15 +45,15 @@ public class SimpleChaining
 	  //initialize the adjancey matrix and scre matrx from top left to bottom right
 	  //for each match i=1..size-1
 	  // 	compare to rest match j= 0,...i-1
-	    Match mr=null;
+	    SimpleChainingMatch mr=null;
 	  for (int i=1; i<size; i++)
 	  {
 
 		  //if ( i !=size-1)
-			  mr= (Match) matches.get(i);
+			  mr= (SimpleChainingMatch) matches.get(i);
 		  for (int j=0; j< i; j++)
 		  {
-			 Match mc =(Match) matches.get(j);
+			 SimpleChainingMatch mc =(SimpleChainingMatch) matches.get(j);
 			 int i_j = i*(i-1)/2+j;
 		         if (mc.isChainable(mr))
 			 {
@@ -154,7 +75,7 @@ public class SimpleChaining
 	  int maxIndex=0;
 	  for (int i=0; i< size; i++)
 	  {
-		  sMax[i]+=((Match) matches.get(i)).getScore();
+		  sMax[i]+=((SimpleChainingMatch) matches.get(i)).getScore();
 		  if (sMax[i]>max)
 		  {
 			  max=sMax[i];
@@ -167,7 +88,7 @@ public class SimpleChaining
 		  printLowerMatrix(adjMatrix, size);
 		  System.out.print("sink\t");
 		  for (int i=0; i< size; i++)
-			  System.out.print( ((Match) matches.get(i)).getScore()+"\t");
+			  System.out.print( ((SimpleChainingMatch) matches.get(i)).getScore()+"\t");
 		  System.out.println();
 		  System.out.println("The score matrix is:");
 		  printLowerMatrix(sMatrix, size);

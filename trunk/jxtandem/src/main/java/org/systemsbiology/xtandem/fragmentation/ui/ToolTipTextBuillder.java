@@ -33,8 +33,9 @@ public class ToolTipTextBuillder extends SVGFragmentBuilder {
         StringBuilder sb = new StringBuilder(super.getTagAttributes());
         SVGFragmentBuilder target = getTarget();
     //    sb.append(" x=\"" + (target.getX() + target.getWidth() / 2) + "\"");
-        sb.append(" x=\"" + (target.getX()) + "\"");
-        sb.append(" y=\"" + target.getY() + "\"");
+        Offset total = target.getTotalOffset();
+        sb.append(" x=\"" + (total.getX()) + "\"");
+        sb.append(" y=\"" + total.getY() + "\"");
         sb.append(" font-size=\"" + POPUP_FONT_SIZE + "\"");
         sb.append(" fill=\"black\" ");
         sb.append(" stroke=\"black\" ");
