@@ -2836,6 +2836,8 @@ public abstract class FileUtilities {
                 return (false);
             }
             // failure - no data
+            if(dst.getParentFile() != null)
+                dst.getParentFile().mkdirs();
             RandomAccessFile dstFile = new RandomAccessFile(dst, "rw");
 
             int bytesRead = 0;

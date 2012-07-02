@@ -1,5 +1,6 @@
 package org.systemsbiology.jmol;
 
+import com.lordjoe.utilities.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 
@@ -23,6 +24,8 @@ public class PDBObject {
         try {
             LineNumberReader rdr = new LineNumberReader(new FileReader(m_File));
             readFromReader(rdr);
+         // save the models that are used
+         //   FileUtilities.copyFile(file,new File("E:/tmp/Models3d/" + file.getName()));
         }
         catch (FileNotFoundException e) {
             throw new RuntimeException(e);
