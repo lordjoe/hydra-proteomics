@@ -44,7 +44,7 @@ public class ScriptWriter {
         appendScriptHeader(original, sb);
         for (int i = 0; i < foundSequences.length; i++) {
             AminoAcidAtLocation[] highlited = foundSequences[i];
-            appendScriptHilight(highlited, COLOR_NAMES[i & COLOR_NAMES.length], sb);
+            appendScriptHilight(highlited, COLOR_NAMES[i % COLOR_NAMES.length], sb);
 
         }
 

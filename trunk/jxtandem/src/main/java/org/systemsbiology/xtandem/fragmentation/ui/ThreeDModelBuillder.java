@@ -36,8 +36,11 @@ public class ThreeDModelBuillder extends AbstractHtmlFragmentHolder {
                     " modeled  " +  m_FragmentLocations.size() + " of " +  frags.length + " fragments "
                     ,1);
             new SingleTagBuillder(this,"p");
-            for(ProteinFragment pf : m_FragmentLocations.keySet())  {
-                ThreeDModelAppletBuillder mf = new ThreeDModelAppletBuillder(this,pfd,pf,m_FragmentLocations.get(pf),index++);
+            ThreeDModelCompositeAppletBuillder mfall = new ThreeDModelCompositeAppletBuillder(this,pfd, m_FragmentLocations );
+            // make individtual models
+            new SingleTagBuillder(this,"p");
+             for(ProteinFragment pf : m_FragmentLocations.keySet())  {
+                ThreeDModelAppletBuillder mf = new ThreeDModelAppletBuillder(this,pfd, m_FragmentLocations.get(pf),index++);
               }
          }
     }

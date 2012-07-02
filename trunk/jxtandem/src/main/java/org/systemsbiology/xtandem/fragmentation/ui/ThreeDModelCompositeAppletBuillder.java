@@ -11,19 +11,17 @@ import java.util.*;
  * User: Steve
  * Date: 6/25/12
  */
-public class ThreeDModelAppletBuillder extends AbstractHtmlFragmentHolder {
-    public static final ThreeDModelAppletBuillder[] EMPTY_ARRAY = {};
+public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHolder {
+    public static final ThreeDModelCompositeAppletBuillder[] EMPTY_ARRAY = {};
 
-     private final AminoAcidAtLocation[]  m_Locations;
-     private final PDBObject m_Model;
+    private final Map<ProteinFragment, AminoAcidAtLocation[]> m_FragmentLocations;
+    private final PDBObject m_Model;
     private final ScriptWriter m_ScriptWriter = new ScriptWriter();
-    private final int m_Index;
 
-    public ThreeDModelAppletBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription pfd, AminoAcidAtLocation[]locs,int index) {
+    public ThreeDModelCompositeAppletBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription pfd, final Map<ProteinFragment, AminoAcidAtLocation[]> fragments) {
         super(page);
-          m_Model = pfd.getModel();
-        m_Locations = locs;
-          m_Index = index;
+        m_FragmentLocations = fragments;
+        m_Model = pfd.getModel();
     }
 
 
@@ -34,24 +32,31 @@ public class ThreeDModelAppletBuillder extends AbstractHtmlFragmentHolder {
     @Override
     public void addStartText(final Appendable out, final Object... data) {
         try {
+            List<AminoAcidAtLocation[]> holder = new ArrayList<AminoAcidAtLocation[]>();
+            for (ProteinFragment pf : m_FragmentLocations.keySet()) {
+                holder.add(m_FragmentLocations.get(pf));
+            }
+
+            AminoAcidAtLocation[][] locations = new AminoAcidAtLocation[holder.size()][];
+            holder.toArray(locations);
             out.append("<applet id=\"" + getUniqueId() + "\" name=\"flash\" code=\"JmolApplet\" archive=\"JmolApplet.jar\"\n" +
                     "        codebase=\"../..\"\n" +
-                    "        width=\"500\" height=\"420\" align=\"center\" mayscript=\"true\">");
+                    "        width=\"924\" height=\"678\" align=\"center\" mayscript=\"true\">");
             out.append("<param name=\"bgcolor\" value=\"black\">");
             out.append("\n");
             out.append("<param name=\"progressbar\" value=\"true\">");
             out.append("\n");
-              out.append("<param name=\"script\" value=\"\n");
-            String script = m_ScriptWriter.writeScript(m_Model,m_Locations,m_Index);
+            out.append("<param name=\"script\" value=\"\n");
+            String script = m_ScriptWriter.writeScript(m_Model,locations);
             out.append(script);
-             out.append("  \">\n");
+            out.append("  \">\n");
 
         }
         catch (IOException e) {
             throw new RuntimeException(e);
 
         }
-     }
+    }
 
     @Override
     public void addEndText(final Appendable out, final Object... data) {
