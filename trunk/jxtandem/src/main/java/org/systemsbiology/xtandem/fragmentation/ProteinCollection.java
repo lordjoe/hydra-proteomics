@@ -261,7 +261,7 @@ public class ProteinCollection implements IFastaHandler {
         ProteinCollection pc = new ProteinCollection();
         pc.loadData();
         String[] ids = pc.getProteinIds();
-        ids = SPECIAL_TEST_PROTEINS; // use only a few
+   //     ids = SPECIAL_TEST_PROTEINS; // use only a few
     //    ids = THREE_INTERESTING; // look at only one case
         ProteinCoveragePageBuilder pb = new ProteinCoveragePageBuilder(pc);
         pb.buildPages(ids);

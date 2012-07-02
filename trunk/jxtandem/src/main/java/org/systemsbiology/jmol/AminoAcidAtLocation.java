@@ -12,10 +12,20 @@ public class AminoAcidAtLocation {
 
     private final FastaAminoAcid m_AminoAcid;
     private final int m_Location;
+    private final ChainEnum m_Chain;
 
-    public AminoAcidAtLocation(FastaAminoAcid aminoAcid, int location) {
+    public AminoAcidAtLocation(FastaAminoAcid aminoAcid, int location,ChainEnum chain) {
         m_AminoAcid = aminoAcid;
         m_Location = location;
+        m_Chain = chain;
+    }
+
+    public AminoAcidAtLocation(FastaAminoAcid aminoAcid, int location) {
+        this(aminoAcid,location,ChainEnum.A);
+    }
+
+    public ChainEnum getChain() {
+        return m_Chain;
     }
 
     public FastaAminoAcid getAminoAcid() {

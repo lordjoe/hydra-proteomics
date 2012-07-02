@@ -71,6 +71,7 @@ public class CoverageFragment extends SVGRootBuilder {
         page.getHeader().addString(CSS_TEXT);
         m_Fragments = fragments;
         setWidth((AMINO_ACID_LINE_WIDTH + 1) * AMINO_ACID_WIDTH);
+
         m_Lines = ProteinFragmentLine.generateLines(fragments);
         ProteinFragment[] fragments1 = fragments.getFragments();
         for (int i = 0; i < m_Lines.length; i++) {
