@@ -36,7 +36,7 @@ public class SVGRootBuilder extends SVGFragmentBuilder {
     }
 
     @Override
-    protected final void appendAllBuilders(final Appendable out, final Object[] data) {
+    protected  void appendAllBuilders(final Appendable out, final Object[] data) {
         super.appendAllBuilders(out, data);
         for(ToolTipTextBuillder tt : m_ToolTips)  {
             tt.appendFragment(out,data);

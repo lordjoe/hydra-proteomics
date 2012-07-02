@@ -52,18 +52,59 @@ public class PDBObject {
             StringBuilder sb = new StringBuilder();
             String line = rdr.readLine();
             while (line != null) {
-                AminoAcidAtLocation now = handleLine(line, here);
-                if (now != null && !now.equals(here)) {
-                    m_DisplayedAminoAcids.add(now);
-                    sb.append(now.getAminoAcid());
-                }
-                here = now;
+                handleLine(line,sb );
+ //               AminoAcidAtLocation now = handleLine(line,sb, here);
+//                if (now != null && !now.equals(here)) {
+//                    m_DisplayedAminoAcids.add(now);
+//                    sb.append(now.getAminoAcid());
+//                }
+//                here = now;
                 line = rdr.readLine();
             }
             m_Sequence = sb.toString();
         }
         catch (IOException e) {
             throw new RuntimeException(e);
+
+        }
+    }
+
+    private void handleLine(String line, StringBuilder sb ) {
+        if (line.startsWith("SEQRES")) {
+             handleSeqRes(line,sb );
+        }
+      }
+
+
+
+    private void handleSeqRes(String line, StringBuilder sb ) {
+        String substring = line.substring(8, 10).trim();
+        int num = Integer.parseInt(substring);
+        String substring1 = line.substring(11, 12);
+
+        try {
+            ChainEnum chain = ChainEnum.fromString(substring1);
+        }
+        catch (IllegalArgumentException e) {
+             ChainEnum.valueOf(substring1);
+            throw new RuntimeException(e);
+
+        }
+        String substring2 = line.substring(13, 18).trim();;
+        int residues = Integer.parseInt(substring2);
+
+        String rest = line.substring(19);
+        String[] items = rest.split(" ");
+        for (int i = 0; i < items.length; i++) {
+            String item = items[i];
+            if(item == null || item.length() == 0)
+                 continue;
+            FastaAminoAcid aa = FastaAminoAcid.fromAbbreviation(item);
+            if(aa == null)
+                continue;
+             AminoAcidAtLocation now = new AminoAcidAtLocation(aa, m_DisplayedAminoAcids.size() + 1);
+            m_DisplayedAminoAcids.add(now);
+            sb.append(aa.toString());
 
         }
     }
@@ -92,7 +133,7 @@ public class PDBObject {
     }
 
     public AminoAcidAtLocation[] getAminoAcidsForSequence(String foundSequence) {
-        AminoAcidAtLocation[] ret = internalAminoAcidsForSequence(  foundSequence);
+        AminoAcidAtLocation[] ret = internalAminoAcidsForSequence(foundSequence);
         if(ret != null)
             return ret;
         return getAminoAcidsForCloseSequence (  foundSequence);

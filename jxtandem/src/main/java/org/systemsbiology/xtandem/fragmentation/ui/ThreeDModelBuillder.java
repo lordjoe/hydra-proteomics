@@ -30,6 +30,7 @@ public class ThreeDModelBuillder extends AbstractHtmlFragmentHolder {
         int index = 0;
         if(m_FragmentLocations.isEmpty())   {
             new HTMLHeaderHolder(this,"No Fragments found in 3D model",1);
+            pfd.setModel(null);
         }
         else {
             new HTMLHeaderHolder(this,"Using Model " + getModel().getFile() +
