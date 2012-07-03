@@ -82,7 +82,7 @@ public class ProteinCoveragePageBuilder {
         String[] pages = new String[holder.size()];
         holder.toArray(pages);
         String[] idsUsed = new String[idholder.size()];
-        holder.toArray(idsUsed);
+        idholder.toArray(idsUsed);
         buildIndexPage(idsUsed, pages);
     }
 
@@ -95,7 +95,7 @@ public class ProteinCoveragePageBuilder {
         File model3d = proteins.getPDBModelFile(id);
         if (model3d != null) {
             try {
-                model = new PDBObject(model3d);
+                model = new PDBObject(model3d,pfd.getProtein());
                 pfd.setModel(model);
             }
             catch (NumberFormatException e) {

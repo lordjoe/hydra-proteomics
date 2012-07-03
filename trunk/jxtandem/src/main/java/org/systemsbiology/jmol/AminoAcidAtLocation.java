@@ -2,6 +2,8 @@ package org.systemsbiology.jmol;
 
 import org.systemsbiology.xtandem.*;
 
+import java.util.*;
+
 /**
  * org.systemsbiology.jmol.AminoAcidAtLocation
  * User: steven
@@ -9,6 +11,38 @@ import org.systemsbiology.xtandem.*;
  */
 public class AminoAcidAtLocation {
     public static final AminoAcidAtLocation[] EMPTY_ARRAY = {};
+
+    /**
+     * convert locations to a sequence
+     * @param locs !null locs
+     * @return   represented sequence
+     */
+    public static ChainEnum[] toChains(AminoAcidAtLocation[] locs)
+    {
+        Set<ChainEnum> holder = new HashSet<ChainEnum>();
+
+        for (int i = 0; i < locs.length; i++) {
+            AminoAcidAtLocation loc = locs[i];
+            holder.add(loc.getChain());
+        }
+        ChainEnum[] ret = new ChainEnum[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
+    /**
+     * convert locations to a sequence
+     * @param locs !null locs
+     * @return   represented sequence
+     */
+    public static String toSequence(AminoAcidAtLocation[] locs)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < locs.length; i++) {
+            AminoAcidAtLocation loc = locs[i];
+            sb.append(loc.toString());
+        }
+        return sb.toString();
+    }
 
     private final FastaAminoAcid m_AminoAcid;
     private final int m_Location;

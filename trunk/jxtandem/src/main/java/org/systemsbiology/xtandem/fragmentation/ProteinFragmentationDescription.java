@@ -22,7 +22,7 @@ public class ProteinFragmentationDescription {
     private final String m_UniprotId;
     private Protein m_Protein;
     private final List<ProteinFragment> m_Fragments = new ArrayList<ProteinFragment>();
-    private short[] m_Coverage;
+     private short[] m_Coverage;
     private double m_FractionalCoverage; // fraction of amino acids in any fragment
     private PDBObject m_Model;
 
