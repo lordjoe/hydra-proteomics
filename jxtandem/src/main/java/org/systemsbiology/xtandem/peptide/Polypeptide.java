@@ -212,6 +212,15 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         }
         m_Sequence = pSequence;
         m_SequenceLength = m_Sequence.length();
+        int missedCleavages = 0;
+        for(int i = 0; i < m_Sequence.length() - 1; i++)  {
+              char c = m_Sequence.charAt(i);
+              if(c == 'R' || c == 'K') {
+                   if( 'P' != m_Sequence.charAt(i))
+                     missedCleavages++;
+              }
+        }
+        setMissedCleavages(missedCleavages);
      }
 
 //    public void setParentProtein(final IProtein pParentProtein) {

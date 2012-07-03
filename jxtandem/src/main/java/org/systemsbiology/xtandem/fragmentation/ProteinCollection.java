@@ -2,14 +2,14 @@ package org.systemsbiology.xtandem.fragmentation;
 
 import com.lordjoe.utilities.*;
 import org.systemsbiology.fasta.*;
-import org.systemsbiology.jmol.*;
-//import org.systemsbiology.xtandem.fragmentation.ui.*;
 import org.systemsbiology.xtandem.fragmentation.ui.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.taxonomy.*;
 
 import java.io.*;
 import java.util.*;
+
+//import org.systemsbiology.xtandem.fragmentation.ui.*;
 
 /**
  * org.systemsbiology.xtandem.fragmentation.ProteinCollection
@@ -43,6 +43,24 @@ public class ProteinCollection implements IFastaHandler {
             "Q9Y4K3",
             "Q9UPV9",
             "Q9Y6X3",
+    };
+
+    public static final String[] MORE_PROTEINS = {
+            "A8MT69", "O00139", "O00151", "O00154", "O00161", "O00244", "O00255", "O00267", "O00273", "O00299", "O00330", "O00401", "O00408", "O00411",
+            "O00422", "O00425", "O00443", "O00506", "O00541", "O00571", "O00585", "O00746", "O00762", "O00764", "O14497", "O14519", "O14545", "O14556",
+            "O14561", "O14593", "O14617", "O14684", "O14732", "O14733", "O14745", "O14757", "O14773", "O14776", "O14777", "O14893", "O14907", "O14920",
+            "O14929", "O14933", "O14936", "O14965", "O14974", "O14976", "O14980", "O15020", "O15031", "O15047", "O15056", "O15085", "O15119", "O15305",
+            "O15344", "O15379", "O15382", "O15514", "O15550", "O43148", "O43169", "O43172", "O43175", "O43251", "O43252", "O43278", "O43314", "O43324",
+            "O43390", "O43395", "O43396", "O43405", "O43432", "O43447", "O43463", "O43488", "O43504", "O43566", "O43572", "O43615", "O43617", "O43663",
+            "O43665", "O43707", "O43708", "O43719", "O43741", "O43747", "O43752", "O43765", "O43809", "O43813", "O43924", "O60218", "O60234", "O60256",
+            "O60271", "O60333", "O60341", "O60343", "O60344", "O60462", "O60496", "O60504", "O60506", "O60547", "O60566", "O60573", "O60603", "O60658",
+            "O60671", "O60674", "O60701", "O60711", "O60716", "O60763", "O60784", "O60869", "O60880", "O60885", "O60888", "O60907", "O60921", "O60930",
+            "O60942", "O75112", "O75164", "O75223", "O75334", "O75340", "O75347", "O75351", "O75367", "O75368", "O75369", "O75391", "O75400", "O75436",
+            "O75475", "O75521", "O75534", "O75569", "O75582", "O75608", "O75643", "O75688", "O75717", "O75792", "O75821", "O75832", "O75865", "O75874",
+            "O75925", "O75940", "O75962", "O76003", "O76054", "O94768", "O94804", "O94813", "O94829", "O94855", "O94856", "O94925", "O95071", "O95149",
+            "O95155", "O95166", "O95218", "O95292", "O95340", "O95400", "O95433", "O95453", "O95487", "O95684", "O95714", "O95747", "O95786", "O95822",
+            "O95831", "O95861", "O95881", "O95989", "P00167", "P00338", "P00367", "P00387", "P00390", "P00441", "P00480", "P00488", "P00491", "P00492",
+            "P00533", "P00558", "P00568", "P00749", "P00813", "P00918", "P01111", "P01112", "P02461", "P02462", "P02545", "P02549", "P02647", "P02649",
     };
 
     public static final Set<String> SPECIAL_ID_SET = new HashSet<String>(Arrays.asList(SPECIAL_TEST_PROTEINS));
@@ -256,13 +274,13 @@ public class ProteinCollection implements IFastaHandler {
     public static final String[] THREE_INTERESTING = {"Q13114"};
 
 
-
     public static void main(String[] args) {
         ProteinCollection pc = new ProteinCollection();
         pc.loadData();
         String[] ids = pc.getProteinIds();
-   //     ids = SPECIAL_TEST_PROTEINS; // use only a few
-    //    ids = THREE_INTERESTING; // look at only one case
+        //     ids = SPECIAL_TEST_PROTEINS; // use only a few
+        //    ids = THREE_INTERESTING; // look at only one case
+        ids = MORE_PROTEINS;
         ProteinCoveragePageBuilder pb = new ProteinCoveragePageBuilder(pc);
         pb.buildPages(ids);
 

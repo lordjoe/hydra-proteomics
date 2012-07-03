@@ -22,6 +22,14 @@ public class ScriptWriter {
         return sb.toString();
     }
 
+    public static final int MAX_COVERAGE = 6;
+
+    public static String getCoverageColor(int coverage) {
+        coverage = Math.min(coverage, MAX_COVERAGE);
+        int cvalue =  Math.min(255,120 + ((  136 * coverage) / MAX_COVERAGE));
+        return "[" +  cvalue + "," + cvalue + ",80]";
+    }
+
     private final Map<AminoAcidAtLocation, Integer> m_UsedPositions = new HashMap<AminoAcidAtLocation, Integer>();
 
     public String writeScript(PDBObject original, String[] foundSequences) {
@@ -33,6 +41,27 @@ public class ScriptWriter {
             AminoAcidAtLocation[] highlited = original.getAminoAcidsForSequence(foundSequence);
             appendScriptHilight(highlited, COLOR_NAMES[i & COLOR_NAMES.length], sb);
 
+        }
+
+        return sb.toString();
+    }
+
+    public String writeScript(PDBObject original, short[] coverage) {
+        m_UsedPositions.clear();
+
+        StringBuilder sb = new StringBuilder();
+        appendScriptHeader(original, sb);
+        for (int i = 0; i < coverage.length; i++) {
+            short corg = coverage[i];
+            if (corg > 0) {
+                AminoAcidAtLocation aa = original.getAminoAcidAtLocation(i);
+                if (aa != null) {
+                    String coverageColor = getCoverageColor(corg);
+                    appendScriptHilight(aa, coverageColor, sb);
+
+                }
+
+            }
         }
 
         return sb.toString();
@@ -52,7 +81,7 @@ public class ScriptWriter {
     }
 
 
-    public String writeScript(PDBObject original, AminoAcidAtLocation[] highlited,int index) {
+    public String writeScript(PDBObject original, AminoAcidAtLocation[] highlited, int index) {
         m_UsedPositions.clear();
         StringBuilder sb = new StringBuilder();
         appendScriptHeader(original, sb);
@@ -98,7 +127,7 @@ public class ScriptWriter {
             String parentName = file.getParentFile().getName();
             sb.append("load ../" + parentName + "/" + fileName);
             sb.append(";\n");
-             sb.append("select all;color translucent[80,80,80] white");
+            sb.append("select all;color translucent[80,80,80] white");
             sb.append(";\n");
             sb.append("select all ;ribbon off");
             sb.append(";\n");

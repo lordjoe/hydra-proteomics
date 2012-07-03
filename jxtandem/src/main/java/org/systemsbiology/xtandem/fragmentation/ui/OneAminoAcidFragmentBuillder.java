@@ -55,9 +55,10 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     protected String getTagAttributes() {
         StringBuilder sb = new StringBuilder(super.getTagAttributes());
         int textCoverage = getCoverage();
+
         sb.append(" style=\"fill:" + getCoverageColor(textCoverage) + ";\" ");
         sb.append(" text-anchor=\"middle\" "  );
-        sb.append(getTransformText());
+         sb.append(getTransformText());
     //     sb.append(" transform=\"translate(" + getX() + "," + getHeight() + ")\" ");
         return sb.toString();
 
