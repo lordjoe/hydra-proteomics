@@ -68,16 +68,22 @@ public class ProteinCoveragePageBuilder {
 
     public void buildPages(final String[] ids) {
         List<String> holder = new ArrayList<String>();
+        List<String> idholder = new ArrayList<String>();
 
         ProteinCollection pc = getProteins();
         for (int i = 0; i < ids.length; i++) {
             String id = ids[i];
             String page = showCoveragePage(id);
-            holder.add(page);
+            if (page != null) {
+                holder.add(page);
+                idholder.add(id);
+            }
         }
         String[] pages = new String[holder.size()];
         holder.toArray(pages);
-        buildIndexPage(ids, pages);
+        String[] idsUsed = new String[idholder.size()];
+        holder.toArray(idsUsed);
+        buildIndexPage(idsUsed, pages);
     }
 
     static int bad_models = 0;
@@ -115,6 +121,8 @@ public class ProteinCoveragePageBuilder {
         }
 
         double fractionalCoverage = pfd.getFractionalCoverage();
+        if (fractionalCoverage == 0)
+            return null;
         int coveragePercent = (int) (100 * fractionalCoverage);
         body.addString("<h2>Coverage % " + coveragePercent + "</h2>\n");
 
@@ -135,6 +143,7 @@ public class ProteinCoveragePageBuilder {
 
         String page = pb.buildPage();
         String fileName = "pages/" + id + ".html";
+        new File("pages").mkdirs();
         FileUtilities.writeFile(fileName, page);
         return fileName;
     }

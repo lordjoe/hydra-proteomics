@@ -11,6 +11,7 @@ public enum ChainEnum {
 
     public static ChainEnum fromString(String s)
     {
+        s = s.toUpperCase();
         if(Character.isDigit(s.charAt(0)))
             s = "Chn"  + s;
         return valueOf(s);
