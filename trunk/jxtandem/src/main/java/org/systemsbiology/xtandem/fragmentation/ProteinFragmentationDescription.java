@@ -95,6 +95,7 @@ public class ProteinFragmentationDescription {
     }
 
     public ProteinFragment[] getFragments() {
+        guaranteeFragments();
         ProteinFragment[] proteinFragments = m_Fragments.toArray(ProteinFragment.EMPTY_ARRAY);
         return proteinFragments;
     }
@@ -107,6 +108,9 @@ public class ProteinFragmentationDescription {
         if (fragmentsFile.exists() && fragmentsFile.length() > MINIMUM_LENGTH) {
             String[] lines = FileUtilities.readInLines(fragmentsFile);
             buildFragments(lines);
+            if (!m_Fragments.isEmpty())
+                 return;
+
             return;
         }
         String[] lines = downloadProteinFragments();
@@ -129,7 +133,16 @@ public class ProteinFragmentationDescription {
          ProteinFragment[] frage = getFragments();
         for (int i = 0; i < frage.length; i++) {
             ProteinFragment pf = frage[i];
-            AminoAcidAtLocation[] aas = model.getAminoAcidsForSequence(pf.getSequence());
+            AminoAcidAtLocation[] aas = new AminoAcidAtLocation[0];
+            try {
+                aas = model.getAminoAcidsForSequence(pf.getSequence());
+            }
+            catch (IllegalArgumentException e) {
+                if(e.getMessage().startsWith("Invalid amino acid character"))
+                    continue;
+                throw new RuntimeException(e);
+
+            }
             if(aas == null || aas.length == 0)
                 continue;
             ret.put(pf,aas);
