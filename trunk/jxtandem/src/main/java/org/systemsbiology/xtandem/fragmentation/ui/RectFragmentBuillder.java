@@ -1,5 +1,7 @@
 package org.systemsbiology.xtandem.fragmentation.ui;
 
+import org.systemsbiology.xtandem.fragmentation.*;
+
 /**
  * org.systemsbiology.xtandem.fragmentation.ui.HTMLPageBuillder
  * User: Steve
@@ -25,9 +27,17 @@ public class RectFragmentBuillder extends SVGFragmentBuilder {
     @Override
     protected String getTagAttributes() {
         StringBuilder sb = new StringBuilder(super.getTagAttributes());
+        DetectedFragmentBuillder fp = getParentOfType(DetectedFragmentBuillder.class);
+        ProteinFragment fragment = fp.getFragment();
         sb.append(getTransformText());
-        sb.append(" style=\"fill:" + getCoverageColor() + ";\" ");
-    //    sb.append(" transform=\"translate(" + getX() + "," + getY() + ")\" ");
+ //       sb.append("  fill=\"" + getCoverageColor() + "\" ");
+        if(fragment.hasMissedCleavages())
+            sb.append(" style=\"fill:"   + getCoverageColor() + ";stroke-width:3;stroke:black\" ");
+        else {
+            sb.append(" style=\"fill:"   + getCoverageColor() + ";stroke-width:0.5px;stroke:black\" ");
+
+        }
+     //    sb.append(" transform=\"translate(" + getX() + "," + getY() + ")\" ");
         sb.append(" width=\"" + getWidth() + "\"");
         sb.append(" height=\"" + getHeight() + "\"");
         return sb.toString();

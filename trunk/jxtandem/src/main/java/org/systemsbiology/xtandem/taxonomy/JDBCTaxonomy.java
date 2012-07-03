@@ -245,7 +245,7 @@ package org.systemsbiology.xtandem.taxonomy;
 //        String query = GET_MASS_TO_MODIFICATIONS_STATEMENT;
 //        List<IModifiedPeptide> plist2 = template.query(query, SpringJDBCUtilities.MODIFIED_PEPTIDE_MAPPER, mass);
 //        for (IPolypeptide pp : plist2) {
-//            if (!isSemi && pp.isProbablySemiTryptic())
+//            if (!isSemi && pp.hasMissedCleavages())
 //                continue;
 //            if (pp.getMissedCleavages() <= maxMissed)
 //                holder.add(pp);
@@ -266,7 +266,7 @@ package org.systemsbiology.xtandem.taxonomy;
 //        String query = GET_MASS_TO_MODIFICATIONS_STATEMENT;
 //        List<IModifiedPeptide> plist2 = template.query(query, SpringJDBCUtilities.MODIFIED_PEPTIDE_MAPPER, mass);
 //        for (IPolypeptide pp : plist2) {
-//            if (!isSemi && pp.isProbablySemiTryptic())
+//            if (!isSemi && pp.hasMissedCleavages())
 //                continue;
 //            if (pp.getMissedCleavages() <= maxMissed)
 //                holder.add(pp);

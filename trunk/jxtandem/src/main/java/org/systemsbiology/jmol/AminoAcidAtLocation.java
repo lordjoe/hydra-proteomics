@@ -45,18 +45,17 @@ public class AminoAcidAtLocation {
     }
 
     private final FastaAminoAcid m_AminoAcid;
-    private final int m_Location;
+    private int m_Location = -1;
     private final ChainEnum m_Chain;
 
-    public AminoAcidAtLocation(FastaAminoAcid aminoAcid, int location,ChainEnum chain) {
+    public AminoAcidAtLocation(FastaAminoAcid aminoAcid, ChainEnum chain) {
         m_AminoAcid = aminoAcid;
-        m_Location = location;
-        m_Chain = chain;
+         m_Chain = chain;
     }
-
-    public AminoAcidAtLocation(FastaAminoAcid aminoAcid, int location) {
-        this(aminoAcid,location,ChainEnum.A);
-    }
+//
+//    public AminoAcidAtLocation(FastaAminoAcid aminoAcid, int location) {
+//        this(aminoAcid,location,ChainEnum.A);
+//    }
 
     public ChainEnum getChain() {
         return m_Chain;
@@ -70,28 +69,37 @@ public class AminoAcidAtLocation {
         return m_Location;
     }
 
+    public void setLocation(int location) {
+        if(m_Location == -1)
+            m_Location = location;
+        else
+            throw new IllegalStateException("Location already set");
+    }
+
     @Override
     public String toString() {
         return  m_AminoAcid.getAbbreviation() + m_Location;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        AminoAcidAtLocation that = (AminoAcidAtLocation) o;
-
-        if (m_Location != that.m_Location) return false;
-        if (m_AminoAcid != that.m_AminoAcid) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = m_AminoAcid != null ? m_AminoAcid.hashCode() : 0;
-        result = 31 * result + m_Location;
-        return result;
-    }
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        AminoAcidAtLocation that = (AminoAcidAtLocation) o;
+//
+//        if (m_Location != that.m_Location) return false;
+//        if (m_AminoAcid != that.m_AminoAcid) return false;
+//        if (m_Chain != that.m_Chain) return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = m_AminoAcid != null ? m_AminoAcid.hashCode() : 0;
+//        result = 31 * result + m_Location;
+//        result = 31 * result + m_Chain.hashCode();
+//        return result;
+//    }
 }

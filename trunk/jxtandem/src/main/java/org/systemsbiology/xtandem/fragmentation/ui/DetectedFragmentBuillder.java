@@ -53,6 +53,10 @@ public class DetectedFragmentBuillder extends SVGFragmentBuilder {
      }
 
 
+    public ProteinFragment getFragment() {
+        return m_Fragment;
+    }
+
     public ProteinFragmentLine getLine() {
         return m_Line;
     }

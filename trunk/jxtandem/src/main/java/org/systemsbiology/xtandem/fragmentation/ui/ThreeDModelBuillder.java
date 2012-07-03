@@ -2,7 +2,6 @@ package org.systemsbiology.xtandem.fragmentation.ui;
 
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
-import org.systemsbiology.xtandem.peptide.*;
 
 import java.io.*;
 import java.util.*;
@@ -28,22 +27,35 @@ public class ThreeDModelBuillder extends AbstractHtmlFragmentHolder {
         ProteinFragment[] frags = pfd.getFragments();
         m_FragmentLocations = pfd.getAminoAcidLocations();
         int index = 0;
-        if(m_FragmentLocations.isEmpty())   {
-            new HTMLHeaderHolder(this,"No Fragments found in 3D model",1);
+        if (m_FragmentLocations.isEmpty()) {
+            new HTMLHeaderHolder(this, "No Fragments found in 3D model", 1);
             pfd.setModel(null);
         }
         else {
-            new HTMLHeaderHolder(this,"Using Model " + getModel().getFile() +
-                    " modeled  " +  m_FragmentLocations.size() + " of " +  frags.length + " fragments "
-                    ,1);
-            new SingleTagBuillder(this,"p");
-            ThreeDModelCompositeAppletBuillder mfall = new ThreeDModelCompositeAppletBuillder(this,pfd, m_FragmentLocations );
+            int totalFragments = frags.length;
+            int modeledFragments = m_FragmentLocations.size();
+            if (totalFragments > 3 * modeledFragments) {
+                new HTMLHeaderHolder(this, "Dropping bad Model " + getModel().getFile() +
+                        " modeled  " + modeledFragments + " of " + totalFragments + " fragments "
+                        , 1);
+                pfd.setModel(null);
+                return;
+            }
+            new HTMLHeaderHolder(this, "Using Model " + getModel().getFile() +
+                    " modeled  " + modeledFragments + " of " + totalFragments + " fragments "
+                    , 1);
+            new SingleTagBuillder(this, "p");
+            ThreeDModelCompositeAppletBuillder mfall = new ThreeDModelCompositeAppletBuillder(this, pfd, m_FragmentLocations);
             // make individtual models
-            new SingleTagBuillder(this,"p");
-             for(ProteinFragment pf : m_FragmentLocations.keySet())  {
-                ThreeDModelAppletBuillder mf = new ThreeDModelAppletBuillder(this,pfd, m_FragmentLocations.get(pf),index++);
-              }
-         }
+            new SingleTagBuillder(this, "p");
+            new HTMLHeaderHolder(this, "Coverage Plot", 2);
+            ThreeDModelCoverageAppletBuillder cfall = new ThreeDModelCoverageAppletBuillder(this, pfd);
+            // make individtual models
+            new SingleTagBuillder(this, "p");
+//            for (ProteinFragment pf : m_FragmentLocations.keySet()) {
+//                ThreeDModelAppletBuillder mf = new ThreeDModelAppletBuillder(this, pfd, m_FragmentLocations.get(pf), index++);
+//            }
+        }
     }
 
 

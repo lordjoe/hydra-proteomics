@@ -71,12 +71,20 @@ public class ProteinCoveragePageBuilder {
         List<String> idholder = new ArrayList<String>();
 
         ProteinCollection pc = getProteins();
+        String next = null;
+        String prev = null;
         for (int i = 0; i < ids.length; i++) {
+            if(i < ids.length - 1)
+                next = ids[i + 1];
+            else
+                 next = null;
             String id = ids[i];
-            String page = showCoveragePage(id);
+            String page = showCoveragePage(id,prev,next);
+
             if (page != null) {
                 holder.add(page);
                 idholder.add(id);
+                prev = id;
             }
         }
         String[] pages = new String[holder.size()];
@@ -88,14 +96,14 @@ public class ProteinCoveragePageBuilder {
 
     static int bad_models = 0;
 
-    protected String showCoveragePage(String id) {
+    protected String showCoveragePage(String id,String next,String prev) {
         ProteinCollection proteins = getProteins();
         ProteinFragmentationDescription pfd = proteins.getProteinFragmentationDescription(id);
         PDBObject model = null;
         File model3d = proteins.getPDBModelFile(id);
         if (model3d != null) {
             try {
-                model = new PDBObject(model3d,pfd.getProtein());
+                model = new PDBObject(model3d, pfd.getProtein());
                 pfd.setModel(model);
             }
             catch (NumberFormatException e) {
@@ -114,17 +122,34 @@ public class ProteinCoveragePageBuilder {
         HTMLBodyBuillder body = pb.getBody();
         Protein protein = pfd.getProtein();
         body.addString("<a href=\"../Index.html\" >Home</a>\n");
-        body.addString("<h1>" + pb.getTitle() + "</h1>\n");
+        if(prev != null)
+            body.addString("<a href=\"" + prev + ".html\" >Prev</a>\n");
+        if(next != null)
+            body.addString("<a href=\"" + next + ".html\" >Next</a>\n");
+
+         body.addString("<h1>" + pb.getTitle() + "</h1>\n");
         body.addString("<h3>" + protein.getAnnotation() + "</h3>\n");
+        String chainstr = "";
         if (model == null) {
             new HTMLHeaderHolder(body, "No 3D Model Found", 1);
         }
+        else {
+            ChainEnum[] chains = model.getChains();
+            if (chains.length > 1) {
+                StringBuilder sb = buildChainsString(chains);
+                chainstr = sb.toString();
+            }
+        }
 
+        ProteinFragment[] fragments = pfd.getFragments();
         double fractionalCoverage = pfd.getFractionalCoverage();
         if (fractionalCoverage == 0)
             return null;
         int coveragePercent = (int) (100 * fractionalCoverage);
-        body.addString("<h2>Coverage % " + coveragePercent + "</h2>\n");
+        body.addString("<h2>Coverage % " + coveragePercent +
+                " Number Fragments " + fragments.length +
+                chainstr +
+                "</h2>\n");
 
         new CoverageColorsLabel(body);
         new SingleTagBuillder(body, "p");
@@ -146,6 +171,18 @@ public class ProteinCoveragePageBuilder {
         new File("pages").mkdirs();
         FileUtilities.writeFile(fileName, page);
         return fileName;
+    }
+
+    protected static StringBuilder buildChainsString(ChainEnum[] chains) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" Chains ");
+        for (int i = 0; i < chains.length; i++) {
+            ChainEnum chain = chains[i];
+            if (i > 0)
+                sb.append(",");
+            sb.append(chain);
+        }
+        return sb;
     }
 
     protected String buildIndexPage(String[] ids, String[] pages) {

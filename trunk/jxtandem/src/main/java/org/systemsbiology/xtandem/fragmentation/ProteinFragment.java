@@ -35,6 +35,11 @@ public class ProteinFragment {
         return m_Peptide;
     }
 
+    public boolean hasMissedCleavages()
+    {
+         return getPeptide().getMissedCleavages() > 0;
+    }
+
 
     public String getSequence() {
         return getPeptide().getSequence();
