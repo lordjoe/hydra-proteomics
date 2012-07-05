@@ -112,6 +112,9 @@ public class ScriptWriter {
         m_UsedPositions.clear();
         StringBuilder sb = new StringBuilder();
         appendScriptHeader(original, sb);
+        String hiliteChains = writeHideChainsScript(  pfd );
+        sb.append(hiliteChains);
+        sb.append("\n");
         for (int i = 0; i < foundSequences.length; i++) {
             AminoAcidAtLocation[] highlited = foundSequences[i];
             appendScriptHilight(highlited, COLOR_NAMES[i % COLOR_NAMES.length], sb);
