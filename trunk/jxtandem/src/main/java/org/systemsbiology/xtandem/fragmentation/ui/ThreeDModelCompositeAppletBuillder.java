@@ -15,18 +15,21 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
     public static final ThreeDModelCompositeAppletBuillder[] EMPTY_ARRAY = {};
 
     private final Map<ProteinFragment, AminoAcidAtLocation[]> m_FragmentLocations;
-    private final PDBObject m_Model;
+    private final ProteinFragmentationDescription m_PFD;
     private final ScriptWriter m_ScriptWriter = new ScriptWriter();
 
     public ThreeDModelCompositeAppletBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription pfd, final Map<ProteinFragment, AminoAcidAtLocation[]> fragments) {
         super(page);
         m_FragmentLocations = fragments;
-        m_Model = pfd.getModel();
+        m_PFD = pfd;
+     }
+
+    public ProteinFragmentationDescription getPFD() {
+        return m_PFD;
     }
 
-
     public PDBObject getModel() {
-        return m_Model;
+        return getPFD().getModel();
     }
 
     @Override
@@ -47,7 +50,7 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             out.append("<param name=\"progressbar\" value=\"true\">");
             out.append("\n");
             out.append("<param name=\"script\" value=\"\n");
-            String script = m_ScriptWriter.writeScript(m_Model,locations);
+            String script = m_ScriptWriter.writeScript(getPFD(),locations);
             out.append(script);
             out.append("  \">\n");
 

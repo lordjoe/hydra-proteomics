@@ -16,7 +16,11 @@ import java.util.*;
 public class ProteinCoveragePageBuilder {
     public static final ProteinCoveragePageBuilder[] EMPTY_ARRAY = {};
 
+    public static final int MAX_COVERAGE = 8;
+
     private final ProteinCollection m_Proteins;
+    private final int[] m_TotalCoverage = new int[MAX_COVERAGE];
+    private final double[] m_AverageCoverage = new double[MAX_COVERAGE];
 
     public ProteinCoveragePageBuilder(final ProteinCollection proteins) {
         m_Proteins = proteins;
@@ -26,6 +30,22 @@ public class ProteinCoveragePageBuilder {
         return m_Proteins;
     }
 
+    public int[] getTotalCoverage() {
+        return m_TotalCoverage;
+    }
+
+    public double[] getAverageCoverage() {
+        if(m_AverageCoverage[0] == 0) {
+            int sum = 0;
+            for (int i = 0; i < m_TotalCoverage.length; i++) {
+                   sum += m_TotalCoverage[i];
+                 }
+            for (int i = 0; i < m_TotalCoverage.length; i++) {
+                   m_AverageCoverage[i] = m_TotalCoverage[i] / (double )sum;
+                 }
+            }
+        return m_AverageCoverage;
+    }
 
     public void showCoverage(String id) {
         ProteinCollection pc = getProteins();
@@ -99,12 +119,18 @@ public class ProteinCoveragePageBuilder {
     protected String showCoveragePage(String id,String next,String prev) {
         ProteinCollection proteins = getProteins();
         ProteinFragmentationDescription pfd = proteins.getProteinFragmentationDescription(id);
+        int[] coverageLevels = pfd.getStatistics().getCoverateStatistics();
+        for (int i = 0; i < Math.min(MAX_COVERAGE,coverageLevels.length); i++) {
+            int coverageLevel = coverageLevels[i];
+            m_TotalCoverage[i] +=  coverageLevel;
+        }
         PDBObject model = null;
         File model3d = proteins.getPDBModelFile(id);
         if (model3d != null) {
             try {
                 model = new PDBObject(model3d, pfd.getProtein());
                 pfd.setModel(model);
+
             }
             catch (NumberFormatException e) {
                 System.out.println("problem " + id + " " + e.getMessage());
@@ -194,6 +220,7 @@ public class ProteinCoveragePageBuilder {
         List<String> idWithout3dModel = new ArrayList<String>();
         List<String> pageWith3dModel = new ArrayList<String>();
         List<String> pageWithout3dModel = new ArrayList<String>();
+        List<ProteinFragmentationDescription> pfdWith3dModel = new ArrayList<ProteinFragmentationDescription>();
 
         for (int i = 0; i < ids.length; i++) {
             String id = ids[i];
@@ -201,6 +228,7 @@ public class ProteinCoveragePageBuilder {
             ProteinFragmentationDescription pd = proteins.getProteinFragmentationDescription(id);
             if (pd.getModel() != null) {
                 idWith3dModel.add(id);
+                pfdWith3dModel.add(pd);
                 pageWith3dModel.add(page);
             }
             else {
@@ -221,6 +249,18 @@ public class ProteinCoveragePageBuilder {
         String page = pb.buildPage();
         String fileName = "Index.html";
         FileUtilities.writeFile(fileName, page);
+        Collections.sort(pfdWith3dModel,ProteinFragmentationDescription.INTERESTING_COMPARATOR);
+        for (Iterator<ProteinFragmentationDescription> iterator = pfdWith3dModel.iterator(); iterator.hasNext(); ) {
+            ProteinFragmentationDescription next =  iterator.next();
+            System.out.println(next.getUniprotId() + " " + String.format("%5.3f", next.getFractionalCoverage()) + " " +
+                    next.getStatistics().getPartitionStatistics(2));
+        }
+        double[] averagecoverage = getAverageCoverage();
+        for (int i = 0; i < averagecoverage.length; i++) {
+            double v = averagecoverage[i];
+            System.out.print(Integer.toString(i) + " " + String.format("%5.3f", v) + ",");
+        }
+        System.out.println();
         return fileName;
     }
 

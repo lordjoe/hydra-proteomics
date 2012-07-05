@@ -17,18 +17,43 @@
 package com.lordjoe.utilities;
 
 import com.lordjoe.lib.xml.*;
+import org.xml.sax.*;
 
+import java.awt.*;
 import java.beans.*;
 import java.io.*;
+import java.lang.Comparable;
 import java.lang.reflect.*;
 import java.net.*;
 import java.text.*;
 import java.util.*;
 import java.util.List;
-import java.lang.Comparable;
-import java.awt.*;
-
-import org.xml.sax.SAXParseException;
+import java.lang.UnsupportedOperationException;
+import java.lang.String;
+import java.lang.Enum;
+import java.lang.InterruptedException;
+import java.lang.Process;
+import java.lang.Character;
+import java.lang.Object;
+import java.lang.Appendable;
+import java.lang.SecurityManager;
+import java.lang.Double;
+import java.lang.Class;
+import java.lang.NoSuchMethodException;
+import java.lang.Thread;
+import java.lang.IllegalStateException;
+import java.lang.Override;
+import java.lang.ArrayStoreException;
+import java.lang.IllegalAccessException;
+import java.lang.IllegalArgumentException;
+import java.lang.Boolean;
+import java.lang.StringBuffer;
+import java.lang.NumberFormatException;
+import java.lang.RuntimeException;
+import java.lang.SuppressWarnings;
+import java.lang.StringBuilder;
+import java.lang.Integer;
+import java.lang.Throwable;
 
 /**
  * { class
@@ -90,36 +115,136 @@ public abstract class Util {
     public static final Comparator<Object> OBJECT_COMPARATOR = new BaseJavaComparator();  // what object does
     public static final int DEFAULT_MAX_STRING_LENGTH = 0x4fff;
 
-    protected final  static long secondInMs = 1000L;
-    protected static  final long minuteInMs = 60L * secondInMs;
-    protected static  final long hourInMs = 60L * minuteInMs;
-    protected static  final long dayInMs = 24L * hourInMs;
+    protected final static long secondInMs = 1000L;
+    protected static final long minuteInMs = 60L * secondInMs;
+    protected static final long hourInMs = 60L * minuteInMs;
+    protected static final long dayInMs = 24L * hourInMs;
 
-     public static class BaseJavaComparator implements Comparator<Object> {
-         @Override
-         public int compare(final Object o1, final Object o2) {
-                return Util.objectCompareTo(o1, o2);
-         }
+    public static class BaseJavaComparator implements Comparator<Object> {
+        @Override
+        public int compare(final Object o1, final Object o2) {
+            return Util.objectCompareTo(o1, o2);
+        }
 
-      }
+    }
+
+    public static final int DEFAULT_MAX_VALUE = 4095;
 
     /**
-     *   comparason Java uses forObject
+      *
+      * count the occurances of each positive value up to DEFAULT_MAX_VALUE
+      * @param values  !null array of non-negative values
+        * @return  array of counts
+      */
+    public static int[] computeStatistics(int[] values) {
+         return computeStatistics( values,DEFAULT_MAX_VALUE);
+    }
+
+    /**
+      *
+      * count the occurances of each positive value up to maxvalue
+      * @param values  !null array of non-negative values
+      * @param maxValue value to truncate
+      * @return
+      */
+    public static int[] computeStatistics(int[] values,int maxValue) {
+        int max = 0;
+        int[] temp = new int[maxValue + + 1];
+        for (int i = 0; i < values.length; i++) {
+            int val = Math.min(maxValue,values[i]);
+            max = Math.max(val,max);
+            if(val < 0)
+                throw new IllegalStateException("statistics are fpr positive numbers only ");
+            temp[val]++;
+        }
+        int[] ret = new int[max];
+        System.arraycopy(temp,0,ret,0,max + 1);
+        return ret;
+    }
+
+
+    /**
+      *
+      * count the occurances of each positive value up to DEFAULT_MAX_VALUE
+      * @param values  !null array of non-negative values
+        * @return  array of counts
+      */
+    public static int[] computeStatistics(short[] values) {
+         return computeStatistics( values,DEFAULT_MAX_VALUE);
+    }
+    /**
+      *
+      * count the occurances of each positive value up to maxvalue
+      * @param values  !null array of non-negative values
+      * @param maxValue value to truncate
+      * @return
+      */
+    public static int[] computeStatistics(short[] values,int maxValue) {
+        int max = 0;
+        int[] temp = new int[maxValue + + 1];
+        for (int i = 0; i < values.length; i++) {
+            int val = Math.min(maxValue,values[i]);
+            max = Math.max(val,max);
+            if(val < 0)
+                throw new IllegalStateException("statistics are fpr positive numbers only ");
+            temp[val]++;
+        }
+        int[] ret = new int[max + 1];
+        System.arraycopy(temp,0,ret,0,max + 1);
+        return ret;
+    }
+
+    /**
+      *
+      * count the occurances of each positive value up to DEFAULT_MAX_VALUE
+      * @param values  !null array of non-negative values
+        * @return  array of counts
+      */
+   public static int[] computeStatistics(long[] values) {
+         return computeStatistics( values,DEFAULT_MAX_VALUE);
+    }
+
+    /**
+     *
+     * count the occurances of each positive value up to maxvalue
+     * @param values  !null array of non-negative values
+     * @param maxValue value to truncate
+     * @return
+     */
+    public static int[] computeStatistics(long[] values,int maxValue) {
+        int max = 0;
+        int[] temp = new int[maxValue +   1];
+        for (int i = 0; i < values.length; i++) {
+            int val = Math.min((int)maxValue,(int)values[i]);
+            max = Math.max(val,max);
+            if(val < 0)
+                throw new IllegalStateException("statistics are fpr positive numbers only ");
+            temp[val]++;
+        }
+        int[] ret = new int[max];
+        System.arraycopy(temp,0,ret,0,max + 1);
+        return ret;
+    }
+
+
+
+    /**
+     * comparason Java uses forObject
+     *
      * @param o1
      * @param o2
      * @return
      */
     public static int objectCompareTo(final Object o1, final Object o2) {
-         int h1 = System.identityHashCode(o1);
-         int h2 = System.identityHashCode(o2);
-         if(h1 == h2)
-             return 0;
-         if(h1 < h2)
-             return 1;
-         else
-             return -1;
-     }
-
+        int h1 = System.identityHashCode(o1);
+        int h2 = System.identityHashCode(o2);
+        if (h1 == h2)
+            return 0;
+        if (h1 < h2)
+            return 1;
+        else
+            return -1;
+    }
 
 
     public static String getExceptionStack(Throwable t) {
@@ -144,6 +269,59 @@ public abstract class Util {
         for (int i = 1; i < values.length; i++) {
             ret = Math.max(ret, values[i]);
 
+        }
+        return ret;
+    }
+
+    public static int[] convert(Integer... wrapped) {
+        int[] ret = new int[wrapped.length];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = wrapped[i];
+        }
+        return ret;
+    }
+
+
+    public static short[] convert(Short... wrapped) {
+        short[] ret = new short[wrapped.length];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = wrapped[i];
+        }
+        return ret;
+    }
+
+
+    public static double[] convert(Double... wrapped) {
+        double[] ret = new double[wrapped.length];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = wrapped[i];
+        }
+        return ret;
+    }
+
+
+    public static long[] convert(Long... wrapped) {
+        long[] ret = new long[wrapped.length];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = wrapped[i];
+        }
+        return ret;
+    }
+
+
+    public static float[] convert(Float... wrapped) {
+        float[] ret = new float[wrapped.length];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = wrapped[i];
+        }
+        return ret;
+    }
+
+
+    public static boolean[] convert(Boolean... wrapped) {
+        boolean[] ret = new boolean[wrapped.length];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = wrapped[i];
         }
         return ret;
     }
@@ -178,7 +356,7 @@ public abstract class Util {
 
     private static Boolean gRunningOnMac;
 
-    public static synchronized  boolean isMac() {
+    public static synchronized boolean isMac() {
         if (gRunningOnMac == null) {
             String osName = System.getProperty("os.name");
             gRunningOnMac = osName.startsWith("Mac OS");
@@ -198,7 +376,7 @@ public abstract class Util {
     //- Methods
 
     public static Date getStartTime() {
-        return ((Date)gStartTime.clone());
+        return ((Date) gStartTime.clone());
     }
 
     public static String getStartTimeString() {
@@ -2169,7 +2347,7 @@ public abstract class Util {
         // now run the heap	sort
         l = (s.length >> 1) + 1;
         ir = s.length;
-        for (; ;) {
+        for (; ; ) {
             if (l > 1) {
                 rra = ra[--l];
             }
@@ -2222,7 +2400,7 @@ public abstract class Util {
         // now run the heap	sort
         l = (s.length >> 1) + 1;
         ir = s.length;
-        for (; ;) {
+        for (; ; ) {
             if (l > 1) {
                 rra = ra[--l];
             }
@@ -2287,7 +2465,7 @@ public abstract class Util {
         // now run the heap	sort
         l = (s.length >> 1) + 1;
         ir = s.length;
-        for (; ;) {
+        for (; ; ) {
             if (l > 1) {
                 rra = ra[--l];
             }
@@ -3410,7 +3588,7 @@ public abstract class Util {
         if (c == uc)
             return in;
         if (in.length() == 1)
-            return  ("" + uc);
+            return ("" + uc);
         else
             return uc + in.substring(1);
     }
@@ -3418,9 +3596,10 @@ public abstract class Util {
 
     /**
      * return the text between beforeStart and  afterEnd
-     * @param in  !null String
+     *
+     * @param in          !null String
      * @param beforeStart !null string
-     * @param afterEnd  !null string
+     * @param afterEnd    !null string
      * @return possibly null string - null says nothing is there
      */
     public static String textBetween(String in, String beforeStart, String afterEnd) {
@@ -5275,26 +5454,26 @@ public abstract class Util {
     }
 
     /**
-      * write a string representing Now
-      *
-      * @return non-null String
-      */
-     public static String nowString() {
-         SimpleDateFormat fmt = new SimpleDateFormat("dd-MMM-yyyy HH:mm");
-         return (fmt.format(new Date()));
-     }
+     * write a string representing Now
+     *
+     * @return non-null String
+     */
+    public static String nowString() {
+        SimpleDateFormat fmt = new SimpleDateFormat("dd-MMM-yyyy HH:mm");
+        return (fmt.format(new Date()));
+    }
 
-      /**
-      * write a string representing Now
-      *
-      * @return non-null String
-      */
-     public static String timeString() {
-         SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
-         return (fmt.format(new Date()));
-     }
+    /**
+     * write a string representing Now
+     *
+     * @return non-null String
+     */
+    public static String timeString() {
+        SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+        return (fmt.format(new Date()));
+    }
 
-     /**
+    /**
      * return a random lighter color
      *
      * @return
@@ -5323,7 +5502,7 @@ public abstract class Util {
      *
      * @param o1 possibly null object
      * @param o2 possibly null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compareNonNull
      */
     public static int compare(Object o1, Object o2) {
@@ -5341,7 +5520,7 @@ public abstract class Util {
      *
      * @param o1 possibly null object
      * @param o2 possibly null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compareNonNull
      */
     public static int compareCaseless(String o1, String o2) {
@@ -5370,7 +5549,7 @@ public abstract class Util {
      *
      * @param o1 possibly null object
      * @param o2 possibly null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compareNonNull
      */
     public static int comparenull(Object o1, Object o2) {
@@ -5387,7 +5566,7 @@ public abstract class Util {
      *
      * @param o1 non null object
      * @param o2 non null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see comparenull
      */
     protected static int compareNonNull(Object o1, Object o2) {
@@ -5436,7 +5615,7 @@ public abstract class Util {
      *
      * @param o1 non null object
      * @param o2 non null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compare
      */
     protected static int compareArrays(Object o1, Object o2) {
@@ -5473,7 +5652,7 @@ public abstract class Util {
      *
      * @param o1 non null object
      * @param o2 non null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compare
      */
     protected static int compareObjectArrays(Object[] o1, Object[] o2) {
@@ -5495,7 +5674,7 @@ public abstract class Util {
      *
      * @param o1 non null object
      * @param o2 non null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compare
      */
     protected static int compareIntArrays(int[] o1, int[] o2) {
@@ -5516,7 +5695,7 @@ public abstract class Util {
      *
      * @param o1 non null object
      * @param o2 non null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compare
      */
     protected static int compareShortArrays(short[] o1, short[] o2) {
@@ -5537,7 +5716,7 @@ public abstract class Util {
      *
      * @param o1 non null object
      * @param o2 non null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compare
      */
     protected static int compareLongArrays(long[] o1, long[] o2) {
@@ -5558,7 +5737,7 @@ public abstract class Util {
      *
      * @param o1 non null object
      * @param o2 non null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compare
      */
     protected static int compareCharArrays(char[] o1, char[] o2) {
@@ -5579,7 +5758,7 @@ public abstract class Util {
      *
      * @param o1 non null object
      * @param o2 non null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compare
      */
     protected static int compareByteArrays(byte[] o1, byte[] o2) {
@@ -5600,7 +5779,7 @@ public abstract class Util {
      *
      * @param o1 non null object
      * @param o2 non null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compare
      */
     protected static int compareBooleanArrays(boolean[] o1, boolean[] o2) {
@@ -5621,7 +5800,7 @@ public abstract class Util {
      *
      * @param o1 non null object
      * @param o2 non null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compare
      */
     protected static int compareDoubleArrays(double[] o1, double[] o2) {
@@ -5642,7 +5821,7 @@ public abstract class Util {
      *
      * @param o1 non null object
      * @param o2 non null object
-     * @return 1,0,-1 as on compareTo
+     * @return 1, 0,-1 as on compareTo
      * @see compare
      */
     protected static int compareFloatArrays(float[] o1, float[] o2) {
@@ -5657,9 +5836,10 @@ public abstract class Util {
         return (o1.length < o2.length ? -1 : 1);
     }
 
-    public static class StringComparator implements Comparator<String>,Serializable {
+    public static class StringComparator implements Comparator<String>, Serializable {
         private StringComparator() {
-         }
+        }
+
         public int compare(String o1, String o2) {
             return (((String) o1).compareTo((String) o2));
         }
@@ -5670,47 +5850,48 @@ public abstract class Util {
     }
 
     /**
-      * compare a number of strings all of which represent numbers
-      */
-     public static class StringAsNumberComparator implements Comparator<String>,Serializable {
-         private StringAsNumberComparator() {
-         }
+     * compare a number of strings all of which represent numbers
+     */
+    public static class StringAsNumberComparator implements Comparator<String>, Serializable {
+        private StringAsNumberComparator() {
+        }
 
-         public int compare(String o1, String o2) {
-             if(o1 == o2)
-                 return 0;
-             long l1 = Long.parseLong(o1);
-             long l2 = Long.parseLong(o2);
-             if(l1 > l2)
-                  return 1;
-             if(l1 < l2)
-                  return -1;
-             return o1.compareTo(o2);
-           }
+        public int compare(String o1, String o2) {
+            if (o1 == o2)
+                return 0;
+            long l1 = Long.parseLong(o1);
+            long l2 = Long.parseLong(o2);
+            if (l1 > l2)
+                return 1;
+            if (l1 < l2)
+                return -1;
+            return o1.compareTo(o2);
+        }
 
-       }
+    }
+
     /**
-      * compare a number of strings all of which represent numbers
-      */
-     public static class StringAsDescendingNumberComparator implements Comparator<String>,Serializable {
-         private StringAsDescendingNumberComparator() {
-         }
+     * compare a number of strings all of which represent numbers
+     */
+    public static class StringAsDescendingNumberComparator implements Comparator<String>, Serializable {
+        private StringAsDescendingNumberComparator() {
+        }
 
-         public int compare(String o1, String o2) {
-             if(o1 == o2)
-                 return 0;
-             long l1 = Long.parseLong(o1);
-             long l2 = Long.parseLong(o2);
-             if(l1 > l2)
-                  return -1;
-             if(l1 < l2)
-                  return 1;
-             return o1.compareTo(o2);
-           }
+        public int compare(String o1, String o2) {
+            if (o1 == o2)
+                return 0;
+            long l1 = Long.parseLong(o1);
+            long l2 = Long.parseLong(o2);
+            if (l1 > l2)
+                return -1;
+            if (l1 < l2)
+                return 1;
+            return o1.compareTo(o2);
+        }
 
-       }
+    }
 
-    public static class DoubleComparator implements Comparator,Serializable {
+    public static class DoubleComparator implements Comparator, Serializable {
         public int compare(Object o1, Object o2) {
             return (((Double) o1).compareTo((Double) o2));
         }
@@ -5720,7 +5901,7 @@ public abstract class Util {
         }
     }
 
-    public static class IntegerComparator implements Comparator,Serializable {
+    public static class IntegerComparator implements Comparator, Serializable {
         public int compare(Object o1, Object o2) {
             return (((Integer) o1).compareTo((Integer) o2));
         }
@@ -5730,7 +5911,7 @@ public abstract class Util {
         }
     }
 
-    public static class DateComparator implements Comparator,Serializable {
+    public static class DateComparator implements Comparator, Serializable {
         public int compare(Object o1, Object o2) {
             return (((Date) o1).compareTo((Date) o2));
         }
@@ -6084,7 +6265,7 @@ public abstract class Util {
      * @return as above
      */
     @SuppressWarnings(value = "deprecated")
-     public static boolean sameDay(Date d1, Date d2) {
+    public static boolean sameDay(Date d1, Date d2) {
         if (d1.getYear() != d2.getYear())
             return false;
         if (d1.getMonth() != d2.getMonth())
@@ -6680,10 +6861,10 @@ public abstract class Util {
         }
     }
 
-//*******************************
+    //*******************************
 //- *******************
 //- End Class Util
-    protected static  final StackRevealer gRevealer = new StackRevealer();
+    protected static final StackRevealer gRevealer = new StackRevealer();
 
     /**
      * hack to expose SecurityManager getClassContext method
@@ -6705,7 +6886,7 @@ public abstract class Util {
 
     }
 
-    public static class NameComparator implements Comparator,Serializable {
+    public static class NameComparator implements Comparator, Serializable {
         public int compare(Object o1, Object o2) {
             String n1 = ((INameable) o1).getName();
             String n2 = ((INameable) o2).getName();

@@ -4,7 +4,6 @@ import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 
 import java.io.*;
-import java.util.*;
 
 /**
  * org.systemsbiology.xtandem.fragmentation.ui.HTMLPageBuillder
@@ -16,11 +15,11 @@ public class ThreeDModelCoverageAppletBuillder extends AbstractHtmlFragmentHolde
 
     private final PDBObject m_Model;
     private final ProteinFragmentationDescription m_PFD;
-      private final ScriptWriter m_ScriptWriter = new ScriptWriter();
+    private final ScriptWriter m_ScriptWriter = new ScriptWriter();
 
-    public ThreeDModelCoverageAppletBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription pfd ) {
+    public ThreeDModelCoverageAppletBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription pfd) {
         super(page);
-         m_Model = pfd.getModel();
+        m_Model = pfd.getModel();
         m_PFD = pfd;
     }
 
@@ -36,7 +35,7 @@ public class ThreeDModelCoverageAppletBuillder extends AbstractHtmlFragmentHolde
     @Override
     public void addStartText(final Appendable out, final Object... data) {
         try {
-             out.append("<applet id=\"" + getUniqueId() + "\" name=\"flash\" code=\"JmolApplet\" archive=\"JmolApplet.jar\"\n" +
+            out.append("<applet id=\"" + getUniqueId() + "\" name=\"flash\" code=\"JmolApplet\" archive=\"JmolApplet.jar\"\n" +
                     "        codebase=\"../..\"\n" +
                     "        width=\"924\" height=\"678\" align=\"center\" mayscript=\"true\">");
             out.append("<param name=\"bgcolor\" value=\"black\">");
@@ -44,8 +43,12 @@ public class ThreeDModelCoverageAppletBuillder extends AbstractHtmlFragmentHolde
             out.append("<param name=\"progressbar\" value=\"true\">");
             out.append("\n");
             out.append("<param name=\"script\" value=\"\n");
-            String script = m_ScriptWriter.writeScript(m_Model,getPFD().getAllCoverage());
+            ProteinFragmentationDescription pfd = getPFD();
+            String script = m_ScriptWriter.writeScript(pfd, pfd.getAllCoverage());
             out.append(script);
+            script = m_ScriptWriter.writeHideChainsScript(pfd);
+            out.append(script);
+
             out.append("  \">\n");
 
         }
