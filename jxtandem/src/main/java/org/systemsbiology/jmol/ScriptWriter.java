@@ -1,5 +1,7 @@
 package org.systemsbiology.jmol;
 
+import org.systemsbiology.xtandem.fragmentation.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -26,8 +28,8 @@ public class ScriptWriter {
 
     public static String getCoverageColor(int coverage) {
         coverage = Math.min(coverage, MAX_COVERAGE);
-        int cvalue =  Math.min(255,120 + ((  136 * coverage) / MAX_COVERAGE));
-        return "[" +  cvalue + "," + cvalue + ",80]";
+        int cvalue = Math.min(255, 120 + ((136 * coverage) / MAX_COVERAGE));
+        return "[" + cvalue + "," + cvalue + ",80]";
     }
 
     private final Map<AminoAcidAtLocation, Integer> m_UsedPositions = new HashMap<AminoAcidAtLocation, Integer>();
@@ -46,8 +48,46 @@ public class ScriptWriter {
         return sb.toString();
     }
 
-    public String writeScript(PDBObject original, short[] coverage) {
+    public static final String[] TRANSLUCENT_COLORS =
+            {
+                    "[100,0,0]",
+                    "[0,100,0]",
+                    "[0,0,100]",
+                    "[60,60,0]",
+                    "[ 0,60,60]",
+                    "[60,0,60]",
+            };
+
+    public String getChainColor(ChainEnum chain, int index) {
+        if (index == 0)
+            return "";
+        StringBuilder sb = new StringBuilder();
+        sb.append("select {*:" + chain + "};color translucent" + TRANSLUCENT_COLORS[index % TRANSLUCENT_COLORS.length] + " white;");
+        return sb.toString();
+    }
+
+    public String writeHideChainsScript(ProteinFragmentationDescription pfd ) {
         m_UsedPositions.clear();
+        PDBObject original = pfd.getModel();
+
+        StringBuilder sb = new StringBuilder();
+        int index = 0;
+        ChainEnum[] chains = pfd.getModel().getChains();
+        for (int i = 0; i < chains.length; i++) {
+            ChainEnum chain = chains[i];
+            String line = getChainColor(chain, index++);
+            if (line.length() > 0) {
+                sb.append(line);
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
+
+    public String writeScript(ProteinFragmentationDescription pfd, short[] coverage) {
+        m_UsedPositions.clear();
+        PDBObject original = pfd.getModel();
 
         StringBuilder sb = new StringBuilder();
         appendScriptHeader(original, sb);
@@ -67,7 +107,8 @@ public class ScriptWriter {
         return sb.toString();
     }
 
-    public String writeScript(PDBObject original, AminoAcidAtLocation[][] foundSequences) {
+    public String writeScript(ProteinFragmentationDescription pfd, AminoAcidAtLocation[][] foundSequences) {
+        PDBObject original = pfd.getModel();
         m_UsedPositions.clear();
         StringBuilder sb = new StringBuilder();
         appendScriptHeader(original, sb);
@@ -81,9 +122,10 @@ public class ScriptWriter {
     }
 
 
-    public String writeScript(PDBObject original, AminoAcidAtLocation[] highlited, int index) {
+    public String writeScript(ProteinFragmentationDescription pfd, AminoAcidAtLocation[] highlited, int index) {
         m_UsedPositions.clear();
         StringBuilder sb = new StringBuilder();
+        PDBObject original = pfd.getModel();
         appendScriptHeader(original, sb);
         appendScriptHilight(highlited, COLOR_NAMES[index % COLOR_NAMES.length], sb);
         return sb.toString();
@@ -107,6 +149,8 @@ public class ScriptWriter {
     }
 
     private void appendScriptHilight(AminoAcidAtLocation aa, String colorName, Appendable sb) {
+        if (aa.getLocation() == -1)
+            return;
         int used = getHilight(aa);
         try {
             sb.append("select " + aa.toString() + ";");

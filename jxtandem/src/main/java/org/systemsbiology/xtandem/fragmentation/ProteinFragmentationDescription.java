@@ -16,6 +16,24 @@ import java.util.*;
 public class ProteinFragmentationDescription {
     public static final ProteinFragmentationDescription[] EMPTY_ARRAY = {};
 
+    public static Comparator<? super ProteinFragmentationDescription>  INTERESTING_COMPARATOR =
+            new InterestingComparator();
+
+
+    /**
+     * we are interested in interesting PFDS
+     */
+     private static class InterestingComparator implements Comparator< ProteinFragmentationDescription> {
+         @Override
+         public int compare(ProteinFragmentationDescription o1, ProteinFragmentationDescription o2) {
+             int int1 = o1.getInterestScore();
+             int int2 = o2.getInterestScore();
+             if(int1 != int2)
+                 return int1 > int2 ? -1 : 1;
+             return o1.getUniprotId().compareTo(o2.getUniprotId());
+         }
+     }
+
     public static final int MINIMUM_LENGTH = 20;
 
     private final ProteinCollection m_Parent;
@@ -25,11 +43,30 @@ public class ProteinFragmentationDescription {
      private short[] m_Coverage;
     private double m_FractionalCoverage; // fraction of amino acids in any fragment
     private PDBObject m_Model;
+    private final CoverageStatistics m_Statistics;
 
     public ProteinFragmentationDescription(final String uniprotId, ProteinCollection parent) {
         m_UniprotId = uniprotId;
         m_Parent = parent;
         m_Protein = parent.getProtein(uniprotId);
+        m_Statistics = new CoverageStatistics(this);
+    }
+
+    public int getInterestScore() {
+        if(getFractionalCoverage() < 0.2)
+              return 0;
+        if(getFragments().length < 5)
+              return 0;
+        CoverageStatistics statistics = getStatistics();
+        CoverageStatistics.PartitionStatistics ps = statistics.getPartitionStatistics(2);
+
+        if(ps.getLowestOverHighest() == 0)
+                return 0;
+        return (int)(100 - (100  * (ps.getLowestOverHighest())));
+    }
+
+    public CoverageStatistics getStatistics() {
+        return m_Statistics;
     }
 
     public String getUniprotId() {
