@@ -46,8 +46,6 @@ public class ThreeDModelCoverageAppletBuillder extends AbstractHtmlFragmentHolde
             ProteinFragmentationDescription pfd = getPFD();
             String script = m_ScriptWriter.writeScript(pfd, pfd.getAllCoverage());
             out.append(script);
-            script = m_ScriptWriter.writeHideChainsScript(pfd);
-            out.append(script);
 
             out.append("  \">\n");
 
