@@ -48,10 +48,10 @@ public class ThreeDModelBuillder extends AbstractHtmlFragmentHolder {
             ThreeDModelCompositeAppletBuillder mfall = new ThreeDModelCompositeAppletBuillder(this, pfd, m_FragmentLocations);
             // make individtual models
             new SingleTagBuillder(this, "p");
-            new HTMLHeaderHolder(this, "Coverage Plot", 2);
-            ThreeDModelCoverageAppletBuillder cfall = new ThreeDModelCoverageAppletBuillder(this, pfd);
-            // make individtual models
-            new SingleTagBuillder(this, "p");
+//            new HTMLHeaderHolder(this, "Coverage Plot", 2);
+//            ThreeDModelCoverageAppletBuillder cfall = new ThreeDModelCoverageAppletBuillder(this, pfd);
+//            // make individtual models
+//            new SingleTagBuillder(this, "p");
 //            for (ProteinFragment pf : m_FragmentLocations.keySet()) {
 //                ThreeDModelAppletBuillder mf = new ThreeDModelAppletBuillder(this, pfd, m_FragmentLocations.get(pf), index++);
 //            }

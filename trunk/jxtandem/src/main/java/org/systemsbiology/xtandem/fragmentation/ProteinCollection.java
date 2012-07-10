@@ -267,7 +267,7 @@ public class ProteinCollection implements IFastaHandler {
     }
 
     // Only one amino acid - look at rectangle placement
-    public static final String[] ONE_INTERESTING = {"O00300"};
+    public static final String[] ONE_INTERESTING = {"O95292"};
     // Fragmented 3d model code if fine model is bad
     public static final String[] TWO_INTERESTING = {"Q9Y296"};
     // says 3d model but nothing shown

@@ -48,6 +48,45 @@ public class ScriptWriter {
         return sb.toString();
     }
 
+    public static String buildChainsCheckBoxes(ProteinFragmentationDescription pfd) {
+        PDBObject pdbObject = pfd.getModel();
+        ChainEnum[] chains = pdbObject.getChains();
+        StringBuilder sb = new StringBuilder();
+   //     sb.append("jmolHtml(\"<h3>Dim Chain</h3>\");\n");
+        for (int i = 0; i < chains.length; i++) {
+            ChainEnum chain = chains[i];
+             String color = ScriptWriter.getHideChainCommand(chain, i);
+
+            sb.append("jmolCheckbox([scriptOnly] ,\""  + color + "\",\"Chain "  + chain + "\",\"checked\");\n");
+          }
+        return sb.toString();
+    }
+
+    public static String buildCoverageAminoAcidSelector( ) {
+          StringBuilder sb = new StringBuilder();
+                sb.append("jmolRadioGroup([\n" +
+                        "\n" +
+                        "          [ [setAndScript,showCoverage], \"Coverage\"] ,\n" +
+                        " \t  [ [setAndScript,showAminoAcids] , \"Peptides\",  \"checked\"],\n" +
+                        "  \t]);");
+         return sb.toString();
+    }
+
+    protected static StringBuilder buildChainsCheckBoxes(ChainEnum[] chains) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Dim Chain");
+        for (int i = 0; i < chains.length; i++) {
+            ChainEnum chain = chains[i];
+             String color = ScriptWriter.getChainColor(chain, i);
+            sb.append("jmolCheckbox(\""  + color + "\" , currentScript,"  + chain);
+            if (i > 0)
+                sb.append(",");
+            sb.append(chain);
+        }
+        return sb;
+    }
+
+
     public static final String[] TRANSLUCENT_COLORS =
             {
                     "[100,0,0]",
@@ -58,7 +97,7 @@ public class ScriptWriter {
                     "[60,0,60]",
             };
 
-    public String getChainColor(ChainEnum chain, int index) {
+    public static String getChainColor(ChainEnum chain, int index) {
         if (index == 0)
             return "";
         StringBuilder sb = new StringBuilder();
@@ -66,7 +105,13 @@ public class ScriptWriter {
         return sb.toString();
     }
 
-    public String writeHideChainsScript(ProteinFragmentationDescription pfd ) {
+    public static String getHideChainCommand(ChainEnum chain, int index) {
+         StringBuilder sb = new StringBuilder();
+        sb.append("select {*:" + chain + "};color translucent" + TRANSLUCENT_COLORS[index % TRANSLUCENT_COLORS.length] + " white;");
+        return sb.toString();
+    }
+
+    public String writeHideChainsScript(ProteinFragmentationDescription pfd) {
         m_UsedPositions.clear();
         PDBObject original = pfd.getModel();
 
@@ -112,7 +157,7 @@ public class ScriptWriter {
         m_UsedPositions.clear();
         StringBuilder sb = new StringBuilder();
         appendScriptHeader(original, sb);
-        String hiliteChains = writeHideChainsScript(  pfd );
+        String hiliteChains = writeHideChainsScript(pfd);
         sb.append(hiliteChains);
         sb.append("\n");
         for (int i = 0; i < foundSequences.length; i++) {
@@ -167,13 +212,25 @@ public class ScriptWriter {
         }
     }
 
+    public static String getLoadText(ProteinFragmentationDescription pfd) {
+        StringBuilder sb = new StringBuilder();
+        PDBObject original = pfd.getModel();
+        File file = original.getFile();
+        String fileName = file.getName();
+        String parentName = file.getParentFile().getName();
+        sb.append("load ../" + parentName + "/" + fileName);
+        sb.append(";");
+         return sb.toString();
+
+    }
+
     private void appendScriptHeader(PDBObject original, Appendable sb) {
         try {
             File file = original.getFile();
             String fileName = file.getName();
             String parentName = file.getParentFile().getName();
-            sb.append("load ../" + parentName + "/" + fileName);
-            sb.append(";\n");
+         //   sb.append("load ../" + parentName + "/" + fileName);
+         //   sb.append(";\n");
             sb.append("select all;color translucent[80,80,80] white");
             sb.append(";\n");
             sb.append("select all ;ribbon off");

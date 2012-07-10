@@ -42,17 +42,46 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
 
             AminoAcidAtLocation[][] locations = new AminoAcidAtLocation[holder.size()][];
             holder.toArray(locations);
-            out.append("<applet id=\"" + getUniqueId() + "\" name=\"flash\" code=\"JmolApplet\" archive=\"JmolApplet.jar\"\n" +
-                    "        codebase=\"../..\"\n" +
-                    "        width=\"924\" height=\"678\" align=\"center\" mayscript=\"true\">");
-            out.append("<param name=\"bgcolor\" value=\"black\">");
+            ProteinFragmentationDescription pfd = getPFD();
+            String script = m_ScriptWriter.writeScript(pfd,locations);
+            String coveragescript = m_ScriptWriter.writeScript(pfd, pfd.getAllCoverage());
+            script = script.replace("\n","\\\n");
+            coveragescript = coveragescript.replace("\n","\\\n");
+
+            out.append("      <script type=\"text/javascript\">\n");
+            out.append("    jmol_id = \"" + ProteinCoveragePageBuilder.JMOL_APPLET_ID + "\";") ;
+             out.append("    loadText = \'" +  ScriptWriter.getLoadText(pfd ) + "\';\n");
+            out.append("    showAminoAcids = \'" + script + "\';\n");
+            out.append("    showCoverage = \'" + coveragescript + "\';\n");
+            out.append("     window.defaultloadscript = showAminoAcids;\n");
+                        out.append("    jmolInitialize(\"../../\");\n");
+            out.append("    jmolApplet([\"924\",\"678\"], loadText + defaultloadscript,jmol_id);\n");
+            out.append("\tfunction setAndScript(btn, obj, target) {\n" +
+                    "        // Entire array object is provided as 2nd argument.\n" +
+                    "        window.defaultloadscript = obj[1];\n" +
+                    "        jmolScript(window.defaultloadscript,jmol_id);\n" +
+                    "    }\n" +
+                    "\tfunction scriptOnly(btn, obj, target) {\n" +
+                    "          jmolScript(window.defaultloadscript,jmol_id);\n" +
+                    "    }\n");
+            out.append(" \tjmolBr();\n");
+            String view =   m_ScriptWriter.buildCoverageAminoAcidSelector( );
+            out.append(view );
+            out.append(" \tjmolBr();\n");
+            String chechBoxes = m_ScriptWriter.buildChainsCheckBoxes(  pfd);
+          out.append(chechBoxes );
             out.append("\n");
-            out.append("<param name=\"progressbar\" value=\"true\">");
-            out.append("\n");
-            out.append("<param name=\"script\" value=\"\n");
-            String script = m_ScriptWriter.writeScript(getPFD(),locations);
-            out.append(script);
-            out.append("  \">\n");
+            out.append("</script>\n");
+//            out.append("<applet id=\"" + getUniqueId() + "\" name=\"flash\" code=\"JmolApplet\" archive=\"JmolApplet.jar\"\n" +
+//                    "        codebase=\"../..\"\n" +
+//                    "        width=\"924\" height=\"678\" align=\"center\" mayscript=\"true\">");
+//            out.append("<param name=\"bgcolor\" value=\"black\">");
+//            out.append("\n");
+//            out.append("<param name=\"progressbar\" value=\"true\">");
+//            out.append("\n");
+//            out.append("<param name=\"script\" value=\"\n");
+//             out.append(script);
+//            out.append("  \">\n");
 
         }
         catch (IOException e) {
@@ -64,8 +93,8 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
     @Override
     public void addEndText(final Appendable out, final Object... data) {
         try {
-            out.append("</applet>");
-            out.append("\n");
+         //   out.append("</applet>");
+             out.append("\n");
         }
         catch (IOException e) {
             throw new RuntimeException(e);

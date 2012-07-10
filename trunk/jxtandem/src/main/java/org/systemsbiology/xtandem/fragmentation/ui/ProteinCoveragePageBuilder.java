@@ -1,6 +1,8 @@
 package org.systemsbiology.xtandem.fragmentation.ui;
 
 import com.lordjoe.utilities.*;
+import com.sun.net.httpserver.*;
+import com.sun.org.apache.bcel.internal.generic.*;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 import org.systemsbiology.xtandem.peptide.*;
@@ -17,6 +19,9 @@ public class ProteinCoveragePageBuilder {
     public static final ProteinCoveragePageBuilder[] EMPTY_ARRAY = {};
 
     public static final int MAX_COVERAGE = 8;
+
+
+    public static final String JMOL_APPLET_ID = "JMol";
 
     private final ProteinCollection m_Proteins;
     private final int[] m_TotalCoverage = new int[MAX_COVERAGE];
@@ -146,8 +151,10 @@ public class ProteinCoveragePageBuilder {
 
         HTMLPageBuillder pb = new HTMLPageBuillder("Coverage for " + id);
         HTMLBodyBuillder body = pb.getBody();
-        Protein protein = pfd.getProtein();
+        HTMLHeaderBuillder header = pb.getHeader();
+           Protein protein = pfd.getProtein();
         body.addString("<a href=\"../Index.html\" >Home</a>\n");
+         header.addString("<script src=\"../Jmol.js\" type=\"text/javascript\"></script> <!-- REQUIRED -->\n");
         if(prev != null)
             body.addString("<a href=\"" + prev + ".html\" >Prev</a>\n");
         if(next != null)
@@ -180,7 +187,7 @@ public class ProteinCoveragePageBuilder {
         new CoverageColorsLabel(body);
         new SingleTagBuillder(body, "p");
 
-        CoverageFragment cf = new CoverageFragment(body, pfd);
+         CoverageFragment cf = new CoverageFragment(body, pfd);
 
         SingleTagBuillder st = new SingleTagBuillder(body, "p");
 
@@ -210,6 +217,8 @@ public class ProteinCoveragePageBuilder {
         }
         return sb;
     }
+
+
 
     protected String buildIndexPage(String[] ids, String[] pages) {
         ProteinCollection proteins = getProteins();
