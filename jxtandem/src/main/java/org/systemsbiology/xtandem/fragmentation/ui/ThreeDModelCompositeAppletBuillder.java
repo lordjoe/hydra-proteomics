@@ -22,7 +22,7 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
         super(page);
         m_FragmentLocations = fragments;
         m_PFD = pfd;
-     }
+    }
 
     public ProteinFragmentationDescription getPFD() {
         return m_PFD;
@@ -43,33 +43,64 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             AminoAcidAtLocation[][] locations = new AminoAcidAtLocation[holder.size()][];
             holder.toArray(locations);
             ProteinFragmentationDescription pfd = getPFD();
-            String script = m_ScriptWriter.writeScript(pfd,locations);
+            String hilightText = m_ScriptWriter.writeHilightText(pfd);
+            String scriptx = m_ScriptWriter.writeScript(pfd);
             String coveragescript = m_ScriptWriter.writeScript(pfd, pfd.getAllCoverage());
-            script = script.replace("\n","\\\n");
-            coveragescript = coveragescript.replace("\n","\\\n");
+            //    script = script.replace("\n","\\\n");
+            //     coveragescript = coveragescript.replace("\n","\\\n");
 
             out.append("      <script type=\"text/javascript\">\n");
-            out.append("    jmol_id = \"" + ProteinCoveragePageBuilder.JMOL_APPLET_ID + "\";") ;
-             out.append("    loadText = \'" +  ScriptWriter.getLoadText(pfd ) + "\';\n");
-            out.append("    showAminoAcids = \'" + script + "\';\n");
+            out.append("    var hideChains = [];\n");
+            out.append("    var ribbons = 'off';\n");
+              out.append("    jmol_id = \"" + ProteinCoveragePageBuilder.JMOL_APPLET_ID + "\";");
+            out.append("    loadText = \'" + ScriptWriter.getLoadText(pfd) + "\';\n");
+            out.append(hilightText + "\n");
+            out.append(scriptx + "\n");
+            out.append("    showAminoAcids = fragments.join(\' \'); \n");
             out.append("    showCoverage = \'" + coveragescript + "\';\n");
-            out.append("     window.defaultloadscript = showAminoAcids;\n");
-                        out.append("    jmolInitialize(\"../../\");\n");
-            out.append("    jmolApplet([\"924\",\"678\"], loadText + defaultloadscript,jmol_id);\n");
-            out.append("\tfunction setAndScript(btn, obj, target) {\n" +
+            out.append("    window.defaultloadscript = showAminoAcids;\n");
+            out.append("    jmolInitialize(\"../../\");\n");
+            out.append("    jmolApplet([\"924\",\"678\"], loadText + \'select all;color translucent[80,80,80] white;select all ;ribbon off;\' + window.defaultloadscript,jmol_id);\n");
+            out.append(
+                    "\tfunction runScript( ) {\n" +
+                     "        script = \'select all;color translucent[80,80,80] white;\\\n" +
+                     "          select all ;ribbon \' + ribbons + \';\'  +  \n" +
+                          "         window.defaultloadscript  +  hideChains.join(\' \');\n" +
+                    "          jmolScript(script,jmol_id);\n" +
+                    "    }\n" +
+                    "\tfunction setAndScript(btn, obj, target) {\n" +
                     "        // Entire array object is provided as 2nd argument.\n" +
                     "        window.defaultloadscript = obj[1];\n" +
-                    "        jmolScript(window.defaultloadscript,jmol_id);\n" +
+                    "          runScript();\n" +
                     "    }\n" +
                     "\tfunction scriptOnly(btn, obj, target) {\n" +
-                    "          jmolScript(window.defaultloadscript,jmol_id);\n" +
-                    "    }\n");
+                    "          runScript();\n" +
+                    "    }\n" +
+                    "\tfunction hideChain(btn, obj, target) {\n" +
+                    "          hideChains[obj[1]] = \'\';\n" +
+                    "          runScript();\n" +
+                    "    }\n" +
+                            "\tfunction showChain(btn, obj, target) {\n" +
+                             "          hideChains[obj[1]] = obj[2];\n" +
+                             "          runScript();\n" +
+                             "    }\n" +
+                            "\tfunction changeRibbon(btn, obj, target) {\n" +
+                             "          ribbons = obj[1];\n" +
+                             "          runScript();\n" +
+                             "    }\n" +
+                     "\n");
+
             out.append(" \tjmolBr();\n");
-            String view =   m_ScriptWriter.buildCoverageAminoAcidSelector( );
-            out.append(view );
+            String view = m_ScriptWriter.buildCoverageAminoAcidSelector();
+            out.append(view);
             out.append(" \tjmolBr();\n");
-            String chechBoxes = m_ScriptWriter.buildChainsCheckBoxes(  pfd);
-          out.append(chechBoxes );
+            String chechBoxes = m_ScriptWriter.buildChainsCheckBoxes(pfd);
+            out.append(chechBoxes);
+            out.append(" \tjmolBr();\n");
+            out.append("jmolCheckbox([changeRibbon,\'on\'],[changeRibbon,\'off\'],\'Ribbons\');\n");
+            out.append(" \tjmolBr();\n");
+               String menu = m_ScriptWriter.buildFragmentSelectMenu(pfd);
+            out.append(menu);
             out.append("\n");
             out.append("</script>\n");
 //            out.append("<applet id=\"" + getUniqueId() + "\" name=\"flash\" code=\"JmolApplet\" archive=\"JmolApplet.jar\"\n" +
@@ -93,8 +124,8 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
     @Override
     public void addEndText(final Appendable out, final Object... data) {
         try {
-         //   out.append("</applet>");
-             out.append("\n");
+            //   out.append("</applet>");
+            out.append("\n");
         }
         catch (IOException e) {
             throw new RuntimeException(e);

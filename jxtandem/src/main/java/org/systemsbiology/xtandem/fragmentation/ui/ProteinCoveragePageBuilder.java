@@ -19,6 +19,7 @@ public class ProteinCoveragePageBuilder {
     public static final ProteinCoveragePageBuilder[] EMPTY_ARRAY = {};
 
     public static final int MAX_COVERAGE = 8;
+    public static final int INDEX_ROW_LENGTH  = 6;
 
 
     public static final String JMOL_APPLET_ID = "JMol";
@@ -184,20 +185,21 @@ public class ProteinCoveragePageBuilder {
                 chainstr +
                 "</h2>\n");
 
+        if (model != null) {
+             ThreeDModelBuillder tm = new ThreeDModelBuillder(body, pfd);
+//
+//         }
+//         else {
+//             new HTMLHeaderHolder(body, "No 3D Model Found", 1);
+         }
+
         new CoverageColorsLabel(body);
         new SingleTagBuillder(body, "p");
 
-         CoverageFragment cf = new CoverageFragment(body, pfd);
+        CoverageFragment cf = new CoverageFragment(body, pfd);
 
         SingleTagBuillder st = new SingleTagBuillder(body, "p");
 
-        if (model != null) {
-            ThreeDModelBuillder tm = new ThreeDModelBuillder(body, pfd);
-
-        }
-        else {
-            new HTMLHeaderHolder(body, "No 3D Model Found", 1);
-        }
 
         String page = pb.buildPage();
         String fileName = "pages/" + id + ".html";
@@ -225,8 +227,8 @@ public class ProteinCoveragePageBuilder {
         HTMLPageBuillder pb = new HTMLPageBuillder("Protein Coverage ");
         HTMLBodyBuillder body = pb.getBody();
 
-        List<String> idWith3dModel = new ArrayList<String>();
-        List<String> idWithout3dModel = new ArrayList<String>();
+        List<ProteinFragmentationDescription> idWith3dModel = new ArrayList<ProteinFragmentationDescription>();
+        List<ProteinFragmentationDescription> idWithout3dModel = new ArrayList<ProteinFragmentationDescription>();
         List<String> pageWith3dModel = new ArrayList<String>();
         List<String> pageWithout3dModel = new ArrayList<String>();
         List<ProteinFragmentationDescription> pfdWith3dModel = new ArrayList<ProteinFragmentationDescription>();
@@ -236,24 +238,24 @@ public class ProteinCoveragePageBuilder {
             String page = pages[i];
             ProteinFragmentationDescription pd = proteins.getProteinFragmentationDescription(id);
             if (pd.getModel() != null) {
-                idWith3dModel.add(id);
-                pfdWith3dModel.add(pd);
-                pageWith3dModel.add(page);
+                idWith3dModel.add(pd);
+                 pageWith3dModel.add(page);
             }
             else {
-                idWithout3dModel.add(id);
+                idWithout3dModel.add(pd);
                 pageWithout3dModel.add(page);
 
             }
         }
         String[] empty = {};
-        if (!idWith3dModel.isEmpty()) {
+        ProteinFragmentationDescription[] emptyPd = {};
+         if (!idWith3dModel.isEmpty()) {
             body.addString("<h1>Proteins With 3D Models</h1>");
-            new ReferenceTableBuillder(body, idWith3dModel.toArray(empty), pageWith3dModel.toArray(empty), 12);
+            new ReferenceTableBuillder(body, idWith3dModel.toArray(emptyPd), pageWith3dModel.toArray(empty), INDEX_ROW_LENGTH);
         }
         if (!idWithout3dModel.isEmpty()) {
             body.addString("<h1>Proteins Without 3D Models</h1>");
-            new ReferenceTableBuillder(body, idWithout3dModel.toArray(empty), pageWithout3dModel.toArray(empty), 12);
+            new ReferenceTableBuillder(body, idWithout3dModel.toArray(emptyPd), pageWithout3dModel.toArray(empty), INDEX_ROW_LENGTH);
         }
         String page = pb.buildPage();
         String fileName = "Index.html";

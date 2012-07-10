@@ -1,7 +1,7 @@
 package org.systemsbiology.windowedanalysis;
 
-import org.apache.hadoop.conf.*;
-import org.apache.hadoop.mapreduce.*;
+//import org.apache.hadoop.conf.*;
+//import org.apache.hadoop.mapreduce.*;
 //import org.apache.hadoop.mapreduce.task.*;
 
 import java.io.*;
