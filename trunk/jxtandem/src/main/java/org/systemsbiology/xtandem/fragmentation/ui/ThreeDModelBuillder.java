@@ -69,27 +69,27 @@ public class ThreeDModelBuillder extends AbstractHtmlFragmentHolder {
 
     @Override
     public void addStartText(final Appendable out, final Object... data) {
-        try {
-            out.append("<body>");
-            out.append("\n");
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-
-        }
+//        try {
+//            out.append("<body>");
+//            out.append("\n");
+//        }
+//        catch (IOException e) {
+//            throw new RuntimeException(e);
+//
+//        }
 
     }
 
     @Override
     public void addEndText(final Appendable out, final Object... data) {
-        try {
-            out.append("</body>");
-            out.append("\n");
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-
-        }
+//        try {
+//            out.append("</body>");
+//            out.append("\n");
+//        }
+//        catch (IOException e) {
+//            throw new RuntimeException(e);
+//
+//        }
 
     }
 

@@ -1,5 +1,8 @@
 package org.systemsbiology.xtandem.fragmentation.ui;
 
+import org.systemsbiology.jmol.*;
+import org.systemsbiology.xtandem.fragmentation.*;
+
 import java.io.*;
 
 /**
@@ -10,10 +13,10 @@ import java.io.*;
 public class ReferenceTableBuillder extends AbstractHtmlFragmentHolder {
     public static final ReferenceTableBuillder[] EMPTY_ARRAY = {};
 
-    private final String[] m_Texts;
+    private final ProteinFragmentationDescription[] m_Texts;
     private final String[] m_References;
     private final int m_RowLength;
-    public ReferenceTableBuillder(final IHtmlFragmentHolder page, String[] text, String[] refs,int rowLength) {
+    public ReferenceTableBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription[] text, String[] refs,int rowLength) {
         super(page);
         m_References = refs;
         m_Texts = text;
@@ -37,9 +40,20 @@ public class ReferenceTableBuillder extends AbstractHtmlFragmentHolder {
             String[] references = getReferences();
             for (int i = 0; i < references.length; i++) {
                 String ref = references[i];
-                String text = m_Texts[i];
+                ProteinFragmentationDescription pd = m_Texts[i];
                 out.append("<td>");
-                  out.append("<a href=\"" + ref + "\">" + text + "</a>\n");
+                int coveragePercent = (int) (100 * pd.getFractionalCoverage());
+                String modeled = "";
+                PDBObject model = pd.getModel();
+                if(model != null)   {
+                   int nf =  pd.getFragments().length;
+                   int nm = pd.getAminoAcidLocations().size();
+                   modeled = " "  + nm + "/" + nf;
+                }
+
+                out.append("<a href=\"" + ref + "\">" + pd.getUniprotId() + " " + coveragePercent + "% " +  modeled +
+
+                        "</a>\n");
                   out.append("</td>");
                   if(col++ > getRowLength()) {
                       col = 0;

@@ -37,39 +37,79 @@ public class ScriptWriter {
     public String writeScript(PDBObject original, String[] foundSequences) {
         m_UsedPositions.clear();
         StringBuilder sb = new StringBuilder();
-        appendScriptHeader(original, sb);
+        boolean quoteNewLines = false;
+        appendScriptHeader(original, quoteNewLines, sb);
         for (int i = 0; i < foundSequences.length; i++) {
             String foundSequence = foundSequences[i];
             AminoAcidAtLocation[] highlited = original.getAminoAcidsForSequence(foundSequence);
             appendScriptHilight(highlited, COLOR_NAMES[i & COLOR_NAMES.length], sb);
-
+            sb.append("\n");
         }
 
         return sb.toString();
     }
 
+
+    public static String buildFragmentSelectMenu(ProteinFragmentationDescription pfd) {
+        Map<ProteinFragment, AminoAcidAtLocation[]> aminoAcidLocations = pfd.getAminoAcidLocations();
+        ProteinFragment[] proteinFragments = aminoAcidLocations.keySet().toArray(ProteinFragment.EMPTY_ARRAY);
+        Arrays.sort(proteinFragments);
+        StringBuilder sb = new StringBuilder();
+        //     sb.append("jmolHtml(\"<h3>Dim Chain</h3>\");\n");
+        sb.append("jmolMenu([\n");
+        sb.append("[ [setAndScript,fragments.join()], \"all\", true]\n");
+        for (ProteinFragment pf : proteinFragments) {
+            String select = pf.getSequence();
+            if (select.length() > 13)
+                select = select.substring(0, 10) + "...";
+            sb.append(",\n");
+            //            sb.append("[[SetFragment" + pf.getIndex() + "], \"" + select + "\"]");
+            sb.append("[[setAndScript,fragments[" + (1 + pf.getIndex()) + "]],\"" + select + "\"]");
+        }
+        //   sb.append( "],12,\'FragmentsMenu\',\"Select Fragments\");\n");
+        sb.append("\n] );\n");
+        return sb.toString();
+    }
+
+
+    public static String buildFragmentFunctionStrings(ProteinFragmentationDescription pfd) {
+        Map<ProteinFragment, AminoAcidAtLocation[]> aminoAcidLocations = pfd.getAminoAcidLocations();
+        ProteinFragment[] proteinFragments = aminoAcidLocations.keySet().toArray(ProteinFragment.EMPTY_ARRAY);
+        Arrays.sort(proteinFragments);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < proteinFragments.length; i++) {
+            ProteinFragment proteinFragment = proteinFragments[i];
+
+        }
+        return sb.toString();
+    }
+
+
     public static String buildChainsCheckBoxes(ProteinFragmentationDescription pfd) {
         PDBObject pdbObject = pfd.getModel();
         ChainEnum[] chains = pdbObject.getChains();
         StringBuilder sb = new StringBuilder();
-   //     sb.append("jmolHtml(\"<h3>Dim Chain</h3>\");\n");
+         if (chains.length < 2)
+            return sb.toString();
+
+          //     sb.append("jmolHtml(\"<h3>Dim Chain</h3>\");\n");
         for (int i = 0; i < chains.length; i++) {
             ChainEnum chain = chains[i];
-             String color = ScriptWriter.getHideChainCommand(chain, i);
+            String color = ScriptWriter.getHideChainCommand(chain, i);
 
-            sb.append("jmolCheckbox([scriptOnly] ,\""  + color + "\",\"Chain "  + chain + "\",\"checked\");\n");
-          }
+            sb.append("jmolCheckbox([hideChain,"  + (i + 1) + "],[showChain," +  (i + 1)  + ",\'" + color + "\'],\"Chain " + chain + "\",\"checked\");\n");
+        }
         return sb.toString();
     }
 
-    public static String buildCoverageAminoAcidSelector( ) {
-          StringBuilder sb = new StringBuilder();
-                sb.append("jmolRadioGroup([\n" +
-                        "\n" +
-                        "          [ [setAndScript,showCoverage], \"Coverage\"] ,\n" +
-                        " \t  [ [setAndScript,showAminoAcids] , \"Peptides\",  \"checked\"],\n" +
-                        "  \t]);");
-         return sb.toString();
+    public static String buildCoverageAminoAcidSelector() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("jmolRadioGroup([\n" +
+                "\n" +
+                "          [ [setAndScript,showCoverage], \"Coverage\"] ,\n" +
+                " \t  [ [setAndScript,showAminoAcids] , \"Peptides\",  \"checked\"] \n" +
+                "  \t]);");
+        return sb.toString();
     }
 
     protected static StringBuilder buildChainsCheckBoxes(ChainEnum[] chains) {
@@ -77,8 +117,8 @@ public class ScriptWriter {
         sb.append("Dim Chain");
         for (int i = 0; i < chains.length; i++) {
             ChainEnum chain = chains[i];
-             String color = ScriptWriter.getChainColor(chain, i);
-            sb.append("jmolCheckbox(\""  + color + "\" , currentScript,"  + chain);
+            String color = ScriptWriter.getChainColor(chain, i);
+            sb.append("jmolCheckbox(\"" + color + "\" , currentScript," + chain);
             if (i > 0)
                 sb.append(",");
             sb.append(chain);
@@ -106,7 +146,7 @@ public class ScriptWriter {
     }
 
     public static String getHideChainCommand(ChainEnum chain, int index) {
-         StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append("select {*:" + chain + "};color translucent" + TRANSLUCENT_COLORS[index % TRANSLUCENT_COLORS.length] + " white;");
         return sb.toString();
     }
@@ -135,36 +175,72 @@ public class ScriptWriter {
         PDBObject original = pfd.getModel();
 
         StringBuilder sb = new StringBuilder();
-        appendScriptHeader(original, sb);
+        boolean quoteNewLines = true;
+        appendScriptHeader(original, quoteNewLines, sb);
         for (int i = 0; i < coverage.length; i++) {
             short corg = coverage[i];
             if (corg > 0) {
                 AminoAcidAtLocation aa = original.getAminoAcidAtLocation(i);
                 if (aa != null) {
                     String coverageColor = getCoverageColor(corg);
-                    appendScriptHilight(aa, coverageColor, sb);
-
+                    if(appendScriptHilight(aa, coverageColor, sb));
+                        sb.append("\\\n");
                 }
-
-            }
+             }
         }
 
         return sb.toString();
     }
 
-    public String writeScript(ProteinFragmentationDescription pfd, AminoAcidAtLocation[][] foundSequences) {
-        PDBObject original = pfd.getModel();
-        m_UsedPositions.clear();
+
+    public String writeHilightText(ProteinFragmentationDescription pfd) {
+        Map<ProteinFragment, AminoAcidAtLocation[]> aminoAcidLocations = pfd.getAminoAcidLocations();
+        ProteinFragment[] proteinFragments = aminoAcidLocations.keySet().toArray(ProteinFragment.EMPTY_ARRAY);
+        Arrays.sort(proteinFragments);
         StringBuilder sb = new StringBuilder();
-        appendScriptHeader(original, sb);
-        String hiliteChains = writeHideChainsScript(pfd);
-        sb.append(hiliteChains);
-        sb.append("\n");
-        for (int i = 0; i < foundSequences.length; i++) {
-            AminoAcidAtLocation[] highlited = foundSequences[i];
-            appendScriptHilight(highlited, COLOR_NAMES[i % COLOR_NAMES.length], sb);
+         for (int i = 0; i < proteinFragments.length; i++) {
+            ProteinFragment pf = proteinFragments[i];
+            sb.append("HilightFragment" + (pf.getIndex() + 1) + "=\'\\\n");
+            AminoAcidAtLocation[] highlited = aminoAcidLocations.get(pf);
+            String colorName = COLOR_NAMES[i % COLOR_NAMES.length];
+            for (int j = 0; j < highlited.length; j++) {
+                AminoAcidAtLocation aa = highlited[j];
+                appendScriptHilight(aa, colorName, sb);
+                sb.append("\\\n");   // app end to javascript string
+
+            }
+            sb.append("\';\n");
 
         }
+        return sb.toString();
+    }
+
+
+    public String writeScript(ProteinFragmentationDescription pfd) {
+        Map<ProteinFragment, AminoAcidAtLocation[]> aminoAcidLocations = pfd.getAminoAcidLocations();
+        ProteinFragment[] proteinFragments = aminoAcidLocations.keySet().toArray(ProteinFragment.EMPTY_ARRAY);
+        Arrays.sort(proteinFragments);
+        StringBuilder sb = new StringBuilder();
+        sb.append("var fragments = [];\n");
+        for (int i = 0; i < proteinFragments.length; i++) {
+            ProteinFragment pf = proteinFragments[i];
+//            if (i > 0)
+//                sb.append("+");
+            int index = pf.getIndex() + 1;
+            sb.append("fragments[" + index + "] = HilightFragment" + index + ";\n");
+        }
+   //
+//        PDBObject original = pfd.getModel();
+//        m_UsedPositions.clear();
+//        appendScriptHeader(original, sb);
+//        String hiliteChains = writeHideChainsScript(pfd);
+//        sb.append(hiliteChains);
+//        sb.append("\n");
+//        for (int i = 0; i < foundSequences.length; i++) {
+//            AminoAcidAtLocation[] highlited = foundSequences[i];
+//            appendScriptHilight(highlited, COLOR_NAMES[i % COLOR_NAMES.length], sb);
+//
+//        }
 
         return sb.toString();
     }
@@ -174,7 +250,8 @@ public class ScriptWriter {
         m_UsedPositions.clear();
         StringBuilder sb = new StringBuilder();
         PDBObject original = pfd.getModel();
-        appendScriptHeader(original, sb);
+        boolean quoteNewLines = false;
+        appendScriptHeader(original, quoteNewLines, sb);
         appendScriptHilight(highlited, COLOR_NAMES[index % COLOR_NAMES.length], sb);
         return sb.toString();
     }
@@ -193,18 +270,27 @@ public class ScriptWriter {
         for (int i = 0; i < hilighted.length; i++) {
             AminoAcidAtLocation aa = hilighted[i];
             appendScriptHilight(aa, colorName, sb);
+            try {
+                sb.append("\n");
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e);
+
+            }
         }
     }
 
-    private void appendScriptHilight(AminoAcidAtLocation aa, String colorName, Appendable sb) {
+    private boolean appendScriptHilight(AminoAcidAtLocation aa, String colorName, Appendable sb) {
         if (aa.getLocation() == -1)
-            return;
+            return false;
         int used = getHilight(aa);
         try {
             sb.append("select " + aa.toString() + ";");
             //   sb.append("color " + buildTranslucentString(used) + " " +  colorName);
             sb.append("color " + colorName);
-            sb.append(";\n");
+            sb.append(";");
+            return true;
+            //    sb.append(";\n");
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -220,21 +306,25 @@ public class ScriptWriter {
         String parentName = file.getParentFile().getName();
         sb.append("load ../" + parentName + "/" + fileName);
         sb.append(";");
-         return sb.toString();
+        return sb.toString();
 
     }
 
-    private void appendScriptHeader(PDBObject original, Appendable sb) {
+    private void appendScriptHeader(PDBObject original, boolean quoteNewLines, Appendable sb) {
         try {
             File file = original.getFile();
             String fileName = file.getName();
             String parentName = file.getParentFile().getName();
-         //   sb.append("load ../" + parentName + "/" + fileName);
-         //   sb.append(";\n");
-            sb.append("select all;color translucent[80,80,80] white");
-            sb.append(";\n");
-            sb.append("select all ;ribbon off");
-            sb.append(";\n");
+            //   sb.append("load ../" + parentName + "/" + fileName);
+            //   sb.append(";\n");
+            sb.append("select all;color translucent[80,80,80] white;");
+            if (quoteNewLines)
+                sb.append("\\");
+            sb.append("\n");
+            sb.append("select all ;ribbon off;");
+            if (quoteNewLines)
+                sb.append("\\");
+            sb.append("\n");
         }
         catch (IOException e) {
             throw new RuntimeException(e);

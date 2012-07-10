@@ -4,7 +4,6 @@ import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 
 import java.io.*;
-import java.util.*;
 
 /**
  * org.systemsbiology.xtandem.fragmentation.ui.HTMLPageBuillder
@@ -14,16 +13,16 @@ import java.util.*;
 public class ThreeDModelAppletBuillder extends AbstractHtmlFragmentHolder {
     public static final ThreeDModelAppletBuillder[] EMPTY_ARRAY = {};
 
-     private final AminoAcidAtLocation[]  m_Locations;
+    private final AminoAcidAtLocation[] m_Locations;
     private final ProteinFragmentationDescription m_PFD;
-       private final ScriptWriter m_ScriptWriter = new ScriptWriter();
+    private final ScriptWriter m_ScriptWriter = new ScriptWriter();
     private final int m_Index;
 
-    public ThreeDModelAppletBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription pfd, AminoAcidAtLocation[]locs,int index) {
+    public ThreeDModelAppletBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription pfd, AminoAcidAtLocation[] locs, int index) {
         super(page);
-          m_PFD = pfd ;
+        m_PFD = pfd;
         m_Locations = locs;
-          m_Index = index;
+        m_Index = index;
     }
 
     public ProteinFragmentationDescription getPFD() {
@@ -31,7 +30,7 @@ public class ThreeDModelAppletBuillder extends AbstractHtmlFragmentHolder {
     }
 
     public PDBObject getModel() {
-        return  getPFD().getModel();
+        return getPFD().getModel();
     }
 
     @Override
@@ -44,17 +43,17 @@ public class ThreeDModelAppletBuillder extends AbstractHtmlFragmentHolder {
             out.append("\n");
             out.append("<param name=\"progressbar\" value=\"true\">");
             out.append("\n");
-              out.append("<param name=\"script\" value=\"\n");
-            String script = m_ScriptWriter.writeScript(getPFD(),m_Locations,m_Index);
+            out.append("<param name=\"script\" value=\"\n");
+            String script = m_ScriptWriter.writeScript(getPFD(), m_Locations, m_Index);
             out.append(script);
-             out.append("  \">\n");
+            out.append("  \">\n");
 
         }
         catch (IOException e) {
             throw new RuntimeException(e);
 
         }
-     }
+    }
 
     @Override
     public void addEndText(final Appendable out, final Object... data) {
