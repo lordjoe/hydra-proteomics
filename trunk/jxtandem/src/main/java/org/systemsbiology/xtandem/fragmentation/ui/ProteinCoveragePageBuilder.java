@@ -142,13 +142,19 @@ public class ProteinCoveragePageBuilder {
                 System.out.println("problem " + id + " " + e.getMessage());
                 System.out.println("Bad Models " + bad_models++);
             }
+            catch (IllegalStateException e) {
+                 if (!e.getMessage().startsWith("bad location"))
+                     throw new RuntimeException(e);
+                 else
+                     System.out.println("problem " + id + " " + e.getMessage());
+             }
             catch (IllegalArgumentException e) {
-                if (!e.getMessage().startsWith("Bad amino acid abbreviation"))
-                    throw new RuntimeException(e);
-                else
-                    System.out.println("problem " + id + " " + e.getMessage());
-            }
-        }
+                 if (!e.getMessage().startsWith("Bad amino acid abbreviation"))
+                     throw new RuntimeException(e);
+                 else
+                     System.out.println("problem " + id + " " + e.getMessage());
+             }
+         }
 
         HTMLPageBuillder pb = new HTMLPageBuillder("Coverage for " + id);
         HTMLBodyBuillder body = pb.getBody();
@@ -250,7 +256,8 @@ public class ProteinCoveragePageBuilder {
         String[] empty = {};
         ProteinFragmentationDescription[] emptyPd = {};
          if (!idWith3dModel.isEmpty()) {
-            body.addString("<h1>Proteins With 3D Models</h1>");
+            body.addString("<h1>Proteins With 3D Models</h1>\n");
+             body.addString("<h3>UniprotID Coverage% Peptides Modeled/Total Peptides  [Number Chains]</h3>\n");
             new ReferenceTableBuillder(body, idWith3dModel.toArray(emptyPd), pageWith3dModel.toArray(empty), INDEX_ROW_LENGTH);
         }
         if (!idWithout3dModel.isEmpty()) {
