@@ -48,14 +48,15 @@ public class ReferenceTableBuillder extends AbstractHtmlFragmentHolder {
                 if(model != null)   {
                    int nf =  pd.getFragments().length;
                    int nm = pd.getAminoAcidLocations().size();
-                   modeled = " "  + nm + "/" + nf;
+                   int nchains = model.getChains().length;
+                   modeled = " "  + nm + "/" + nf + "[" + nchains + "]";
                 }
 
-                out.append("<a href=\"" + ref + "\">" + pd.getUniprotId() + " " + coveragePercent + "% " +  modeled +
+                out.append("<a href=\"" + ref + "\">" + pd.getUniprotId() + " " +  coveragePercent + "% " +  modeled +
 
                         "</a>\n");
                   out.append("</td>");
-                  if(col++ > getRowLength()) {
+                  if(++col  >= getRowLength()) {
                       col = 0;
                       out.append("</tr>\n");
                       out.append("<tr>\n");
