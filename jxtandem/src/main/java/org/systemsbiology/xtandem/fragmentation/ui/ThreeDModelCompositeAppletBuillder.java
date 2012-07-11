@@ -52,7 +52,7 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             out.append("      <script type=\"text/javascript\">\n");
             out.append("    var hideChains = [];\n");
             out.append("    var ribbons = 'off';\n");
-              out.append("    jmol_id = \"" + ProteinCoveragePageBuilder.JMOL_APPLET_ID + "\";");
+            out.append("    jmol_id = \"" + ProteinCoveragePageBuilder.JMOL_APPLET_ID + "\";");
             out.append("    loadText = \'" + ScriptWriter.getLoadText(pfd) + "\';\n");
             out.append(hilightText + "\n");
             out.append(scriptx + "\n");
@@ -63,32 +63,34 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             out.append("    jmolApplet([\"924\",\"678\"], loadText + \'select all;color translucent[80,80,80] white;select all ;ribbon off;\' + window.defaultloadscript,jmol_id);\n");
             out.append(
                     "\tfunction runScript( ) {\n" +
-                     "        script = \'select all;color translucent[80,80,80] white;\\\n" +
-                     "          select all ;ribbon \' + ribbons + \';\'  +  \n" +
-                          "         window.defaultloadscript  +  hideChains.join(\' \');\n" +
-                    "          jmolScript(script,jmol_id);\n" +
-                    "    }\n" +
-                    "\tfunction setAndScript(btn, obj, target) {\n" +
-                    "        // Entire array object is provided as 2nd argument.\n" +
-                    "        window.defaultloadscript = obj[1];\n" +
-                    "          runScript();\n" +
-                    "    }\n" +
-                    "\tfunction scriptOnly(btn, obj, target) {\n" +
-                    "          runScript();\n" +
-                    "    }\n" +
-                    "\tfunction hideChain(btn, obj, target) {\n" +
-                    "          hideChains[obj[1]] = \'\';\n" +
-                    "          runScript();\n" +
-                    "    }\n" +
+                            "        script = \'select all;color translucent[80,80,80] white;\\\n" +
+                            "          select all ;ribbon \' + ribbons + \';\'  +  \n" +
+                            "         window.defaultloadscript  +  hideChains.join(\' \');\n" +
+                            "          jmolScript(script,jmol_id);\n" +
+                            "    }\n" +
+                            "\tfunction setAndScript(btn, obj, target) {\n" +
+                            "        // Entire array object is provided as 2nd argument.\n" +
+                            "        window.defaultloadscript = obj[1];\n" +
+                            "          runScript();\n" +
+                            "    }\n" +
+                            "\tfunction scriptOnly(btn, obj, target) {\n" +
+                            "          runScript();\n" +
+                            "    }\n" +
+                            "\tfunction hideChain(btn, obj, target) {\n" +
+                            "          hideChains[obj[1]] = \'\';\n" +
+                            "          runScript();\n" +
+                            "    }\n" +
                             "\tfunction showChain(btn, obj, target) {\n" +
-                             "          hideChains[obj[1]] = obj[2];\n" +
-                             "          runScript();\n" +
-                             "    }\n" +
+                            "          hideChains[obj[1]] = obj[2];\n" +
+                            "          runScript();\n" +
+                            "    }\n" +
                             "\tfunction changeRibbon(btn, obj, target) {\n" +
-                             "          ribbons = obj[1];\n" +
-                             "          runScript();\n" +
-                             "    }\n" +
-                     "\n");
+                            "          ribbons = obj[1];\n" +
+                            "          if('off' == ribbons) \n" +
+                            "                jmolScript(\'select all;wireframe 0.15;spacefill 20%;\',jmol_id);\n" +
+                            "          runScript();\n" +
+                            "    }\n" +
+                            "\n");
 
             out.append(" \tjmolBr();\n");
             String view = m_ScriptWriter.buildCoverageAminoAcidSelector();
@@ -97,9 +99,9 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             String chechBoxes = m_ScriptWriter.buildChainsCheckBoxes(pfd);
             out.append(chechBoxes);
             out.append(" \tjmolBr();\n");
-            out.append("jmolCheckbox([changeRibbon,\'on\'],[changeRibbon,\'off\'],\'Ribbons\');\n");
+            out.append("jmolCheckbox([changeRibbon,\'only\'],[changeRibbon,\'off\'],\'Ribbons\');\n");
             out.append(" \tjmolBr();\n");
-               String menu = m_ScriptWriter.buildFragmentSelectMenu(pfd);
+            String menu = m_ScriptWriter.buildFragmentSelectMenu(pfd);
             out.append(menu);
             out.append("\n");
             out.append("</script>\n");
