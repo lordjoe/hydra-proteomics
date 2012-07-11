@@ -57,7 +57,7 @@ public class ScriptWriter {
         StringBuilder sb = new StringBuilder();
         //     sb.append("jmolHtml(\"<h3>Dim Chain</h3>\");\n");
         sb.append("jmolMenu([\n");
-        sb.append("[ [setAndScript,fragments.join()], \"all\", true]");
+        sb.append("[ [setAndScript,showAminoAcids ], \"all\", true]");
         for (ProteinFragment pf : proteinFragments) {
             String select = pf.getSequence();
             if (select.length() > 13)
