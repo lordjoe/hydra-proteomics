@@ -1,6 +1,7 @@
 package org.systemsbiology.jmol;
 
 import com.lordjoe.utilities.*;
+import org.systemsbiology.asa.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 import org.systemsbiology.xtandem.peptide.*;
@@ -13,7 +14,7 @@ import java.util.*;
  * User: steven
  * Date: 5/15/12
  */
-public class PDBObject {
+public class PDBObject extends AsaMolecule {
     public static final PDBObject[] EMPTY_ARRAY = {};
 
     private File m_File;
@@ -142,8 +143,11 @@ public class PDBObject {
         }
         if(line.startsWith("ATOM"))   {
             guaranteeChains();
-
-            handleAtom(line);
+             handleAtom(line);
+        }
+        if(line.startsWith("HETATM"))   {
+            guaranteeChains();
+             handleAtom(line);
         }
     }
 
@@ -173,7 +177,7 @@ public class PDBObject {
             FastaAminoAcid aa = FastaAminoAcid.fromAbbreviation(item);
             if (aa == null)
                 continue;
-            AminoAcidAtLocation now = new AminoAcidAtLocation(aa,  chain);
+            AminoAcidAtLocation now = new AminoAcidAtLocation( chain,aa);
             m_DisplayedAminoAcids.add(now);
             sb.append(aa.toString());
 
@@ -186,18 +190,31 @@ public class PDBObject {
         }
      }
 
-    private void handleAtom(String line ) {
+   @Override
+    protected AsaAtom buildAtom(String line ) {
+       AsaAtom ret = null;
+       try {
+           ret = super.buildAtom(line);
+       }
+       catch (UnknownAtomException e) {
+           return null;
+       }
+        catch (Exception e) {
+           return null;
+       }
+         if(ret == null)
+            return null;
         String aaStr = line.substring(17, 20);
         FastaAminoAcid aa = FastaAminoAcid.fromAbbreviation(aaStr);
         if (aa == null)
-             return;
+             return ret;
         String chainStr = line.substring(21, 22);
         ChainEnum chain = ChainEnum.fromString(chainStr);
         String posStr = line.substring(22, 26).trim();
         // sometimed we see lines like    ARG B  37A     24.919  22.314  18.745  0.08 30.67           N
         String modifier = line.substring(26,27);
         if(!" ".equals(modifier))
-            return; // i cannot handle that
+            return ret; // i cannot handle that
         int pos = Integer.parseInt(posStr);
         ProteinSubunit subUnit = getSubUnit(chain);
         AminoAcidAtLocation test = subUnit.getAminoAcidAtLocation(pos);
@@ -206,18 +223,18 @@ public class PDBObject {
                 String msg = "bad location  " + getFile() + " " + line;
                 throw new IllegalStateException(msg);
             }
-            return;
+            return ret;
         }
          AminoAcidAtLocation[] locations = subUnit.getLocations();
         for (int i = Math.max(subUnit.getMinLoc(),pos); i < locations.length; i++) {
             AminoAcidAtLocation loc = locations[i];
             if(loc.getLocation() == -1 && loc.getAminoAcid() == aa) {
                 subUnit.setRealLocation(loc,pos);
-                return;
+                return ret;
             }
 
         }
-
+        return ret;
       }
 
     public AminoAcidAtLocation[] getAminoAcidsForSequence(String foundSequence) {

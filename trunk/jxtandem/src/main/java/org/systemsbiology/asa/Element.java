@@ -29,6 +29,7 @@ public enum Element {
     XE(1.8),
     AU(1.8),
     LI(1.8),;
+    // not used D,E,G,J,Q,R,T,U,V,W,Z
     public static final Element[] EMPTY_ARRAY = {};
 
     private final double m_Radius;
