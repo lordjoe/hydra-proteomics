@@ -1,5 +1,9 @@
 package org.systemsbiology.asa;
 
+import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.pepxml.*;
+
+import javax.vecmath.*;
 import java.util.*;
 
 /**
@@ -7,7 +11,7 @@ import java.util.*;
  * User: Steve
  * Date: 7/11/12
  */
-public class Point3d {
+public class Point3d extends Vector3d {
     public static final Point3d[] EMPTY_ARRAY = {};
     public static final Random RND = new Random();
 
@@ -46,89 +50,57 @@ public class Point3d {
         return a < SMALL;
     }
 
-    private final double m_X;
-    private final double m_Y;
-    private final double m_Z;
-
-    public Point3d(final double x, final double y, final double z) {
-        m_X = x;
-        m_Y = y;
-        m_Z = z;
+  
+    public Point3d(final double px, final double py, final double pz) {
+        super(px, py ,pz);
     }
 
-    public Point3d(Point3d z) {
-        m_X = z.getX();
-        m_Y = z.getY();
-        m_Z = z.getZ();
+    public Point3d(Point3d pz) {
+       this(pz.x,pz.y,pz.z);
     }
-
-    public double getX() {
-        return m_X;
-    }
-
-    public double getY() {
-        return m_Y;
-    }
-
-    public double getZ() {
-        return m_Z;
-    }
+ 
 
     public double distance(Point3d o) {
         double sum = 0;
-        double del = getX() - o.getX();
+        double del = x - o.x;
         sum += del * del;
-        del = getY() - o.getY();
+        del = y - o.y;
         sum += del * del;
-        del = getZ() - o.getZ();
+        del = z - o.z;
         sum += del * del;
         return Math.sqrt(sum);
     }
 
-    public double length() {
-        return distance(this);
-    }
+ 
 
 
     public Point3d add(Point3d added) {
-        return new Point3d(getX() + added.getX(), getY() + added.getY(), getZ() + added.getZ());
+        return new Point3d(x + added.x, y + added.y, z+ added.z);
     }
 
     public Point3d subtract(Point3d added) {
-        return new Point3d(getX() - added.getX(), getY() - added.getY(), getZ() - added.getZ());
+        return new Point3d(x - added.x, y - added.y, z- added.z);
     }
 
     public double dot(Point3d added) {
-        return  getX() * added.getX() + getY() * added.getY() + getZ() * added.getZ();
+        return  x * added.x + y * added.y + z* added.z;
     }
 
 
-    public Point3d scale(double added) {
-        return new Point3d(getX() * added , getY() * added, getZ()  * added);
-    }
 
 
     public Point3d copy(double added) {
-        return new Point3d(getX()  , getY() , getZ()  );
+        return new Point3d(x  , y , z );
     }
 
 
-    public Point3d normalize( ) {
-        return scale(1.0 / length());
-    }
-
-
-
-    public Point3d negate() {
-        return new Point3d(-getX(), -getY(), -getZ());
-    }
 
     public boolean eq(Point3d added) {
-        if (!isSmall(Math.abs(getX() - added.getX())))
+        if (!isSmall(Math.abs(x - added.x)))
             return false;
-        if (!isSmall(Math.abs(getY() - added.getY())))
+        if (!isSmall(Math.abs(y - added.y)))
             return false;
-        if (!isSmall(Math.abs(getZ() - added.getZ())))
+        if (!isSmall(Math.abs(z- added.z)))
             return false;
 
         return true;

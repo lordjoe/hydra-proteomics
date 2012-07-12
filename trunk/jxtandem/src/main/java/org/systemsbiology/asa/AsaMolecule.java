@@ -1,5 +1,9 @@
 package org.systemsbiology.asa;
 
+import com.lordjoe.utilities.*;
+
+import javax.vecmath.*;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -9,6 +13,26 @@ import java.util.*;
  */
 public class AsaMolecule {
     public static final AsaMolecule[] EMPTY_ARRAY = {};
+
+    public static AsaMolecule fromPDB(File pdb)
+    {
+        String[] lines = FileUtilities.readInLines(pdb);
+        return fromPDB(lines);
+    }
+
+    public static AsaMolecule fromPDB(String[] lines)
+    {
+        AsaMolecule ret = new AsaMolecule();
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            if(line.startsWith("ATOM") || line.startsWith("HETATM"))
+                ret.insert_atom(new AsaAtom(line));
+             if(line.startsWith("ENDMDL"))
+                 return ret;
+        }
+        return ret;
+    }
+
 
     private final List<AsaAtom>  m_Atoms = new ArrayList<AsaAtom>();
 
@@ -30,11 +54,37 @@ public class AsaMolecule {
       }
 
     public void insert_atom(AsaAtom added ) {
-           m_Atoms.add(added );
+           m_Atoms.add(added);
       }
 
+    public void transform(Matrix3d mx)
+    {
+        for(AsaAtom atom : m_Atoms)
+            atom.transform(  mx);
 
- /*
+    }
+
+    public void erase_atom(Element  atom_type){
+        List<AsaAtom> holder = new ArrayList<AsaAtom>();
+
+         for(AsaAtom atom : m_Atoms)   {
+             if(atom.getType() == atom_type)
+                 holder.add(atom);
+         }
+         m_Atoms.removeAll(holder);
+    }
+
+    public String asPDB()
+    {
+        StringBuilder sb = new StringBuilder();
+        AsaAtom[] atoms = getAtoms();
+        Arrays.sort(atoms);
+        for(AsaAtom atom : atoms)   {
+            sb.append(atom.asPDB());
+        }
+         return sb.toString();
+    }
+    /*
  class Molecule:
 
   def __init__(self, pdb=""):

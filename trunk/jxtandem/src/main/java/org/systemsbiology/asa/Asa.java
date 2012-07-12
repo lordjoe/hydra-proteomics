@@ -1,5 +1,7 @@
 package org.systemsbiology.asa;
 
+import java.util.*;
+
 /**
  * org.systemsbiology.asa.Asa
  * User: Steve
@@ -16,6 +18,7 @@ package org.systemsbiology.asa;
  */
 public class Asa {
     public static final Asa[] EMPTY_ARRAY = {};
+    public static final int DEFAULT_SPHERE_POINTS = 960;
 
     /*
 
@@ -88,131 +91,233 @@ def find_neighbor_indices(atoms, probe, k):
 */
 
     /**
-     *     Returns list of indices of atoms within probe distance to atom k.
-
+     * Returns list of indices of atoms within probe distance to atom k.
+     *
      * @param atoms
      * @param probe
      * @param k
      * @return
      */
-public int[] find_neighbor_indices(AsaAtom[] atoms,double probe,int k)
-{
+    public int[] find_neighbor_indices(AsaAtom[] atoms, double probe, int k) {
+        List<Integer> holder = new ArrayList<Integer>();
+        AsaAtom atom_k = atoms[k];
+        Point3d pos = atom_k.getPos();
+        double radius = atom_k.getRadius() + probe + probe;
+        for (int i = 0; i < atoms.length; i++) {
+            if (i == k)
+                continue;
+            AsaAtom atom = atoms[i];
+            double dist = pos.distance(atom.getPos());
+            if (dist < radius + atom.getRadius())
+                holder.add(i);
+        }
 
-}
-    """
-     """
-    neighbor_indices = []
-    atom_k = atoms[k]
-    radius = atom_k.radius + probe + probe
-    indices = range(k)
-    indices.extend(range(k+1, len(atoms)))
-    for i in indices:
-        atom_i = atoms[i]
-        dist = pos_distance(atom_k.pos, atom_i.pos)
-        if dist < radius + atom_i.radius:
-            neighbor_indices.append(i)
-    return neighbor_indices
+        Integer[] held = new Integer[holder.size()];
+        holder.toArray(held);
+        int[] ret = new int[holder.size()];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = held[i];
+        }
+        return ret;
+    }
 
     /*
 
-def calculate_asa(atoms, probe, n_sphere_point=960):
-    """
-    Returns list of accessible surface areas of the atoms, using the probe
-    and atom radius to define the surface.
-    """
-    sphere_points = generate_sphere_points(n_sphere_point)
+    def calculate_asa(atoms, probe, n_sphere_point=960):
+        """
+        Returns list of accessible surface areas of the atoms, using the probe
+        and atom radius to define the surface.
+        """
+        sphere_points = generate_sphere_points(n_sphere_point)
 
-    const = 4.0 * Math.pi / len(sphere_points)
-    test_point = Vector3d()
-    areas = []
-    for i, atom_i in enumerate(atoms):
+        const = 4.0 * Math.pi / len(sphere_points)
+        test_point = Vector3d()
+        areas = []
+        for i, atom_i in enumerate(atoms):
 
-        neighbor_indices = find_neighbor_indices(atoms, probe, i)
-        n_neighbor = len(neighbor_indices)
-        j_closest_neighbor = 0
-        radius = probe + atom_i.radius
+            neighbor_indices = find_neighbor_indices(atoms, probe, i)
+            n_neighbor = len(neighbor_indices)
+            j_closest_neighbor = 0
+            radius = probe + atom_i.radius
 
-        n_accessible_point = 0
-        for point in sphere_points:
-            is_accessible = True
+            n_accessible_point = 0
+            for point in sphere_points:
+                is_accessible = True
 
-            test_point.x = point[0]*radius + atom_i.pos.x
-            test_point.y = point[1]*radius + atom_i.pos.y
-            test_point.z = point[2]*radius + atom_i.pos.z
+                test_point.x = point[0]*radius + atom_i.pos.x
+                test_point.y = point[1]*radius + atom_i.pos.y
+                test_point.z = point[2]*radius + atom_i.pos.z
 
-            cycled_indices = range(j_closest_neighbor, n_neighbor)
-            cycled_indices.extend(range(j_closest_neighbor))
+                cycled_indices = range(j_closest_neighbor, n_neighbor)
+                cycled_indices.extend(range(j_closest_neighbor))
 
+                for j in cycled_indices:
+                    atom_j = atoms[neighbor_indices[j]]
+                    r = atom_j.radius + probe
+                    diff_sq = pos_distance_sq(atom_j.pos, test_point)
+                    if diff_sq < r*r:
+                        j_closest_neighbor = j
+                        is_accessible = False
+                        break
+                if is_accessible:
+                    n_accessible_point += 1
+
+            area = const*n_accessible_point*radius*radius
+            areas.append(area)
+        return areas
+    */
+
+    /**
+     * Returns list of accessible surface areas of the atoms, using the probe
+     * and atom radius to define the surface.
+     *
+     * @param atoms
+     * @param probe solvent radius
+     * @return
+     */
+    public Object[] calculate_asa(AsaAtom[] atoms, double probe) {
+        return calculate_asa(atoms, probe, DEFAULT_SPHERE_POINTS);
+    }
+
+    /**
+     * Returns list of accessible surface areas of the atoms, using the probe
+     * and atom radius to define the surface.
+     *
+     * @param atoms
+     * @param probe          solvent radius
+     * @param n_sphere_point points on a sphere
+     * @return
+     */
+    public Object[] calculate_asa(AsaAtom[] atoms, double probe, int n_sphere_point) {
+        Point3d[] sphere_points = generate_sphere_points(n_sphere_point);
+
+        double constant = 4.0 * Math.PI / sphere_points.length;
+        Point3d test_point = new Point3d(0, 0, 0);
+        List<Object> areas = new ArrayList<Object>();
+        for (int i = 0; i < atoms.length; i++) {
+            AsaAtom atom_i = atoms[i];
+            Point3d pos = atom_i.getPos();
+            int[] neighbor_indices = find_neighbor_indices(atoms, probe, i);
+            int n_neighbor = neighbor_indices.length;
+            int j_closest_neighbor = 0;
+            double radius = probe + atom_i.getRadius();
+            int n_accessible_point = 0;
+            throw new UnsupportedOperationException("Fix This"); // ToDo
+            /*
+            for (int j = 0; j < sphere_points.length; j++) {
+                Point3d point = sphere_points[j];
+                boolean is_accessible = true;
+                 test_point.x = point[0]*radius +  pos.x;
+                    test_point.y = point[1]*radius +  pos.y;
+                    test_point.z = point[2]*radius +  pos.z;
+               }
             for j in cycled_indices:
-                atom_j = atoms[neighbor_indices[j]]
-                r = atom_j.radius + probe
-                diff_sq = pos_distance_sq(atom_j.pos, test_point)
-                if diff_sq < r*r:
-                    j_closest_neighbor = j
-                    is_accessible = False
-                    break
-            if is_accessible:
-                n_accessible_point += 1
+                 atom_j = atoms[neighbor_indices[j]]
+                 r = atom_j.radius + probe
+                 diff_sq = pos_distance_sq(atom_j.pos, test_point)
+                 if diff_sq < r*r:
+                     j_closest_neighbor = j
+                     is_accessible = False
+                     break
+             if(is_accessible)
+                 n_accessible_point++;
+            */
+        }
+        /*
+         areas = []
+         for i, atom_i in enumerate(atoms):
 
-        area = const*n_accessible_point*radius*radius
-        areas.append(area)
-    return areas
+             neighbor_indices = find_neighbor_indices(atoms, probe, i)
+             n_neighbor = len(neighbor_indices)
+             j_closest_neighbor = 0
+             radius = probe + atom_i.radius
 
+             n_accessible_point = 0
+             for point in sphere_points:
+                 is_accessible = True
 
+                 test_point.x = point[0]*radius + atom_i.pos.x
+                 test_point.y = point[1]*radius + atom_i.pos.y
+                 test_point.z = point[2]*radius + atom_i.pos.z
+
+                 cycled_indices = range(j_closest_neighbor, n_neighbor)
+                 cycled_indices.extend(range(j_closest_neighbor))
+
+                 for j in cycled_indices:
+                     atom_j = atoms[neighbor_indices[j]]
+                     r = atom_j.radius + probe
+                     diff_sq = pos_distance_sq(atom_j.pos, test_point)
+                     if diff_sq < r*r:
+                         j_closest_neighbor = j
+                         is_accessible = False
+                         break
+                 if is_accessible:
+                     n_accessible_point += 1
+
+             area = const*n_accessible_point*radius*radius
+             areas.append(area)
+         return areas
+         */
+        Object[] ret = new Object[areas.size()];
+        areas.toArray(ret);
+        return ret;
+    }
+
+    /*
 def main():
-  import sys
-  import getopt
-  import molecule
+ import sys
+ import getopt
+ import molecule
 
 
-  usage = \
-  """
+ usage = \
+ """
 
-  Copyright (c) 2007 Bosco Ho
+ Copyright (c) 2007 Bosco Ho
 
-  Calculates the total Accessible Surface Area (ASA) of atoms in a
-  PDB file.
+ Calculates the total Accessible Surface Area (ASA) of atoms in a
+ PDB file.
 
-  Usage: asa.py -s n_sphere in_pdb [out_pdb]
+ Usage: asa.py -s n_sphere in_pdb [out_pdb]
 
-  - out_pdb    PDB file in which the atomic ASA values are written
-               to the b-factor column.
+ - out_pdb    PDB file in which the atomic ASA values are written
+              to the b-factor column.
 
-  -s n_sphere  number of points used in generating the spherical
-               dot-density for the calculation (default=960). The
-               more points, the more accurate (but slower) the
-               calculation.
+ -s n_sphere  number of points used in generating the spherical
+              dot-density for the calculation (default=960). The
+              more points, the more accurate (but slower) the
+              calculation.
 
-  """
+ """
 
-  opts, args = getopt.getopt(sys.argv[1:], "n:")
-  if len(args) < 1:
-    print usage
-    return
+ opts, args = getopt.getopt(sys.argv[1:], "n:")
+ if len(args) < 1:
+   print usage
+   return
 
-  mol = molecule.Molecule(args[0])
-  atoms = mol.atoms()
-  molecule.add_radii(atoms)
+ mol = molecule.Molecule(args[0])
+ atoms = mol.atoms()
+ molecule.add_radii(atoms)
 
-  n_sphere = 960
-  for o, a in opts:
-    if '-n' in o:
-      n_sphere = int(a)
-      print "Points on sphere: ", n_sphere
-  asas = calculate_asa(atoms, 1.4, n_sphere)
-  print "%.1f angstrom squared." % sum(asas)
+ n_sphere = 960
+ for o, a in opts:
+   if '-n' in o:
+     n_sphere = int(a)
+     print "Points on sphere: ", n_sphere
+ asas = calculate_asa(atoms, 1.4, n_sphere)
+ print "%.1f angstrom squared." % sum(asas)
 
-  if len(args) > 1:
-    for asa, atom in zip(asas, atoms):
-      atom.bfactor = asa
-    mol.write_pdb(args[1])
+ if len(args) > 1:
+   for asa, atom in zip(asas, atoms):
+     atom.bfactor = asa
+   mol.write_pdb(args[1])
 
 
 if __name__ == "__main__":
-  main()
+ main()
 
 
 
-     */
+    */
 
 }

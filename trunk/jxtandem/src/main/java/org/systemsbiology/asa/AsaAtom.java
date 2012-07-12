@@ -1,5 +1,7 @@
 package org.systemsbiology.asa;
 
+import javax.vecmath.*;
+
 /**
  * org.systemsbiology.asa.AsaAtom
  * User: Steve
@@ -15,12 +17,15 @@ public class AsaAtom implements Comparable<AsaAtom> {
     private int m_Num;
     private double m_BFActor;
     private double m_Occupancy;
+    private Element m_Element;
     private String m_Type;
+    private String m_ChainId;
     private String m_ResType;
     private String m_ResNum;
     private String m_Res_Inset;
 
     public AsaAtom(String line) {
+        setHetAtom(line.startsWith("HETATM"));
         throw new UnsupportedOperationException("Fix This"); // ToDo
     }
 
@@ -28,8 +33,8 @@ public class AsaAtom implements Comparable<AsaAtom> {
 class Atom:
  def __init__(self):
    self.is_hetatm = False
-   self.pos = vector3d.Vector3d()
-   self.vel = vector3d.Vector3d()
+   self.pos = Point3d.Point3d()
+   self.vel = Point3d.Point3d()
    self.mass = 0.0
    self.type = ""
    self.element = ""
@@ -40,25 +45,6 @@ class Atom:
    self.bfactor = 0.0
    self.occupancy = 0.0
    self.num = 0
-
- def pdb_str(self):
-   if self.is_hetatm:
-     field = "HETATM"
-   else:
-     field = "ATOM  "
-   return "%6s%5s %4s %3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f" \
-           % (field, self.num,
-              pad_atom_type(self.type),
-              self.res_type, self.chain_id,
-              self.res_num, self.res_insert,
-              self.pos.x, self.pos.y, self.pos.z,
-              self.occupancy, self.bfactor)
-
- def __str__(self):
-   return "%s%s-%s (% .1f % .1f % .1f)" \
-           %  (self.res_type, self.res_num,
-               self.type, self.pos.x,
-               self.pos.y, self.pos.z)
 
 
 def AtomFromPdbLine(line):
@@ -163,6 +149,27 @@ def AtomFromPdbLine(line):
         m_Type = type;
     }
 
+    public Element getElement() {
+        return m_Element;
+    }
+
+    public double getRadius()
+    {
+        return getElement().getRadius();
+    }
+
+    public void setElement(final Element element) {
+        m_Element = element;
+    }
+
+    public String getChainId() {
+        return m_ChainId;
+    }
+
+    public void setChainId(final String chainId) {
+        m_ChainId = chainId;
+    }
+
     public String getResType() {
         return m_ResType;
     }
@@ -234,9 +241,11 @@ def add_radii(atoms):
      atom.radius = radii['.']
 
  */
+
+
     /*
 def get_center(atoms):
- center = vector3d.Vector3d(0, 0, 0)
+ center = Point3d.Point3d(0, 0, 0)
  for atom in atoms:
    center += atom.pos
  center.scale(1.0/float(len(atoms)))
@@ -248,9 +257,9 @@ def get_center(atoms):
         double z = 0;
         for (int i = 0; i < atoms.length; i++) {
             Point3d atom = atoms[i].getPos();
-            x += atom.getX();
-            y += atom.getY();
-            z += atom.getZ();
+            x += atom.x;
+            y += atom.y;
+            z += atom.z;
         }
         return new Point3d(x, y, z);
     }
@@ -259,7 +268,7 @@ def get_center(atoms):
 def get_width(atoms, center):
  max_diff = 0
  for atom in atoms:
-   diff = vector3d.pos_distance(atom.pos, center)
+   diff = Point3d.pos_distance(atom.pos, center)
    if diff > max_diff:
      max_diff = diff
  return 2*max_diff
@@ -278,5 +287,59 @@ def get_width(atoms, center):
         }
         return dist;
     }
+
+    public void transform(Matrix3d mx)
+    {
+        mx.transform(getPos());
+     }
+
+    /*
+ def pdb_str(self):
+   if self.is_hetatm:
+     field = "HETATM"
+   else:
+     field = "ATOM  "
+   return "%6s%5s %4s %3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f" \
+           % (field, self.num,
+              pad_atom_type(self.type),
+              self.res_type, self.chain_id,
+              self.res_num, self.res_insert,
+              self.pos.x, self.pos.y, self.pos.z,
+              self.occupancy, self.bfactor)
+
+ def __str__(self):
+   return "%s%s-%s (% .1f % .1f % .1f)" \
+           %  (self.res_type, self.res_num,
+               self.type, self.pos.x,
+               self.pos.y, self.pos.z)
+
+
+     */
+    public String asPDB()
+    {
+        StringBuilder sb = new StringBuilder();
+        if(isHetAtom())
+            sb.append("ATOM  ");
+        else
+            sb.append("HETATM");
+
+        Vector3d pos = getPos();
+        String line = String.format("%6s%5s %4s %3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f",
+              m_Num,
+              pad_atom_type(m_Type),
+              m_ResType, m_ChainId,
+              m_ResNum, m_Res_Inset,
+              pos.x, pos.y, pos.z,
+              m_Occupancy, m_BFActor
+        );
+        sb.append(line);
+         return sb.toString();
+    }
+
+    protected String pad_atom_type(String el)
+    {
+        throw new UnsupportedOperationException("Fix This"); // ToDo
+    }
+
 
 }
