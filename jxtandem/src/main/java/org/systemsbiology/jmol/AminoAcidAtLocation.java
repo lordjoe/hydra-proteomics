@@ -1,5 +1,6 @@
 package org.systemsbiology.jmol;
 
+import org.systemsbiology.asa.*;
 import org.systemsbiology.xtandem.*;
 
 import java.util.*;
@@ -9,7 +10,7 @@ import java.util.*;
  * User: steven
  * Date: 5/15/12
  */
-public class AminoAcidAtLocation {
+public class AminoAcidAtLocation extends AsaSubunit {
     public static final AminoAcidAtLocation[] EMPTY_ARRAY = {};
 
     /**
@@ -48,9 +49,10 @@ public class AminoAcidAtLocation {
     private int m_Location = -1;
     private final ChainEnum m_Chain;
 
-    public AminoAcidAtLocation(FastaAminoAcid aminoAcid, ChainEnum chain) {
+    public AminoAcidAtLocation(ChainEnum chain,FastaAminoAcid aminoAcid  ) {
+        super(chain,aminoAcid.toString(),0);
         m_AminoAcid = aminoAcid;
-         m_Chain = chain;
+        m_Chain = chain;
     }
 //
 //    public AminoAcidAtLocation(FastaAminoAcid aminoAcid, int location) {

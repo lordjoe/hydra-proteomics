@@ -1,5 +1,6 @@
 package org.systemsbiology.jmol;
 
+import org.systemsbiology.asa.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 
 import java.io.*;
@@ -106,7 +107,8 @@ public class ScriptWriter {
         StringBuilder sb = new StringBuilder();
         sb.append("jmolRadioGroup([\n" +
                 "\n" +
-                "          [ [setAndScript,showCoverage], \"Coverage\"] ,\n" +
+                "     [ [setAndScript,showCoverage], \"Coverage\"] ,\n" +
+                "     [ [setAndScript,showSolventAccess], \"Solvent Access\"] ,\n" +
                 " \t  [ [setAndScript,showAminoAcids] , \"Peptides\",  \"checked\"] \n" +
                 "  \t]);");
         return sb.toString();
@@ -191,6 +193,28 @@ public class ScriptWriter {
 
         return sb.toString();
     }
+
+    public String writeSolventAccessScript(ProteinFragmentationDescription pfd) {
+         m_UsedPositions.clear();
+         PDBObject original = pfd.getModel();
+
+         StringBuilder sb = new StringBuilder();
+         boolean quoteNewLines = true;
+         appendScriptHeader(original, quoteNewLines, sb);
+         sb.append("select all;color red;wireframe off;spacefill 100%;");
+        AsaSubunit[] su = original.getAccessibleSubunits();
+        for (int i = 0; i < su.length; i++) {
+             AsaSubunit corg = su[i];
+            if (corg instanceof AminoAcidAtLocation) {
+                AminoAcidAtLocation aa = (AminoAcidAtLocation) corg;
+                if(aa.isAccessible())
+                    appendScriptHilight(aa, "translucent[0,0,100]", sb);
+            }
+        }
+
+        return sb.toString();
+     }
+
 
 
     public String writeHilightText(ProteinFragmentationDescription pfd) {

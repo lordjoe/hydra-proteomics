@@ -3,6 +3,7 @@ package org.systemsbiology.xtandem.fragmentation.ui;
 import com.lordjoe.utilities.*;
 import com.sun.net.httpserver.*;
 import com.sun.org.apache.bcel.internal.generic.*;
+import org.systemsbiology.asa.*;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 import org.systemsbiology.xtandem.peptide.*;
@@ -192,6 +193,7 @@ public class ProteinCoveragePageBuilder {
                 "</h2>\n");
 
         if (model != null) {
+            Asa.calculate_asa(model);
              ThreeDModelBuillder tm = new ThreeDModelBuillder(body, pfd);
 //
 //         }

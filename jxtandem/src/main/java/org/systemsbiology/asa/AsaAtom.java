@@ -1,5 +1,7 @@
 package org.systemsbiology.asa;
 
+import org.systemsbiology.jmol.*;
+
 import javax.vecmath.*;
 
 /**
@@ -19,14 +21,103 @@ public class AsaAtom implements Comparable<AsaAtom> {
     private double m_Occupancy;
     private Element m_Element;
     private String m_Type;
-    private String m_ChainId;
+    private ChainEnum m_ChainId;
     private String m_ResType;
-    private String m_ResNum;
+    private int m_ResNum;
     private String m_Res_Inset;
+    private boolean m_Accessible;
+    private double m_AccessibleArea;
 
     public AsaAtom(String line) {
         setHetAtom(line.startsWith("HETATM"));
-        throw new UnsupportedOperationException("Fix This"); // ToDo
+        String s;
+        s = line.substring(6, 12).trim();
+        m_Num = Integer.parseInt(s);
+        s = line.substring(12, 17).trim();
+        m_Type = s;
+        if("UNK".equals(s))
+            throw new UnknownAtomException();
+        if (s.length() == 1) {
+            try {
+                m_Element = Element.valueOf(s);
+            }
+            catch (IllegalArgumentException e) {
+                throw new UnknownAtomException(s);
+            }
+        }
+        else {
+            try {
+                char c = s.charAt(0);
+
+                switch (c) {
+                    case 'D' :
+                    case 'E' :
+                    case 'G' :
+                    case 'J' :
+                    case 'Q' :
+                    case 'R' :
+                    case 'T' :
+                    case 'U' :
+                    case 'V' :
+                    case 'W' :
+                          throw new UnknownAtomException(s);
+                    case 'C':   // CU CA
+                    case 'M':  // MN MG
+                    case 'Z':  // ZN
+                    case 'B':   //
+                    case 'S':  // SE
+                    case 'N':
+                    case 'L':   // LI
+                        m_Element = Element.valueOf(s.substring(0, 2)); // elements have only one letter
+                        break;
+                    default:
+                        m_Element = Element.valueOf(s.substring(0, 1)); // elements have only one letter
+                        break;
+                }
+            }
+            catch (IllegalArgumentException e) {
+                try {
+                    m_Element = Element.valueOf(s.substring(0, 1)); // elements have only one letter
+                }
+                catch (IllegalArgumentException e1) {
+                    throw new UnknownAtomException(s);
+
+                }
+
+            }
+        }
+
+//        if element[:2] in two_char_elements:
+//          atom.element = element[:2]
+//        else:
+//          atom.element = element[0]
+//        atom.res_type = line[17:20]
+        s = line.substring(17, 21).trim();
+        m_ResType = s;
+//        atom.chain_id = line[21]
+        s = line.substring(21, 22);
+        m_ChainId = ChainEnum.fromString(s);
+//        atom.res_num = int(line[22:26])
+        s = line.substring(22, 26).trim();
+        m_ResNum = Integer.parseInt(s);
+
+//        atom.res_insert = line[26]
+        s = line.substring(26, 27).trim();
+        m_Res_Inset = s;
+
+//        if atom.res_insert == " ":
+//          atom.res_insert = ""
+        s = line.substring(30, 38).trim();
+        double x = Double.parseDouble(s);
+        s = line.substring(38, 46).trim();
+        double y = Double.parseDouble(s);
+        s = line.substring(46, 54).trim();
+        double z = Double.parseDouble(s);
+//        x = float(line[30:38])
+//        y = float(line[38:46])
+//        z = float(line[46:54])
+//        atom.pos.set(x, y, z)
+        setPos(new Point3d(x, y, z));
     }
 
     /*
@@ -153,8 +244,7 @@ def AtomFromPdbLine(line):
         return m_Element;
     }
 
-    public double getRadius()
-    {
+    public double getRadius() {
         return getElement().getRadius();
     }
 
@@ -162,11 +252,11 @@ def AtomFromPdbLine(line):
         m_Element = element;
     }
 
-    public String getChainId() {
+    public ChainEnum getChainId() {
         return m_ChainId;
     }
 
-    public void setChainId(final String chainId) {
+    public void setChainId(final ChainEnum chainId) {
         m_ChainId = chainId;
     }
 
@@ -178,11 +268,11 @@ def AtomFromPdbLine(line):
         m_ResType = resType;
     }
 
-    public String getResNum() {
+    public int getResNum() {
         return m_ResNum;
     }
 
-    public void setResNum(final String resNum) {
+    public void setResNum(final int resNum) {
         m_ResNum = resNum;
     }
 
@@ -192,6 +282,22 @@ def AtomFromPdbLine(line):
 
     public void setRes_Inset(final String res_Inset) {
         m_Res_Inset = res_Inset;
+    }
+
+    public boolean isAccessible() {
+        return m_Accessible;
+    }
+
+    public void setAccessible(boolean accessible) {
+        m_Accessible = accessible;
+    }
+
+    public double getAccessibleArea() {
+        return m_AccessibleArea;
+    }
+
+    public void setAccessibleArea(double accessibleArea) {
+        m_AccessibleArea = accessibleArea;
     }
 
     /*
@@ -288,10 +394,9 @@ def get_width(atoms, center):
         return dist;
     }
 
-    public void transform(Matrix3d mx)
-    {
+    public void transform(Matrix3d mx) {
         mx.transform(getPos());
-     }
+    }
 
     /*
  def pdb_str(self):
@@ -315,29 +420,35 @@ def get_width(atoms, center):
 
 
      */
-    public String asPDB()
-    {
+    public String asPDB() {
         StringBuilder sb = new StringBuilder();
-        if(isHetAtom())
+        if (isHetAtom())
             sb.append("ATOM  ");
         else
             sb.append("HETATM");
 
         Vector3d pos = getPos();
         String line = String.format("%6s%5s %4s %3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f",
-              m_Num,
-              pad_atom_type(m_Type),
-              m_ResType, m_ChainId,
-              m_ResNum, m_Res_Inset,
-              pos.x, pos.y, pos.z,
-              m_Occupancy, m_BFActor
+                m_Num,
+                pad_atom_type(m_Type),
+                m_ResType, m_ChainId,
+                m_ResNum, m_Res_Inset,
+                pos.x, pos.y, pos.z,
+                m_Occupancy, m_BFActor
         );
         sb.append(line);
-         return sb.toString();
+        return sb.toString();
     }
 
-    protected String pad_atom_type(String el)
-    {
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        String suString = AsaSubunit.buildSubUnitString(getChainId().toString(), getResType(), getResNum());
+        sb.append(suString + "-" + getElement() + getNum());
+        return sb.toString();
+    }
+
+    protected String pad_atom_type(String el) {
         throw new UnsupportedOperationException("Fix This"); // ToDo
     }
 

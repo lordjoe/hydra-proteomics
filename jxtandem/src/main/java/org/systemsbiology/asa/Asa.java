@@ -1,5 +1,6 @@
 package org.systemsbiology.asa;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -19,6 +20,7 @@ import java.util.*;
 public class Asa {
     public static final Asa[] EMPTY_ARRAY = {};
     public static final int DEFAULT_SPHERE_POINTS = 960;
+    public static final double WATER_RADIUS = 1.4;
 
     /*
 
@@ -55,10 +57,10 @@ def generate_sphere_points(n):
      * Returns list of 3d coordinates of points on a sphere using the
      * Golden Section Spiral algorithm.
      *
-     * @param n
-     * @return
+     * @param n number points
+     * @return !null array of points
      */
-    public Point3d[] generate_sphere_points(int n) {
+    public static Point3d[] generate_sphere_points(int n) {
         Point3d[] ret = new Point3d[n];
         double inc = Math.PI * (3 - Math.sqrt(5));
         double offset = 2 / (double) n;
@@ -98,7 +100,7 @@ def find_neighbor_indices(atoms, probe, k):
      * @param k
      * @return
      */
-    public int[] find_neighbor_indices(AsaAtom[] atoms, double probe, int k) {
+    public static int[] find_neighbor_indices(AsaAtom[] atoms, double probe, int k) {
         List<Integer> holder = new ArrayList<Integer>();
         AsaAtom atom_k = atoms[k];
         Point3d pos = atom_k.getPos();
@@ -168,16 +170,36 @@ def find_neighbor_indices(atoms, probe, k):
     */
 
     /**
-     * Returns list of accessible surface areas of the atoms, using the probe
-     * and atom radius to define the surface.
-     *
-     * @param atoms
-     * @param probe solvent radius
-     * @return
-     */
-    public Object[] calculate_asa(AsaAtom[] atoms, double probe) {
-        return calculate_asa(atoms, probe, DEFAULT_SPHERE_POINTS);
-    }
+      * Returns list of accessible surface areas of the atoms, using the probe
+      * and atom radius to define the surface.
+      *
+      * @param atoms
+      * @param probe solvent radius
+      * @return
+      */
+     public static AsaAtom[] calculate_asa(AsaAtom[] atoms, double probe) {
+         return calculate_asa(atoms, probe, DEFAULT_SPHERE_POINTS);
+     }
+    /**
+      * Returns list of accessible surface areas of the atoms, using the probe
+      * and atom radius to define the surface.
+      *
+      * @param atoms
+        * @return
+      */
+     public static AsaAtom[] calculate_asa(AsaAtom[] atoms ) {
+         return calculate_asa(atoms, WATER_RADIUS);
+     }
+    /**
+      * Returns list of accessible surface areas of the atoms, using the probe
+      * and atom radius to define the surface.
+      *
+      * @param atoms
+        * @return
+      */
+     public static AsaAtom[] calculate_asa(AsaMolecule mol ) {
+         return calculate_asa(mol.getAtoms());
+     }
 
     /**
      * Returns list of accessible surface areas of the atoms, using the probe
@@ -188,12 +210,12 @@ def find_neighbor_indices(atoms, probe, k):
      * @param n_sphere_point points on a sphere
      * @return
      */
-    public Object[] calculate_asa(AsaAtom[] atoms, double probe, int n_sphere_point) {
+    public static AsaAtom[] calculate_asa(AsaAtom[] atoms, double probe, int n_sphere_point) {
         Point3d[] sphere_points = generate_sphere_points(n_sphere_point);
 
         double constant = 4.0 * Math.PI / sphere_points.length;
         Point3d test_point = new Point3d(0, 0, 0);
-        List<Object> areas = new ArrayList<Object>();
+        List<AsaAtom> areas = new ArrayList<AsaAtom>();
         for (int i = 0; i < atoms.length; i++) {
             AsaAtom atom_i = atoms[i];
             Point3d pos = atom_i.getPos();
@@ -202,68 +224,126 @@ def find_neighbor_indices(atoms, probe, k):
             int j_closest_neighbor = 0;
             double radius = probe + atom_i.getRadius();
             int n_accessible_point = 0;
-            throw new UnsupportedOperationException("Fix This"); // ToDo
-            /*
-            for (int j = 0; j < sphere_points.length; j++) {
-                Point3d point = sphere_points[j];
+            for (int k = 0; k < sphere_points.length; k++) {
+                Point3d point = sphere_points[k];
                 boolean is_accessible = true;
-                 test_point.x = point[0]*radius +  pos.x;
-                    test_point.y = point[1]*radius +  pos.y;
-                    test_point.z = point[2]*radius +  pos.z;
-               }
-            for j in cycled_indices:
-                 atom_j = atoms[neighbor_indices[j]]
-                 r = atom_j.radius + probe
-                 diff_sq = pos_distance_sq(atom_j.pos, test_point)
-                 if diff_sq < r*r:
-                     j_closest_neighbor = j
-                     is_accessible = False
-                     break
-             if(is_accessible)
-                 n_accessible_point++;
-            */
+                test_point.x = point.x * radius + pos.x;
+                test_point.y = point.y * radius + pos.y;
+                test_point.z = point.z * radius + pos.z;
+                for (int j = 0; j < neighbor_indices.length; j++) {
+                    int neighbor_indice = neighbor_indices[j];
+                    AsaAtom atom_j = atoms[neighbor_indice];
+                    double r = atom_j.getRadius() + probe;
+                    double dist = test_point.distance(atom_j.getPos());
+                    if (dist < r) {
+                        j_closest_neighbor = j;
+                        is_accessible = false;
+                        break;
+                    }
+                }
+                if (is_accessible)
+                    n_accessible_point++;
+            }
+            if (n_accessible_point > 0) {
+                double area = constant * n_accessible_point * radius * radius;
+                atom_i.setAccessible(true);
+                atom_i.setAccessibleArea(area);
+                areas.add(atom_i);
+            }
+
         }
-        /*
-         areas = []
-         for i, atom_i in enumerate(atoms):
-
-             neighbor_indices = find_neighbor_indices(atoms, probe, i)
-             n_neighbor = len(neighbor_indices)
-             j_closest_neighbor = 0
-             radius = probe + atom_i.radius
-
-             n_accessible_point = 0
-             for point in sphere_points:
-                 is_accessible = True
-
-                 test_point.x = point[0]*radius + atom_i.pos.x
-                 test_point.y = point[1]*radius + atom_i.pos.y
-                 test_point.z = point[2]*radius + atom_i.pos.z
-
-                 cycled_indices = range(j_closest_neighbor, n_neighbor)
-                 cycled_indices.extend(range(j_closest_neighbor))
-
-                 for j in cycled_indices:
-                     atom_j = atoms[neighbor_indices[j]]
-                     r = atom_j.radius + probe
-                     diff_sq = pos_distance_sq(atom_j.pos, test_point)
-                     if diff_sq < r*r:
-                         j_closest_neighbor = j
-                         is_accessible = False
-                         break
-                 if is_accessible:
-                     n_accessible_point += 1
-
-             area = const*n_accessible_point*radius*radius
-             areas.append(area)
-         return areas
-         */
-        Object[] ret = new Object[areas.size()];
+        AsaAtom[] ret = new AsaAtom[areas.size()];
         areas.toArray(ret);
         return ret;
+        
+    }
+    /*
+    areas = []
+    for i, atom_i in enumerate(atoms):
+
+        neighbor_indices = find_neighbor_indices(atoms, probe, i)
+        n_neighbor = len(neighbor_indices)
+        j_closest_neighbor = 0
+        radius = probe + atom_i.radius
+
+        n_accessible_point = 0
+        for point in sphere_points:
+            is_accessible = True
+
+            test_point.x = point[0]*radius + atom_i.pos.x
+            test_point.y = point[1]*radius + atom_i.pos.y
+            test_point.z = point[2]*radius + atom_i.pos.z
+
+            cycled_indices = range(j_closest_neighbor, n_neighbor)
+            cycled_indices.extend(range(j_closest_neighbor))
+
+            for j in cycled_indices:
+                atom_j = atoms[neighbor_indices[j]]
+                r = atom_j.radius + probe
+                diff_sq = pos_distance_sq(atom_j.pos, test_point)
+                if diff_sq < r*r:
+                    j_closest_neighbor = j
+                    is_accessible = False
+                    break
+            if is_accessible:
+                n_accessible_point += 1
+
+        area = const*n_accessible_point*radius*radius
+        areas.append(area)
+    return areas
+    */
+
+    private static void readPDBMolecule(File pdb) {
+         AsaMolecule mol  = AsaMolecule.fromPDB(pdb);
+         AsaAtom[] atoms = mol.getAtoms();
+
+         int n_sphere = DEFAULT_SPHERE_POINTS;
+         AsaAtom[] asaAtoms = calculate_asa(atoms, WATER_RADIUS, n_sphere);
+
+         AsaSubunit[] accessibleSubunits = mol.getAccessibleSubunits();
+         AsaSubunit[] inaccessibleSubunits = mol.getInaccessibleSubunits();
+         for (int i = 0; i < inaccessibleSubunits.length; i++) {
+             AsaSubunit inaccessibleSubunit = inaccessibleSubunits[i];
+
+         }
+     }
+
+    /**
+     * Usage: asa.py -s n_sphere in_pdb [out_pdb]
+     * <p/>
+     * - out_pdb    PDB file in which the atomic ASA values are written
+     * to the b-factor column.
+     * <p/>
+     * -s n_sphere  number of points used in generating the spherical
+     * dot-density for the calculation (default=960). The
+     * more points, the more accurate (but slower) the
+     * calculation.
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+         File pdb = new File("1I72.pdb");
+         readPDBMolecule(pdb);
+
+        File[] files = new File(System.getProperty("user.dir")).listFiles();
+        for (int i = 570; i < files.length; i++) {
+            pdb = files[i];
+            System.out.println(pdb + " " + i);
+            if(pdb.getName().endsWith(".pdb"))
+                readPDBMolecule(pdb);
+
+        }
+     //   File pdb = new File(args[0]);
+         //   print "%.1f angstrom squared." % sum(asas)
+//
+//        if len(args) > 1:
+//          for asa, atom in zip(asas, atoms):
+//            atom.bfactor = asa
+//          mol.write_pdb(args[1])
+
     }
 
-    /*
+     /*
 def main():
  import sys
  import getopt
