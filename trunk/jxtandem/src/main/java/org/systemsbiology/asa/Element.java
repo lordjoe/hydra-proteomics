@@ -28,7 +28,9 @@ public enum Element {
     HG(1.8),
     XE(1.8),
     AU(1.8),
-    LI(1.8),;
+    LI(1.8),
+    W(1.70),   // use this for all others
+    ;
     // not used D,E,G,J,Q,R,T,U,V,W,Z
     public static final Element[] EMPTY_ARRAY = {};
 
@@ -41,4 +43,60 @@ public enum Element {
     public double getRadius() {
         return m_Radius;
     }
+
+    public static final Element UNKNOWN_ELEMENT = W;
+
+    public static Element fromString(String s) {
+        if ("UNK".equals(s))
+            return UNKNOWN_ELEMENT;
+        if (s.length() == 1) {
+            try {
+                return Element.valueOf(s);
+            }
+            catch (IllegalArgumentException e) {
+                return UNKNOWN_ELEMENT;
+            }
+        }
+        else {
+            try {
+                char c = s.charAt(0);
+
+                switch (c) {
+                    case 'D':
+                    case 'E':
+                    case 'G':
+                    case 'J':
+                    case 'Q':
+                    case 'R':
+                    case 'T':
+                    case 'U':
+                    case 'V':
+                    case 'W':
+                        return UNKNOWN_ELEMENT;
+
+                    case 'C':   // CU CA
+                    case 'M':  // MN MG
+                    case 'Z':  // ZN
+                    case 'B':   //
+                    case 'S':  // SE
+                    case 'N':
+                    case 'L':   // LI
+                        return Element.valueOf(s.substring(0, 2)); // elements have only one letter
+                    default:
+                        return Element.valueOf(s.substring(0, 1)); // elements have only one letter
+                }
+            }
+            catch (IllegalArgumentException e) {
+                try {
+                    return Element.valueOf(s.substring(0, 1)); // elements have only one letter
+                }
+                catch (IllegalArgumentException e1) {
+                    return UNKNOWN_ELEMENT;
+
+                }
+
+            }
+          }
+    }
 }
+

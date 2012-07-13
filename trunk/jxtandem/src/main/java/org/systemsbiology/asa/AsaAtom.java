@@ -35,57 +35,7 @@ public class AsaAtom implements Comparable<AsaAtom> {
         m_Num = Integer.parseInt(s);
         s = line.substring(12, 17).trim();
         m_Type = s;
-        if("UNK".equals(s))
-            throw new UnknownAtomException();
-        if (s.length() == 1) {
-            try {
-                m_Element = Element.valueOf(s);
-            }
-            catch (IllegalArgumentException e) {
-                throw new UnknownAtomException(s);
-            }
-        }
-        else {
-            try {
-                char c = s.charAt(0);
-
-                switch (c) {
-                    case 'D' :
-                    case 'E' :
-                    case 'G' :
-                    case 'J' :
-                    case 'Q' :
-                    case 'R' :
-                    case 'T' :
-                    case 'U' :
-                    case 'V' :
-                    case 'W' :
-                          throw new UnknownAtomException(s);
-                    case 'C':   // CU CA
-                    case 'M':  // MN MG
-                    case 'Z':  // ZN
-                    case 'B':   //
-                    case 'S':  // SE
-                    case 'N':
-                    case 'L':   // LI
-                        m_Element = Element.valueOf(s.substring(0, 2)); // elements have only one letter
-                        break;
-                    default:
-                        m_Element = Element.valueOf(s.substring(0, 1)); // elements have only one letter
-                        break;
-                }
-            }
-            catch (IllegalArgumentException e) {
-                try {
-                    m_Element = Element.valueOf(s.substring(0, 1)); // elements have only one letter
-                }
-                catch (IllegalArgumentException e1) {
-                    throw new UnknownAtomException(s);
-
-                }
-
-            }
-        }
+        m_Element = Element.fromString(s);
 
 //        if element[:2] in two_char_elements:
 //          atom.element = element[:2]

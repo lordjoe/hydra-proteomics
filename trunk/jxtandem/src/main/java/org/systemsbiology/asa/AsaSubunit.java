@@ -28,6 +28,8 @@ public class AsaSubunit implements Comparable<AsaSubunit> {
     }
 
     public boolean isAccessible() {
+        if (m_Atoms.isEmpty())
+            return false;
         for (AsaAtom atom : m_Atoms) {
             if (atom.isAccessible())
                 return true;

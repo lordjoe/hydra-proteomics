@@ -2,6 +2,7 @@ package org.systemsbiology.asa;
 
 import com.lordjoe.utilities.*;
 import org.systemsbiology.jmol.*;
+import org.systemsbiology.xtandem.*;
 
 import javax.vecmath.*;
 import java.io.*;
@@ -66,9 +67,8 @@ public class AsaMolecule {
         holder.toArray(ret);
         return ret;
     }
-
     protected final void handleAtom(String line) {
-        buildAtom(  line);
+        buildAtom(line);
     }
 
     protected AsaAtom buildAtom(String line) {
@@ -97,9 +97,23 @@ public class AsaMolecule {
         String id = AsaSubunit.buildSubUnitString(chainId.toString(), resType, resNum);
         AsaSubunit asaSubunit = m_Subunits.get(id);
         if (asaSubunit == null) {
-            asaSubunit = new AsaSubunit(chainId, resType, resNum);
-            m_Subunits.put(id, asaSubunit);
+            FastaAminoAcid aa = FastaAminoAcid.fromAbbreviation(resType);
+            if(aa == null)
+                return null;
+            asaSubunit = buildSubunit(chainId, resType, resNum );
+            addSubUnit(id, asaSubunit);
         }
+        return asaSubunit;
+    }
+
+    protected void addSubUnit(final String id, final AsaSubunit asaSubunit) {
+        m_Subunits.put(id, asaSubunit);
+    }
+
+    protected AsaSubunit buildSubunit(  ChainEnum chainId,   String resType,   int resNum ) {
+        String id = AsaSubunit.buildSubUnitString(chainId.toString(), resType, resNum);
+        final AsaSubunit asaSubunit;
+        asaSubunit = new AsaSubunit(chainId, resType, resNum);
         return asaSubunit;
     }
 
@@ -121,9 +135,12 @@ public class AsaMolecule {
     }
 
     public void addAtom(AsaAtom added) {
-        AsaSubunit subunit = getSubunit(added);
-        subunit.addAtom(added);
         m_Atoms.add(added);
+        if("HOH".equals(added.getResType()))
+            return; // do not add water
+        AsaSubunit subunit = getSubunit(added);
+        if(subunit != null)
+            subunit.addAtom(added);
     }
 
     public void transform(Matrix3d mx) {
