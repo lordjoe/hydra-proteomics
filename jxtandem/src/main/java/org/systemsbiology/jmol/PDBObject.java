@@ -20,23 +20,20 @@ public class PDBObject extends AsaMolecule {
     private File m_File;
     private final Protein m_Protein;
     private int m_LastHandledLoc = -1;
-    private final List<AminoAcidAtLocation> m_DisplayedAminoAcids = new ArrayList<AminoAcidAtLocation>();
-    private String m_Sequence;
+ //   private final List<AminoAcidAtLocation> m_DisplayedAminoAcids = new ArrayList<AminoAcidAtLocation>();
+    //    private String m_Sequence;
     private final Map<ChainEnum, ProteinSubunit> m_Chains = new HashMap<ChainEnum, ProteinSubunit>();
 
     public PDBObject(File file, Protein p) {
         m_File = file;
         m_Protein = p;
-        try {
-            LineNumberReader rdr = new LineNumberReader(new FileReader(m_File));
-            readFromReader(rdr);
-            // save the models that are used
-            //  FileUtilities.copyFile(file, new File("E:/tmp/Models3d/" + file.getName()));
-        }
-        catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-
-        }
+        if (!m_File.exists())
+            throw new IllegalStateException("bad file " + m_File);
+        String[] lines = FileUtilities.readInLines(m_File);
+//            LineNumberReader rdr = new LineNumberReader(new FileReader(m_File));
+        readFromReader(lines);
+        // save the models that are used
+        //  FileUtilities.copyFile(file, new File("E:/tmp/Models3d/" + file.getName()));
 
     }
 
@@ -52,13 +49,6 @@ public class PDBObject extends AsaMolecule {
         m_File = file;
     }
 
-    public AminoAcidAtLocation getAminoAcidAtLocation(int loc) {
-        if(loc < m_DisplayedAminoAcids.size())  {
-            return m_DisplayedAminoAcids.get(loc);
-        }
-        return null;
-    }
-
     public ChainEnum[] getChains() {
         guaranteeChains();
         ChainEnum[] ret = m_Chains.keySet().toArray(ChainEnum.EMPTY_ARRAY);
@@ -68,35 +58,36 @@ public class PDBObject extends AsaMolecule {
 
     protected void guaranteeChains() {
         if (m_Chains.isEmpty()) {
-            ChainEnum[] chains = buildChains();
-            for (int i = 0; i < chains.length; i++) {
-                ChainEnum chain = chains[i];
-                ProteinSubunit su = buildSubunit(chain);
-                m_Chains.put(chain, su);
-            }
+            throw new IllegalStateException("problem"); // ToDo change
+//            ChainEnum[] chains = buildChains();
+//            for (int i = 0; i < chains.length; i++) {
+//                ChainEnum chain = chains[i];
+//                ProteinSubunit su = buildSubunit(chain);
+//                m_Chains.put(chain, su);
+//            }
         }
     }
 
-    protected ChainEnum[] buildChains() {
-        Set<ChainEnum> holder = new HashSet<ChainEnum>();
-        for (AminoAcidAtLocation aa : m_DisplayedAminoAcids) {
-            holder.add(aa.getChain());
-        }
-        return holder.toArray(ChainEnum.EMPTY_ARRAY);
-    }
-
-    protected ProteinSubunit buildSubunit(final ChainEnum chain) {
-        List<AminoAcidAtLocation> hdx = new ArrayList<AminoAcidAtLocation>();
-        for (AminoAcidAtLocation aa : m_DisplayedAminoAcids) {
-            if (chain == aa.getChain()) {
-                hdx.add(aa);
-            }
-        }
-
-        AminoAcidAtLocation[] locs = new AminoAcidAtLocation[hdx.size()];
-        hdx.toArray(locs);
-        return new ProteinSubunit(chain, getProtein(), locs);
-    }
+//    protected ChainEnum[] buildChains() {
+//        Set<ChainEnum> holder = new HashSet<ChainEnum>();
+//        for (AminoAcidAtLocation aa : m_DisplayedAminoAcids) {
+//            holder.add(aa.getChain());
+//        }
+//        return holder.toArray(ChainEnum.EMPTY_ARRAY);
+//    }
+//
+//    protected ProteinSubunit buildSubunit(final ChainEnum chain) {
+//        List<AminoAcidAtLocation> hdx = new ArrayList<AminoAcidAtLocation>();
+//        for (AminoAcidAtLocation aa : m_DisplayedAminoAcids) {
+//            if (chain == aa.getChain()) {
+//                hdx.add(aa);
+//            }
+//        }
+//
+//        AminoAcidAtLocation[] locs = new AminoAcidAtLocation[hdx.size()];
+//        hdx.toArray(locs);
+//        return new ProteinSubunit(chain, getProtein(), locs);
+//    }
 
     public ProteinSubunit[] getSubUnits() {
         ProteinSubunit[] ret = m_Chains.values().toArray(ProteinSubunit.EMPTY_ARRAY);
@@ -105,60 +96,282 @@ public class PDBObject extends AsaMolecule {
     }
 
     public ProteinSubunit getSubUnit(ChainEnum chain) {
-        return m_Chains.get(chain);
+        ProteinSubunit proteinSubunit = m_Chains.get(chain);
+        if (proteinSubunit != null)
+            return proteinSubunit;
+        proteinSubunit = new ProteinSubunit(getProtein(), chain);
+        m_Chains.put(chain, proteinSubunit);
+        return proteinSubunit;
     }
 
-    public String getSequence() {
-        return m_Sequence;
-    }
+//    public String getSequence() {
+//        return m_Sequence;
+//    }
 
-    public void readFromReader(LineNumberReader rdr) {
-        try {
-            m_LastHandledLoc = -1;
-            AminoAcidAtLocation here = null;
-            StringBuilder sb = new StringBuilder();
-            String line = rdr.readLine();
-            while (line != null) {
-                handleLine(line, sb);
-                //               AminoAcidAtLocation now = handleLine(line,sb, here);
-//                if (now != null && !now.equals(here)) {
-//                    m_DisplayedAminoAcids.add(now);
-//                    sb.append(now.getAminoAcid());
-//                }
-//                here = now;
-                line = rdr.readLine();
-            }
-            m_Sequence = sb.toString();
+    public void readFromReader(String[] lines) {
+        m_LastHandledLoc = -1;
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            handleAtoms(line);
         }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            handleStructure(line);
         }
     }
 
-    private void handleLine(String line, StringBuilder sb) {
+    private void handleAtoms(String line) {
         if (line.startsWith("SEQRES")) {
-            handleSeqRes(line, sb);
             return;
         }
-        if(line.startsWith("ATOM"))   {
-            guaranteeChains();
-             handleAtom(line);
+        if (line.startsWith("ATOM")) {
+ //           guaranteeChains();
+            handleAtom(line);
+            return;
         }
-        if(line.startsWith("HETATM"))   {
-            guaranteeChains();
-             handleAtom(line);
+        if (line.startsWith("HETATM")) {
+  //          guaranteeChains();
+            handleAtom(line);
+            return;
         }
+        if (line.startsWith("HELIX")) {
+            return;
+        }
+        if (line.startsWith("SHEET")) {
+            return;
+        }
+        if (line.startsWith("SSBOND")) {
+            return;
+        }
+
+    }
+
+    private void handleStructure(String line) {
+        if (line.startsWith("SEQRES")) {
+         //   handleSeqRes(line);
+            return;
+        }
+        if (line.startsWith("ATOM")) {
+            return;
+        }
+        if (line.startsWith("HETATM")) {
+            return;
+        }
+        if (line.startsWith("HELIX")) {
+            guaranteeChains();
+            handleHelix(line);
+        }
+        if (line.startsWith("SHEET")) {
+            guaranteeChains();
+            handleSheet(line);
+        }
+        if (line.startsWith("SSBOND")) {
+            guaranteeChains();
+            handleSSBond(line);
+        }
+
     }
 
 
-    private void handleSeqRes(String line, StringBuilder sb) {
+    protected final void handleSSBond(String line) {
+
+        throw new UnsupportedOperationException("Fix This"); // ToDo
+    }
+
+    /*
+HELIX	1-5	"HELIX"		character
+8-10	Helix serial number	right	integer
+12-14	Helix identifier	right	character
+16-18§	Initial residue name	right	character
+20	Chain identifier		character
+22-25	Residue sequence number	right	integer
+26	Code for insertions of residues		character
+28-30§	Terminal residue name	right	character
+32	Chain identifier		character
+34-37	Residue sequence number	right	integer
+38	Code for insertions of residues		character
+39-40	Type of helix†	right	integer
+41-70	Comment	left	character
+72-76	Length of helix	right	integer
+*/
+    protected final void handleHelix(String line) {
+        String s;
+        s = line.substring(7, 10).trim();
+        int HelixNum = Integer.parseInt(s);
+        s = line.substring(11, 14).trim();
+        String HelixId = s;
+        s = line.substring(15, 18).trim();
+        String Residue = s;
+        s = line.substring(19, 20).trim();
+        ChainEnum chainId = ChainEnum.fromString(s);
+        ProteinSubunit chain = m_Chains.get(chainId);
+        if(chain == null)
+            throw new IllegalStateException("bad chain " + chainId);
+
+        s = line.substring(21, 25).trim();
+        int ResNum = Integer.parseInt(s);
+
+        s = line.substring(27, 30).trim();
+        String ResidueEnd = s;
+        s = line.substring(31, 32).trim();
+        ChainEnum chainEnd = ChainEnum.fromString(s);
+        ProteinSubunit chainLast = m_Chains.get(chainEnd);
+        if(chain == null)
+            throw new IllegalStateException("bad chain " + chainEnd);
+        if(chain != chainLast)
+             throw new IllegalStateException("bad last chain ");
+
+        s = line.substring(33, 37).trim();
+        int ResNumEnd = Integer.parseInt(s);
+
+        s = line.substring(38, 40).trim();
+        int HelixType = Integer.parseInt(s);
+
+        s = line.substring(71, 76).trim();
+        int length = Integer.parseInt(s);
+        AminoAcidAtLocation[] locations = chain.getLocations();
+        int start = -1;
+        for (int i = 0; i < locations.length; i++) {
+            AminoAcidAtLocation aa = locations[i];
+            int loc = aa.getLocation();
+            String res = aa.getAminoAcid().getAbbreviation();
+            if(Residue.equals(res))  {
+                if(loc == ResNum)  {
+                    start = i;
+                    break;
+                }
+
+
+            }
+        }
+        if(start == -1)
+            throw new IllegalStateException("cannot find " + Residue + ResNum);
+        for (int i = start; i < Math.min(locations.length,start + length); i++) {
+            AminoAcidAtLocation aa = locations[i];
+             aa.setStructure(SecondaryStructure.HELIX);
+        }
+
+    }
+
+
+    /*
+    SHEET	1-5	"SHEET"		character
+    8-10	Strand number (in current sheet)	right	integer
+    12-14	Sheet identifier	right	character
+    15-16	Number of strands (in current sheet)	right	integer
+    18-20§	Initial residue name	right	character
+    22	Filter.Chain identifier		character
+    23-26	Residue sequence number	right	integer
+    27	Code for insertions of residues		character
+    29-31§	Terminal residue name	right	character
+    33	Chain identifier		character
+    34-37	Residue sequence number	right	integer
+    38	Code for insertions of residues		character
+    39-40	Strand sense with respect to previous‡	right	integer
+    The following fields identify two atoms involved in a hydrogen bond,
+    the first in the current strand and the second in the previous strand.
+    These fields should be blank for strand 1 (the first strand in a sheet).
+
+    42-45	Atom name (as per ATOM record)	left	character
+    46-48§	Residue name	right	character
+    50	Chain identifier		character
+    51-54	Residue sequence number	right	integer
+    55	Code for insertions of residues		character
+    57-60	Atom name (as per ATOM record)	left	character
+    61-63§	Residue name	right	character
+    65	Chain identifier		character
+    66-69	Residue sequence number	right	integer
+    70	Code for insertions of residues		character
+    */
+    protected final void handleSheet(String line) {
+        String s;
+        s = line.substring(7, 10).trim();
+        int HelixNum = Integer.parseInt(s);
+        s = line.substring(11, 14).trim();
+        String HelixId = s;
+        s = line.substring(17, 20).trim();
+        String Residue = s;
+        s = line.substring(21, 22).trim();
+        ChainEnum chainId = ChainEnum.fromString(s);
+        ProteinSubunit chain = m_Chains.get(chainId);
+        if(chain == null)
+            throw new IllegalStateException("bad chain " + chainId);
+
+        s = line.substring(22, 26).trim();
+        int ResNum = Integer.parseInt(s);
+
+        s = line.substring(28, 31).trim();
+        String ResidueEnd = s;
+        s = line.substring(32, 33).trim();
+        ChainEnum chainEnd = ChainEnum.fromString(s);
+        ProteinSubunit chainLast = m_Chains.get(chainEnd);
+        if(chain == null)
+            throw new IllegalStateException("bad chain " + chainEnd);
+        if(chain != chainLast)
+             throw new IllegalStateException("bad last chain ");
+
+        s = line.substring(33, 37).trim();
+        int ResNumEnd = Integer.parseInt(s);
+
+        s = line.substring(38, 40).trim();
+        int HelixType = Integer.parseInt(s);
+
+        s = line.substring(71, 76).trim();
+        int length = Integer.parseInt(s);
+        AminoAcidAtLocation[] locations = chain.getLocations();
+        int start = -1;
+        for (int i = 0; i < locations.length; i++) {
+            AminoAcidAtLocation aa = locations[i];
+            int loc = aa.getLocation();
+            String res = aa.getAminoAcid().getAbbreviation();
+            if(Residue.equals(res))  {
+                if(loc == ResNum)  {
+                    start = i;
+                    break;
+                }
+             }
+        }
+        if(start == -1)
+            throw new IllegalStateException("cannot find " + Residue + ResNum);
+        for (int i = start; i < Math.min(locations.length,start + length); i++) {
+            AminoAcidAtLocation aa = locations[i];
+             aa.setStructure(SecondaryStructure.SHEET);
+            String res = aa.getAminoAcid().getAbbreviation();
+            int loc = aa.getLocation();
+             if(Residue.equals(ResidueEnd))  {
+                 if(loc == ResNumEnd)  {
+                       return;
+                 }
+              }
+        }
+        throw new IllegalStateException("end not found");
+
+    }
+
+    /*
+SSBOND	1-6	"SSBOND"		character
+8-10	Serial number	right	integer
+12-14	Residue name ("CYS")	right	character
+16	Filter.Chain identifier		character
+18-21	Residue sequence number	right	integer
+22	Code for insertions of residues		character
+26-28	Residue name ("CYS")	right	character
+30	Chain identifier		character
+32-35	Residue sequence number	right	integer
+36	Code for insertions of residues		character
+60-65	Symmetry operator for first residue	right	integer
+67-72	Symmetry operator for second residue	right	integer
+74-78	Length of disulfide bond	right	real (5.2)
+
+     */
+
+    private void handleSeqRes(String line) {
         String substring = line.substring(8, 10).trim();
         int num = Integer.parseInt(substring);
         String substring1 = line.substring(11, 12);
         ChainEnum chain = ChainEnum.A;
         try {
-              chain = ChainEnum.fromString(substring1);
+            chain = ChainEnum.fromString(substring1);
         }
         catch (IllegalArgumentException e) {
             ChainEnum.valueOf(substring1);
@@ -177,80 +390,101 @@ public class PDBObject extends AsaMolecule {
             FastaAminoAcid aa = FastaAminoAcid.fromAbbreviation(item);
             if (aa == null)
                 continue;
-            AminoAcidAtLocation now = new AminoAcidAtLocation( chain,aa);
-            m_DisplayedAminoAcids.add(now);
-            sb.append(aa.toString());
+            int resNum = i + 1;
+            AminoAcidAtLocation now = buildSubunit(chain, item, resNum);
+            String id = AsaSubunit.buildSubUnitString(chain.toString(), item, resNum);
+            addSubUnit(id, now);
+          //  m_DisplayedAminoAcids.add(now);
+            //          sb.append(aa.toString());
 
         }
     }
 
-    private void handleLine(String line ) {
-        if (line.startsWith("ATOM")) {
-             handleAtom(line );
-        }
-     }
-
-   @Override
-    protected AsaAtom buildAtom(String line ) {
-       AsaAtom ret = null;
-       try {
-           ret = super.buildAtom(line);
-       }
-       catch (UnknownAtomException e) {
-           return null;
-       }
-        catch (Exception e) {
-           return null;
-       }
-         if(ret == null)
-            return null;
-        String aaStr = line.substring(17, 20);
-        FastaAminoAcid aa = FastaAminoAcid.fromAbbreviation(aaStr);
+    /**
+     * override builds  AminoAcidAtLocation
+     */
+    @Override
+    protected AminoAcidAtLocation buildSubunit(ChainEnum chainId, String resType, final int pos) {
+        FastaAminoAcid aa = FastaAminoAcid.fromAbbreviation(resType);
         if (aa == null)
-             return ret;
-        String chainStr = line.substring(21, 22);
-        ChainEnum chain = ChainEnum.fromString(chainStr);
-        String posStr = line.substring(22, 26).trim();
-        // sometimed we see lines like    ARG B  37A     24.919  22.314  18.745  0.08 30.67           N
-        String modifier = line.substring(26,27);
-        if(!" ".equals(modifier))
-            return ret; // i cannot handle that
-        int pos = Integer.parseInt(posStr);
-        ProteinSubunit subUnit = getSubUnit(chain);
-        AminoAcidAtLocation test = subUnit.getAminoAcidAtLocation(pos);
-        if(test != null )   {
-            if(test.getAminoAcid() != aa) {
-                String msg = "bad location  " + getFile() + " " + line;
-                throw new IllegalStateException(msg);
-            }
-            return ret;
-        }
-         AminoAcidAtLocation[] locations = subUnit.getLocations();
-        for (int i = Math.max(subUnit.getMinLoc(),pos); i < locations.length; i++) {
-            AminoAcidAtLocation loc = locations[i];
-            if(loc.getLocation() == -1 && loc.getAminoAcid() == aa) {
-                subUnit.setRealLocation(loc,pos);
-                return ret;
-            }
+            return null;
+        final AminoAcidAtLocation asaSubunit;
+        asaSubunit = new AminoAcidAtLocation(chainId, aa);
+        asaSubunit.setLocation(pos);
+        ProteinSubunit subUnit = getSubUnit(chainId);
+        subUnit.addAminoAcidAtLocation(asaSubunit);
+        //     AminoAcidAtLocation test = subUnit.getAminoAcidAtLocation(pos);
+        return asaSubunit;
+    }
 
-        }
-        return ret;
-      }
+
+//    private void handleLine(String line) {
+//        if (line.startsWith("ATOM")) {
+//            handleAtom(line);
+//        }
+//    }
+//
+//    @Override
+//    protected AsaAtom buildAtom(String line) {
+//        AsaAtom ret = null;
+//        try {
+//            ret = super.buildAtom(line);
+//        }
+//        catch (UnknownAtomException e) {
+//            return null;
+//        }
+//        catch (Exception e) {
+//            return null;
+//        }
+//        if (ret == null)
+//            return null;
+//        String aaStr = line.substring(17, 20);
+//        FastaAminoAcid aa = FastaAminoAcid.fromAbbreviation(aaStr);
+//        if (aa == null)
+//            return ret;
+//        String chainStr = line.substring(21, 22);
+//        ChainEnum chain = ChainEnum.fromString(chainStr);
+//        String posStr = line.substring(22, 26).trim();
+//        // sometimed we see lines like    ARG B  37A     24.919  22.314  18.745  0.08 30.67           N
+//        String modifier = line.substring(26, 27);
+//        if (!" ".equals(modifier))
+//            return ret; // i cannot handle that
+//        int pos = Integer.parseInt(posStr);
+//        ProteinSubunit subUnit = getSubUnit(chain);
+//        AminoAcidAtLocation test = subUnit.getAminoAcidAtLocation(pos);
+//        if (test != null) {
+//            if (test.getAminoAcid() != aa) {
+//                String msg = "bad location  " + getFile() + " " + line;
+//                throw new IllegalStateException(msg);
+//            }
+//            return ret;
+//        }
+//        AminoAcidAtLocation[] locations = subUnit.getLocations();
+//        for (int i = Math.max(subUnit.getMinLoc(), pos); i < locations.length; i++) {
+//            AminoAcidAtLocation loc = locations[i];
+//            if (loc.getLocation() == -1 && loc.getAminoAcid() == aa) {
+//                subUnit.setRealLocation(loc, pos);
+//                return ret;
+//            }
+//
+//        }
+//        return ret;
+//    }
 
     public AminoAcidAtLocation[] getAminoAcidsForSequence(String foundSequence) {
-        for(ProteinSubunit su : getSubUnits()) {
+        for (ProteinSubunit su : getSubUnits()) {
             AminoAcidAtLocation[] ret = su.internalAminoAcidsForSequence(foundSequence);
             if (ret != null)
-                 return ret;
+                return ret;
 
         }
-        for(ProteinSubunit su : getSubUnits()) {
+        for (ProteinSubunit su : getSubUnits()) {
             AminoAcidAtLocation[] ret = su.getAminoAcidsForCloseSequence(foundSequence);
             if (ret != null)
-                 return ret;
+                return ret;
 
         }
-         return null;
+        return null;
     }
 //
 //    protected AminoAcidAtLocation[] internalAminoAcidsForSequence(String foundSequence) {

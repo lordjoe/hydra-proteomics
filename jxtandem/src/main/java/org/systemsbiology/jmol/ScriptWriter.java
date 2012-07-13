@@ -175,20 +175,25 @@ public class ScriptWriter {
     public String writeScript(ProteinFragmentationDescription pfd, short[] coverage) {
         m_UsedPositions.clear();
         PDBObject original = pfd.getModel();
-
+        ProteinSubunit[] subUnits = original.getSubUnits();
         StringBuilder sb = new StringBuilder();
         boolean quoteNewLines = true;
         appendScriptHeader(original, quoteNewLines, sb);
         for (int i = 0; i < coverage.length; i++) {
             short corg = coverage[i];
             if (corg > 0) {
-                AminoAcidAtLocation aa = original.getAminoAcidAtLocation(i);
-                if (aa != null) {
-                    String coverageColor = getCoverageColor(corg);
-                    if(appendScriptHilight(aa, coverageColor, sb));
-                        sb.append("\\\n");
+                for (int j = 0; j < subUnits.length; j++) {
+                    ProteinSubunit subUnit = subUnits[j];
+                    AminoAcidAtLocation aa = subUnit.getAminoAcidAtLocation(i);
+                      if (aa != null) {
+                          String coverageColor = getCoverageColor(corg);
+                          if(appendScriptHilight(aa, coverageColor, sb));
+                              sb.append("\\\n");
+                          break; // only for one subunit???
+                      }
+
                 }
-             }
+              }
         }
 
         return sb.toString();
@@ -201,15 +206,18 @@ public class ScriptWriter {
          StringBuilder sb = new StringBuilder();
          boolean quoteNewLines = true;
          appendScriptHeader(original, quoteNewLines, sb);
-         sb.append("select all;color red;wireframe off;spacefill 100%;");
+        sb.append("select all;color translucent[0,0,50];");
+        sb.append("wireframe off;spacefill 100%;");
         AsaSubunit[] su = original.getAccessibleSubunits();
         for (int i = 0; i < su.length; i++) {
              AsaSubunit corg = su[i];
             if (corg instanceof AminoAcidAtLocation) {
                 AminoAcidAtLocation aa = (AminoAcidAtLocation) corg;
-                if(aa.isAccessible())
-                    appendScriptHilight(aa, "translucent[0,0,100]", sb);
-            }
+                if(!aa.isAccessible())  {
+                     appendScriptHilight(aa, "red", sb);
+                    sb.append("\\\n");
+                }
+              }
         }
 
         return sb.toString();

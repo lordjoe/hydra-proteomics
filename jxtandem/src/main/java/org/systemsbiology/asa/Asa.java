@@ -250,6 +250,10 @@ def find_neighbor_indices(atoms, probe, k):
                 atom_i.setAccessibleArea(area);
                 areas.add(atom_i);
             }
+            else {
+                atom_i.setAccessible(false);
+
+            }
 
         }
         AsaAtom[] ret = new AsaAtom[areas.size()];
@@ -326,7 +330,7 @@ def find_neighbor_indices(atoms, probe, k):
          readPDBMolecule(pdb);
 
         File[] files = new File(System.getProperty("user.dir")).listFiles();
-        for (int i = 570; i < files.length; i++) {
+        for (int i = 1300; i < files.length; i++) {
             pdb = files[i];
             System.out.println(pdb + " " + i);
             if(pdb.getName().endsWith(".pdb"))

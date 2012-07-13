@@ -40,13 +40,14 @@ public class AminoAcidAtLocation extends AsaSubunit {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < locs.length; i++) {
             AminoAcidAtLocation loc = locs[i];
-            sb.append(loc.toString());
+            sb.append(loc.getAminoAcid().toString());
         }
         return sb.toString();
     }
 
     private final FastaAminoAcid m_AminoAcid;
     private int m_Location = -1;
+    private SecondaryStructure m_Structure = SecondaryStructure.NONE;
     private final ChainEnum m_Chain;
 
     public AminoAcidAtLocation(ChainEnum chain,FastaAminoAcid aminoAcid  ) {
@@ -58,6 +59,15 @@ public class AminoAcidAtLocation extends AsaSubunit {
 //    public AminoAcidAtLocation(FastaAminoAcid aminoAcid, int location) {
 //        this(aminoAcid,location,ChainEnum.A);
 //    }
+
+
+    public SecondaryStructure getStructure() {
+        return m_Structure;
+    }
+
+    public void setStructure(final SecondaryStructure structure) {
+        m_Structure = structure;
+    }
 
     public ChainEnum getChain() {
         return m_Chain;
