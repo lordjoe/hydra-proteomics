@@ -109,7 +109,8 @@ public class ScriptWriter {
                 "\n" +
                 "     [ [setAndScript,showCoverage], \"Coverage\"] ,\n" +
                 "     [ [setAndScript,showSolventAccess], \"Solvent Access\"] ,\n" +
-                " \t  [ [setAndScript,showAminoAcids] , \"Peptides\",  \"checked\"] \n" +
+                "     [ [setAndScript,showSolventAtomicAccess], \"Solvent Atomic Access\"] ,\n" +
+                       " \t  [ [setAndScript,showAminoAcids] , \"Peptides\",  \"checked\"] \n" +
                 "  \t]);");
         return sb.toString();
     }
@@ -182,17 +183,26 @@ public class ScriptWriter {
         for (int i = 0; i < coverage.length; i++) {
             short corg = coverage[i];
             if (corg > 0) {
-                for (int j = 0; j < subUnits.length; j++) {
-                    ProteinSubunit subUnit = subUnits[j];
-                    AminoAcidAtLocation aa = subUnit.getAminoAcidAtLocation(i);
-                      if (aa != null) {
-                          String coverageColor = getCoverageColor(corg);
-                          if(appendScriptHilight(aa, coverageColor, sb));
-                              sb.append("\\\n");
-                          break; // only for one subunit???
-                      }
+                SequenceChainMap mapping = original.getMapping(i);
+                AminoAcidAtLocation[] chainMappings = mapping.getChainMappings();
+                for (int j = 0; j < chainMappings.length; j++) {
+                    AminoAcidAtLocation aa = chainMappings[j];
+                    String coverageColor = getCoverageColor(corg);
+                      if(appendScriptHilight(aa, coverageColor, sb));
+                          sb.append("\\\n");
 
                 }
+//                for (int j = 0; j < subUnits.length; j++) {
+//                    ProteinSubunit subUnit = subUnits[j];
+//                    AminoAcidAtLocation aa = subUnit.getAminoAcidAtLocation(i);
+//                      if (aa != null) {
+//                          String coverageColor = getCoverageColor(corg);
+//                          if(appendScriptHilight(aa, coverageColor, sb));
+//                              sb.append("\\\n");
+//                          break; // only for one subunit???
+//                      }
+//
+//                }
               }
         }
 
@@ -202,13 +212,13 @@ public class ScriptWriter {
     public String writeSolventAccessScript(ProteinFragmentationDescription pfd) {
          m_UsedPositions.clear();
          PDBObject original = pfd.getModel();
-
-         StringBuilder sb = new StringBuilder();
-         boolean quoteNewLines = true;
-         appendScriptHeader(original, quoteNewLines, sb);
+        StringBuilder sb = new StringBuilder();
+        boolean quoteNewLines = true;
+          appendScriptHeader(original, quoteNewLines, sb);
         sb.append("select all;color translucent[0,0,50];");
         sb.append("wireframe off;spacefill 100%;");
-        AsaSubunit[] su = original.getAccessibleSubunits();
+        sb.append("select water;color translucent[0,0,50];");
+         AsaSubunit[] su = original.getAccessibleSubunits();
         for (int i = 0; i < su.length; i++) {
              AsaSubunit corg = su[i];
             if (corg instanceof AminoAcidAtLocation) {
@@ -222,6 +232,30 @@ public class ScriptWriter {
 
         return sb.toString();
      }
+
+
+    public String writeSolventAtomicAccessScript(ProteinFragmentationDescription pfd) {
+         m_UsedPositions.clear();
+         PDBObject original = pfd.getModel();
+
+         StringBuilder sb = new StringBuilder();
+         boolean quoteNewLines = true;
+         appendScriptHeader(original, quoteNewLines, sb);
+        sb.append("select all;color translucent[0,0,50];");
+        sb.append("wireframe off;spacefill 100%;");
+        sb.append("select water;color translucent[0,0,50];");
+        AsaAtom[] atoms = original.getAtoms();
+        for (int i = 0; i < atoms.length; i++) {
+            AsaAtom atom = atoms[i];
+            if(!atom.isAccessible())  {
+                 sb.append("select atomno = " + atom.getNum() + ";color red;");
+                    sb.append("\\\n");
+             }
+
+        }
+        return sb.toString();
+     }
+
 
 
 
@@ -353,7 +387,7 @@ public class ScriptWriter {
             if (quoteNewLines)
                 sb.append("\\");
             sb.append("\n");
-            sb.append("select all ;ribbon off;");
+            sb.append("select all ;ribbon off;wireframe on;spacefill 30%;");
             if (quoteNewLines)
                 sb.append("\\");
             sb.append("\n");

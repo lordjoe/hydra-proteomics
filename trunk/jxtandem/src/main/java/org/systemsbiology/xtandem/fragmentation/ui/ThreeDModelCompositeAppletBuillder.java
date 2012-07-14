@@ -47,7 +47,8 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             String scriptx = m_ScriptWriter.writeScript(pfd);
             String coveragescript = m_ScriptWriter.writeScript(pfd, pfd.getAllCoverage());
             String solventScript = m_ScriptWriter.writeSolventAccessScript(pfd );
-             //    script = script.replace("\n","\\\n");
+            String solventAtomicScript = m_ScriptWriter.writeSolventAtomicAccessScript(pfd );
+               //    script = script.replace("\n","\\\n");
             //     coveragescript = coveragescript.replace("\n","\\\n");
 
             out.append("      <script type=\"text/javascript\">\n");
@@ -57,9 +58,10 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             out.append("    loadText = \'" + ScriptWriter.getLoadText(pfd) + "\';\n");
             out.append(hilightText + "\n");
             out.append(scriptx + "\n");
-            out.append("    showAminoAcids = fragments.join(\' \'); \n");
+            out.append("    showAminoAcids = \'select all;color translucent[80,80,80] white;ribbon off;wireframe on;spacefill 30%;\' + fragments.join(\' \'); \n");
+            out.append("    showSolventAtomicAccess = \'" + solventAtomicScript + "\';\n");
             out.append("    showSolventAccess = \'" + solventScript + "\';\n");
-            out.append("    showCoverage = \'" + coveragescript + "\';\n");
+                out.append("    showCoverage = \'" + coveragescript + "\';\n");
                out.append("    window.defaultloadscript = showAminoAcids;\n");
             out.append("    jmolInitialize(\"../../\");\n");
             out.append("    jmolApplet([\"924\",\"678\"], loadText + \'select all;color translucent[80,80,80] white;select all ;ribbon off;\' + window.defaultloadscript,jmol_id);\n");

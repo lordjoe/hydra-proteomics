@@ -56,6 +56,10 @@ public class AsaSubunit implements Comparable<AsaSubunit> {
     }
 
 
+    public void accumulateAtoms(Collection<AsaAtom> c) {
+        c.addAll(m_Atoms);
+    }
+
     public ChainEnum getChainId() {
         return m_ChainId;
     }
