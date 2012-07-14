@@ -49,6 +49,7 @@ public class AminoAcidAtLocation extends AsaSubunit {
     private int m_Location = -1;
     private SecondaryStructure m_Structure = SecondaryStructure.NONE;
     private final ChainEnum m_Chain;
+    private boolean m_DiSulphideBond;
 
     public AminoAcidAtLocation(ChainEnum chain,FastaAminoAcid aminoAcid  ) {
         super(chain,aminoAcid.toString(),0);
@@ -92,7 +93,16 @@ public class AminoAcidAtLocation extends AsaSubunit {
     public String toString() {
         return  m_AminoAcid.getAbbreviation() + m_Location;
     }
-//
+
+    public boolean isDiSulphideBond() {
+        return m_DiSulphideBond;
+    }
+
+    public void setDiSulphideBond(boolean diSulphideBond) {
+        m_DiSulphideBond = diSulphideBond;
+    }
+
+    //
 //    @Override
 //    public boolean equals(Object o) {
 //        if (this == o) return true;

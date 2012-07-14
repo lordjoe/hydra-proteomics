@@ -47,8 +47,7 @@ public class AsaMolecule {
     }
 
 
-    private final List<AsaAtom> m_Atoms = new ArrayList<AsaAtom>();
-    private final Map<String, AsaSubunit> m_Subunits = new HashMap<String, AsaSubunit>();
+     private final Map<String, AsaSubunit> m_Subunits = new HashMap<String, AsaSubunit>();
 
     public AsaSubunit[] getSubunits() {
         AsaSubunit[] ret = m_Subunits.values().toArray(AsaSubunit.EMPTY_ARRAY);
@@ -117,47 +116,62 @@ public class AsaMolecule {
         return asaSubunit;
     }
 
-    public int n_atom() {
-        return m_Atoms.size();
-    }
+//    public int n_atom() {
+//        return m_Atoms.size();
+//    }
+//
+//    public AsaAtom atom(int i) {
+//        return m_Atoms.get(i);
+//    }
+//
+//    public AsaAtom[] getAtoms() {
+//        return m_Atoms.toArray(AsaAtom.EMPTY_ARRAY);
+//    }
+//
+//    public void clear() {
+//        m_Atoms.clear();
+//    }
+//public void transform(Matrix3d mx) {
+//    for (AsaAtom atom : m_Atoms)
+//        atom.transform(mx);
+//
+//}
+//
+//public void erase_atom(String atom_type) {
+//    List<AsaAtom> holder = new ArrayList<AsaAtom>();
+//
+//    for (AsaAtom atom : m_Atoms) {
+//        if (atom.getType().equals(atom_type))
+//            holder.add(atom);
+//    }
+//    m_Atoms.removeAll(holder);
+//}
 
-    public AsaAtom atom(int i) {
-        return m_Atoms.get(i);
-    }
 
     public AsaAtom[] getAtoms() {
-        return m_Atoms.toArray(AsaAtom.EMPTY_ARRAY);
+       List<AsaAtom> holder = new ArrayList<AsaAtom>();
+       accumulateAtoms(holder);
+       AsaAtom[] ret = new AsaAtom[holder.size()];
+       holder.toArray(ret);
+       return ret;
     }
 
 
-    public void clear() {
-        m_Atoms.clear();
+    public void accumulateAtoms(Collection<AsaAtom> c) {
+        for( AsaSubunit su : getSubunits() )
+            su.accumulateAtoms(c);
     }
+
 
     public void addAtom(AsaAtom added) {
-        m_Atoms.add(added);
-        if("HOH".equals(added.getResType()))
-            return; // do not add water
+//        m_Atoms.add(added);
+//        if("HOH".equals(added.getResType()))
+//            return; // do not add water
         AsaSubunit subunit = getSubunit(added);
         if(subunit != null)
             subunit.addAtom(added);
     }
 
-    public void transform(Matrix3d mx) {
-        for (AsaAtom atom : m_Atoms)
-            atom.transform(mx);
-
-    }
-
-    public void erase_atom(String atom_type) {
-        List<AsaAtom> holder = new ArrayList<AsaAtom>();
-
-        for (AsaAtom atom : m_Atoms) {
-            if (atom.getType().equals(atom_type))
-                holder.add(atom);
-        }
-        m_Atoms.removeAll(holder);
-    }
 
     public String asPDB() {
         StringBuilder sb = new StringBuilder();
