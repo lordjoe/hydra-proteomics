@@ -133,6 +133,7 @@ public enum FastaAminoAcid {
      * @return 0.. n - 1
      */
     public static FastaAminoAcid fromAbbreviation(String in) {
+        in = in.toUpperCase();
         char c = in.charAt(0);
         switch (c) {
             case 'A':

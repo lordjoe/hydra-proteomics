@@ -1,8 +1,6 @@
 package org.systemsbiology.xtandem.fragmentation.ui;
 
 import com.lordjoe.utilities.*;
-import com.sun.net.httpserver.*;
-import com.sun.org.apache.bcel.internal.generic.*;
 import org.systemsbiology.asa.*;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
@@ -20,7 +18,7 @@ public class ProteinCoveragePageBuilder {
     public static final ProteinCoveragePageBuilder[] EMPTY_ARRAY = {};
 
     public static final int MAX_COVERAGE = 8;
-    public static final int INDEX_ROW_LENGTH  = 6;
+    public static final int INDEX_ROW_LENGTH = 6;
 
 
     public static final String JMOL_APPLET_ID = "JMol";
@@ -42,15 +40,15 @@ public class ProteinCoveragePageBuilder {
     }
 
     public double[] getAverageCoverage() {
-        if(m_AverageCoverage[0] == 0) {
+        if (m_AverageCoverage[0] == 0) {
             int sum = 0;
             for (int i = 0; i < m_TotalCoverage.length; i++) {
-                   sum += m_TotalCoverage[i];
-                 }
-            for (int i = 0; i < m_TotalCoverage.length; i++) {
-                   m_AverageCoverage[i] = m_TotalCoverage[i] / (double )sum;
-                 }
+                sum += m_TotalCoverage[i];
             }
+            for (int i = 0; i < m_TotalCoverage.length; i++) {
+                m_AverageCoverage[i] = m_TotalCoverage[i] / (double) sum;
+            }
+        }
         return m_AverageCoverage;
     }
 
@@ -101,12 +99,12 @@ public class ProteinCoveragePageBuilder {
         String next = null;
         String prev = null;
         for (int i = 0; i < ids.length; i++) {
-            if(i < ids.length - 1)
+            if (i < ids.length - 1)
                 next = ids[i + 1];
             else
-                 next = null;
+                next = null;
             String id = ids[i];
-            String page = showCoveragePage(id,prev,next);
+            String page = showCoveragePage(id, prev, next);
 
             if (page != null) {
                 holder.add(page);
@@ -123,13 +121,13 @@ public class ProteinCoveragePageBuilder {
 
     static int bad_models = 0;
 
-    protected String showCoveragePage(String id,String next,String prev) {
+    protected String showCoveragePage(String id, String next, String prev) {
         ProteinCollection proteins = getProteins();
         ProteinFragmentationDescription pfd = proteins.getProteinFragmentationDescription(id);
         int[] coverageLevels = pfd.getStatistics().getCoverateStatistics();
-        for (int i = 0; i < Math.min(MAX_COVERAGE,coverageLevels.length); i++) {
+        for (int i = 0; i < Math.min(MAX_COVERAGE, coverageLevels.length); i++) {
             int coverageLevel = coverageLevels[i];
-            m_TotalCoverage[i] +=  coverageLevel;
+            m_TotalCoverage[i] += coverageLevel;
         }
         PDBObject model = null;
         File model3d = proteins.getPDBModelFile(id);
@@ -144,31 +142,31 @@ public class ProteinCoveragePageBuilder {
                 System.out.println("Bad Models " + bad_models++);
             }
             catch (IllegalStateException e) {
-                 if (!e.getMessage().startsWith("bad location"))
-                     throw new RuntimeException(e);
-                 else
-                     System.out.println("problem " + id + " " + e.getMessage());
-             }
+                if (!e.getMessage().startsWith("bad location"))
+                    throw new RuntimeException(e);
+                else
+                    System.out.println("problem " + id + " " + e.getMessage());
+            }
             catch (IllegalArgumentException e) {
-                 if (!e.getMessage().startsWith("Bad amino acid abbreviation"))
-                     throw new RuntimeException(e);
-                 else
-                     System.out.println("problem " + id + " " + e.getMessage());
-             }
-         }
+                if (!e.getMessage().startsWith("Bad amino acid abbreviation"))
+                    throw new RuntimeException(e);
+                else
+                    System.out.println("problem " + id + " " + e.getMessage());
+            }
+        }
 
         HTMLPageBuillder pb = new HTMLPageBuillder("Coverage for " + id);
         HTMLBodyBuillder body = pb.getBody();
         HTMLHeaderBuillder header = pb.getHeader();
-           Protein protein = pfd.getProtein();
+        Protein protein = pfd.getProtein();
         body.addString("<a href=\"../Index.html\" >Home</a>\n");
-         header.addString("<script src=\"../Jmol.js\" type=\"text/javascript\"></script> <!-- REQUIRED -->\n");
-        if(prev != null)
+        header.addString("<script src=\"../Jmol.js\" type=\"text/javascript\"></script> <!-- REQUIRED -->\n");
+        if (prev != null)
             body.addString("<a href=\"" + prev + ".html\" >Prev</a>\n");
-        if(next != null)
+        if (next != null)
             body.addString("<a href=\"" + next + ".html\" >Next</a>\n");
 
-         body.addString("<h1>" + pb.getTitle() + "</h1>\n");
+        body.addString("<h1>" + pb.getTitle() + "</h1>\n");
         body.addString("<h3>" + protein.getAnnotation() + "</h3>\n");
         String chainstr = "";
         if (model == null) {
@@ -194,14 +192,19 @@ public class ProteinCoveragePageBuilder {
 
         if (model != null) {
             Asa.calculate_asa(model);
-             ThreeDModelBuillder tm = new ThreeDModelBuillder(body, pfd);
+            ThreeDModelBuillder tm = new ThreeDModelBuillder(body, pfd);
 //
 //         }
 //         else {
 //             new HTMLHeaderHolder(body, "No 3D Model Found", 1);
-         }
+        }
 
         new CoverageColorsLabel(body);
+        if(model != null)  {
+            new SingleTagBuillder(body, "p");
+            new SecondaryStructureLabel(body);
+        }
+
         new SingleTagBuillder(body, "p");
 
         CoverageFragment cf = new CoverageFragment(body, pfd);
@@ -229,7 +232,6 @@ public class ProteinCoveragePageBuilder {
     }
 
 
-
     protected String buildIndexPage(String[] ids, String[] pages) {
         ProteinCollection proteins = getProteins();
         HTMLPageBuillder pb = new HTMLPageBuillder("Protein Coverage ");
@@ -247,7 +249,7 @@ public class ProteinCoveragePageBuilder {
             ProteinFragmentationDescription pd = proteins.getProteinFragmentationDescription(id);
             if (pd.getModel() != null) {
                 idWith3dModel.add(pd);
-                 pageWith3dModel.add(page);
+                pageWith3dModel.add(page);
             }
             else {
                 idWithout3dModel.add(pd);
@@ -257,9 +259,9 @@ public class ProteinCoveragePageBuilder {
         }
         String[] empty = {};
         ProteinFragmentationDescription[] emptyPd = {};
-         if (!idWith3dModel.isEmpty()) {
+        if (!idWith3dModel.isEmpty()) {
             body.addString("<h1>Proteins With 3D Models</h1>\n");
-             body.addString("<h3>UniprotID Coverage% Peptides Modeled/Total Peptides  [Number Chains]</h3>\n");
+            body.addString("<h3>UniprotID Coverage% Peptides Modeled/Total Peptides  [Number Chains]</h3>\n");
             new ReferenceTableBuillder(body, idWith3dModel.toArray(emptyPd), pageWith3dModel.toArray(empty), INDEX_ROW_LENGTH);
         }
         if (!idWithout3dModel.isEmpty()) {
@@ -269,9 +271,9 @@ public class ProteinCoveragePageBuilder {
         String page = pb.buildPage();
         String fileName = "Index.html";
         FileUtilities.writeFile(fileName, page);
-        Collections.sort(pfdWith3dModel,ProteinFragmentationDescription.INTERESTING_COMPARATOR);
+        Collections.sort(pfdWith3dModel, ProteinFragmentationDescription.INTERESTING_COMPARATOR);
         for (Iterator<ProteinFragmentationDescription> iterator = pfdWith3dModel.iterator(); iterator.hasNext(); ) {
-            ProteinFragmentationDescription next =  iterator.next();
+            ProteinFragmentationDescription next = iterator.next();
             System.out.println(next.getUniprotId() + " " + String.format("%5.3f", next.getFractionalCoverage()) + " " +
                     next.getStatistics().getPartitionStatistics(2));
         }

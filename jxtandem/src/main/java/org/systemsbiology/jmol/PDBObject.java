@@ -148,10 +148,10 @@ public class PDBObject extends AsaMolecule {
         String chainSeq = subUnit.getSequence();
         AminoAcidAtLocation[] locations = subUnit.getLocations();
         String seqence = getProtein().getSequence();
-        if (seqence.contains("X"))
-            return;
-        if (chainSeq.contains("X"))
-            return;
+ //       if (seqence.contains("X"))
+ //           return;
+ //       if (chainSeq.contains("X"))
+ //           return;
         int index = seqence.indexOf(chainSeq);
         if (index > -1) {
             for (int i = 0; i < chainSeq.length(); i++) {
@@ -169,11 +169,13 @@ public class PDBObject extends AsaMolecule {
                 int fromB = best.getFromB();
                 int toB = best.getToB();
                 int bindex = fromB;
-                for (int i = fromA; i <= toA; i++) {
-                    SequenceChainMap mapping = getMapping(index + i);
-                    FastaAminoAcid seqaa = FastaAminoAcid.fromChar(seqence.charAt(i));
-                    AminoAcidAtLocation bx = locations[bindex];
-                    if (seqaa == bx.getAminoAcid()) {
+                for (int i = fromA; i < toA; i++) {
+                    int zeroBassed = i - 1;
+                    SequenceChainMap mapping = getMapping(zeroBassed);
+                    FastaAminoAcid seqaa = FastaAminoAcid.fromChar(seqence.charAt(zeroBassed ));
+                    AminoAcidAtLocation bx = locations[bindex - 1];  // zero based
+                    FastaAminoAcid baa = bx.getAminoAcid();
+                    if (seqaa == baa) {
                         mapping.addChainMapping(ch,bx);
                         bindex++;
                      }

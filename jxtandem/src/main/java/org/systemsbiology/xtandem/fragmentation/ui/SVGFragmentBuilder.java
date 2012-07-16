@@ -181,7 +181,7 @@ public abstract class SVGFragmentBuilder extends AbstractHtmlFragmentHolder {
      * @param data
      */
     @Override
-    public final void addStartText(final Appendable out, final Object... data) {
+    public void addStartText(final Appendable out, final Object... data) {
         try {
             indent(out);
             out.append("<");

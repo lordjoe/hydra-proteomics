@@ -1,5 +1,6 @@
 package org.systemsbiology.xtandem.fragmentation.ui;
 
+import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 
 import java.io.*;
@@ -28,13 +29,22 @@ public class ProteinLineBuillder extends SVGFragmentBuilder {
         int start = line.getStart();
         ProteinFragmentationDescription fragments = line.getFragments();
         short[] allCoverage = fragments.getAllCoverage();
+        SequenceChainMap[] mappings = fragments.getChainMappings();
+        if(mappings != null) {
+            if(mappings.length != allCoverage.length)
+                throw new IllegalStateException("problem"); // ToDo change
+        }
     //    int height = getLineHeight();
         String sequence = line.getSequence();
         for (int i = 0; i < sequence.length(); i++) {
             String c = sequence.substring(i, i + 1);
             int xPosition = CoverageFragment.AMINO_ACID_WIDTH * (i + 1);
-            short textCoverage = allCoverage[start + i];
-            OneAminoAcidFragmentBuillder aa = new OneAminoAcidFragmentBuillder(  this, xPosition, c, textCoverage);
+            int index = start + i;
+            short textCoverage = allCoverage[index];
+            SequenceChainMap mapping = null;
+            if(mappings != null)
+                mapping = mappings[index];
+            OneAminoAcidFragmentBuillder aa = new OneAminoAcidFragmentBuillder(  this, xPosition, c, textCoverage, mapping);
           }
 
     }
