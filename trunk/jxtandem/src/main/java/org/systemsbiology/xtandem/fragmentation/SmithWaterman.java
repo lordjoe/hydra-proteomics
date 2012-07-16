@@ -9,8 +9,7 @@ package org.systemsbiology.xtandem.fragmentation;
  */
 
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Design Note: this class implements AminoAcids interface: a simple fix customized to amino acids, since that is all we deal with in this class
@@ -331,6 +330,7 @@ public class SmithWaterman {
 					}
 			    }
 			}
+        Collections.sort(matchList);
 		return matchList; // could be empty if no HSP scores are > scoreThreshold
 	}
 

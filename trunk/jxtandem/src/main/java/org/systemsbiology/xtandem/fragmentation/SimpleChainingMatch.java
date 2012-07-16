@@ -3,7 +3,7 @@ package org.systemsbiology.xtandem.fragmentation;
 /**
  * Match class defintion
  */
-public class SimpleChainingMatch {
+public class SimpleChainingMatch implements Comparable<SimpleChainingMatch> {
     int fromA;
     int fromB;
     int toA;
@@ -70,14 +70,28 @@ public class SimpleChainingMatch {
         return buffer.toString();
     }
 
-    public String showInTargets(String original,String sought)
-    {
+    public String showInTargets(String original, String sought) {
         StringBuilder sb = new StringBuilder();
-        sb.append(original.substring(getFromA(),getToA()));
+        sb.append(original.substring(getFromA(), getToA()));
         sb.append("\n");
-        sb.append(sought.substring(getFromB(),getToB()));
+        sb.append(sought.substring(getFromB(), getToB()));
         sb.append("\n");
 
         return sb.toString();
+    }
+
+    @Override
+    public int compareTo(SimpleChainingMatch o) {
+        if (getScore() != o.getScore())
+            return getScore() > o.getScore() ? -1 : 1;
+        if (getFromA() != o.getFromA())
+            return getFromA() > o.getFromA() ? -1 : 1;
+        if (getFromB() != o.getFromB())
+            return getFromB() > o.getFromB() ? -1 : 1;
+        if (getToA() != o.getToA())
+            return getToA() > o.getToA() ? -1 : 1;
+        if (getToB() != o.getToB())
+            return getToB() > o.getToB() ? -1 : 1;
+        return 0;
     }
 }

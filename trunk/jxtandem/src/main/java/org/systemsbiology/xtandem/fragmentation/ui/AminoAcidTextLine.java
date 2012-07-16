@@ -1,10 +1,5 @@
 package org.systemsbiology.xtandem.fragmentation.ui;
 
-import org.systemsbiology.xtandem.*;
-import org.systemsbiology.xtandem.fragmentation.*;
-
-import java.io.*;
-
 /**
  * org.systemsbiology.xtandem.fragmentation.ui.AminoAcidTextLine
  * User: Steve
@@ -16,15 +11,15 @@ public class AminoAcidTextLine extends SVGFragmentBuilder {
 
     public static final String TAG = "g";
 
-     private final ProteinFragmentLine m_LineFragment;
+    private final ProteinFragmentLine m_LineFragment;
 
-    public AminoAcidTextLine( SVGFragmentBuilder parent, ProteinFragmentLine coverageFragment,int index) {
-        super( parent, TAG);
+    public AminoAcidTextLine(SVGFragmentBuilder parent, ProteinFragmentLine coverageFragment, int index) {
+        super(parent, TAG);
         setIndex(index);
         m_LineFragment = coverageFragment;
-        setY( getLineHeight() * getIndex());
-         new ProteinLineBuillder( this,m_LineFragment) ;
-     }
+        setY(getLineHeight() * getIndex());
+        new ProteinLineBuillder(this, m_LineFragment);
+    }
 
 
     public ProteinFragmentLine getLineFragment() {
@@ -32,19 +27,17 @@ public class AminoAcidTextLine extends SVGFragmentBuilder {
     }
 
 
-
-    protected int getLineHeight()
-    {
-         return ((CoverageFragment)getParent()).getLineHeight();
+    protected int getLineHeight() {
+        return ((CoverageFragment) getParent()).getLineHeight();
     }
 
     @Override
     protected String getTagAttributes() {
         StringBuilder sb = new StringBuilder(super.getTagAttributes());
         sb.append(getTransformText());
-     //   sb.append("  transform=\"translate(0," +
-     //               ( getLineHeight() * getIndex()) + ")\" ");
+        //   sb.append("  transform=\"translate(0," +
+        //               ( getLineHeight() * getIndex()) + ")\" ");
         return sb.toString();
-      }
+    }
 
 }
