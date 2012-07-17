@@ -1,5 +1,9 @@
 package org.systemsbiology.xtandem;
 
+import com.sun.xml.internal.ws.client.*;
+import org.apache.taglibs.standard.lang.jstl.*;
+import org.eclipse.jdt.internal.compiler.flow.*;
+
 import java.util.*;
 
 /**
@@ -9,30 +13,30 @@ import java.util.*;
  * @date Jan 7, 2011
  */
 public enum FastaAminoAcid {
-    A("alanine"),
-    B("aspartate or asparagine"),
-    C("cystine"),
-    D("aspartate"),
-    E("glutamate"),
-    F("phenylalanine"),
-    G("glycine"),
-    H("histidine"),
-    I("isoleucine"),
-    K("lysine"),
-    L("leucine"),
-    M("methionine"),
-    N("asparagine"),
-    P("proline"),
-    Q("glutamine"),
-    R("arginine"),
-    S("serine"),
-    T("threonine"),
-    V("valine"),
-    W("tryptophan"),
-    Y("tyrosine"),
-    Z("glutamate or glutamine"),
-    X("any"),
-    UNKNOWN("unknown")
+    A("alanine",41,9.69,6.00),
+    B("aspartate or asparagine",-28,8.80,5.41),
+    C("cystine",49,10.28,5.07),
+    D("aspartate",-55,8.80,2.77),
+    E("glutamate",-31,9.67,3.22),
+    F("phenylalanine",100,9.13,5.48),
+    G("glycine",0,9.60,5.97),
+    H("histidine",8,9.17,7.59),
+    I("isoleucine",99,9.60,6.02),
+    K("lysine",-23,8.95,9.78),
+    L("leucine",97,9.60,5.98),
+    M("methionine",74,9.21,5.74),
+    N("asparagine",-28,8.80,5.41),
+    P("proline",-46,10.60,6,30),
+    Q("glutamine",-10,9.13,5.65),
+    R("arginine",-14,9.04,10.76),
+    S("serine",-5,9.15,5.68),
+    T("threonine",13,9.1,5.600),
+    V("valine",76,9.62,5,96),
+    W("tryptophan",97,9.39,5.89),
+    Y("tyrosine",63,9.11,5.66),
+    Z("glutamate or glutamine",-10,1,5.65),
+    X("any",0,1,1),
+    UNKNOWN("unknown",0,1,1)
 
     ;
 
@@ -379,16 +383,28 @@ public enum FastaAminoAcid {
     public static Class THIS_CLASS = FastaAminoAcid.class;
 
     private final String m_Name;
+    private final double m_Hydrophobicity;
+    private final double m_PkB;
+    private final double m_PHIsoelectric;
 
-    FastaAminoAcid(String pName) {
+    FastaAminoAcid(String pName,double hydrophobicity, double pkbdouble pI) {
         m_Name = pName;
+        m_Hydrophobicity = hydrophobicity;
+        m_PkB = pkb;
+        m_PHIsoelectric = PortInfo;
     }
 
     public String getName() {
         return m_Name;
     }
 
+    public double getHydrophobicity() {
+        return m_Hydrophobicity;
+    }
 
+    public double getPkB() {
+        return m_PkB;
+    }
 
     /**
      * three letter abbreviation
