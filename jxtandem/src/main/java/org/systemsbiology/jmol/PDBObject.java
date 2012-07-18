@@ -295,7 +295,8 @@ SSBOND	1-6	"SSBOND"		character
         if (chain == null)
             throw new IllegalStateException("bad chain " + chainEnd);
         if (chain != chainLast)
-            throw new IllegalStateException("bad last chain ");
+            return;
+          //  throw new IllegalStateException("bad last chain ");
 
         s = line.substring(31, 35).trim();
         int ResNumEnd = Integer.parseInt(s);
@@ -487,11 +488,12 @@ HELIX	1-5	"HELIX"		character
                     break;
                 }
             }
-        }
+         }
         if (start == -1)
-            throw new IllegalStateException("cannot find " + Residue + ResNum);
-        for (int i = start; i < locations.length; i++) {
-            AminoAcidAtLocation aa = locations[i];
+            return;
+    //        throw new IllegalStateException("cannot find " + Residue + ResNum);
+        for (int k = start; k < locations.length; k++) {
+            AminoAcidAtLocation aa = locations[k];
             aa.setStructure(SecondaryStructure.SHEET);
             String res = aa.getAminoAcid().getAbbreviation();
             int loc = aa.getLocation();
@@ -501,6 +503,8 @@ HELIX	1-5	"HELIX"		character
                 }
             }
         }
+        if(true)
+            return;
         throw new IllegalStateException("end not found");
 
     }

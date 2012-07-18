@@ -29,7 +29,7 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
 
     public static final String[] SECONDARY_STRUCTURE_COLORS =
             {
-                    "#d0d0d0",  // SECONDARY_STRUCTURE_NOT_MODELED
+                    "white",  // SECONDARY_STRUCTURE_NOT_MODELED
                     "#ffe0e0",  //  SECONDARY_STRUCTURE_MODELED
                     "#d0d0ff",  //    SECONDARY_STRUCTURE_HELIX
                     "#d0ffff",  //  SECONDARY_STRUCTURE_SHEET
@@ -122,7 +122,8 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     public void addStartText(Appendable out, Object... data) {
         try {
             indent(out);
-            out.append("<rect ");
+            AminoAcidAtLocation aaMapping = getAAMapping();
+             out.append("<rect ");
             out.append(" style=\"fill:" + getFillColor() + ";\" ");
             out.append("width=\"" + CoverageFragment.AMINO_ACID_WIDTH + "\" height=\"" + CoverageFragment.AMINO_ACID_HEIGHT + "\" ");
             Offset offset = getOffset();

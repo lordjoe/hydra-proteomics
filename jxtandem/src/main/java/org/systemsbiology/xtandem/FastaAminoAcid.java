@@ -26,12 +26,12 @@ public enum FastaAminoAcid {
     L("leucine",97,9.60,5.98),
     M("methionine",74,9.21,5.74),
     N("asparagine",-28,8.80,5.41),
-    P("proline",-46,10.60,6,30),
+    P("proline",-46,10.60,6.30),
     Q("glutamine",-10,9.13,5.65),
     R("arginine",-14,9.04,10.76),
     S("serine",-5,9.15,5.68),
     T("threonine",13,9.1,5.600),
-    V("valine",76,9.62,5,96),
+    V("valine",76,9.62,5.96),
     W("tryptophan",97,9.39,5.89),
     Y("tyrosine",63,9.11,5.66),
     Z("glutamate or glutamine",-10,1,5.65),
@@ -387,11 +387,11 @@ public enum FastaAminoAcid {
     private final double m_PkB;
     private final double m_PHIsoelectric;
 
-    FastaAminoAcid(String pName,double hydrophobicity, double pkbdouble pI) {
+    FastaAminoAcid(String pName,double hydrophobicity, double pkb,double pI) {
         m_Name = pName;
         m_Hydrophobicity = hydrophobicity;
         m_PkB = pkb;
-        m_PHIsoelectric = PortInfo;
+        m_PHIsoelectric = pI;
     }
 
     public String getName() {

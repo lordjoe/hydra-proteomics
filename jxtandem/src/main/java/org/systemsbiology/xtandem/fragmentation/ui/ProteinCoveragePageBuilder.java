@@ -104,6 +104,7 @@ public class ProteinCoveragePageBuilder {
             else
                 next = null;
             String id = ids[i];
+            System.out.println(id);
             String page = showCoveragePage(id, prev, next);
 
             if (page != null) {
