@@ -101,6 +101,11 @@
              <layout>default</layout>
              <url>http://repo1.maven.org/maven2</url>
            </repository>
+        <repository>
+            <id>biojava-maven-repo</id>
+            <name>BioJava repository</name>
+            <url>http://www.biojava.org/download/maven/</url>
+        </repository>
           <!--
          <repository>
             <id>informatics-svcs.systemsbiology.net</id>
