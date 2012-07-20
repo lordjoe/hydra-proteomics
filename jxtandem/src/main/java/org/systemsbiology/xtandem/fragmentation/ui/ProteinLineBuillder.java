@@ -30,6 +30,7 @@ public class ProteinLineBuillder extends SVGFragmentBuilder {
         ProteinFragmentationDescription fragments = line.getFragments();
         short[] allCoverage = fragments.getAllCoverage();
         SequenceChainMap[] mappings = fragments.getChainMappings();
+        ProteinFragment[] fragments1 = fragments.getFragments();
         if(mappings != null) {
             if(mappings.length != allCoverage.length)
                 throw new IllegalStateException("problem"); // ToDo change
@@ -38,13 +39,29 @@ public class ProteinLineBuillder extends SVGFragmentBuilder {
         String sequence = line.getSequence();
         for (int i = 0; i < sequence.length(); i++) {
             String c = sequence.substring(i, i + 1);
-            int xPosition = CoverageFragment.AMINO_ACID_WIDTH * (i + 1);
+            boolean  misssedCleavage = false;
             int index = start + i;
-            short textCoverage = allCoverage[index];
+              if(c.equals("R")|| c.equals("K"))  {   //
+                for (int j = 0; j < fragments1.length; j++) {
+                    ProteinFragment pf = fragments1[j];
+                    String sequence1 = pf.getSequence();
+                    if(pf.containsPosition(index))  {
+                        if( pf.hasMissedCleavages()) {
+                              if( pf.containsPosition(index + 1))    {
+                                  misssedCleavage = true;
+                                  break;
+                              }
+                          }
+                          
+                    }
+                }
+            }
+            int xPosition = CoverageFragment.AMINO_ACID_WIDTH * (i + 1);
+              short textCoverage = allCoverage[index];
             SequenceChainMap mapping = null;
             if(mappings != null)
                 mapping = mappings[index];
-            OneAminoAcidFragmentBuillder aa = new OneAminoAcidFragmentBuillder(  this, xPosition, c, textCoverage, mapping);
+            OneAminoAcidFragmentBuillder aa = new OneAminoAcidFragmentBuillder(  this, xPosition, c, textCoverage, mapping,misssedCleavage);
           }
 
     }

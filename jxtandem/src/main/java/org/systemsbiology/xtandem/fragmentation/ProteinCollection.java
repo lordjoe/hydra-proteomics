@@ -271,11 +271,26 @@ public class ProteinCollection implements IFastaHandler {
     // Fragmented 3d model code if fine model is bad
     public static final String[] TWO_INTERESTING = {"Q9Y296"};
     // says 3d model but nothing shown
-    public static final String[] THREE_INTERESTING = {"O43708",
+    public static final String[] THREE_INTERESTING = {
+      //      "A8MT69",
  //           "O14933",
-            "O14684" ,
-  //          "O602182",
-    };
+  //          "O00139" ,
+            "Q9Y3D8",
+            "Q9NTM9",
+            "O43924",
+            "O00764",
+            "P63165",
+            "O75340",
+            "O60218",
+            "O60234",
+            "P00568",
+            "P00387",
+            "P00918",
+            "O60701",
+            "O14556",
+            "O14733",
+
+     };
 
 
     public static void main(String[] args) {
@@ -284,7 +299,7 @@ public class ProteinCollection implements IFastaHandler {
         String[] ids = pc.getProteinIds();
         //     ids = SPECIAL_TEST_PROTEINS; // use only a few
         ids = THREE_INTERESTING; // look at only one case
-         ids = MORE_PROTEINS;
+       // ids = MORE_PROTEINS;
         ProteinCoveragePageBuilder pb = new ProteinCoveragePageBuilder(pc);
         pb.buildPages(ids);
 

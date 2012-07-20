@@ -55,7 +55,27 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
     }
 
     public Polypeptide(String pSequence ) {
-       this(pSequence,0);
+       this(pSequence,findMissedCleavages(pSequence));
+    }
+
+    public static int findMissedCleavages(String pSequence) {
+        int length = pSequence.length();
+        if(length < 2)
+            return 0;
+        String test = pSequence.substring(0,length - 1); // drop last position
+        int index = test.indexOf("K");
+        while(index > -1) {
+            if(pSequence.charAt(index + 1) != 'P')
+                return 1; // missed
+            index = test.indexOf("K",index + 1);
+        }
+         index = test.indexOf("R");
+        while(index > -1) {
+            if(pSequence.charAt(index + 1) != 'P')
+                return 1; // missed
+            index = test.indexOf("R",index + 1);
+        }
+        return 0;
     }
 
 

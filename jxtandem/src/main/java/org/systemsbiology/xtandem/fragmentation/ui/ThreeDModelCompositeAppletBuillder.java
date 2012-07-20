@@ -58,15 +58,17 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             out.append("    loadText = \'" + ScriptWriter.getLoadText(pfd) + "\';\n");
             out.append(hilightText + "\n");
             out.append(scriptx + "\n");
-            out.append("    showAminoAcids = \'select all;color translucent[80,80,80] white;ribbon off;wireframe on;spacefill 30%;\' + fragments.join(\' \'); \n");
+            out.append("    showAminoAcids = \'select all;color translucent[80,80,80] white;\' + fragments.join(\' \'); \n");
             out.append("    showSolventAtomicAccess = \'" + solventAtomicScript + "\';\n");
             out.append("    showSolventAccess = \'" + solventScript + "\';\n");
                 out.append("    showCoverage = \'" + coveragescript + "\';\n");
                out.append("    window.defaultloadscript = showAminoAcids;\n");
             out.append("    jmolInitialize(\"../../\");\n");
-            out.append("    jmolApplet([\"924\",\"678\"], loadText + \'select all;color translucent[80,80,80] white;select all ;ribbon off;\' + window.defaultloadscript,jmol_id);\n");
+            out.append("    jmolApplet([\"924\",\"678\"], loadText + \'select all;color translucent[80,80,80] white;select all ;wireframe on;spacefill 30%;ribbon off;\' + window.defaultloadscript,jmol_id);\n");
             out.append(
                     "\tfunction runScript( ) {\n" +
+                            "          if('off' == ribbons) \n" +
+                            "                jmolScript(\'select all;wireframe on;spacefill 30%;\',jmol_id);\n" +
                             "        script = \'select all;color translucent[80,80,80] white;\\\n" +
                             "          select all ;ribbon \' + ribbons + \';\'  +  \n" +
                             "         window.defaultloadscript  +  hideChains.join(\' \');\n" +
@@ -91,7 +93,7 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
                             "\tfunction changeRibbon(btn, obj, target) {\n" +
                             "          ribbons = obj[1];\n" +
                             "          if('off' == ribbons) \n" +
-                            "                jmolScript(\'select all;wireframe 0.15;spacefill 20%;\',jmol_id);\n" +
+                            "                jmolScript(\'select all;wireframe on;spacefill 30%;\',jmol_id);\n" +
                             "          runScript();\n" +
                             "    }\n" +
                             "\n");

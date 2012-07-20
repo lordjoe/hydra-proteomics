@@ -21,6 +21,7 @@ public class ProteinCoveragePageBuilder {
     public static final int INDEX_ROW_LENGTH = 6;
 
 
+    public static final String HOME_PAGE = "IndexGood.html";
     public static final String JMOL_APPLET_ID = "JMol";
 
     private final ProteinCollection m_Proteins;
@@ -122,7 +123,7 @@ public class ProteinCoveragePageBuilder {
 
     static int bad_models = 0;
 
-    protected String showCoveragePage(String id, String next, String prev) {
+    protected String showCoveragePage(String id, String prev, String next) {
         ProteinCollection proteins = getProteins();
         ProteinFragmentationDescription pfd = proteins.getProteinFragmentationDescription(id);
         int[] coverageLevels = pfd.getStatistics().getCoverateStatistics();
@@ -160,7 +161,7 @@ public class ProteinCoveragePageBuilder {
         HTMLBodyBuillder body = pb.getBody();
         HTMLHeaderBuillder header = pb.getHeader();
         Protein protein = pfd.getProtein();
-        body.addString("<a href=\"../Index.html\" >Home</a>\n");
+        body.addString("<a href=\"../" + HOME_PAGE + "\" >Home</a>\n");
         header.addString("<script src=\"../Jmol.js\" type=\"text/javascript\"></script> <!-- REQUIRED -->\n");
         if (prev != null)
             body.addString("<a href=\"" + prev + ".html\" >Prev</a>\n");
@@ -270,7 +271,7 @@ public class ProteinCoveragePageBuilder {
             new ReferenceTableBuillder(body, idWithout3dModel.toArray(emptyPd), pageWithout3dModel.toArray(empty), INDEX_ROW_LENGTH);
         }
         String page = pb.buildPage();
-        String fileName = "Index.html";
+        String fileName = HOME_PAGE;
         FileUtilities.writeFile(fileName, page);
         Collections.sort(pfdWith3dModel, ProteinFragmentationDescription.INTERESTING_COMPARATOR);
         for (Iterator<ProteinFragmentationDescription> iterator = pfdWith3dModel.iterator(); iterator.hasNext(); ) {

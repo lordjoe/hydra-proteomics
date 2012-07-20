@@ -386,11 +386,11 @@ public class ScriptWriter {
             sb.append("select all;color translucent[80,80,80] white;");
             if (quoteNewLines)
                 sb.append("\\");
-            sb.append("\n");
-            sb.append("select all ;ribbon off;wireframe on;spacefill 30%;");
-            if (quoteNewLines)
-                sb.append("\\");
-            sb.append("\n");
+           sb.append("\n");
+//            sb.append("select all ;ribbon off;wireframe on;spacefill 30%;");
+//            if (quoteNewLines)
+//                sb.append("\\");
+//            sb.append("\n");
         }
         catch (IOException e) {
             throw new RuntimeException(e);

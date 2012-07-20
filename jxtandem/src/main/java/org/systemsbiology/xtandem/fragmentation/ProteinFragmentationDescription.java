@@ -170,8 +170,9 @@ public class ProteinFragmentationDescription {
         for (int i = 0; i < frage.length; i++) {
             ProteinFragment pf = frage[i];
             AminoAcidAtLocation[] aas = new AminoAcidAtLocation[0];
-            try {
-                aas = model.getAminoAcidsForSequence(pf.getSequence());
+            String sequence = pf.getSequence();
+             try {
+                aas = model.getAminoAcidsForSequence(sequence);
             }
             catch (IllegalArgumentException e) {
                 if (e.getMessage().startsWith("Invalid amino acid character"))
@@ -179,8 +180,10 @@ public class ProteinFragmentationDescription {
                 throw new RuntimeException(e);
 
             }
-            if (aas == null || aas.length == 0)
-                continue;
+            if (aas == null || aas.length == 0)     {
+                aas = model.getAminoAcidsForSequence(sequence);  // break here
+                 continue;
+            }
             ret.put(pf, aas);
         }
         return ret;

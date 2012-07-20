@@ -50,6 +50,7 @@ public class AminoAcidAtLocation extends AsaSubunit {
     private SecondaryStructure m_Structure = SecondaryStructure.NONE;
     private final ChainEnum m_Chain;
     private boolean m_DiSulphideBond;
+    private boolean m_SometimesMissedCleavage;
 
     public AminoAcidAtLocation(ChainEnum chain,FastaAminoAcid aminoAcid  ) {
         super(chain,aminoAcid.toString(),0);
@@ -85,8 +86,11 @@ public class AminoAcidAtLocation extends AsaSubunit {
     public void setLocation(int location) {
         if(m_Location == -1)
             m_Location = location;
-        else
+        else   {
+            if( m_Location == location)
+                return;
             throw new IllegalStateException("Location already set");
+        }
     }
 
     @Override
@@ -100,6 +104,14 @@ public class AminoAcidAtLocation extends AsaSubunit {
 
     public void setDiSulphideBond(boolean diSulphideBond) {
         m_DiSulphideBond = diSulphideBond;
+    }
+
+    public boolean isSometimesMissedCleavage() {
+        return m_SometimesMissedCleavage;
+    }
+
+    public void setSometimesMissedCleavage(boolean sometimesMissedCleavage) {
+        m_SometimesMissedCleavage = sometimesMissedCleavage;
     }
 
     //
