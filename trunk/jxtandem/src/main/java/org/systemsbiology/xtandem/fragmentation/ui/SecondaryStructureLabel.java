@@ -9,7 +9,7 @@ import java.io.*;
  */
 public class SecondaryStructureLabel extends SVGRootBuilder {
     public static final SecondaryStructureLabel[] EMPTY_ARRAY = {};
-    public static final int DEFAULT_WIDTH = 1100;
+    public static final int DEFAULT_WIDTH = 1120;
     public static final int DEFAULT_HEIGHT = 30;
 
     public static final int[] ITEM_WIDTH = { 180, 130, 90, 100, 150, 100 };

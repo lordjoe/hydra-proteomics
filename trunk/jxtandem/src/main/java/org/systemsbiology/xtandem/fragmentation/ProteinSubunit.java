@@ -32,6 +32,7 @@ public class ProteinSubunit {
     private final ChainEnum m_Chain;
     private final Protein m_Protein;
     private final List<AminoAcidAtLocation> m_Locations = new ArrayList<AminoAcidAtLocation>();
+    private final List<AminoAcidAtLocation> m_Seqres = new ArrayList<AminoAcidAtLocation>();
     private Map<Integer, AminoAcidAtLocation> m_LocToAminoAcid = new HashMap<Integer, AminoAcidAtLocation>();
     private   String m_Sequence;
  //   private final  ChainEnum[] m_ChainSet; // only non-null if multiple chains
@@ -62,6 +63,27 @@ public class ProteinSubunit {
         m_Sequence = null;
     }
 
+
+    public void addAminoAcidAtSeqres(AminoAcidAtLocation added)   {
+         m_Seqres.add(added);
+      }
+
+    public AminoAcidAtLocation[] getSeqres()
+    {
+        return m_Seqres.toArray(AminoAcidAtLocation.EMPTY_ARRAY);
+    }
+
+    public String getSeqresSequence()
+    {
+         AminoAcidAtLocation[] aas = getSeqres();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < aas.length; i++) {
+            AminoAcidAtLocation aa = aas[i];
+            sb.append(aa.getAminoAcid().toString());
+        }
+        return sb.toString();
+    }
+
     public Protein getProtein() {
         return m_Protein;
     }
@@ -80,6 +102,10 @@ public class ProteinSubunit {
         return m_Sequence;
     }
 
+    @Override
+    public String toString() {
+        return getSequence();
+    }
 
     public void setRealLocation(AminoAcidAtLocation loc, int pos) {
         if(loc.getLocation() != -1)

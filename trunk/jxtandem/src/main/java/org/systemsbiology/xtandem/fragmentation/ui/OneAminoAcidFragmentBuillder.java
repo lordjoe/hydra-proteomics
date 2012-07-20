@@ -55,18 +55,21 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     private final int m_Coverage;
     private final SequenceChainMap m_Mapping;
     private final AminoAcidAtLocation m_AAMapping;
+    private final boolean  m_MisssedCleavage;
 
     public OneAminoAcidFragmentBuillder(ProteinLineBuillder parent, int xpos, String aminoAcid, int coverage,
-                                        SequenceChainMap mapping) {
+                                        SequenceChainMap mapping,boolean  misssedCleavage) {
 
         super(parent, TAG);
         m_AminoAcid = new String(aminoAcid);
         m_Coverage = coverage;
         m_Mapping = mapping;
+        m_MisssedCleavage = misssedCleavage;
         if (mapping != null) {
             AminoAcidAtLocation[] chainMappings = mapping.getChainMappings();
             if (chainMappings.length > 0) {
                 m_AAMapping = chainMappings[0];
+
             }
             else {
                 m_AAMapping = null;
@@ -99,11 +102,13 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
 
     protected String getFillColor() {
         AminoAcidAtLocation aaMapping = getAAMapping();
+        if (m_MisssedCleavage)
+               return SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_MISSED_CLEAVAGE];
         if (aaMapping == null)
             return SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_NOT_MODELED];
         if (aaMapping.isDiSulphideBond())
-            return SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_DISULPHIDE];
-        SecondaryStructure structure = aaMapping.getStructure();
+              return SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_DISULPHIDE];
+            SecondaryStructure structure = aaMapping.getStructure();
         if (structure != null) {
             switch (structure) {
                 case HELIX:
