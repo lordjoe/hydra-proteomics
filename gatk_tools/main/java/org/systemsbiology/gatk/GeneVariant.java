@@ -5,7 +5,7 @@ package org.systemsbiology.gatk;
  * User: steven
  * Date: 6/12/12
  */
-public class GeneVariant implements Comparable<GeneVariant> {
+public abstract class GeneVariant implements Comparable<GeneVariant> {
     public static final GeneVariant[] EMPTY_ARRAY = {};
 
     private final VariantType m_Type;
@@ -40,9 +40,7 @@ public class GeneVariant implements Comparable<GeneVariant> {
         return m_Score;
     }
 
-    public GeneVariant asSample() {
-        return new GeneVariant(getType(), getLocation(), 100);
-    }
+    public abstract GeneVariant asSample();
 
     public boolean equivalent(GeneVariant o) {
         if (this == o) return true;

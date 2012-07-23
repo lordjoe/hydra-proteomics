@@ -34,6 +34,12 @@ public class InsertionVariation extends GeneVariant {
         return m_Altered.length;
     }
 
+    @Override
+    public GeneVariant asSample() {
+        return new InsertionVariation(getLocation(),getScore(),getReference(),getAltered(),"100");
+    }
+
+
 
     @Override
     public String toString() {

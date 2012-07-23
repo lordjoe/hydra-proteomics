@@ -291,6 +291,31 @@ public class SamToolsRunner {
         return out;
     }
 
+    public static String[] buildCountLocusArguments(File in, File out, File intervals) {
+         List<String> holder = new ArrayList<String>();
+
+         holder.add("-I");
+         holder.add(in.getAbsolutePath());
+
+         holder.add("-o");
+          holder.add(out.getAbsolutePath());
+             holder.add("-R");
+         holder.add("e:/resources/Hg19.fa");
+             holder.add("-T");
+         holder.add("CountLoci");
+         holder.add("--output_mode");
+          holder.add("-stand_emit_conf");
+         holder.add(GATKRunner.DEFAULT_MIMIMUM_SCORE);
+         holder.add("-L");
+         holder.add(intervals.getAbsolutePath());
+
+         String[] ret = new String[holder.size()];
+         holder.toArray(ret);
+         return ret;
+     }
+
+
+
 
     private static File runFindVariants(final File in,final File intervals ) {
         GATKRunner mr = new GATKRunner();

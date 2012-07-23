@@ -1,5 +1,7 @@
 package org.systemsbiology.gatk;
 
+import net.sf.samtools.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -125,7 +127,21 @@ public class ExperimentalRun implements Comparable<ExperimentalRun> {
             String name = file.getName();
             if (name.endsWith(".vcf")) {
                 readVCF(file);
+            }
+        }
 
+    }
+
+    public void saveReadsWithLocations(GeneLocation[] loc,SAMFileWriter out) {
+        File dir = new File(getId());
+        File[] files = dir.listFiles();
+        if (files == null)
+            return;
+        for (int i = 0; i < files.length; i++) {
+            File file = files[i];
+            String name = file.getName();
+            if (name.endsWith(".sortedByPos.Grouped.Reordered.bam")) {
+                throw new UnsupportedOperationException("Fix This"); // ToDo
             }
         }
 
