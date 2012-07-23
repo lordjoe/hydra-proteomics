@@ -41,6 +41,10 @@ public class SNPVariation extends GeneVariant {
       }
 
 
+    @Override
+    public GeneVariant asSample() {
+        return new SNPVariation(getLocation(),getScore(),getReference(),getAltered(),"100");
+    }
 
     @Override
     public String toString() {

@@ -1,5 +1,7 @@
 package org.systemsbiology.gatk;
 
+import net.sf.samtools.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -14,6 +16,7 @@ public class GeneExperiment {
     private Set<GeneVariant> m_CommonVariants = new HashSet<GeneVariant>();
     private final List<GeneRegion> m_Regions = new ArrayList<GeneRegion>();
     private final Map<ExperimentalSubject, GeneSampleSet> m_Subjects = new HashMap<ExperimentalSubject, GeneSampleSet>();
+    Map<ExperimentalSubject, SAMFileWriter> m_Writers = new HashMap<ExperimentalSubject, SAMFileWriter>();
 
     public ExperimentalSubject[] getSubjects() {
         ExperimentalSubject[] ret = m_Subjects.keySet().toArray(ExperimentalSubject.EMPTY_ARRAY);
@@ -170,11 +173,10 @@ public class GeneExperiment {
                 out.println(loc);
 
             }
-            out.println("     " + var  + "\t" + var.getLocation().asIGVInterval());
+            out.println("     " + var + "\t" + var.getLocation().asIGVInterval());
         }
 
     }
-
 
 
     public void showInterestingGenes(PrintStream out) {
@@ -184,15 +186,15 @@ public class GeneExperiment {
             ExperimentalSubject subject = subjects[i];
             GeneSampleSet gs = getGeneSampleSet(subject);
             GeneVariant[] uncommon = gs.getUncommonVariants();
-             out.println(  );
-             out.println(  );
+            out.println();
+            out.println();
             out.println("Subject " + subject + "- Interesting Genes   " + uncommon.length);
             for (int j = 0; j < uncommon.length; j++) {
                 GeneVariant var = uncommon[j];
                 GeneRegion myGene = this.getRegionContaining(var.getLocation());
                 if (myGene != loc) {
                     loc = myGene;
-                    out.println(loc );
+                    out.println(loc);
 
                 }
                 out.println("     " + var + "\t" + var.getLocation().asIGVInterval());
@@ -202,8 +204,17 @@ public class GeneExperiment {
 
     }
 
-    public static void usage()
-    {
+    public SAMFileWriter getWriter(String id) {
+        ExperimentalSubject es = ExperimentalSubject.getSubject(id);
+        SAMFileWriter ret = m_Writers.get(es);
+        if (ret == null) {
+            ret = new SAMTextWriter(new File("Subject" + id + "bam"));
+            m_Writers.put(es, ret);
+        }
+        return ret;
+    }
+
+    public static void usage() {
         System.out.println("prints interesting common variants");
         System.out.println("Arg1 - file listing directoriies subjects and conditions - such as " +
                 " Mouse Liver ids.txt");
@@ -234,20 +245,21 @@ public class GeneExperiment {
 
 
     /**
-     *
      * @param args
      */
     public static void main(String[] args) {
-        if(args.length < 2) {
+        if (args.length < 2) {
             usage();
             return;
         }
         File describingFile = new File(args[0]);
         File geneFile = new File(args[1]);
+        File interesting = null;
         GeneExperiment exp = new GeneExperiment();
 
         exp.readExperiments(describingFile);
         exp.readGeneMap(geneFile);
+
         ExperimentalSubject[] subjects = exp.getSubjects();
         for (int i = 0; i < subjects.length; i++) {
             ExperimentalSubject subject = subjects[i];
@@ -259,13 +271,41 @@ public class GeneExperiment {
             }
 
         }
-      //  exp.showVariants(System.out);
-        System.out.println(  );
-        System.out.println(  );
+        if (args.length > 2) {
+            interesting = new File(args[2]);
+            InterestingVariation[] vars = InterestingVariation.readInterestingVariants(interesting);
+            GeneLocation[] locs = new GeneLocation[vars.length];
+            for (int i = 0; i < locs.length; i++) {
+                locs[i] = vars[i].getLocation();
+            }
+            for (int i = 0; i < vars.length; i++) {
+                InterestingVariation var = vars[i];
+                GeneLocation location = var.getLocation();
+                ExperimentalSubject subject = ExperimentalSubject.getSubject(var.getSubject());
+                GeneSampleSet geneSampleSet = exp.getGeneSampleSet(subject);
+                GeneVariant[] uncommonVariants = geneSampleSet.getUncommonVariants();
+                for (int j = 0; j < uncommonVariants.length; j++) {
+                    GeneVariant test = uncommonVariants[j];
+                    if (test.getLocation().equals(location)) {
+                        String annotation = test.getAnnotation();
+                        if (test instanceof SNPVariation) {
+                            SNPVariation sv = (SNPVariation) test;
+                            var.setOldBase(sv.getReference());
+                            var.setNewBase(sv.getAltered());
+                            System.out.println(var.getLocation() + "-" + var.getLocation().getLocation());
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        //  exp.showVariants(System.out);
+        System.out.println();
+        System.out.println();
         exp.showCommonInterestingGenes(System.out);
-        System.out.println(  );
-        System.out.println(  );
-         exp.showInterestingGenes(System.out);
+        System.out.println();
+        System.out.println();
+        exp.showInterestingGenes(System.out);
     }
 
 

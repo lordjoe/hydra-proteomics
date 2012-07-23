@@ -22,6 +22,11 @@ public class DeletionVariation extends GeneVariant {
 
     }
 
+    @Override
+    public GeneVariant asSample() {
+        return new DeletionVariation(getLocation(),getScore(),getReference(),getAltered(),"100");
+    }
+
     public DNABase getAltered() {
         return m_Altered;
     }
