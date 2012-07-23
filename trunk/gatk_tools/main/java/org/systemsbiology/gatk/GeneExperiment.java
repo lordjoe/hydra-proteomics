@@ -202,8 +202,46 @@ public class GeneExperiment {
 
     }
 
+    public static void usage()
+    {
+        System.out.println("prints interesting common variants");
+        System.out.println("Arg1 - file listing directoriies subjects and conditions - such as " +
+                " Mouse Liver ids.txt");
+        System.out.println("#\n" +
+                "# Mouse Sample Identification\n" +
+                "#\n" +
+                "# Sample\tDonor\tInfected\n" +
+                "17\t1\tHCV\n" +
+                "18\t2\tHCV\n" +
+                "19\t2\tNone\n" +
+                "20\t3\tNone\n" +
+                "21\t3\tHCV\n" +
+                "22\t4\tHCV\n" +
+                "23\t4\tHCV\n" +
+                "24\t4\tNone");
+        System.out.println("arg2 interesting genes such as  LiverIntervals.annotated");
+        System.out.println("ZC3HAV1\tchr7:138728265-138794465\n" +
+                "USP46\tchr4:53457126-53525502\n" +
+                "USP18\tchr22:18632757-18660162\n" +
+                "UHRF1\tchr19:4909509-4962165\n" +
+                "UBE2L6\tchr11:57319127-57335803\n" +
+                "UBD\tchr6:29523388-29527702\n" +
+                "TXNRD1\tchr12:104609558-104744062\n" +
+                "TRIM56\tchr7:100728785-100733889\n" +
+                "TRIM21\tchr11:4406126-4414926" +
+                "....");
+    }
 
+
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args) {
+        if(args.length < 2) {
+            usage();
+            return;
+        }
         File describingFile = new File(args[0]);
         File geneFile = new File(args[1]);
         GeneExperiment exp = new GeneExperiment();
