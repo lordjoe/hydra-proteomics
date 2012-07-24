@@ -1,5 +1,11 @@
 package org.systemsbiology.gatk;
 
+import net.sf.picard.reference.*;
+import net.sf.samtools.*;
+import org.broadinstitute.sting.gatk.contexts.*;
+import org.broadinstitute.sting.gatk.datasources.reference.*;
+import org.broadinstitute.sting.utils.*;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -12,6 +18,38 @@ import java.util.*;
  */
 public class GeneUtilities {
     public static final GeneUtilities[] EMPTY_ARRAY = {};
+
+
+    private static File gReferenceFile;
+    private static SAMSequenceDictionary gReferenceDictionary;
+
+    public static File getReferenceFile() {
+        return gReferenceFile;
+    }
+
+    public static void setReferenceFile(File refFile) {
+        ReferenceDataSource rds = new ReferenceDataSource(refFile);
+        IndexedFastaSequenceFile reference = rds.getReference();
+        SAMSequenceDictionary sd = reference.getSequenceDictionary();
+        setReferenceDictionary(sd);
+        gReferenceFile = refFile;
+    }
+
+    public static SAMSequenceDictionary getReferenceDictionary() {
+        return gReferenceDictionary;
+    }
+
+    private static void setReferenceDictionary(SAMSequenceDictionary referenceDictionary) {
+        gReferenceDictionary = referenceDictionary;
+    }
+
+    public static void guaranteeHeader(SAMFileWriter writer, ReferenceContext ref) {
+        SAMFileHeader fileHeader = writer.getFileHeader();
+        SAMSequenceDictionary sd = fileHeader.getSequenceDictionary();
+        if(sd.getSequences().isEmpty()) {
+            GenomeLocParser gp = ref.getGenomeLocParser();
+        }
+    }
 
     /**
      * { method
@@ -52,8 +90,8 @@ public class GeneUtilities {
         int end = 0;
         int loc = xml.indexOf(beforeQuote, end);
         while (loc != -1) {
-             loc++;
-             end = xml.indexOf("\"", loc + 1);
+            loc++;
+            end = xml.indexOf("\"", loc + 1);
             if (end > -1)
                 holder.add(xml.substring(loc, end));
         }

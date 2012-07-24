@@ -20,11 +20,11 @@ public class ExperimentalRun implements Comparable<ExperimentalRun> {
     private final Map<GeneRegion, RegionWithVariants> m_RegionsToVariants = new HashMap<GeneRegion, RegionWithVariants>();
 
 
-    public ExperimentalRun(GeneExperiment exp,final ExperimentalSubject subject, final String id) {
-        this(exp,subject, id, ExperimentalCondition.unknown);
+    public ExperimentalRun(GeneExperiment exp, final ExperimentalSubject subject, final String id) {
+        this(exp, subject, id, ExperimentalCondition.unknown);
     }
 
-    public ExperimentalRun(GeneExperiment exp,final ExperimentalSubject subject, final String id, ExperimentalCondition ec) {
+    public ExperimentalRun(GeneExperiment exp, final ExperimentalSubject subject, final String id, ExperimentalCondition ec) {
         m_Subject = subject;
         m_Id = id;
         m_Condition = ec;
@@ -46,8 +46,6 @@ public class ExperimentalRun implements Comparable<ExperimentalRun> {
     public String getId() {
         return m_Id;
     }
-
-
 
 
     public RegionWithVariants[] getRegionsWithVariants() {
@@ -75,7 +73,7 @@ public class ExperimentalRun implements Comparable<ExperimentalRun> {
     }
 
     public void addVariant(GeneVariant variant) {
-        GeneRegion regionContaining =  getRegionContaining(variant.getLocation());
+        GeneRegion regionContaining = getRegionContaining(variant.getLocation());
         if (regionContaining == null)
             return; // todo throw exception???
         RegionWithVariants regionsWithVariants = getRegionsWithVariants(regionContaining);
@@ -132,7 +130,7 @@ public class ExperimentalRun implements Comparable<ExperimentalRun> {
 
     }
 
-    public void saveReadsWithLocations(GeneLocation[] loc,SAMFileWriter out) {
+    public void saveReadsWithLocations(InterestingVariation[] loc, SAMFileWriter out, File intervals) {
         File dir = new File(getId());
         File[] files = dir.listFiles();
         if (files == null)
@@ -141,11 +139,18 @@ public class ExperimentalRun implements Comparable<ExperimentalRun> {
             File file = files[i];
             String name = file.getName();
             if (name.endsWith(".sortedByPos.Grouped.Reordered.bam")) {
-                throw new UnsupportedOperationException("Fix This"); // ToDo
+                SAMFileHeader fh = out.getFileHeader();
+                SAMSequenceDictionary sd = fh.getSequenceDictionary();
+                if (sd == null) {
+                    fh.setSequenceDictionary(GeneUtilities.getReferenceDictionary());
+                }
+                SamToolsRunner.runCountLoci(file, out, loc, intervals);
+                //   throw new UnsupportedOperationException("Fix This"); // ToDo
             }
         }
 
     }
+
 
     private void readVCF(final File file) {
         String[] lines = GeneUtilities.readInLines(file);
@@ -154,5 +159,21 @@ public class ExperimentalRun implements Comparable<ExperimentalRun> {
             GeneVariant variant = variants[j];
             addVariant(variant);
         }
+    }
+
+    public void mapRecordsToMouse(InterestingVariation[] vars, Map<String, SAMRecord> allRecords) {
+        File dir = new File(getId());
+        File[] files = dir.listFiles();
+        if (files == null)
+            return;
+        for (int i = 0; i < files.length; i++) {
+            File file = files[i];
+            String name = file.getName();
+            if (name.startsWith("mouse") && name.endsWith(".sortedByPos.Grouped.bam")) {
+                   SamToolsRunner.runFindInMouse(file, vars, allRecords);
+                //   throw new UnsupportedOperationException("Fix This"); // ToDo
+            }
+        }
+
     }
 }

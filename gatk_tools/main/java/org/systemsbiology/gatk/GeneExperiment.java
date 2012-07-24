@@ -206,12 +206,20 @@ public class GeneExperiment {
 
     public SAMFileWriter getWriter(String id) {
         ExperimentalSubject es = ExperimentalSubject.getSubject(id);
-        SAMFileWriter ret = m_Writers.get(es);
+        SAMTextWriter ret = (SAMTextWriter) m_Writers.get(es);
         if (ret == null) {
-            ret = new SAMTextWriter(new File("Subject" + id + "bam"));
+            File file = getSubjectSamFile(id);
+            ret = new SAMTextWriter(file);
+            SAMFileHeader header = new SAMFileHeader();
+            header.setSortOrder(SAMFileHeader.SortOrder.coordinate);
+            ret.setHeader(header);
             m_Writers.put(es, ret);
         }
         return ret;
+    }
+
+    public File getSubjectSamFile(String id) {
+        return new File("Subject" + id + ".sam");
     }
 
     public static void usage() {
@@ -243,11 +251,108 @@ public class GeneExperiment {
                 "....");
     }
 
+    public void readSampleDictionaries(ExperimentalSubject[] subjects) {
+        for (int i = 0; i < subjects.length; i++) {
+            ExperimentalSubject subject = subjects[i];
+            GeneSampleSet gs = getGeneSampleSet(subject);
+            ExperimentalRun[] runs = gs.getRuns();
+            for (int j = 0; j < runs.length; j++) {
+                ExperimentalRun run = runs[j];
+                run.readSampleDirectory();
+            }
+
+        }
+    }
+
+    public Map<String, SAMRecord> readRelevantRecords(File samFile) {
+        Map<String, SAMRecord> sm = SamToolsRunner.readSamFile(samFile);
+        return sm;
+    }
+
+    public void processInterestingReads(InterestingVariation[] vars, ExperimentalSubject[] subjects) {
+        Set<String> usedIds = new HashSet<String>();
+        for (int i = 0; i < vars.length; i++) {
+            usedIds.add(vars[i].getSubject());
+
+        }
+        for (int i = 0; i < subjects.length; i++) {
+            ExperimentalSubject subject = subjects[i];
+            String id = subject.getId();
+            if (!usedIds.contains(id))
+                continue; // not interesting
+            File inp = getSubjectSamFile(id);
+            Map<String, SAMRecord> sm = readRelevantRecords(inp);
+            GeneSampleSet gs = getGeneSampleSet(subject);
+            ExperimentalRun[] runs = gs.getRuns();
+            Map<String, SAMRecord> allRecords = new HashMap<String, SAMRecord>();
+            for (int j = 0; j < runs.length; j++) {
+                ExperimentalRun run = runs[j];
+                run.mapRecordsToMouse(vars, allRecords );
+             }
+            int size = allRecords.size();
+
+            //       out.close();
+
+        }
+    }
+
+
+    public void copyInterestingReads(InterestingVariation[] vars, ExperimentalSubject[] subjects) {
+        Set<String> usedIds = new HashSet<String>();
+        for (int i = 0; i < vars.length; i++) {
+            usedIds.add(vars[i].getSubject());
+
+        }
+//            GeneLocation[] locs = new GeneLocation[vars.length];
+//            for (int i = 0; i < locs.length; i++) {
+//                locs[i] = vars[i].getLocation();
+//            }
+        File intervals = new File("Interesting.intervals");
+        for (int i = 0; i < subjects.length; i++) {
+            ExperimentalSubject subject = subjects[i];
+            String id = subject.getId();
+            if (!usedIds.contains(id))
+                continue; // not interesting
+            SAMFileWriter out = getWriter(id);
+            GeneSampleSet gs = getGeneSampleSet(subject);
+            ExperimentalRun[] runs = gs.getRuns();
+            for (int j = 0; j < runs.length; j++) {
+                ExperimentalRun run = runs[j];
+                run.saveReadsWithLocations(vars, out, intervals);
+            }
+            out.close();
+
+        }
+    }
+
+    public void findSNPChanges(InterestingVariation[] vars) {
+        for (int i = 0; i < vars.length; i++) {
+            InterestingVariation var = vars[i];
+            GeneLocation location = var.getLocation();
+            ExperimentalSubject subject = ExperimentalSubject.getSubject(var.getSubject());
+            GeneSampleSet geneSampleSet = getGeneSampleSet(subject);
+            GeneVariant[] uncommonVariants = geneSampleSet.getUncommonVariants();
+            for (int j = 0; j < uncommonVariants.length; j++) {
+                GeneVariant test = uncommonVariants[j];
+                if (test.getLocation().equals(location)) {
+                    String annotation = test.getAnnotation();
+                    if (test instanceof SNPVariation) {
+                        SNPVariation sv = (SNPVariation) test;
+                        var.setOldBase(sv.getReference());
+                        var.setNewBase(sv.getAltered());
+                        System.out.println(var.getLocation() + "-" + var.getLocation().getLocation());
+                    }
+                    break;
+                }
+            }
+        }
+    }
 
     /**
      * @param args
      */
     public static void main(String[] args) {
+        GeneUtilities.setReferenceFile(new File("e:/resources/hg19.fa"));
         if (args.length < 2) {
             usage();
             return;
@@ -257,55 +362,28 @@ public class GeneExperiment {
         File interesting = null;
         GeneExperiment exp = new GeneExperiment();
 
+
         exp.readExperiments(describingFile);
         exp.readGeneMap(geneFile);
 
         ExperimentalSubject[] subjects = exp.getSubjects();
-        for (int i = 0; i < subjects.length; i++) {
-            ExperimentalSubject subject = subjects[i];
-            GeneSampleSet gs = exp.getGeneSampleSet(subject);
-            ExperimentalRun[] runs = gs.getRuns();
-            for (int j = 0; j < runs.length; j++) {
-                ExperimentalRun run = runs[j];
-                run.readSampleDirectory();
-            }
-
-        }
+        exp.readSampleDictionaries(subjects);
         if (args.length > 2) {
             interesting = new File(args[2]);
             InterestingVariation[] vars = InterestingVariation.readInterestingVariants(interesting);
-            GeneLocation[] locs = new GeneLocation[vars.length];
-            for (int i = 0; i < locs.length; i++) {
-                locs[i] = vars[i].getLocation();
-            }
-            for (int i = 0; i < vars.length; i++) {
-                InterestingVariation var = vars[i];
-                GeneLocation location = var.getLocation();
-                ExperimentalSubject subject = ExperimentalSubject.getSubject(var.getSubject());
-                GeneSampleSet geneSampleSet = exp.getGeneSampleSet(subject);
-                GeneVariant[] uncommonVariants = geneSampleSet.getUncommonVariants();
-                for (int j = 0; j < uncommonVariants.length; j++) {
-                    GeneVariant test = uncommonVariants[j];
-                    if (test.getLocation().equals(location)) {
-                        String annotation = test.getAnnotation();
-                        if (test instanceof SNPVariation) {
-                            SNPVariation sv = (SNPVariation) test;
-                            var.setOldBase(sv.getReference());
-                            var.setNewBase(sv.getAltered());
-                            System.out.println(var.getLocation() + "-" + var.getLocation().getLocation());
-                        }
-                        break;
-                    }
-                }
-            }
+            //       exp.copyInterestingReads(  vars, subjects);
+            GeneUtilities.setReferenceFile(new File("e:/resources/mmu9.fa"));
+            exp.processInterestingReads(vars, subjects);
+
+            exp.findSNPChanges(vars);
         }
-        //  exp.showVariants(System.out);
-        System.out.println();
-        System.out.println();
-        exp.showCommonInterestingGenes(System.out);
-        System.out.println();
-        System.out.println();
-        exp.showInterestingGenes(System.out);
+//        //  exp.showVariants(System.out);
+//        System.out.println();
+//        System.out.println();
+//        exp.showCommonInterestingGenes(System.out);
+//        System.out.println();
+//        System.out.println();
+//        exp.showInterestingGenes(System.out);
     }
 
 
