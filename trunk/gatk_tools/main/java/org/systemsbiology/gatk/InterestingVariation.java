@@ -95,6 +95,23 @@ public class InterestingVariation {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        InterestingVariation that = (InterestingVariation) o;
+
+        if (m_Location != null ? !m_Location.equals(that.m_Location) : that.m_Location != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return m_Location != null ? m_Location.hashCode() : 0;
+    }
+
     public static void main(String[] args) {
         File test = new File(args[0]);
         InterestingVariation[] interestingVariations = readInterestingVariants(test);

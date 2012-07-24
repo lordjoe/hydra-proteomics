@@ -1,6 +1,7 @@
 package org.systemsbiology.gatk;
 
 
+import net.sf.samtools.*;
 
 import java.io.*;
 import java.util.*;
@@ -279,11 +280,11 @@ public class SamToolsRunner {
     }
 
 
-    protected static File[] findVariants(final File[] candidates,final File intervals) {
+    protected static File[] findVariants(final File[] candidates, final File intervals) {
         List<File> outputs = new ArrayList<File>();
         for (int i = 0; i < candidates.length; i++) {
             File candidate = candidates[i];
-             File output = runFindVariants(candidate, intervals);
+            File output = runFindVariants(candidate, intervals);
             outputs.add(output);
         }
         File[] out = new File[outputs.size()];
@@ -291,43 +292,103 @@ public class SamToolsRunner {
         return out;
     }
 
-    public static String[] buildCountLocusArguments(File in, File out, File intervals) {
-         List<String> holder = new ArrayList<String>();
+    public static String[] buildCountLocusArguments(File in, SAMFileWriter out, InterestingVariation[] genes, File intervals) {
+        List<String> holder = new ArrayList<String>();
 
-         holder.add("-I");
-         holder.add(in.getAbsolutePath());
+        CopyInterestingReadsWalker.setLocations(genes);
+        CopyInterestingReadsWalker.setWriter(out);
 
-         holder.add("-o");
-          holder.add(out.getAbsolutePath());
-             holder.add("-R");
-         holder.add("e:/resources/Hg19.fa");
-             holder.add("-T");
-         holder.add("CountLoci");
-         holder.add("--output_mode");
-          holder.add("-stand_emit_conf");
-         holder.add(GATKRunner.DEFAULT_MIMIMUM_SCORE);
-         holder.add("-L");
-         holder.add(intervals.getAbsolutePath());
+        holder.add("-I");
+        holder.add(in.getAbsolutePath());
 
-         String[] ret = new String[holder.size()];
-         holder.toArray(ret);
-         return ret;
-     }
+        holder.add("-R");
+        holder.add(GeneUtilities.getReferenceFile().getAbsolutePath());
+        holder.add("-T");
+        holder.add("CopyInterestingReads");
+        holder.add("-L");
+        holder.add(intervals.getAbsolutePath());
+
+        String[] ret = new String[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
 
 
+    public static void runCountLoci(final File in, SAMFileWriter out, InterestingVariation[] genes, File intervals) {
+        GATKRunner mr = new GATKRunner();
+        String[] Mainargs = buildCountLocusArguments(in, out, genes, intervals);
+        mr.runMain(Mainargs);
+    }
 
 
-    private static File runFindVariants(final File in,final File intervals ) {
+    public static void runFindInMouse(final File in, InterestingVariation[] vars, Map<String, SAMRecord> allRecords) {
+        GATKRunner mr = new GATKRunner();
+        String[] Mainargs = buildFindInMouse(in,vars, allRecords);
+        mr.runMain(Mainargs);
+    }
+
+
+    public static String[] buildFindInMouse(File in, InterestingVariation[] vars, Map<String, SAMRecord> allRecords) {
+        List<String> holder = new ArrayList<String>();
+
+        FindInAlternateSpeciesWalker.setInterestingReads(allRecords.keySet());
+        holder.add("-I");
+        holder.add(in.getAbsolutePath());
+
+        holder.add("-R");
+        holder.add(GeneUtilities.getReferenceFile().getAbsolutePath());
+        holder.add("-T");
+        holder.add("FindInAlternateSpecies");
+
+        String[] ret = new String[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
+
+
+
+    public static Map<String,SAMRecord> readSamFile(final File samFile) {
+        Map<String,SAMRecord>  ret = new HashMap<String, SAMRecord>();
+        SAMFileReader rdr = new SAMFileReader(samFile);
+        rdr.setValidationStringency(SAMFileReader.ValidationStringency.SILENT);
+        SAMRecordIterator iterator = rdr.iterator();
+        while (iterator.hasNext()) {
+            SAMRecord next = iterator.next();
+            String readString = next.getReadString();
+            ret.put(readString,next);
+        }
+        return ret;
+    }
+
+    public static String[] buildReadSamFileArguments(File in) {
+        List<String> holder = new ArrayList<String>();
+
+
+        holder.add("-I");
+        holder.add(in.getAbsolutePath());
+
+        holder.add("-R");
+        holder.add(GeneUtilities.getReferenceFile().getAbsolutePath());
+        holder.add("-T");
+        holder.add("GatherReads");
+
+        String[] ret = new String[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
+
+
+    private static File runFindVariants(final File in, final File intervals) {
         GATKRunner mr = new GATKRunner();
         String addedExtension = "Grouped";
 
         String fileName = in.getName();
-        fileName = fileName.substring(0,fileName.indexOf(".")) + ".vcf";
-         File out = new File(fileName);
-        if(in.getParentFile() != null)
-            out = new File(in.getParentFile(),fileName);
+        fileName = fileName.substring(0, fileName.indexOf(".")) + ".vcf";
+        File out = new File(fileName);
+        if (in.getParentFile() != null)
+            out = new File(in.getParentFile(), fileName);
 
-        String[] Mainargs = buildFindVariantsArguments(in,out,  intervals );
+        String[] Mainargs = buildFindVariantsArguments(in, out, intervals);
         mr.runMain(Mainargs);
         return out;
     }
@@ -339,13 +400,13 @@ public class SamToolsRunner {
         holder.add(in.getAbsolutePath());
 
         holder.add("-o");
-         holder.add(out.getAbsolutePath());
+        holder.add(out.getAbsolutePath());
         holder.add("-l");
         holder.add("INFO");
         holder.add("--genotype_likelihoods_model");
         holder.add("BOTH");
         holder.add("-R");
-        holder.add("e:/resources/Hg19.fa");
+        holder.add(GeneUtilities.getReferenceFile().getAbsolutePath());
         holder.add("-U");
         holder.add("ALLOW_SEQ_DICT_INCOMPATIBILITY");
         holder.add("-T");
@@ -414,13 +475,13 @@ public class SamToolsRunner {
         candidates = addReadGroups(candidates);
         candidates = reorderFiles(candidates);
     }
-  
+
     public static void main(String[] args) throws Exception {
         File dir = new File(".");
         File[] candidates = getFilesWithExtension(dir, "bam");
         candidates = excludeFilesWithoutEnding(candidates, ".Grouped.Reordered.bam");
         candidates = excludeFilesWithStart(candidates, "HCV");
-         candidates = excludeFilesWithoutStart(candidates, "human");
+        candidates = excludeFilesWithoutStart(candidates, "human");
 //        candidates = excludeFilesWithEnding(candidates, "Grouped.Sorted.bam");
 //        candidates = excludeFilesWithEnding(candidates, "Sorted.Grouped.Sorted.Grouped");
 
@@ -432,7 +493,7 @@ public class SamToolsRunner {
 //        fixBamFiles(candidates);
 //        candidates = cleanFiles(candidates);
 
-          candidates = findVariants(candidates, new File("LiverGenes.intervals"));
+        candidates = findVariants(candidates, new File("LiverGenes.intervals"));
         for (int i = 0; i < candidates.length; i++) {
             File candidate = candidates[i];
 
