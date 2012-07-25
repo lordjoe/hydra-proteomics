@@ -161,7 +161,7 @@ public class ExperimentalRun implements Comparable<ExperimentalRun> {
         }
     }
 
-    public void mapRecordsToMouse(InterestingVariation[] vars, Map<String, SAMRecord> allRecords) {
+    public void mapRecordsToMouse(InterestingVariation[] vars,Map<String, SAMRecord> interestingRecords, Map<String, SAMRecord> allRecords) {
         File dir = new File(getId());
         File[] files = dir.listFiles();
         if (files == null)
@@ -170,7 +170,7 @@ public class ExperimentalRun implements Comparable<ExperimentalRun> {
             File file = files[i];
             String name = file.getName();
             if (name.startsWith("mouse") && name.endsWith(".sortedByPos.Grouped.bam")) {
-                   SamToolsRunner.runFindInMouse(file, vars, allRecords);
+                   SamToolsRunner.runFindInMouse(file, vars,interestingRecords, allRecords);
                 //   throw new UnsupportedOperationException("Fix This"); // ToDo
             }
         }

@@ -287,7 +287,7 @@ public class GeneExperiment {
             Map<String, SAMRecord> allRecords = new HashMap<String, SAMRecord>();
             for (int j = 0; j < runs.length; j++) {
                 ExperimentalRun run = runs[j];
-                run.mapRecordsToMouse(vars, allRecords );
+                run.mapRecordsToMouse(vars,sm, allRecords );
              }
             int size = allRecords.size();
 

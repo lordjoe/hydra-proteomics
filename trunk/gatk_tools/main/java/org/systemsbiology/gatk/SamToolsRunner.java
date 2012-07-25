@@ -115,12 +115,12 @@ public class SamToolsRunner {
     }
 
 
-    public static void addIOutputArguments(List<String> holder, File in, String addedExtension) {
-        File out = addedExtension(in, addedExtension);
-        holder.add("O=" + out.getAbsolutePath());
-    }
+//    public static void addIOutputArgumentsX(List<String> holder, File in, String addedExtension) {
+//        File out = addedExtension(in, addedExtension);
+//        holder.add("O=" + out.getAbsolutePath());
+//    }
 
-    private static File addedExtension(final File in, final String addedExtension) {
+    private static File addedExtensionX(final File in, final String addedExtension) {
         String name = in.getName();
         int index = name.lastIndexOf(".");
         String newName = name.substring(0, index) + "." + addedExtension + name.substring(index);
@@ -130,9 +130,76 @@ public class SamToolsRunner {
             return new File(newName);
     }
 
-    public static void addInputAndOutputArguments(List<String> holder, File in, String addedExtension) {
+
+    private static File buildTmp(final File in) {
+        File inParent = in.getParentFile();
+        if (inParent == null)
+            return new File("tmp.bam");
+        File file = new File(inParent, "tmp.bam");
+        return file;
+    }
+
+    private static File buildIndex(final File in) {
+        File inParent = in.getParentFile();
+        String indexName = in.getName().replace(".bam",".bai");
+        if (inParent == null)
+            return new File(indexName);
+        File file = new File(inParent, indexName);
+        return file;
+    }
+
+    /**
+     * rename tmp to to in then kill in
+     *
+     * @param in
+     * @return in - now the contents of tmp
+     */
+    private static File handleTmpRename(final File in) {
+        if (!in.exists())
+          throw new IllegalStateException("in file not found");
+        File index = buildIndex(in);
+        if (!index.exists())
+           throw new IllegalStateException(" index file not found");
+        File tmp = buildTmp(in);
+        File tmpindex = buildIndex(tmp);
+          if (!tmp.exists())
+           throw new IllegalStateException("tmp file not found");
+        if (!tmpindex.exists())
+           throw new IllegalStateException("tmp index file not found");
+
+
+        File inParent = in.getParentFile();
+        File rename = new File(  "tmpSaver.bam");
+        File renameIndex= new File(  "tmpSaver.bai");
+         if (inParent != null)  {
+             rename = new File(inParent, "tmpSaver.bam");
+             renameIndex = new File(inParent, "tmpSaver.bai");
+           }
+        rename.delete();
+        renameIndex.delete();
+
+        if(!index.renameTo(renameIndex)) // rename index first it will be problematic
+              throw new IllegalStateException("cannot rename " + index);
+        if(!in.renameTo(rename))
+             throw new IllegalStateException("cannot rename " + in);
+
+        if(!tmp.renameTo(in))
+                throw new IllegalStateException("cannot rename " + tmp);
+        if(! tmpindex.renameTo(index))
+                throw new IllegalStateException("cannot rename " + tmpindex);
+
+
+        rename.delete();
+        renameIndex.delete();
+
+        return in;
+    }
+
+    public static void addInputAndOutputArguments(List<String> holder, File in) { //}, String addedExtension) {
         addInputArguments(holder, in);
-        addIOutputArguments(holder, in, addedExtension);
+        //       addIOutputArguments(holder, in, addedExtension);
+        File out = buildTmp(in);
+        holder.add("O=" + out.getAbsolutePath());
     }
 
     private static File runReorderSam(final File in) {
@@ -140,10 +207,12 @@ public class SamToolsRunner {
             Class cls = Class.forName("net.sf.picard.sam.ReorderSam");
             MainRunner mr = new MainRunner(cls);
             String addedExtension = "Reordered";
-            File output = addedExtension(in, addedExtension);
+            File output = buildTmp(in); // addedExtension(in, addedExtension);
             String[] Mainargs = buildReorderSamArguments(in, addedExtension);
             mr.runMain(Mainargs);
-            return output;
+            output = handleTmpRename(in);
+
+            return in;
         }
         catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -153,7 +222,7 @@ public class SamToolsRunner {
 
     public static String[] buildReorderSamArguments(File in, String addedExtension) {
         List<String> holder = new ArrayList<String>();
-        addInputAndOutputArguments(holder, in, addedExtension);
+        addInputAndOutputArguments(holder, in); //, addedExtension);
         String name = in.getName();
         String fastaFile = "e:/resources/hg19.fa";   // todo make generic
         if (name.toLowerCase().contains("mouse"))
@@ -181,10 +250,12 @@ public class SamToolsRunner {
         try {
             Class cls = Class.forName("net.sf.picard.sam.SortSam");
             MainRunner mr = new MainRunner(cls);
-            String addedExtension = "Sorted";
-            File output = addedExtension(in, addedExtension);
+            String addedExtension = "sortedByPos";
+            if(in.getName().contains(addedExtension))
+                return in;
             String[] Mainargs = buildSortSamArguments(in, addedExtension);
             mr.runMain(Mainargs);
+            File output = handleTmpRename(in);
             return output;
         }
         catch (ClassNotFoundException e) {
@@ -195,7 +266,7 @@ public class SamToolsRunner {
 
     public static String[] buildSortSamArguments(File in, String addedExtension) {
         List<String> holder = new ArrayList<String>();
-        addInputAndOutputArguments(holder, in, addedExtension);
+        addInputAndOutputArguments(holder, in); //, addedExtension);
         holder.add("SO=coordinate");
         holder.add("VALIDATION_STRINGENCY=SILENT");
 
@@ -209,9 +280,9 @@ public class SamToolsRunner {
             Class cls = Class.forName("net.sf.picard.sam.CleanSam");
             MainRunner mr = new MainRunner(cls);
             String addedExtension = "Cleaned";
-            File output = addedExtension(in, addedExtension);
             String[] Mainargs = buildCleanSamArguments(in, addedExtension);
             mr.runMain(Mainargs);
+            File output = handleTmpRename(in);
             return output;
         }
         catch (ClassNotFoundException e) {
@@ -222,7 +293,7 @@ public class SamToolsRunner {
 
     public static String[] buildCleanSamArguments(File in, String addedExtension) {
         List<String> holder = new ArrayList<String>();
-        addInputAndOutputArguments(holder, in, addedExtension);
+        addInputAndOutputArguments(holder, in); //, addedExtension);
         holder.add("CREATE_INDEX=true");
         holder.add("VALIDATION_STRINGENCY=SILENT");
 
@@ -236,9 +307,9 @@ public class SamToolsRunner {
             Class cls = Class.forName("net.sf.picard.sam.AddOrReplaceReadGroups");
             MainRunner mr = new MainRunner(cls);
             String addedExtension = "Grouped";
-            File output = addedExtension(in, addedExtension);
             String[] Mainargs = buildAddReadGroupArguments(in, addedExtension, id);
             mr.runMain(Mainargs);
+            File output = handleTmpRename(in);
             return output;
         }
         catch (ClassNotFoundException e) {
@@ -249,7 +320,7 @@ public class SamToolsRunner {
 
     public static String[] buildAddReadGroupArguments(File in, String addedExtension, String id) {
         List<String> holder = new ArrayList<String>();
-        addInputAndOutputArguments(holder, in, addedExtension);
+        addInputAndOutputArguments(holder, in); //, addedExtension);
 
 
         holder.add("SORT_ORDER=coordinate");
@@ -321,17 +392,17 @@ public class SamToolsRunner {
     }
 
 
-    public static void runFindInMouse(final File in, InterestingVariation[] vars, Map<String, SAMRecord> allRecords) {
+    public static void runFindInMouse(final File in, InterestingVariation[] vars, Map<String, SAMRecord> interestingRecords, Map<String, SAMRecord> allRecords) {
         GATKRunner mr = new GATKRunner();
-        String[] Mainargs = buildFindInMouse(in,vars, allRecords);
+        String[] Mainargs = buildFindInMouse(in, vars, interestingRecords, allRecords);
         mr.runMain(Mainargs);
     }
 
 
-    public static String[] buildFindInMouse(File in, InterestingVariation[] vars, Map<String, SAMRecord> allRecords) {
+    public static String[] buildFindInMouse(File in, InterestingVariation[] vars, Map<String, SAMRecord> interestingRecords, Map<String, SAMRecord> allRecords) {
         List<String> holder = new ArrayList<String>();
 
-        FindInAlternateSpeciesWalker.setInterestingReads(allRecords.keySet());
+        FindInAlternateSpeciesWalker.setInterestingReads(interestingRecords.keySet());
         holder.add("-I");
         holder.add(in.getAbsolutePath());
 
@@ -339,6 +410,8 @@ public class SamToolsRunner {
         holder.add(GeneUtilities.getReferenceFile().getAbsolutePath());
         holder.add("-T");
         holder.add("FindInAlternateSpecies");
+        holder.add("-U");
+        holder.add("ALLOW_SEQ_DICT_INCOMPATIBILITY");
 
         String[] ret = new String[holder.size()];
         holder.toArray(ret);
@@ -346,16 +419,15 @@ public class SamToolsRunner {
     }
 
 
-
-    public static Map<String,SAMRecord> readSamFile(final File samFile) {
-        Map<String,SAMRecord>  ret = new HashMap<String, SAMRecord>();
+    public static Map<String, SAMRecord> readSamFile(final File samFile) {
+        Map<String, SAMRecord> ret = new HashMap<String, SAMRecord>();
         SAMFileReader rdr = new SAMFileReader(samFile);
         rdr.setValidationStringency(SAMFileReader.ValidationStringency.SILENT);
         SAMRecordIterator iterator = rdr.iterator();
         while (iterator.hasNext()) {
             SAMRecord next = iterator.next();
             String readString = next.getReadString();
-            ret.put(readString,next);
+            ret.put(readString, next);
         }
         return ret;
     }
@@ -471,33 +543,42 @@ public class SamToolsRunner {
         return out;
     }
 
-    private static void fixBamFiles(File[] candidates) {
+    protected static File[] fixBamFiles(File[] candidates) {
         candidates = addReadGroups(candidates);
         candidates = reorderFiles(candidates);
+        return candidates;
     }
 
+
+
+    public static File[] runBamFixPipeline(File[] candidates) {
+        candidates = sortFiles(candidates);
+
+        candidates = reorderFiles(candidates);
+        candidates = fixBamFiles(candidates);
+        candidates = cleanFiles(candidates);
+        return candidates;
+    }
+
+
     public static void main(String[] args) throws Exception {
-        File dir = new File(".");
+        File dir = new File(System.getProperty("user.dir"));
+        dir =  dir.getAbsoluteFile();
         File[] candidates = getFilesWithExtension(dir, "bam");
-        candidates = excludeFilesWithoutEnding(candidates, ".Grouped.Reordered.bam");
+        candidates = excludeFilesWithoutEnding(candidates, ".sortedByPos.bam");
         candidates = excludeFilesWithStart(candidates, "HCV");
-        candidates = excludeFilesWithoutStart(candidates, "human");
+//        candidates = excludeFilesWithoutStart(candidates, "human");
 //        candidates = excludeFilesWithEnding(candidates, "Grouped.Sorted.bam");
 //        candidates = excludeFilesWithEnding(candidates, "Sorted.Grouped.Sorted.Grouped");
+        candidates = excludeFilesWithoutStart(candidates, "mouse");
 
-//         candidates = sortFiles(candidates);
+        candidates = runBamFixPipeline(candidates);
+
+//        candidates = findVariants(candidates, new File("LiverGenes.intervals"));
+//        for (int i = 0; i < candidates.length; i++) {
+//            File candidate = candidates[i];
 //
-//        candidates = reorderFiles(candidates);
-
-
-//        fixBamFiles(candidates);
-//        candidates = cleanFiles(candidates);
-
-        candidates = findVariants(candidates, new File("LiverGenes.intervals"));
-        for (int i = 0; i < candidates.length; i++) {
-            File candidate = candidates[i];
-
-        }
+//        }
     }
 
 

@@ -59,7 +59,9 @@ public class FindInAlternateSpeciesWalker extends ReadWalker<Integer, Integer> {
 
     public Integer map(ReferenceContext ref, GATKSAMRecord read, ReadMetaDataTracker tracker) {
         String readString = read.getReadString();
-        m_SequenceToRecord.put(readString,read);
+        Set<String> interestingReads = getInterestingReads();
+        if(interestingReads.contains(readString))
+            m_SequenceToRecord.put(readString,read);
          return 1;
     }
 
