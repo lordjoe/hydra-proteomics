@@ -1,6 +1,8 @@
 package org.systemsbiology.gatk;
 
 
+import com.devdaily.system.*;
+
 import java.lang.reflect.*;
 
 /**
@@ -70,7 +72,7 @@ public class MainRunner {
         return m_MainClass;
     }
 
-    public void runMain(String[] args) {
+    public void runMainX(String[] args) {
 
         Object[] realArgs = {args};
         try {
@@ -93,4 +95,12 @@ public class MainRunner {
 
         }
     }
+
+    public void runMain(String[] args) {
+        int result = JavaInvoker.invokeInNewProcess(m_MainClass.getName(),JavaInvoker.ONE_GIG * 2,args);
+        if(result != 0)
+            throw new IllegalStateException("bad invocation");
+
+    }
+
 }
