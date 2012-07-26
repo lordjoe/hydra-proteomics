@@ -1,6 +1,7 @@
 package org.systemsbiology.jmol;
 
 import org.systemsbiology.asa.*;
+import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 
 import java.io.*;
@@ -90,15 +91,15 @@ public class ScriptWriter {
         PDBObject pdbObject = pfd.getModel();
         ChainEnum[] chains = pdbObject.getChains();
         StringBuilder sb = new StringBuilder();
-         if (chains.length < 2)
+        if (chains.length < 2)
             return sb.toString();
 
-          //     sb.append("jmolHtml(\"<h3>Dim Chain</h3>\");\n");
+        //     sb.append("jmolHtml(\"<h3>Dim Chain</h3>\");\n");
         for (int i = 0; i < chains.length; i++) {
             ChainEnum chain = chains[i];
             String color = ScriptWriter.getHideChainCommand(chain, i);
 
-            sb.append("jmolCheckbox([hideChain,"  + (i + 1) + "],[showChain," +  (i + 1)  + ",\'" + color + "\'],\"Chain " + chain + "\",\"checked\");\n");
+            sb.append("jmolCheckbox([hideChain," + (i + 1) + "],[showChain," + (i + 1) + ",\'" + color + "\'],\"Chain " + chain + "\",\"checked\");\n");
         }
         return sb.toString();
     }
@@ -110,7 +111,8 @@ public class ScriptWriter {
                 "     [ [setAndScript,showCoverage], \"Coverage\"] ,\n" +
                 "     [ [setAndScript,showSolventAccess], \"Solvent Access\"] ,\n" +
                 "     [ [setAndScript,showSolventAtomicAccess], \"Solvent Atomic Access\"] ,\n" +
-                       " \t  [ [setAndScript,showAminoAcids] , \"Peptides\",  \"checked\"] \n" +
+                "     [ [setAndScript,showHydrophobicity], \"Hydrophobicity\"] ,\n" +
+                " \t  [ [setAndScript,showAminoAcids] , \"Peptides\",  \"checked\"] \n" +
                 "  \t]);");
         return sb.toString();
     }
@@ -188,8 +190,8 @@ public class ScriptWriter {
                 for (int j = 0; j < chainMappings.length; j++) {
                     AminoAcidAtLocation aa = chainMappings[j];
                     String coverageColor = getCoverageColor(corg);
-                      if(appendScriptHilight(aa, coverageColor, sb));
-                          sb.append("\\\n");
+                    if (appendScriptHilight(aa, coverageColor, sb)) ;
+                    sb.append("\\\n");
 
                 }
 //                for (int j = 0; j < subUnits.length; j++) {
@@ -203,60 +205,112 @@ public class ScriptWriter {
 //                      }
 //
 //                }
-              }
+            }
         }
 
         return sb.toString();
     }
 
     public String writeSolventAccessScript(ProteinFragmentationDescription pfd) {
-         m_UsedPositions.clear();
-         PDBObject original = pfd.getModel();
+        m_UsedPositions.clear();
+        PDBObject original = pfd.getModel();
         StringBuilder sb = new StringBuilder();
         boolean quoteNewLines = true;
-          appendScriptHeader(original, quoteNewLines, sb);
+        appendScriptHeader(original, quoteNewLines, sb);
         sb.append("select all;color translucent[0,0,50];");
         sb.append("wireframe off;spacefill 100%;");
         sb.append("select water;color translucent[0,0,50];");
-         AsaSubunit[] su = original.getAccessibleSubunits();
+        AsaSubunit[] su = original.getAccessibleSubunits();
         for (int i = 0; i < su.length; i++) {
-             AsaSubunit corg = su[i];
+            AsaSubunit corg = su[i];
             if (corg instanceof AminoAcidAtLocation) {
                 AminoAcidAtLocation aa = (AminoAcidAtLocation) corg;
-                if(!aa.isAccessible())  {
-                     appendScriptHilight(aa, "red", sb);
+                if (!aa.isAccessible()) {
+                    appendScriptHilight(aa, "red", sb);
                     sb.append("\\\n");
                 }
-              }
+            }
         }
 
         return sb.toString();
-     }
+    }
+
+    public static final String[] HYDROPHOBIC_COLOR_STRINGS =
+            {
+//                    "#FF0000", "#FF1010", "#FF2020", "#FF3030", "#FF4040", "#FF5050",
+//                    "#FF6060", "#FF7070", "#FF8080", "#FF9090", "3FFA0A0", "#FFB0B0",
+//                    "#FFC0C0", "#FFD0D0", "#FFE0E0", "#FFFFFF", "#E0E0FF", "#D0D0FF",
+//                    "#C0C0FF", "#B0B0FF", "#A0A0FF", "#9090FF", "#8080FF", "#7070FF",
+//                    "#6060FF", "#5050FF", "#4040FF", "#3030FF", "#2020FF", "31010FF",
+//                    "#0000FF"
+                    "FF0000", "FF1010", "FF2020", "FF3030", "FF4040", "FF5050",
+                    "FF6060", "FF7070", "FF8080", "FF9090", "3FFA0A0","FFB0B0",
+                    "FFC0C0", "FFD0D0", "FFE0E0", "FFFFFF", "E0E0FF", "D0D0FF",
+                    "C0C0FF", "B0B0FF", "A0A0FF", "9090FF", "8080FF", "7070FF",
+                    "6060FF", "5050FF", "4040FF", "3030FF", "2020FF", "3101FF",
+                    "0000FF"
+
+            };
+    public static final int NUMBER_HYDROPHOBIC_COLORS = HYDROPHOBIC_COLOR_STRINGS.length;
+
+    public static String hydrophobicityColor(FastaAminoAcid aa) {
+        if(FastaAminoAcid.UNKNOWN == aa)
+            return "translucent[0,0,50]";
+        int hydrophobicity = FastaAminoAcid.hydroPhobicityRank(aa,NUMBER_HYDROPHOBIC_COLORS);
+        if(hydrophobicity == -1)
+            return "translucent[0,0,50]";
+        String s = HYDROPHOBIC_COLOR_STRINGS[NUMBER_HYDROPHOBIC_COLORS - hydrophobicity - 1];
+        int red = Integer.parseInt(s.substring(0,2),16);
+        int green = Integer.parseInt(s.substring(2,4),16);
+        int blue = Integer.parseInt(s.substring(4,6),16);
+
+        return "[" + red + "," + green +"," + blue + "]";
+    }
+
+
+    public String writeHydrophobicityScript(ProteinFragmentationDescription pfd) {
+        PDBObject original = pfd.getModel();
+        StringBuilder sb = new StringBuilder();
+        boolean quoteNewLines = true;
+        appendScriptHeader(original, quoteNewLines, sb);
+        AsaSubunit[] su = original.getAccessibleSubunits();
+        for (int i = 0; i < su.length; i++) {
+            AsaSubunit corg = su[i];
+            if (corg instanceof AminoAcidAtLocation) {
+                AminoAcidAtLocation aa = (AminoAcidAtLocation) corg;
+                if (aa.isSometimesMissedCleavage())
+                    appendScriptHilight(aa, "green", sb);
+                else
+                    appendScriptHilight(aa, hydrophobicityColor(aa.getAminoAcid()), sb);
+                sb.append("\\\n");
+            }
+        }
+
+        return sb.toString();
+    }
 
 
     public String writeSolventAtomicAccessScript(ProteinFragmentationDescription pfd) {
-         m_UsedPositions.clear();
-         PDBObject original = pfd.getModel();
+        m_UsedPositions.clear();
+        PDBObject original = pfd.getModel();
 
-         StringBuilder sb = new StringBuilder();
-         boolean quoteNewLines = true;
-         appendScriptHeader(original, quoteNewLines, sb);
+        StringBuilder sb = new StringBuilder();
+        boolean quoteNewLines = true;
+        appendScriptHeader(original, quoteNewLines, sb);
         sb.append("select all;color translucent[0,0,50];");
         sb.append("wireframe off;spacefill 100%;");
         sb.append("select water;color translucent[0,0,50];");
         AsaAtom[] atoms = original.getAtoms();
         for (int i = 0; i < atoms.length; i++) {
             AsaAtom atom = atoms[i];
-            if(!atom.isAccessible())  {
-                 sb.append("select atomno = " + atom.getNum() + ";color red;");
-                    sb.append("\\\n");
-             }
+            if (!atom.isAccessible()) {
+                sb.append("select atomno = " + atom.getNum() + ";color red;");
+                sb.append("\\\n");
+            }
 
         }
         return sb.toString();
-     }
-
-
+    }
 
 
     public String writeHilightText(ProteinFragmentationDescription pfd) {
@@ -264,7 +318,7 @@ public class ScriptWriter {
         ProteinFragment[] proteinFragments = aminoAcidLocations.keySet().toArray(ProteinFragment.EMPTY_ARRAY);
         Arrays.sort(proteinFragments);
         StringBuilder sb = new StringBuilder();
-         for (int i = 0; i < proteinFragments.length; i++) {
+        for (int i = 0; i < proteinFragments.length; i++) {
             ProteinFragment pf = proteinFragments[i];
             sb.append("HilightFragment" + (pf.getIndex() + 1) + "=\'\\\n");
             AminoAcidAtLocation[] highlited = aminoAcidLocations.get(pf);
@@ -295,7 +349,7 @@ public class ScriptWriter {
             int index = pf.getIndex() + 1;
             sb.append("fragments[" + index + "] = HilightFragment" + index + ";\n");
         }
-   //
+        //
 //        PDBObject original = pfd.getModel();
 //        m_UsedPositions.clear();
 //        appendScriptHeader(original, sb);
@@ -386,7 +440,7 @@ public class ScriptWriter {
             sb.append("select all;color translucent[80,80,80] white;");
             if (quoteNewLines)
                 sb.append("\\");
-           sb.append("\n");
+            sb.append("\n");
 //            sb.append("select all ;ribbon off;wireframe on;spacefill 30%;");
 //            if (quoteNewLines)
 //                sb.append("\\");

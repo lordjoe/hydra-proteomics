@@ -188,6 +188,16 @@ public class PDBObject extends AsaMolecule {
     private void buildSequenceMappings(ProteinSubunit subUnit, ChainEnum ch) {
         String chainSeq = subUnit.getSequence();
         AminoAcidAtLocation[] seqres = subUnit.getSeqres();
+        for (int i = 0; i < seqres.length - 1; i++) {
+            AminoAcidAtLocation seqre = seqres[i];
+            FastaAminoAcid aa = seqre.getAminoAcid();
+            if(aa == FastaAminoAcid.K || aa == FastaAminoAcid.R)  {
+                FastaAminoAcid nextAA = seqres[i + 1].getAminoAcid();
+                if(nextAA != FastaAminoAcid.P)  {
+                    seqre.setSometimesMissedCleavage(true);
+                }
+            }
+        }
          String seuresSeg = subUnit.getSeqresSequence();
         int seqresLength = seuresSeg.length();
 

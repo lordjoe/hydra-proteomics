@@ -269,7 +269,8 @@ public class GeneExperiment {
         return sm;
     }
 
-    public void processInterestingReads(InterestingVariation[] vars, ExperimentalSubject[] subjects) {
+    public void processInterestingMouseReads(InterestingVariation[] vars, ExperimentalSubject[] subjects) {
+        GeneUtilities.setReferenceFile(new File("e:/resources/mmu9.fa"));
         Set<String> usedIds = new HashSet<String>();
         for (int i = 0; i < vars.length; i++) {
             usedIds.add(vars[i].getSubject());
@@ -287,9 +288,46 @@ public class GeneExperiment {
             Map<String, SAMRecord> allRecords = new HashMap<String, SAMRecord>();
             for (int j = 0; j < runs.length; j++) {
                 ExperimentalRun run = runs[j];
-                run.mapRecordsToMouse(vars,sm, allRecords );
-             }
+                run.mapRecordsToMouse(vars, sm, allRecords);
+            }
             int size = allRecords.size();
+
+            //       out.close();
+
+        }
+    }
+
+
+    public void processInterestingMouseAndHumanReads(InterestingVariation[] vars, ExperimentalSubject[] subjects) {
+        GeneUtilities.setReferenceFile(new File("e:/resources/mmu9.fa"));
+        Set<String> usedIds = new HashSet<String>();
+        for (int i = 0; i < vars.length; i++) {
+            usedIds.add(vars[i].getSubject());
+
+        }
+        for (int i = 0; i < subjects.length; i++) {
+            ExperimentalSubject subject = subjects[i];
+            String id = subject.getId();
+            if (!usedIds.contains(id))
+                continue; // not interesting
+            File inp = getSubjectSamFile(id);
+            Map<String, SAMRecord> sm = readRelevantRecords(inp);
+            GeneSampleSet gs = getGeneSampleSet(subject);
+            ExperimentalRun[] runs = gs.getRuns();
+            Map<String, SAMRecord> mouseRecords = new HashMap<String, SAMRecord>();
+            Map<String, SAMRecord> humanRecords = new HashMap<String, SAMRecord>();
+            System.out.println("Fitting Mouse for subject " + subject);
+            GeneUtilities.setReferenceFile(new File("e:/resources/mmu9.fa"));
+             for (int j = 0; j < runs.length; j++) {
+                ExperimentalRun run = runs[j];
+                run.mapRecordsToMouse(vars, sm, mouseRecords);
+            }
+            GeneUtilities.setReferenceFile(new File("e:/resources/hg19.fa"));
+             System.out.println("Fitting Human for subject " + subject);
+            for (int j = 0; j < runs.length; j++) {
+                ExperimentalRun run = runs[j];
+                run.mapRecordsToHuman(vars, sm, humanRecords);
+            }
 
             //       out.close();
 
@@ -372,10 +410,11 @@ public class GeneExperiment {
             interesting = new File(args[2]);
             InterestingVariation[] vars = InterestingVariation.readInterestingVariants(interesting);
             //       exp.copyInterestingReads(  vars, subjects);
-            GeneUtilities.setReferenceFile(new File("e:/resources/mmu9.fa"));
-            exp.processInterestingReads(vars, subjects);
+            // look for mouse fits
+        //    exp.processInterestingMouseReads(vars, subjects);
+            exp.processInterestingMouseAndHumanReads(vars, subjects);
 
-            exp.findSNPChanges(vars);
+            //           exp.findSNPChanges(vars);
         }
 //        //  exp.showVariants(System.out);
 //        System.out.println();

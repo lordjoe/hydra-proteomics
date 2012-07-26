@@ -234,7 +234,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/awshadoop/awshadoop.iml" filepath="$PROJECT_DIR$/awshadoop/awshadoop.iml" />
       <module fileurl="file://$PROJECT_DIR$/ConcurrentTools/concurrenttools.iml" filepath="$PROJECT_DIR$/ConcurrentTools/concurrenttools.iml" />
-      <module fileurl="file://$PROJECT_DIR$/gatk_tools/gatk_tools.iml" filepath="$PROJECT_DIR$/gatk_tools/gatk_tools.iml" />
       <module fileurl="file://$PROJECT_DIR$/jxtandem/jxtandem.iml" filepath="$PROJECT_DIR$/jxtandem/jxtandem.iml" />
       <module fileurl="file://$PROJECT_DIR$/mapreduce.iml" filepath="$PROJECT_DIR$/mapreduce.iml" />
       <module fileurl="file://$PROJECT_DIR$/proteos/proteos.iml" filepath="$PROJECT_DIR$/proteos/proteos.iml" />

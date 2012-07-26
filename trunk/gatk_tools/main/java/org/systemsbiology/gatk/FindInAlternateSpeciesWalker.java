@@ -60,9 +60,12 @@ public class FindInAlternateSpeciesWalker extends ReadWalker<Integer, Integer> {
     public Integer map(ReferenceContext ref, GATKSAMRecord read, ReadMetaDataTracker tracker) {
         String readString = read.getReadString();
         Set<String> interestingReads = getInterestingReads();
-        if(interestingReads.contains(readString))
+        if(interestingReads.contains(readString))    {
+            System.out.println("Matched " + readString);
             m_SequenceToRecord.put(readString,read);
-         return 1;
+            return 1;
+        }
+          return 0;
     }
 
     public Integer reduceInit() { return 0; }
@@ -109,6 +112,7 @@ public class FindInAlternateSpeciesWalker extends ReadWalker<Integer, Integer> {
 
     @Override
     public void onTraversalDone(Integer result) {
-        super.onTraversalDone(result);    //To change body of overridden methods use File | Settings | File Templates.
+        super.onTraversalDone(result);
+        System.out.println("Found " + m_SequenceToRecord.size() + " reads");
     }
 }
