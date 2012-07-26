@@ -40,7 +40,15 @@ public enum FastaAminoAcid {
 
     ;
 
+    public static final double MAX_HYDROPHOBICITY = 100;
+    public static final double MIN_HYDROPHOBICITY = -46;
 
+    public static final int hydroPhobicityRank(FastaAminoAcid fa,int scale)
+    {
+        double hydrophobicity = fa.getHydrophobicity();
+        double  fraction = (hydrophobicity - MIN_HYDROPHOBICITY) / (MAX_HYDROPHOBICITY - MIN_HYDROPHOBICITY);
+        return Math.max(0,Math.min(scale - 1,(int)(scale * fraction)));
+    }
     /**
      * convert the first character of a string to an anminoacid - bad values are null
      *

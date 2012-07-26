@@ -39,6 +39,10 @@ public class AsaSubunit implements Comparable<AsaSubunit> {
 
     @Override
     public int compareTo(AsaSubunit o) {
+        if (getChainId().compareTo(o.getChainId()) != 0)
+            return getChainId().compareTo(o.getChainId());
+          if (getLocation() != o.getLocation())
+            return getLocation() < o.getLocation() ? -1 : 1;
         return toString().compareTo(o.toString());
     }
 

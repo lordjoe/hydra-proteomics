@@ -48,7 +48,8 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             String coveragescript = m_ScriptWriter.writeScript(pfd, pfd.getAllCoverage());
             String solventScript = m_ScriptWriter.writeSolventAccessScript(pfd );
             String solventAtomicScript = m_ScriptWriter.writeSolventAtomicAccessScript(pfd );
-               //    script = script.replace("\n","\\\n");
+            String hydrophobicityScript = m_ScriptWriter.writeHydrophobicityScript(pfd )  ;
+                //    script = script.replace("\n","\\\n");
             //     coveragescript = coveragescript.replace("\n","\\\n");
 
             out.append("      <script type=\"text/javascript\">\n");
@@ -60,6 +61,7 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             out.append(scriptx + "\n");
             out.append("    showAminoAcids = \'select all;color translucent[80,80,80] white;\' + fragments.join(\' \'); \n");
             out.append("    showSolventAtomicAccess = \'" + solventAtomicScript + "\';\n");
+            out.append("    showHydrophobicity = \'" + hydrophobicityScript + "\';\n");
             out.append("    showSolventAccess = \'" + solventScript + "\';\n");
                 out.append("    showCoverage = \'" + coveragescript + "\';\n");
                out.append("    window.defaultloadscript = showAminoAcids;\n");

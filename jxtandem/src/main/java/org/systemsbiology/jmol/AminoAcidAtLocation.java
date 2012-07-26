@@ -114,6 +114,10 @@ public class AminoAcidAtLocation extends AsaSubunit {
         m_SometimesMissedCleavage = sometimesMissedCleavage;
     }
 
+
+
+
+
     //
 //    @Override
 //    public boolean equals(Object o) {

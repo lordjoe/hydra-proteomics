@@ -59,6 +59,13 @@ public class ProteinSubunit {
 
 
     public void addAminoAcidAtLocation(AminoAcidAtLocation added)   {
+        if(!m_Locations.isEmpty())      {
+            AminoAcidAtLocation top = m_Locations.get(m_Locations.size() - 1);
+            if(top.getAminoAcid() == added.getAminoAcid()) {
+                if(top.getLocation() == added.getLocation())
+                    return;
+            }
+        }
          m_Locations.add(added);
         m_Sequence = null;
     }

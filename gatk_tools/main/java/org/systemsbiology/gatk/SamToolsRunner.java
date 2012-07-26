@@ -407,7 +407,8 @@ public class SamToolsRunner {
         holder.add(in.getAbsolutePath());
 
         holder.add("-R");
-        holder.add(GeneUtilities.getReferenceFile().getAbsolutePath());
+        String absolutePath = GeneUtilities.getReferenceFile().getAbsolutePath();
+        holder.add(absolutePath);
         holder.add("-T");
         holder.add("FindInAlternateSpecies");
         holder.add("-U");
