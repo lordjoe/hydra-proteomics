@@ -169,7 +169,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
                 String algo = algorithm.getName();
                 String extension = ".pep.xml";
                 if(!"KScore".equals(algo))
-                    extension = algo + "." + extension;
+                    extension = "." + algo  + extension;
                 m_PepXmlsOutWriter[i] = XTandemHadoopUtilities.buildPrintWriter(context, s,extension);
                 PepXMLWriter px = new PepXMLWriter(application);
 
