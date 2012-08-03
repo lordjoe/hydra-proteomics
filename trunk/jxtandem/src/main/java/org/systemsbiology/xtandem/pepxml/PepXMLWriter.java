@@ -1,5 +1,6 @@
 package org.systemsbiology.xtandem.pepxml;
 
+import com.lordjoe.utilities.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.ionization.*;
 import org.systemsbiology.xtandem.peptide.*;
@@ -40,13 +41,17 @@ public class PepXMLWriter {
         return m_Path;
     }
 
-    public void setPath(final String pPath) {
+    public void setPath( String pPath) {
+        int extIndex = pPath.lastIndexOf(".");
+        if(extIndex > 1)
+             pPath = pPath.substring(0,extIndex);
         m_Path = pPath;
     }
 
     public void writePepXML(IScoredScan scan, File out) {
         OutputStream os = null;
         try {
+            System.setProperty("line.separator","\n"); // linux style cr
             os = new FileOutputStream(out);
             writePepXML(scan, out.getAbsolutePath().replace("\\", "/"), os);
         }
@@ -60,6 +65,7 @@ public class PepXMLWriter {
 
         try {
             PrintWriter pw = new PrintWriter(out);
+            setPath(path);
             writePepXML(scan, pw);
         }
         finally {
@@ -97,8 +103,13 @@ public class PepXMLWriter {
                     //             "summary_xml=\"c:\\Inetpub\\wwwroot\\ISB\\data\\HighResMS2\\c:/Inetpub/wwwroot/ISB/data/HighResMS2/noHK-centroid.tandem.pep.xml\" " +
                     "xmlns=\"http://regis-web.systemsbiology.net/pepXML\"" +
                     " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
-                    " xsi:schemaLocation=\"http://sashimi.sourceforge.net/schema_revision/pepXML/pepXML_v115.xsd\">";
+                    " xsi:schemaLocation=\"http://sashimi.sourceforge.net/schema_revision/pepXML/pepXML_v115.xsd\">\n" +
+                    "   <msms_run_summary base_name=\"%PATH%\" search_engine=\"Hydra(k-score)\" msManufacturer=\"Thermo Scientific\" msModel=\"LTQ\" msIonization=\"NSI\" msMassAnalyzer=\"ITMS\" msDetector=\"unknown\" raw_data_type=\"raw\" raw_data=\".mzXML\">" +
+                    "";
 
+
+    public static final String SEARCH_SUMMARY_TEXT =
+            "<search_summary base_name=\"%FULL_FILE_PATH%\" search_engine=\"Hydra(k-score)\" precursor_mass_type=\"monoisotopic\" fragment_mass_type=\"monoisotopic\" search_id=\"1\">";
 
     public void writePepXMLHeader(String path, PrintWriter out) {
         String now = XTandemUtilities.xTandemNow();
@@ -111,6 +122,9 @@ public class PepXMLWriter {
         out.println(header);
 
         out.println(TTRYPSIN_XML);  // tod stop hard coding
+
+        String ss = SEARCH_SUMMARY_TEXT.replace("%FULL_FILE_PATH%",path);
+        out.println(ss);  // tod stop hard coding
 
         showDatabase(out);
         showEnzyme(out);
@@ -156,7 +170,7 @@ public class PepXMLWriter {
 
     public void writePepXMLFooter(PrintWriter out) {
         out.println("     </msms_run_summary>");
-        out.println("<msms_pipeline_analysis/>");
+        out.println("</msms_pipeline_analysis/>");
     }
 
     protected void writeSummaries(IScoredScan scan, PrintWriter out) {
@@ -173,7 +187,7 @@ public class PepXMLWriter {
             case 0:
                 return;
             case 1:
-                printMatch(scan, spectralMatches[0], null, 1, out);
+                printMatch(scan, spectralMatches[0], null,  out);
                 break;
 
             default:
@@ -183,34 +197,46 @@ public class PepXMLWriter {
     }
 
     private void printLimitedMatches(final IScoredScan scan, final PrintWriter out, final ISpectralMatch[] pSpectralMatches, int matchesToPrint) {
+        out.println("         <search_result>");
         for (int i = 0; i < Math.min(matchesToPrint, pSpectralMatches.length); i++) {
             ISpectralMatch match = pSpectralMatches[i];
             int rank = i + 1;
             ISpectralMatch next = null;
             if (i < pSpectralMatches.length - 2)
                 next = pSpectralMatches[i + 1];
-            printMatch(scan, match, next, rank, out);
+            internalPrintMatch(scan, match, next, rank, out);
         }
+          out.println("         </search_result>");
     }
 
     protected void writeScanHeader(IScoredScan scan, PrintWriter out) {
+        String id = scan.getId();
+        String idString = String.format("%05d", Integer.parseInt(id));
+        int charge = scan.getCharge();
 
         out.print("      <spectrum_query ");
         double precursorMass = scan.getRaw().getPrecursorMass();
-        out.print(" spectrum=\"" + scan.getId() + "\"");
+        String path = getPath();
+         out.print(" spectrum=\"" + path +  "." + idString +"." + idString + "." + charge + "\"");
+        out.print(" start_scan=\""   + id + "\" end_scan=\""   + id + "\" ");
         out.print(" precursor_neutral_mass=\"" + String.format("%10.4f", precursorMass).trim() + "\"");
         out.print(" assumed_charge=\"" + scan.getCharge() + "\"");
         out.println(" >");
     }
 
 
-    protected void printMatch(IScoredScan scan, ISpectralMatch match, ISpectralMatch nextmatch, int hitNum, PrintWriter out) {
+    protected void printMatch(IScoredScan scan, ISpectralMatch match, ISpectralMatch nextmatch,  PrintWriter out) {
         out.println("         <search_result>");
+        internalPrintMatch(scan, match, nextmatch, 1, out);
+        out.println("         </search_result>");
+     }
+
+    private void internalPrintMatch(IScoredScan scan, ISpectralMatch match, ISpectralMatch nextmatch, int hitNum, PrintWriter out) {
         out.print("            <search_hit hit_rank=\"" +
                 hitNum +
                 "\" peptide=\"");
         IPolypeptide peptide = match.getPeptide();
-        out.print(peptide);
+        out.print(peptide.getSequence());
         out.print("\"");
         IMeasuredSpectrum conditionedScan = scan.getConditionedScan();
         int totalPeaks = conditionedScan.getPeaks().length;
@@ -238,7 +264,7 @@ public class PepXMLWriter {
         int missed_cleavages = peptide.getMissedCleavages();
         out.print("num_missed_cleavages=\"" + missed_cleavages + "\" ");
         //     out.print("is_rejected=\"0\">\n");
-        out.println(" />");
+        out.println(" >");
 
         for (int i = 1; i < proteinPositions.length; i++) {
             showAlternateiveProtein(proteinPositions[i], out);
@@ -272,19 +298,23 @@ public class PepXMLWriter {
         double expected = hyperScores.getExpectedValue(match.getScore());
         out.println("             <search_score name=\"expect\" value=\"" +
                 String.format("%10.4f", expected).trim() + "\"/>");
-        out.println("         </search_result>");
+        out.println("              </search_hit>");
     }
 
     private void showProteinPosition( final IProteinPosition pPp,final PrintWriter out) {
-        out.println(" protein=\"" + pPp.getProtein() + "\"");
-        out.println("                       protein_descr=\"" + pPp.getProtein() + "\"");
+        out.println(" protein=\"" + getId(pPp.getProtein()) + "\"");
+        out.println("                       protein_descr=\"" + Util.xmlEscape(pPp.getProtein()) + "\"");
         out.print("                        ");
           FastaAminoAcid before = pPp.getBefore();
         if (before != null)
             out.print(" peptide_prev_aa=\"" + before + "\"");
-        FastaAminoAcid after = pPp.getBefore();
+        else
+            out.print(" peptide_prev_aa=\"-\"");
+        FastaAminoAcid after = pPp.getAfter();
         if (after != null)
             out.print(" peptide_next_aa=\"" + after + "\"");
+        else
+             out.print(" peptide_next_aa=\"-\"");
         out.println();
         out.print("                                     ");
     }
@@ -298,18 +328,35 @@ public class PepXMLWriter {
                 showModification(modification, i, out);
             }
         }
-        out.println("             </modification>");
+        out.println("             </modification_info>");
 
     }
 
     protected void showModification(final PeptideModification pModification, final int index, final PrintWriter out) {
-        out.println("             <mod_aminoacid_mass position=\"" + index + "\" mass=\"" + String.format("%10.4f", pModification.getMassChange()).trim() + "\">");
+        out.println("             <mod_aminoacid_mass position=\"" + (index + 1) + "\" mass=\"" + String.format("%10.4f", pModification.getMassChange()).trim() + "\" />");
     }
 
     protected void showAlternateiveProtein(final IProteinPosition pp, final PrintWriter out) {
-        out.print("             <alternative_protein protein=\"" + pp.getProtein() + "\"");
+        out.print("             <alternative_protein ");
         showProteinPosition(pp, out);
         out.println(" />");
+    }
+
+    public static String getId(String descr)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < descr.length(); i++) {
+             char ch = descr.charAt(i);
+            if(ch == ' ')
+                break;
+             if(Character.isJavaIdentifierPart(ch))
+                 sb.append(ch);
+
+         }
+
+        return sb.toString();
+
     }
 
 

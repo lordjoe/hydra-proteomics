@@ -228,10 +228,9 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         return ret;
     }
 
-    public boolean isUseMultipleFiles()
-    {
+    public boolean isUseMultipleFiles() {
         HadoopTandemMain application = getApplication();
-        return application.getBooleanParameter(JXTandemLauncher.TURN_ON_SCAN_OUTPUT_PROPERTY,false)  ;
+        return application.getBooleanParameter(JXTandemLauncher.TURN_ON_SCAN_OUTPUT_PROPERTY, false);
 
     }
 
@@ -565,8 +564,12 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 //            throw new IllegalStateException("bad remote host port " + p);
 //
         IFileSystem acc = getAccessor();
-        if (!acc.exists(hdfsPath))
-            throw new IllegalArgumentException("remote file " + hdfsPath + " does not exist");
+        if (!acc.exists(hdfsPath)) {
+            String s = "remote file " + hdfsPath + " does not exist";
+            System.out.println(s);
+            return null;
+           // throw new IllegalArgumentException(s);
+        }
         else
             XTandemUtilities.outputLine("Copying file " + hdfsPath + " to " + localFile);
         File out = new File(localFile);
@@ -1043,9 +1046,9 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         String databaseName = application.getDatabaseName();
         Path dpath2 = XTandemHadoopUtilities.getRelativePath(databaseName);
         Path dpath = XTandemHadoopUtilities.getRelativePath(".");
-            try {
+        try {
             FileSystem fs = dpath.getFileSystem(application.getContext());
-            fs.delete(new Path(dpath,"full_tandem_output"),true);
+            fs.delete(new Path(dpath, "full_tandem_output"), true);
             XTandemHadoopUtilities.cleanFileSystem(fs, dpath);
         }
         catch (IOException e) {
@@ -1559,7 +1562,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             if (files != null) {
                 System.err.println("Input files " + files);
                 outputFiles = files.split(",");
-              }
+            }
             for (int i = 0; i < outputFiles.length; i++) {
                 outputFiles[i] += ".hydra";
 
@@ -1583,7 +1586,11 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                     for (int i = 0; i < outputFiles.length; i++) {
                         outFile = outputFiles[i];
                         hdfsPath = passedBaseDirctory + "/" + XTandemUtilities.asLocalFile(outFile);
-                        if( isUseMultipleFiles() )  {
+                        outFile = outFile.replace(".mzXML","");
+                          outFile = outFile.replace(".mzML","");
+                        outFile = outFile.replace(".mzxml","");
+                          outFile = outFile.replace(".mzml","");
+                           if (isUseMultipleFiles()) {
                             outFile = copyOutputFile(outFile, application, outFile);
 
                         }
@@ -1610,12 +1617,15 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     private String copyOutputFile(String outFile, HadoopTandemMain application, String hdfsPath) {
         File f;
         f = readRemoteFile(hdfsPath, outFile);
-        if (f.length() < MAX_DISPLAY_LENGTH) {
+        if (f != null && f.length() < MAX_DISPLAY_LENGTH) {
             String s = FileUtilities.readInFile(f);
             XTandemUtilities.outputLine(s);
         }
-        if(outFile.endsWith(".hydra"))
-            outFile = outFile.substring(0,outFile.length() - ".hydra".length()) ;
+        if (outFile.endsWith(".hydra"))
+            outFile = outFile.substring(0, outFile.length() - ".hydra".length());
+
+        outFile = outFile.replace(".mzXML","");
+        outFile = outFile.replace(".mzML","");
 
         // read in the larger scans file
         if (isReadScanFile()) {  // todo add a way to turn this on
@@ -1623,18 +1633,32 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             if (acc.exists(hdfsPath)) {
                 outFile += ".scans";
                 f = readRemoteFile(hdfsPath, outFile);
-                XTandemUtilities.outputLine("Created output file " + f.getAbsolutePath());
+                if(f != null )
+                    XTandemUtilities.outputLine("Created output file " + f.getAbsolutePath());
             }
         }
         String parameter = application.getParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY);
         if ("yes".equals(parameter)) {
-            if(hdfsPath.endsWith(".hydra"))
-                 hdfsPath = hdfsPath.substring(0,hdfsPath.length() - ".hydra".length()) ;
+            String hpl = hdfsPath.toLowerCase();
+            if (hpl.endsWith(".hydra")) {
+                hdfsPath = hdfsPath.substring(0, hdfsPath.length() - ".hydra".length());
+                hpl = hdfsPath.toLowerCase();
+            }
+            if (hpl.endsWith(".mzxml")) {
+                hdfsPath = hdfsPath.substring(0, hdfsPath.length() - ".mzXML".length());
+                hpl = hdfsPath.toLowerCase();
+            }
+            if (hpl.endsWith(".mzml")) {
+                hdfsPath = hdfsPath.substring(0, hdfsPath.length() - ".mzml".length());
+                hpl = hdfsPath.toLowerCase();
+            }
             ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
             for (int i = 0; i < algorithms.length; i++) {
                 ITandemScoringAlgorithm algorithm = algorithms[i];
-                String fileName = hdfsPath + "." + algorithm.getName() + ".pep.xml";
-                String outFile2 = getOutputFileName() + "." + algorithm.getName() + ".pep.xml";
+                String fileName = hdfsPath + /* "." + algorithm.getName() + */ ".pep.xml";
+                String outFile2 = getOutputFileName() + /* "." + algorithm.getName() +  */ ".pep.xml";
+                if (application.getBooleanParameter(MULTIPLE_OUTPUT_FILES_PROPERTY))
+                    outFile2 = fileName;
                 readRemoteFile(fileName, outFile2);
             }
 
@@ -1664,7 +1688,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
     // Call with
     // params=tandem.params remoteHost=Glados remoteBaseDirectory=/user/howdah/JXTandem/data/largeSample
-
+    //
     public static void main(String[] args) {
         if (args.length == 0) {
             usage();
