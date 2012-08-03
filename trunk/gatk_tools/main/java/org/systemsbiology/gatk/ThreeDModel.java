@@ -187,6 +187,11 @@ public class ThreeDModel {
         }
     }
 
+    /**
+     *
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         File models = new File(args[0]);
         if (!models.exists())
