@@ -120,17 +120,17 @@ public abstract class FileUtilities {
         finally {
             guaranteeClosed(buffer);
             guaranteeClosed(byteOut);
-          }
+        }
         return byteOut.toByteArray();
     }
 
     /**
      * guarantee an input stream is closed - deal with all exceptions
-     * @param is  possibly null inputstream
+     *
+     * @param is possibly null inputstream
      */
-    public static void guaranteeClosed(OutputStream is)
-    {
-        if(is == null)
+    public static void guaranteeClosed(OutputStream is) {
+        if (is == null)
             return;
         try {
             is.close();
@@ -143,11 +143,11 @@ public abstract class FileUtilities {
 
     /**
      * guarantee an input stream is closed - deal with all exceptions
-     * @param is  possibly null inputstream
+     *
+     * @param is possibly null inputstream
      */
-    public static void guaranteeClosed(InputStream is)
-    {
-        if(is == null)
+    public static void guaranteeClosed(InputStream is) {
+        if (is == null)
             return;
         try {
             is.close();
@@ -160,11 +160,11 @@ public abstract class FileUtilities {
 
     /**
      * guarantee an input stream is closed - deal with all exceptions
-     * @param is  possibly null inputstream
+     *
+     * @param is possibly null inputstream
      */
-    public static void guaranteeClosed(Reader is)
-    {
-        if(is == null)
+    public static void guaranteeClosed(Reader is) {
+        if (is == null)
             return;
         try {
             is.close();
@@ -203,7 +203,7 @@ public abstract class FileUtilities {
         DigestInputStream in = null;
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-              in = new DigestInputStream(
+            in = new DigestInputStream(
                     pIs, md);
             byte[] buffer = new byte[8192];
             while (in.read(buffer) != -1)
@@ -472,11 +472,80 @@ public abstract class FileUtilities {
     }
 
 
+    public static File makeTempFile(File in) {
+        if (!in.exists())
+            throw new IllegalArgumentException("File " + in.getAbsolutePath() + " does not exist");
+        File ret = new File(in.getAbsolutePath() + ".tmp");
+        if (ret.exists())
+            ret.delete();
+        return ret;
+    }
+
+    /**
+     * rename in to a temp holder
+     *
+     * @param in
+     * @return
+     */
+    private static File makeTempHoldingFile(File in) {
+        if (!in.exists())
+            throw new IllegalArgumentException("File " + in.getAbsolutePath() + " does not exist");
+        File ret = new File(in.getAbsolutePath() + ".tmpHolding");
+        if (ret.exists())
+            ret.delete();
+        if (!in.renameTo(ret))
+            throw new IllegalStateException("cannot rename " + in.getAbsolutePath() + " to " + ret);
+        return ret;
+    }
+
+    /**
+     * internam method to rename tmp to in and remove in
+     * @param in
+     * @param tmp
+     */
+    private static void safeRenameFromTmp(File in, File tmp) {
+        if (!tmp.exists())
+            throw new IllegalArgumentException("Temp File " + tmp.getAbsolutePath() + " does not exist");
+        File holding = makeTempHoldingFile(in);
+        if (!tmp.renameTo(in))
+             throw new IllegalStateException("cannot rename " + tmp.getAbsolutePath() + " to " + in);
+          holding.delete();
+    }
+
+
+    public static void removeWhiteSpace(File in) {
+        PrintWriter out = null;
+        try {
+            File tmp = makeTempFile(in);
+            LineNumberReader rdr = new LineNumberReader(new FileReader(in));
+            out = new PrintWriter(tmp);
+            String line = rdr.readLine();
+            while (line != null) {
+                line = line.trim();
+                out.print(line);
+                line = rdr.readLine();
+            }
+            rdr.close();
+            out.close();
+            out = null;
+            safeRenameFromTmp(in, tmp);  // now rename the tmp file as the original
+
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+        finally {
+            if (out != null) {
+                out.close();
+            }
+        }
+
+    }
+
     private static String[] gRequiredFiles;
 
-    public static void addRequiredFile
-            (String
-                     s) {
+    public static void addRequiredFile(String s) {
         synchronized (gRequiredFiles) {
             String[] newReqFiles = new String[gRequiredFiles.length + 1];
             System.arraycopy(gRequiredFiles, 0, newReqFiles, 0, gRequiredFiles.length);
@@ -838,7 +907,7 @@ public abstract class FileUtilities {
      * @param extension - end of the file name
      * @return pssibly null file
      */
-    public static  File getLatestFileWithExtension(String extension) {
+    public static File getLatestFileWithExtension(String extension) {
         return getLatestFileWithExtension(getUserDirectory(), extension);
     }
 
@@ -854,7 +923,7 @@ public abstract class FileUtilities {
         String[] names = getAllFilesWithName(dir, extension);
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
-            File test = new File(  name);
+            File test = new File(name);
             if (ret == null) {
                 ret = test;
             }
@@ -907,7 +976,7 @@ public abstract class FileUtilities {
     (File
              Directory, String
             Extension) {
-        if (Extension == null || Extension.length() == 0) {
+        if (Extension != null && Extension.length() > 0) {
             FilenameFilter TheFilter = (FilenameFilter) (new HasExtensionFilter(Extension));
             return (getAllFilesWithFilter(Directory, TheFilter));
         }
@@ -1697,10 +1766,6 @@ public abstract class FileUtilities {
     }
 
 
-
-
-
-
     /**
      * { method
      *
@@ -1789,7 +1854,7 @@ public abstract class FileUtilities {
      * @name readInLines
      * @function reads all the data in a file into an array of strings - one per line
      */
-    public static String[] readInLines (Reader TheFile) {
+    public static String[] readInLines(Reader TheFile) {
         LineNumberReader r = new LineNumberReader(TheFile);
         java.util.List holder = new ArrayList();
         try {
@@ -2730,47 +2795,47 @@ public abstract class FileUtilities {
     }
 
     /**
-      * count the number of lines in an input stream
-      * @param f existing readable file
-      * @return number of lines
-      */
-     public static int getNumberLines(String fileName )
-     {
-         File f = new File(fileName);
-          return  getNumberLines(f);
-        }
+     * count the number of lines in an input stream
+     *
+     * @param f existing readable file
+     * @return number of lines
+     */
+    public static int getNumberLines(String fileName) {
+        File f = new File(fileName);
+        return getNumberLines(f);
+    }
 
-
-    /**
-      * count the number of lines in an input stream
-      * @param f existing readable file
-      * @return number of lines
-      */
-     public static int getNumberLines(File f)
-     {
-         try {
-             InputStream str = new FileInputStream(f);
-             return  getNumberLines(str);
-         }
-         catch (FileNotFoundException e) {
-             throw new RuntimeException(e);
-
-         }
-     }
 
     /**
      * count the number of lines in an input stream
+     *
+     * @param f existing readable file
+     * @return number of lines
+     */
+    public static int getNumberLines(File f) {
+        try {
+            InputStream str = new FileInputStream(f);
+            return getNumberLines(str);
+        }
+        catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
+
+    /**
+     * count the number of lines in an input stream
+     *
      * @param s
      * @return
      */
-    public static int getNumberLines(InputStream s)
-    {
+    public static int getNumberLines(InputStream s) {
         LineNumberReader rdr = null;
         try {
             rdr = new LineNumberReader(new InputStreamReader(s));
             int ret = 0;
             String line = rdr.readLine();
-            while(line != null)  {
+            while (line != null) {
                 ret++;
                 line = rdr.readLine();
             }
@@ -2781,7 +2846,7 @@ public abstract class FileUtilities {
 
         }
         finally {
-            if(rdr != null)  {
+            if (rdr != null) {
                 try {
                     rdr.close();
                 }
@@ -2836,7 +2901,7 @@ public abstract class FileUtilities {
                 return (false);
             }
             // failure - no data
-            if(dst.getParentFile() != null)
+            if (dst.getParentFile() != null)
                 dst.getParentFile().mkdirs();
             RandomAccessFile dstFile = new RandomAccessFile(dst, "rw");
 
@@ -3623,7 +3688,7 @@ public abstract class FileUtilities {
         while (Nread > -1) {
             out.write(holder, 0, Nread);
             Nread = in.read(holder);
-           System.out.print(".");
+            System.out.print(".");
             if (col++ > 60) {
                 System.out.println();
                 col = 0;
@@ -3927,236 +3992,265 @@ public abstract class FileUtilities {
 
     }
 
-    public static void main(String[] args) {
+    public static void flattenDirectories(String[] args) {
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             flattenDirectory(arg, true);
         }
     }
+
+    public static void removeWhiteSpace(String[] args) {
+        for (int i = 0; i < args.length; i++) {
+            File arg = new File(args[i]);
+            removeWhiteSpace(arg);
+        }
+    }
+
+    public static void removeWhiteSpace(File[] args) {
+        for (int i = 0; i < args.length; i++) {
+            removeWhiteSpace(args[i]);
+        }
+    }
+
+
+    /**
+     * { class
+     *
+     * @name HasExtensionFilter
+     * @function a file name filter which chooses files ending with a
+     * string - usually an extension
+     * }
+     */
+    public static class HasExtensionFilter implements FilenameFilter {
+
+        //- *******************
+        //- Fields
+        /**
+         * { field
+         *
+         * @name extension
+         * @function the test string
+         * }
+         */
+        private String extension;
+
+        //- *******************
+        //- Methods
+
+        /**
+         * { constructor
+         *
+         * @param e test string
+         *          }
+         * @name HasExtensionFilter
+         * @function Constructor of HasExtensionFilter
+         */
+        public HasExtensionFilter(String e) {
+            if (!e.startsWith(".")) {
+                extension = "." + e;
+            }
+            else {
+                extension = e;
+            }
+        }
+
+        /**
+         * { method
+         *
+         * @param dir  the test directory
+         * @param name thes name of file in directory dir
+         * @return true if file passes test
+         * @name accept
+         * @function test if file should pass filter i.e has proper extension or is
+         * ending
+         * @policy rarely override
+         * @primary }
+         */
+        public boolean accept(File dir, String name) {
+            if (name.endsWith(extension))
+                return (true);
+
+            File file = new File(dir, name);
+            if (file.isDirectory())
+                return true;
+            return false;
+        }
+
+//- *******************
+//- End Class HasExtensionFilter
+    }
+
+    /**
+     * { class
+     *
+     * @name EndsWithFilter
+     * @function a file name filter which chooses files ending with a
+     * string - usually an extension
+     * }
+     */
+    public static class EndsWithFilter implements FilenameFilter {
+
+        //- *******************
+        //- Fields
+        /**
+         * { field
+         *
+         * @name extension
+         * @function the test string
+         * }
+         */
+        private String extension;
+
+        //- *******************
+        //- Methods
+
+        /**
+         * { constructor
+         *
+         * @param e test string
+         *          }
+         * @name EndsWithFilter
+         * @function Constructor of EndsWithFilter
+         */
+        public EndsWithFilter(String e) {
+            extension = e;
+        }
+
+        /**
+         * { method
+         *
+         * @param dir  the test directory
+         * @param name thes name of file in directory dir
+         * @return true if file passes test
+         * @name accept
+         * @function test if file should pass filter i.e has proper extension or is
+         * ending
+         * @policy rarely override
+         * @primary }
+         */
+        public boolean accept(File dir, String name) {
+            if (name.endsWith(extension)) {
+                return (true);
+            }
+            return (new File(dir, name).isDirectory());
+        }
+
+//- *******************
+//- End Class EndsWithFilter
+    }
+
+    /**
+     * { class
+     *
+     * @name DirectoryNamedFilter
+     * @function a directory with a specific name
+     * }
+     */
+    public static class DirectoryNamedFilter implements FilenameFilter {
+
+        //- *******************
+        //- Fields
+        /**
+         * { field
+         *
+         * @name extension
+         * @function the test string
+         * }
+         */
+        private final String Name;
+
+        //- *******************
+        //- Methods
+
+        /**
+         * { constructor
+         *
+         * @param e test string
+         *          }
+         * @name DirectoryNamedFilter
+         * @function Constructor of EndsWithFilter
+         */
+        public DirectoryNamedFilter(String e) {
+            Name = e;
+        }
+
+        /**
+         * { method
+         *
+         * @param dir  the test directory
+         * @param name thes name of file in directory dir
+         * @return true if file passes test
+         * @name accept
+         * @function test if file should pass filter i.e has proper extension or is
+         * ending
+         * @policy rarely override
+         * @primary }
+         */
+        public boolean accept(File dir, String name) {
+            File test = new File(dir, name);
+            if (!test.isDirectory())
+                return (false);
+            if (name.equals(Name)) {
+                return (true);
+            }
+            return (false);
+        }
+
+//- *******************
+//- End Class DirectoryNamedFilter
+    }
+
+    /**
+     * { class
+     *
+     * @name IsDirectoryFilter
+     * @function sorts directories only
+     * }
+     */
+    public static class IsDirectoryFilter implements FilenameFilter {
+
+        //- *******************
+        //- Methods
+
+        /**
+         * { constructor
+         *
+         * @name IsDirectoryFilter
+         * @function Constructor of IsDirectoryFilter
+         * }
+         */
+        public IsDirectoryFilter() {
+        }
+
+        /**
+         * { method
+         *
+         * @param dir  the test directory
+         * @param name this name of file in directory dir
+         * @return true if file passes test
+         * @name accept
+         * @function test if file should pass filter i.e is a directory
+         * @policy <Add Comment Here>
+         * @primary }
+         */
+        public boolean accept(File dir, String name) {
+            return (new File(dir, name).isDirectory());
+        }
+
+//- *******************
+//- End Class IsDirectoryFilter
+    }
+
+    public static void main(String[] args) {
+        File ud = getUserDirectory();
+        String[] files = getAllFilesWithExtension(ud, "pep.xml");
+        removeWhiteSpace(files);
+        //   flattenDirectories(args);
+        // removeWhiteSpace(args);
+    }
+
     //- *******************
 //- End Class FileUtilities
 }
 
-/**
- * { class
- *
- * @name HasExtensionFilter
- * @function a file name filter which chooses files ending with a
- * string - usually an extension
- * }
- */
-class HasExtensionFilter implements FilenameFilter {
 
-    //- *******************
-    //- Fields
-    /**
-     * { field
-     *
-     * @name extension
-     * @function the test string
-     * }
-     */
-    private String extension;
-
-    //- *******************
-    //- Methods
-
-    /**
-     * { constructor
-     *
-     * @param e test string
-     *          }
-     * @name HasExtensionFilter
-     * @function Constructor of HasExtensionFilter
-     */
-    public HasExtensionFilter(String e) {
-        if (!e.startsWith(".")) {
-            extension = "." + e;
-        }
-        else {
-            extension = e;
-        }
-    }
-
-    /**
-     * { method
-     *
-     * @param dir  the test directory
-     * @param name thes name of file in directory dir
-     * @return true if file passes test
-     * @name accept
-     * @function test if file should pass filter i.e has proper extension or is
-     * ending
-     * @policy rarely override
-     * @primary }
-     */
-    public boolean accept(File dir, String name) {
-        if (name.endsWith(extension))
-            return (true);
-        return (new File(dir, name).isDirectory());
-    }
-
-//- *******************
-//- End Class HasExtensionFilter
-}
-
-/**
- * { class
- *
- * @name EndsWithFilter
- * @function a file name filter which chooses files ending with a
- * string - usually an extension
- * }
- */
-class EndsWithFilter implements FilenameFilter {
-
-    //- *******************
-    //- Fields
-    /**
-     * { field
-     *
-     * @name extension
-     * @function the test string
-     * }
-     */
-    private String extension;
-
-    //- *******************
-    //- Methods
-
-    /**
-     * { constructor
-     *
-     * @param e test string
-     *          }
-     * @name EndsWithFilter
-     * @function Constructor of EndsWithFilter
-     */
-    public EndsWithFilter(String e) {
-        extension = e;
-    }
-
-    /**
-     * { method
-     *
-     * @param dir  the test directory
-     * @param name thes name of file in directory dir
-     * @return true if file passes test
-     * @name accept
-     * @function test if file should pass filter i.e has proper extension or is
-     * ending
-     * @policy rarely override
-     * @primary }
-     */
-    public boolean accept(File dir, String name) {
-        if (name.endsWith(extension)) {
-            return (true);
-        }
-        return (new File(dir, name).isDirectory());
-    }
-
-//- *******************
-//- End Class EndsWithFilter
-}
-
-/**
- * { class
- *
- * @name DirectoryNamedFilter
- * @function a directory with a specific name
- * }
- */
-class DirectoryNamedFilter implements FilenameFilter {
-
-    //- *******************
-    //- Fields
-    /**
-     * { field
-     *
-     * @name extension
-     * @function the test string
-     * }
-     */
-    private final String Name;
-
-    //- *******************
-    //- Methods
-
-    /**
-     * { constructor
-     *
-     * @param e test string
-     *          }
-     * @name DirectoryNamedFilter
-     * @function Constructor of EndsWithFilter
-     */
-    public DirectoryNamedFilter(String e) {
-        Name = e;
-    }
-
-    /**
-     * { method
-     *
-     * @param dir  the test directory
-     * @param name thes name of file in directory dir
-     * @return true if file passes test
-     * @name accept
-     * @function test if file should pass filter i.e has proper extension or is
-     * ending
-     * @policy rarely override
-     * @primary }
-     */
-    public boolean accept(File dir, String name) {
-        File test = new File(dir, name);
-        if (!test.isDirectory())
-            return (false);
-        if (name.equals(Name)) {
-            return (true);
-        }
-        return (false);
-    }
-
-//- *******************
-//- End Class DirectoryNamedFilter
-}
-
-/**
- * { class
- *
- * @name IsDirectoryFilter
- * @function sorts directories only
- * }
- */
-class IsDirectoryFilter implements FilenameFilter {
-
-    //- *******************
-    //- Methods
-
-    /**
-     * { constructor
-     *
-     * @name IsDirectoryFilter
-     * @function Constructor of IsDirectoryFilter
-     * }
-     */
-    public IsDirectoryFilter() {
-    }
-
-    /**
-     * { method
-     *
-     * @param dir  the test directory
-     * @param name this name of file in directory dir
-     * @return true if file passes test
-     * @name accept
-     * @function test if file should pass filter i.e is a directory
-     * @policy <Add Comment Here>
-     * @primary }
-     */
-    public boolean accept(File dir, String name) {
-        return (new File(dir, name).isDirectory());
-    }
-
-//- *******************
-//- End Class IsDirectoryFilter
-}
