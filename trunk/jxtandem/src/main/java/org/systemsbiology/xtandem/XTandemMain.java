@@ -347,7 +347,7 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         digester.setSemiTryptic(bval);
         setDigester(digester);
 
-        String parameter = getParameter("org.systemsbiology.algorithms");
+        String parameter = getParameter(JXTandemLauncher.ALGORITHMS_PROPERTY);
         if(parameter != null)
             addAlternateParameters(parameter );
 
