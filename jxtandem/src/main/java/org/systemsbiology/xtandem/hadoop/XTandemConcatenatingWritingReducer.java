@@ -135,7 +135,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
     protected void setWriters(Context context, HadoopTandemMain application, String inputFileNamex) {
          String s = inputFileNamex;
         if (isUseMultipleOutputFiles()) {
-             s = XTandemHadoopUtilities.dropExtension(inputFileNamex);
+            s = XTandemHadoopUtilities.dropExtension(inputFileNamex);
             if (s.equals(m_OutputFile))
                 return;
             m_OutputFile = s;
@@ -166,14 +166,18 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
             m_PepXmlsOutWriter = new PrintWriter[algorithms.length];
             for (int i = 0; i < algorithms.length; i++) {
                 ITandemScoringAlgorithm algorithm = algorithms[i];
-                m_PepXmlsOutWriter[i] = XTandemHadoopUtilities.buildPrintWriter(context, s, /* "." + algorithm.getName() + */   ".pep.xml");
+                String algo = algorithm.getName();
+                String extension = ".pep.xml";
+                if(!"KScore".equals(algo))
+                    extension = algo + "." + extension;
+                m_PepXmlsOutWriter[i] = XTandemHadoopUtilities.buildPrintWriter(context, s,extension);
                 PepXMLWriter px = new PepXMLWriter(application);
 
                 px.setPath(s);
                 m_pepXMLWriter[i] = px;
 
                 String spectrumPath = application.getParameter("spectrum, path");
-                getPepXMLWriter(i).writePepXMLHeader(spectrumPath, getPepXmlsOutWriter(i));
+                getPepXMLWriter(i).writePepXMLHeader(spectrumPath,algo, getPepXmlsOutWriter(i));
 
             }
 

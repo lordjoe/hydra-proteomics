@@ -104,14 +104,14 @@ public class PepXMLWriter {
                     "xmlns=\"http://regis-web.systemsbiology.net/pepXML\"" +
                     " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
                     " xsi:schemaLocation=\"http://sashimi.sourceforge.net/schema_revision/pepXML/pepXML_v115.xsd\">\n" +
-                    "   <msms_run_summary base_name=\"%PATH%\" search_engine=\"Hydra(k-score)\" msManufacturer=\"Thermo Scientific\" msModel=\"LTQ\" msIonization=\"NSI\" msMassAnalyzer=\"ITMS\" msDetector=\"unknown\" raw_data_type=\"raw\" raw_data=\".mzXML\">" +
+                    "   <msms_run_summary base_name=\"%PATH%\" search_engine=\"Hydra(%ALGO%)\" msManufacturer=\"Thermo Scientific\" msModel=\"LTQ\" msIonization=\"NSI\" msMassAnalyzer=\"ITMS\" msDetector=\"unknown\" raw_data_type=\"raw\" raw_data=\".mzXML\">" +
                     "";
 
 
     public static final String SEARCH_SUMMARY_TEXT =
-            "<search_summary base_name=\"%FULL_FILE_PATH%\" search_engine=\"Hydra(k-score)\" precursor_mass_type=\"monoisotopic\" fragment_mass_type=\"monoisotopic\" search_id=\"1\">";
+            "<search_summary base_name=\"%FULL_FILE_PATH%\" search_engine=\"Hydra(%ALGO%)\" precursor_mass_type=\"monoisotopic\" fragment_mass_type=\"monoisotopic\" search_id=\"1\">";
 
-    public void writePepXMLHeader(String path, PrintWriter out) {
+    public void writePepXMLHeader(String path,String algo, PrintWriter out) {
         String now = XTandemUtilities.xTandemNow();
         String header = PEPXML_HEADER.replace("%PATH%", path);
         header = header.replace("%DATE%", now);
@@ -119,11 +119,13 @@ public class PepXMLWriter {
 
         header = ANALYSIS_HEADER.replace("%PATH%", path);
         header = header.replace("%DATE%", now);
-        out.println(header);
+        header = header.replace("%ALGO%", algo);
+          out.println(header);
 
         out.println(TTRYPSIN_XML);  // tod stop hard coding
 
         String ss = SEARCH_SUMMARY_TEXT.replace("%FULL_FILE_PATH%",path);
+        ss = ss.replace("%ALGO%", algo);
         out.println(ss);  // tod stop hard coding
 
         showDatabase(out);

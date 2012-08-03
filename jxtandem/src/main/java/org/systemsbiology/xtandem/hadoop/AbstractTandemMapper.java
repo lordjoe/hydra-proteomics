@@ -63,9 +63,7 @@ public abstract class AbstractTandemMapper<T> extends Mapper<T, Text, Text, Text
         // m_Factory.setValidationStringency(SAMFileReader.ValidationStringency.LENIENT)
 
         m_Application = XTandemHadoopUtilities.loadFromContext(context);
-
-
-        String parameter = m_Application.getParameter("org.systemsbiology.algorithms");
+         String parameter = m_Application.getParameter(JXTandemLauncher.ALGORITHMS_PROPERTY);
         if (parameter != null)
             addAlternateParameters(parameter, m_Application);
     }

@@ -30,6 +30,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     public static final JXTandemLauncher[] EMPTY_ARRAY = {};
 
     public static final String USE_SEPARATE_FILES_STRING = "full_tandem_output_path";
+    public static final String ALGORITHMS_PROPERTY = "org.systemsbiology.algorithm";
     public static final String TURN_ON_SCAN_OUTPUT_PROPERTY = "org.systemsbiology.xtandem.SaveScansData";
     public static final String MULTIPLE_OUTPUT_FILES_PROPERTY = "org.systemsbiology.xtandem.MultipleOutputFiles";
     public static final String INPUT_FILES_PROPERTY = "org.systemsbiology.xtandem.InputFiles";
