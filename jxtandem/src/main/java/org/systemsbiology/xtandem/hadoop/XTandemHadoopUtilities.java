@@ -1011,6 +1011,19 @@ public class XTandemHadoopUtilities {
                                                  HadoopTandemMain data, String added) {
         final Configuration configuration = context.getConfiguration();
         String paramsFile = buildOutputFileName(context, data);
+        String hpl = paramsFile.toLowerCase();
+          if (hpl.endsWith(".hydra")) {
+              paramsFile = paramsFile.substring(0, paramsFile.length() - ".hydra".length());
+              hpl = paramsFile.toLowerCase();
+          }
+          if (hpl.endsWith(".mzxml")) {
+              paramsFile = paramsFile.substring(0, paramsFile.length() - ".mzXML".length());
+              hpl = paramsFile.toLowerCase();
+          }
+          if (hpl.endsWith(".mzml")) {
+              paramsFile = paramsFile.substring(0, paramsFile.length() - ".mzml".length());
+              hpl = paramsFile.toLowerCase();
+          }
         if (added != null)
             paramsFile += added;
         //      if (host != null || !"null".equals(host)) {
