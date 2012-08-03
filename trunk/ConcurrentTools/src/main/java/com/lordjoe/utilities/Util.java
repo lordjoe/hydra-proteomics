@@ -22,38 +22,41 @@ import org.xml.sax.*;
 import java.awt.*;
 import java.beans.*;
 import java.io.*;
+import java.lang.Appendable;
+import java.lang.ArrayStoreException;
+import java.lang.Boolean;
+import java.lang.Character;
+import java.lang.Class;
 import java.lang.Comparable;
+import java.lang.Double;
+import java.lang.Enum;
+import java.lang.IllegalAccessException;
+import java.lang.IllegalArgumentException;
+import java.lang.IllegalStateException;
+import java.lang.Integer;
+import java.lang.InterruptedException;
+import java.lang.NoSuchMethodException;
+import java.lang.NumberFormatException;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.Process;
+import java.lang.RuntimeException;
+import java.lang.SecurityManager;
+import java.lang.String;
+import java.lang.StringBuffer;
+import java.lang.StringBuilder;
+import java.lang.SuppressWarnings;
+import java.lang.Thread;
+import java.lang.Throwable;
+import java.lang.UnsupportedOperationException;
 import java.lang.reflect.*;
 import java.net.*;
 import java.text.*;
 import java.util.*;
 import java.util.List;
-import java.lang.UnsupportedOperationException;
-import java.lang.String;
-import java.lang.Enum;
-import java.lang.InterruptedException;
-import java.lang.Process;
-import java.lang.Character;
-import java.lang.Object;
-import java.lang.Appendable;
-import java.lang.SecurityManager;
-import java.lang.Double;
-import java.lang.Class;
-import java.lang.NoSuchMethodException;
-import java.lang.Thread;
-import java.lang.IllegalStateException;
-import java.lang.Override;
-import java.lang.ArrayStoreException;
-import java.lang.IllegalAccessException;
-import java.lang.IllegalArgumentException;
-import java.lang.Boolean;
-import java.lang.StringBuffer;
-import java.lang.NumberFormatException;
-import java.lang.RuntimeException;
-import java.lang.SuppressWarnings;
-import java.lang.StringBuilder;
-import java.lang.Integer;
-import java.lang.Throwable;
+import java.lang.Short;
+import java.lang.Float;
+import java.lang.Long;
 
 /**
  * { class
@@ -131,101 +134,101 @@ public abstract class Util {
     public static final int DEFAULT_MAX_VALUE = 4095;
 
     /**
-      *
-      * count the occurances of each positive value up to DEFAULT_MAX_VALUE
-      * @param values  !null array of non-negative values
-        * @return  array of counts
-      */
+     * count the occurances of each positive value up to DEFAULT_MAX_VALUE
+     *
+     * @param values !null array of non-negative values
+     * @return array of counts
+     */
     public static int[] computeStatistics(int[] values) {
-         return computeStatistics( values,DEFAULT_MAX_VALUE);
+        return computeStatistics(values, DEFAULT_MAX_VALUE);
     }
 
     /**
-      *
-      * count the occurances of each positive value up to maxvalue
-      * @param values  !null array of non-negative values
-      * @param maxValue value to truncate
-      * @return
-      */
-    public static int[] computeStatistics(int[] values,int maxValue) {
+     * count the occurances of each positive value up to maxvalue
+     *
+     * @param values   !null array of non-negative values
+     * @param maxValue value to truncate
+     * @return
+     */
+    public static int[] computeStatistics(int[] values, int maxValue) {
         int max = 0;
-        int[] temp = new int[maxValue + + 1];
+        int[] temp = new int[maxValue + +1];
         for (int i = 0; i < values.length; i++) {
-            int val = Math.min(maxValue,values[i]);
-            max = Math.max(val,max);
-            if(val < 0)
+            int val = Math.min(maxValue, values[i]);
+            max = Math.max(val, max);
+            if (val < 0)
                 throw new IllegalStateException("statistics are fpr positive numbers only ");
             temp[val]++;
         }
         int[] ret = new int[max];
-        System.arraycopy(temp,0,ret,0,max + 1);
+        System.arraycopy(temp, 0, ret, 0, max + 1);
         return ret;
     }
 
 
     /**
-      *
-      * count the occurances of each positive value up to DEFAULT_MAX_VALUE
-      * @param values  !null array of non-negative values
-        * @return  array of counts
-      */
+     * count the occurances of each positive value up to DEFAULT_MAX_VALUE
+     *
+     * @param values !null array of non-negative values
+     * @return array of counts
+     */
     public static int[] computeStatistics(short[] values) {
-         return computeStatistics( values,DEFAULT_MAX_VALUE);
+        return computeStatistics(values, DEFAULT_MAX_VALUE);
     }
+
     /**
-      *
-      * count the occurances of each positive value up to maxvalue
-      * @param values  !null array of non-negative values
-      * @param maxValue value to truncate
-      * @return
-      */
-    public static int[] computeStatistics(short[] values,int maxValue) {
+     * count the occurances of each positive value up to maxvalue
+     *
+     * @param values   !null array of non-negative values
+     * @param maxValue value to truncate
+     * @return
+     */
+    public static int[] computeStatistics(short[] values, int maxValue) {
         int max = 0;
-        int[] temp = new int[maxValue + + 1];
+        int[] temp = new int[maxValue + +1];
         for (int i = 0; i < values.length; i++) {
-            int val = Math.min(maxValue,values[i]);
-            max = Math.max(val,max);
-            if(val < 0)
+            int val = Math.min(maxValue, values[i]);
+            max = Math.max(val, max);
+            if (val < 0)
                 throw new IllegalStateException("statistics are fpr positive numbers only ");
             temp[val]++;
         }
         int[] ret = new int[max + 1];
-        System.arraycopy(temp,0,ret,0,max + 1);
+        System.arraycopy(temp, 0, ret, 0, max + 1);
         return ret;
     }
 
     /**
-      *
-      * count the occurances of each positive value up to DEFAULT_MAX_VALUE
-      * @param values  !null array of non-negative values
-        * @return  array of counts
-      */
-   public static int[] computeStatistics(long[] values) {
-         return computeStatistics( values,DEFAULT_MAX_VALUE);
+     * count the occurances of each positive value up to DEFAULT_MAX_VALUE
+     *
+     * @param values !null array of non-negative values
+     * @return array of counts
+     */
+    public static int[] computeStatistics(long[] values) {
+        return computeStatistics(values, DEFAULT_MAX_VALUE);
     }
 
     /**
-     *
      * count the occurances of each positive value up to maxvalue
-     * @param values  !null array of non-negative values
+     *
+     * @param values   !null array of non-negative values
      * @param maxValue value to truncate
      * @return
      */
-    public static int[] computeStatistics(long[] values,int maxValue) {
+    public static int[] computeStatistics(long[] values, int maxValue) {
         int max = 0;
-        int[] temp = new int[maxValue +   1];
+        int[] temp = new int[maxValue + 1];
         for (int i = 0; i < values.length; i++) {
-            int val = Math.min((int)maxValue,(int)values[i]);
-            max = Math.max(val,max);
-            if(val < 0)
+            int val = Math.min((int) maxValue, (int) values[i]);
+            max = Math.max(val, max);
+            if (val < 0)
                 throw new IllegalStateException("statistics are fpr positive numbers only ");
             temp[val]++;
         }
         int[] ret = new int[max];
-        System.arraycopy(temp,0,ret,0,max + 1);
+        System.arraycopy(temp, 0, ret, 0, max + 1);
         return ret;
     }
-
 
 
     /**
@@ -6969,5 +6972,57 @@ public abstract class Util {
         }
 
     }
+
+    /**
+     * original string which may contain characters either reserved in XML or with different representation
+     * in different encodings (like 8859-1 and UFT-8)
+     *
+     * @return
+     */
+    public static String xmlEscape(String originalUnprotectedString) {
+        if (originalUnprotectedString == null) {
+            return null;
+        }
+        boolean anyCharactersProtected = false;
+
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < originalUnprotectedString.length(); i++) {
+            char ch = originalUnprotectedString.charAt(i);
+
+            boolean controlCharacter = ch < 32;
+            boolean unicodeButNotAscii = ch > 126;
+            boolean characterWithSpecialMeaningInXML = ch == '<' || ch == '&' || ch == '>';
+
+            if (unicodeButNotAscii || controlCharacter) {
+                sb.append("&#" + (int) ch + ";");
+                anyCharactersProtected = true;
+            }
+            else {
+                switch (ch) {
+                    case '<':
+                        sb.append("&lt;");
+                        break;
+                    case '>':
+                        sb.append("&gt;");
+                        break;
+                    case '\"':
+                        sb.append("&guot;");
+                        break;
+                    case '&':
+                        sb.append("&amp;");
+                        break;
+                    case '\'':
+                        sb.append("&apos;");
+                        break;
+                    default:
+                        sb.append(ch);
+
+                }
+            }
+        }
+
+        return sb.toString();
+    }
+
 
 }
