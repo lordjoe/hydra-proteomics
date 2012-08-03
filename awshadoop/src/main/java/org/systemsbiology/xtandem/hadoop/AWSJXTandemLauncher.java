@@ -323,14 +323,15 @@ public class AWSJXTandemLauncher extends JXTandemLauncher {
                 try {
                     //          f = main.readRemoteFile(hdfsPathEric, outFile);
                     f = main.readRemoteFile(hdfsPath, outFile);
-                    if (f.length() < MAX_DISPLAY_LENGTH) {
+                    if (f != null && f.length() < MAX_DISPLAY_LENGTH) {
                         String s = FileUtilities.readInFile(f);
                         XTandemUtilities.outputLine(s);
                     }
                     // read in the larger scans file
                     outFile += ".scans";
                     f = main.readRemoteFile(hdfsPath, outFile);
-                    XTandemUtilities.outputLine("Created output file " + f.getAbsolutePath());
+                    if(f != null )
+                        XTandemUtilities.outputLine("Created output file " + f.getAbsolutePath());
                 }
                 catch (IllegalArgumentException e) {
                     XTandemUtilities.outputLine("Cannot copy remote file " + hdfsPath + " to local file " + outFile +
