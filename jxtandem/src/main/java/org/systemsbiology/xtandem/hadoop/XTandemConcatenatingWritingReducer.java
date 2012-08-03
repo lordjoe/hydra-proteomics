@@ -132,18 +132,19 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
     }
 
 
-    protected void setWriters(Context context, HadoopTandemMain application, String inputFileName) {
+    protected void setWriters(Context context, HadoopTandemMain application, String inputFileNamex) {
+         String s = inputFileNamex;
         if (isUseMultipleOutputFiles()) {
-            String s = XTandemHadoopUtilities.dropExtension(inputFileName);
+             s = XTandemHadoopUtilities.dropExtension(inputFileNamex);
             if (s.equals(m_OutputFile))
                 return;
             m_OutputFile = s;
             System.err.println("Setting writer to " + m_OutputFile);
             cleanupWriters();
-            m_Writer = XTandemHadoopUtilities.buildPrintWriter(context, inputFileName, ".hydra");
+            m_Writer = XTandemHadoopUtilities.buildPrintWriter(context, s, ".hydra");
 
             if (isWriteScans()) {
-                m_ScansWriter = XTandemHadoopUtilities.buildPrintWriter(context, inputFileName, ".scans");
+                m_ScansWriter = XTandemHadoopUtilities.buildPrintWriter(context, s, ".scans");
                 m_ScansWriter.println("<scans>");
             }
         }
@@ -165,10 +166,10 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
             m_PepXmlsOutWriter = new PrintWriter[algorithms.length];
             for (int i = 0; i < algorithms.length; i++) {
                 ITandemScoringAlgorithm algorithm = algorithms[i];
-                m_PepXmlsOutWriter[i] = XTandemHadoopUtilities.buildPrintWriter(context, inputFileName, /* "." + algorithm.getName() + */   ".pep.xml");
+                m_PepXmlsOutWriter[i] = XTandemHadoopUtilities.buildPrintWriter(context, s, /* "." + algorithm.getName() + */   ".pep.xml");
                 PepXMLWriter px = new PepXMLWriter(application);
 
-                px.setPath(inputFileName);
+                px.setPath(s);
                 m_pepXMLWriter[i] = px;
 
                 String spectrumPath = application.getParameter("spectrum, path");
