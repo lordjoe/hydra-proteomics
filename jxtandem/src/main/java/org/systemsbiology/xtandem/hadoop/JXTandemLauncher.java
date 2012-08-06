@@ -1656,7 +1656,9 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
             for (int i = 0; i < algorithms.length; i++) {
                 ITandemScoringAlgorithm algorithm = algorithms[i];
-                String fileName = hdfsPath + /* "." + algorithm.getName() + */ ".pep.xml";
+                String fileName = hdfsPath +   "." + algorithm.getName() +   ".pep.xml";
+                if("KScore".equals(algorithm.getName()))   // drop kscore algo name
+                      fileName = hdfsPath +   ".pep.xml";
                 String outFile2 = getOutputFileName() + /* "." + algorithm.getName() +  */ ".pep.xml";
                 if (application.getBooleanParameter(MULTIPLE_OUTPUT_FILES_PROPERTY))
                     outFile2 = fileName;

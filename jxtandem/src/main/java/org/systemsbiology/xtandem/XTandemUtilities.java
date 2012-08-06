@@ -170,11 +170,13 @@ public class XTandemUtilities {
                 continue;
             }
             switch (c) {
+                case '|':
+                     sb.append("_");
+                     break;
                 // so it can be parsed
                 case '\"':
                 case '\'':
                 case '!':
-                case '|':
                 case ';':
                 case ':':
                 case ',':
