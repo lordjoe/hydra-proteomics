@@ -150,7 +150,7 @@ public class PepXMLWriter {
         out.println("         <search_database local_path=\"" +
                 application.getDatabaseName() +
                 "\" type=\"AA\"" +
-                "\" />"
+                 " />"
         );
     }
 
@@ -162,7 +162,7 @@ public class PepXMLWriter {
             String parameterKey = parameterKeys[i];
             String value = application.getParameter(parameterKey);
             out.println("        <parameter name=\"" +
-                    parameterKey +
+                    parameterKey + "\"" +
                     " value=\"" +
                     value +
                     "\" />"
