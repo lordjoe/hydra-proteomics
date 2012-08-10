@@ -22,6 +22,7 @@ public class PDBObject extends AsaMolecule {
     private final Protein m_Protein;
     private final SequenceChainMap[] m_Mappings;
     private int m_LastHandledLoc = -1;
+    private ExperimentalType m_ExperimentalType = ExperimentalType.X_RAY_DIFFRACTION;
     //   private final List<AminoAcidAtLocation> m_DisplayedAminoAcids = new ArrayList<AminoAcidAtLocation>();
     //    private String m_Sequence;
     private final Map<ChainEnum, ProteinSubunit> m_Chains = new HashMap<ChainEnum, ProteinSubunit>();
@@ -130,6 +131,10 @@ public class PDBObject extends AsaMolecule {
         m_LastHandledLoc = -1;
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
+            handleConditions(line);
+        }
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
             handleAtoms(line);
         }
         for (int i = 0; i < lines.length; i++) {
@@ -147,7 +152,16 @@ public class PDBObject extends AsaMolecule {
         buildSequenceMappings();
     }
 
-    private void handleResidues(String line, List<AminoAcidAtLocation> holder) {
+    protected void handleConditions(final String line) {
+        if (!line.startsWith("EXPDTA"))   {
+            setExperimentalType(ExperimentalType.fromString(line.substring(10).trim()));
+            return;
+        }
+        String s = null;
+    }
+
+
+    protected void handleResidues(String line, List<AminoAcidAtLocation> holder) {
         if (!line.startsWith("SEQRES"))
             return;
         String s = null;
@@ -337,6 +351,14 @@ public class PDBObject extends AsaMolecule {
 
     }
 
+    public ExperimentalType getExperimentalType() {
+        return m_ExperimentalType;
+    }
+
+    public void setExperimentalType(final ExperimentalType experimentalType) {
+        m_ExperimentalType = experimentalType;
+    }
+
     /*
 SSBOND	1-6	"SSBOND"		character
 8-10	Serial number	right	integer
@@ -351,7 +373,7 @@ SSBOND	1-6	"SSBOND"		character
 60-65	Symmetry operator for first residue	right	integer
 67-72	Symmetry operator for second residue	right	integer
 74-78	Length of disulfide bond	right	real (5.2)
-     */
+    */
     protected final void handleSSBond(String line) {
 
         String s;
