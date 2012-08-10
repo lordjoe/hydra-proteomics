@@ -224,6 +224,10 @@ public class PeptideModification implements Comparable<PeptideModification> {
         return m_MassChange;
     }
 
+    public double getPepideMass() {
+        return getMassChange() + MassCalculator.getDefaultCalculator().getAminoAcidMass(getAminoAcid().getAbbreviation().charAt(0)) ;
+    }
+
     public PeptideModificationRestriction getRestriction() {
         return m_Restriction;
     }

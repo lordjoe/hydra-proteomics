@@ -597,7 +597,7 @@ public class BiomlReporter {
         FastaAminoAcid aminoAcid = modification.getAminoAcid();
         out.print(" type=\"" + aminoAcid + "\"");
         out.print(" at=\"" + (index + 1) + "\"");   // NOTE! 1 based
-        String modString = String.format("%10.4f",modification.getMassChange()).trim();
+        String modString = String.format("%10.3f",modification.getMassChange()).trim();
         out.print(" modified=\"" + modString + "\"");
         out.println(" />");
 

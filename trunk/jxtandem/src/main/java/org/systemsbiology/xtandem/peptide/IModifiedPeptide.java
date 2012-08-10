@@ -14,10 +14,15 @@ public interface IModifiedPeptide extends IPolypeptide {
      */
     public double getMassModification();
     /**
-     * add m[123.5] for a modification
-     * @return
-     */
-    public String getModifiedSequence();
+      * add m[-18] for a modification
+      * @return
+      */
+     public String getModifiedSequence();
+    /**
+      * add m[123.5] for a modification
+      * @return
+      */
+     public String getTotalModifiedSequence();
 
     /**
        * describe the modifications
@@ -29,5 +34,6 @@ public interface IModifiedPeptide extends IPolypeptide {
        * @return
        */
        public PeptideModification[] getModifications();
+
 
 }
