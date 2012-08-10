@@ -107,7 +107,21 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
     }
 
     public void setContainedInProteins(final IProteinPosition[] pContainedInProteins) {
-        m_ContainedInProteins = pContainedInProteins;
+        Set<String> stx = new HashSet<String>();
+        List<IProteinPosition> holder = new ArrayList<IProteinPosition>();
+        for (int i = 0; i < pContainedInProteins.length; i++) {
+            IProteinPosition tst = pContainedInProteins[i];
+            if(!stx.contains(tst.getProtein()))  {
+                stx.add(tst.getProtein());
+                holder.add(tst);
+            }
+            else {
+                continue;
+            }
+        }
+        IProteinPosition[] ret = new IProteinPosition[holder.size()];
+        holder.toArray(ret);
+           m_ContainedInProteins = ret;
     }
 
     /**

@@ -401,6 +401,21 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         return sb.toString();
     }
 
+    public String getTotalModifiedSequence() {
+        StringBuilder sb = new StringBuilder();
+        String sequence = getSequence();
+        for (int i = 0; i < sequence.length(); i++) {
+            char c = sequence.charAt(i);
+            sb.append(c);
+            PeptideModification mod = m_SequenceModifications[i];
+            if (mod != null)
+                sb.append("[" + String.format("%10.3f",mod.getPepideMass()).trim() + "]");
+
+
+        }
+        return sb.toString();
+    }
+
 
     /**
      * true if there is at least one modification

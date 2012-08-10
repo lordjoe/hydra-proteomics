@@ -322,7 +322,7 @@ public class PepXMLWriter {
     }
 
     protected void showModificationInfo(final IModifiedPeptide peptide, final PrintWriter out) {
-        out.println("             <modification_info modified_peptide=\"" + peptide.getModifiedSequence() + "\" >");
+        out.println("             <modification_info modified_peptide=\"" + peptide.getTotalModifiedSequence() + "\" >");
         PeptideModification[] modifications = peptide.getModifications();
         for (int i = 0; i < modifications.length; i++) {
             PeptideModification modification = modifications[i];
@@ -335,7 +335,7 @@ public class PepXMLWriter {
     }
 
     protected void showModification(final PeptideModification pModification, final int index, final PrintWriter out) {
-        out.println("             <mod_aminoacid_mass position=\"" + (index + 1) + "\" mass=\"" + String.format("%10.4f", pModification.getMassChange()).trim() + "\" />");
+        out.println("             <mod_aminoacid_mass position=\"" + (index + 1) + "\" mass=\"" + String.format("%10.3f", pModification.getPepideMass()).trim() + "\" />");
     }
 
     protected void showAlternateiveProtein(final IProteinPosition pp, final PrintWriter out) {

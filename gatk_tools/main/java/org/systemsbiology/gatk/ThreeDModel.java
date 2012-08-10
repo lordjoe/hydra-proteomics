@@ -164,7 +164,7 @@ public class ThreeDModel {
 
     private static String readPDBXML(String item) {
         try {
-            String urlStr = "http://www.pdb.org/pdb/rest/das/pdb_uniprot_mapping/alignment?query=" + item;
+            String urlStr = "http://www.pdb.org/pdb/rest/das/pdb_uniprot_mapping/alignment?query=" + item.trim();
             URL url = new URL(urlStr);
             String[] lines = GeneUtilities.readInLines(url);
             if (lines.length == 0)
@@ -187,24 +187,57 @@ public class ThreeDModel {
         }
     }
 
-    /**
-     *
-     * @param args
-     * @throws Exception
-     */
+    public static void readDesignated3dModels(String arg) throws IOException {
+          File models = new File(arg);
+          if (!models.exists())
+              throw new IllegalArgumentException("model file " + arg + " does not exxist");
+          PrintWriter out = new PrintWriter(new FileWriter("PdbModelList.txt"));
+          ThreeDModel[] model3ds = readPDBList(models );
+          for (int i = 0; i < model3ds.length; i++) {
+              ThreeDModel model3d = model3ds[i];
+              out.println(model3d.getDescriptionString());
+          }
+          out.close();
+      }
+
+
+    public static String[] interesting(File models) {
+         String[] ids = GeneUtilities.readInLines(models);
+        String lastRead = "";
+         List<String> holder = new ArrayList<String>();
+         for (int i = 1; i < ids.length; i++) {
+             String id = ids[i];
+             String[] items = id.split(",");
+             String gene = items[3];
+             String uniprot = items[4];
+             if(lastRead.equals(uniprot))
+                 continue;
+             lastRead = uniprot;
+             String xml = readPDBXML(uniprot);
+             if (xml != null) {
+                 holder.add(xml);
+                 System.out.println("found " + (holder.size()) + " in " + i);
+             }
+
+         }
+
+         String[] ret = new String[holder.size()];
+         holder.toArray(ret);
+         return ret;
+
+     }
+
     public static void main(String[] args) throws Exception {
         File models = new File(args[0]);
-        if (!models.exists())
-            throw new IllegalArgumentException("model file " + args[0] + " does not exxist");
-        PrintWriter out = new PrintWriter(new FileWriter("PdbModelList.txt"));
-        ThreeDModel[] model3ds = readPDBList(models );
-        for (int i = 0; i < model3ds.length; i++) {
-            ThreeDModel model3d = model3ds[i];
-            out.println(model3d.getDescriptionString());
+        String[] strings = interesting(  models);
+        for (int i = 0; i < strings.length; i++) {
+            String string = strings[i];
+            System.out.println(string);
         }
-        out.close();
+    //    readDesignated3dModels(args[0]);
   //      readModelsXML(models, out);
     }
+
 
 
 }
