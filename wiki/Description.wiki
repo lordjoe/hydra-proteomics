@@ -1,0 +1,14 @@
+#summary Hadoop Based Proteomic Search engine
+
+= Introduction =
+
+Shotgun Proteomics involves large search problems comparing many spectra with possible peptides. As researchers  apply modifications and consider alternate cleavages, the search space grows by a few orders of magnitude. Modern searches strain the resources of a single machine. We have an implementation which uses the Hadoop version of Google's Map-Reduce algorithm to search Proteomics databases.
+ 
+ 
+
+
+= Details =
+
+Shotgun Proteomics involves large search problems comparing many spectra with possible peptides. As researchers  apply modifications and consider alternate cleavages, the search space grows by a few orders of magnitude. Modern searches strain the resources of a single machine. We have an implementation which uses the Hadoop version of Google's Map-Reduce algorithm to search Proteomics databases.
+ 
+ 
