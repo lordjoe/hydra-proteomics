@@ -84,6 +84,20 @@ public class PeptideModification implements Comparable<PeptideModification> {
         return pm;
     }
 
+    public static PeptideModification[] getTerminalModifications( ) {
+         guaranteeHardCodedModifications();
+        List<PeptideModification> holder = new ArrayList<PeptideModification>();
+        for(PeptideModification[] pms : gNTermalModifications.values())
+             holder.addAll(Arrays.asList(pms));
+        for(PeptideModification[] pms : gCTermalModifications.values())
+             holder.addAll(Arrays.asList(pms));
+         PeptideModification[] ret = new PeptideModification[holder.size()];
+        holder.toArray(ret);
+        return ret;
+       }
+
+
+
     public static final double CYSTEIN_MODIFICATION_MASS = -57.02146;
 
     public static final PeptideModification CYSTEIN_MODIFICATION = new PeptideModification(FastaAminoAcid.C, CYSTEIN_MODIFICATION_MASS,

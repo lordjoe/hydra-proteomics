@@ -130,8 +130,51 @@ public class PepXMLWriter {
 
         showDatabase(out);
         showEnzyme(out);
+        showModifications(out);
         showParameters(out);
-        out.println("      </search_summary>");
+         out.println("      </search_summary>");
+    }
+
+    protected void showModifications(PrintWriter out) {
+        IMainData application = getApplication();
+        ScoringModifications scoringMods = application.getScoringMods();
+        for(PeptideModification pm :  scoringMods.getModifications())     {
+            showModification(pm,out);
+        }
+         for(PeptideModification pm :  PeptideModification.getTerminalModifications())     {
+             showModification(pm,out);
+         }
+    }
+
+    /*
+       <aminoacid_modification aminoacid="C" massdiff="57.0215" mass="160.0306" variable="N" />
+         <aminoacid_modification aminoacid="C" massdiff="-17.0265" mass="143.0041" variable="Y" symbol="^" /><!--X! Tandem n-terminal AA variable modification-->
+         <aminoacid_modification aminoacid="E" massdiff="-18.0106" mass="111.0320" variable="Y" symbol="^" /><!--X! Tandem n-terminal AA variable modification-->
+         <aminoacid_modification aminoacid="K" massdiff="8.0142" mass="136.1092" variable="Y" />
+         <aminoacid_modification aminoacid="M" massdiff="15.9949" mass="147.0354" variable="Y" />
+         <aminoacid_modification aminoacid="Q" massdiff="-17.0265" mass="111.0321" variable="Y" symbol="^" /><!--X! Tandem n-terminal AA variable modification-->
+         <aminoacid_modification aminoacid="R" massdiff="10.0083" mass="166.1094" variable="Y" />
+
+     */
+    protected void showModification(PeptideModification pm, PrintWriter out) {
+        double massChange = pm.getMassChange();
+        double pepideMass = pm.getPepideMass();
+        String variable = "Y";
+        if(pm.isFixed())
+            variable = "N";
+
+        out.print(" <aminoacid_modification");
+        out.print(" aminoacid=\"" +  pm.getAminoAcid() + "\"");
+        out.print(" massdiff=\"" + String.format("%10.4f",massChange).trim() + "\"");
+        out.print(" mass=\"" + String.format("%10.4f",pepideMass).trim() + "\"");
+        out.print("variable=\"" + variable + "\"");
+         out.print(" />");
+        if(pm.getRestriction() == PeptideModificationRestriction.CTerminal)
+              out.print("<!--X! Tandem c-terminal AA variable modification-->");
+        if(pm.getRestriction() == PeptideModificationRestriction.NTerminal)
+              out.print("<!--X! Tandem n-terminal AA variable modification-->");
+
+        out.println();
     }
 
 
