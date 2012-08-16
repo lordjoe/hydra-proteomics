@@ -1,5 +1,6 @@
 package org.systemsbiology.xtandem.peptide;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -9,14 +10,102 @@ import java.util.*;
  */
 public class FoundPeptides {
     public static final FoundPeptides[] EMPTY_ARRAY = {};
-    private final Map<String,List<FoundPeptide>> m_ProteinToPeptide = new HashMap<String,List<FoundPeptide>>();
+
+    public static FoundPeptides readFoundPeptides(File inp)  {
+         try {
+             FoundPeptides fps = new FoundPeptides();
+             LineNumberReader rdr = new LineNumberReader(new InputStreamReader(new FileInputStream(inp)));
+             String line = rdr.readLine();
+             while (line != null) {
+                 String[] items = line.split("\t");
+                 IPolypeptide peptide1 = FoundPeptide.toPolyPeptide(items[0]);
+                 int charge = Integer.parseInt(items[2]);
+                 String[] proteins = items[1].split("/");
+                 for (int i = 1; i < proteins.length; i++) {
+                     String proteinId = proteins[i];
+                     FoundPeptide fp = new FoundPeptide(peptide1, proteinId, charge);
+                     fps.addPeptide(fp);
+                 }
+                 line = rdr.readLine();
+             }
+             return fps;
+         }
+         catch (IOException e) {
+             throw new RuntimeException(e);
+
+         }
+         catch (NumberFormatException e) {
+             throw new RuntimeException(e);
+
+         }
+     }
+
+
+    private final Map<String, List<FoundPeptide>> m_ProteinToPeptide = new HashMap<String, List<FoundPeptide>>();
 
     public FoundPeptides() {
     }
 
-    public FoundPeptide[] getPeptides(String protein)
-    {
-        throw new UnsupportedOperationException("Fix This"); // ToDo
-      //  m_ProteinToPeptide.get()
+    public FoundPeptide[] getPeptides(String protein) {
+        List<FoundPeptide> foundPeptides = m_ProteinToPeptide.get(protein);
+        return foundPeptides.toArray(FoundPeptide.EMPTY_ARRAY);
     }
-}
+
+    public String[] getProteins() {
+        String[] ret = m_ProteinToPeptide.keySet().toArray(new String[0]);
+        Arrays.sort(ret);
+        return ret;
+    }
+
+    public String[] getMappedProteins() {
+        String[] proteins = getProteins();
+        List<String> holder = new ArrayList<String>();
+        for (String id : proteins) {
+            if(id.contains("DECOY"))
+                continue;
+            if(id.contains("UNMAPPED"))
+                continue;
+            if(id.startsWith("sp|"))
+                continue;
+            holder.add(id);
+        }
+
+        String[] ret = new String[holder.size()];
+        holder.toArray(ret);
+        return ret;
+      }
+
+    public void addPeptide(FoundPeptide added) {
+        String protein = added.getProteinId();
+        List<FoundPeptide> foundPeptides = null;
+        synchronized (m_ProteinToPeptide) {
+            foundPeptides = m_ProteinToPeptide.get(protein);
+            if (foundPeptides == null) {
+                foundPeptides = new ArrayList<FoundPeptide>();
+                m_ProteinToPeptide.put(protein, foundPeptides);
+            }
+
+        }
+        synchronized (foundPeptides) {
+            foundPeptides.add(added);
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        File inp = new File(args[0]);
+        if (!inp.exists())
+            throw new IllegalArgumentException("input file " + args[0] + " does not exist");
+
+        FoundPeptides fps = readFoundPeptides(inp);
+        String[] proteins = fps.getMappedProteins();
+        for (String id : proteins) {
+            System.out.println(id);
+            FoundPeptide[] peptides = fps.getPeptides(id);
+            for (int i = 0; i < peptides.length; i++) {
+                FoundPeptide foundPeptide = peptides[i];
+                foundPeptide = null;
+            }
+        }
+    }
+
+ }
