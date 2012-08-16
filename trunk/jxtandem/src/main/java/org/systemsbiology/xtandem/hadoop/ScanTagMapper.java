@@ -159,12 +159,13 @@ public class ScanTagMapper extends AbstractTandemMapper<Writable> {
 
         scan.setUrl(fileName);
    //     textv = scan.toMzMLFragment();
-        final IScanPrecursorMZ mz = scan.getPrecursorMz();
-        final int charge = scan.getPrecursorCharge();
+         IScanPrecursorMZ mz = scan.getPrecursorMz();
+         int charge = scan.getPrecursorCharge();
         if(charge == 0)   {
            int guess =  XTandemUtilities.guessCharge(scan,mz.getMassChargeRatio());
-           IScanPrecursorMZ newmz  = new ScanPrecursorMz(mz,guess);
-           scan.setPrecursorMz(newmz);
+            mz  = new ScanPrecursorMz(mz,guess);
+           scan.setPrecursorMz(mz);
+           charge = mz.getPrecursorCharge();
         }
 
         // cost of parsing

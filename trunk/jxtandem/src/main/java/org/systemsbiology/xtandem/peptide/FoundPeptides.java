@@ -1,5 +1,7 @@
 package org.systemsbiology.xtandem.peptide;
 
+import java.util.*;
+
 /**
  * org.systemsbiology.xtandem.peptide.FoundPeptides
  * User: Steve
