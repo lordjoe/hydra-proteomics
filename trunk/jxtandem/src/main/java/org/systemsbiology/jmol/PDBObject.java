@@ -451,15 +451,15 @@ SSBOND	1-6	"SSBOND"		character
 HELIX	1-5	"HELIX"		character
 8-10	Helix serial number	right	integer
 12-14	Helix identifier	right	character
-16-18§	Initial residue name	right	character
+16-18 	Initial residue name	right	character
 20	Chain identifier		character
 22-25	Residue sequence number	right	integer
 26	Code for insertions of residues		character
-28-30§	Terminal residue name	right	character
+28-30 	Terminal residue name	right	character
 32	Chain identifier		character
 34-37	Residue sequence number	right	integer
 38	Code for insertions of residues		character
-39-40	Type of helix†	right	integer
+39-40	Type of helix 	right	integer
 41-70	Comment	left	character
 72-76	Length of helix	right	integer
 */
@@ -530,26 +530,26 @@ HELIX	1-5	"HELIX"		character
     8-10	Strand number (in current sheet)	right	integer
     12-14	Sheet identifier	right	character
     15-16	Number of strands (in current sheet)	right	integer
-    18-20§	Initial residue name	right	character
+    18-20 	Initial residue name	right	character
     22	Filter.Chain identifier		character
     23-26	Residue sequence number	right	integer
     27	Code for insertions of residues		character
-    29-31§	Terminal residue name	right	character
+    29-31 	Terminal residue name	right	character
     33	Chain identifier		character
     34-37	Residue sequence number	right	integer
     38	Code for insertions of residues		character
-    39-40	Strand sense with respect to previous‡	right	integer
+    39-40	Strand sense with respect to previous 	right	integer
     The following fields identify two atoms involved in a hydrogen bond,
     the first in the current strand and the second in the previous strand.
     These fields should be blank for strand 1 (the first strand in a sheet).
 
     42-45	Atom name (as per ATOM record)	left	character
-    46-48§	Residue name	right	character
+    46-48 	Residue name	right	character
     50	Chain identifier		character
     51-54	Residue sequence number	right	integer
     55	Code for insertions of residues		character
     57-60	Atom name (as per ATOM record)	left	character
-    61-63§	Residue name	right	character
+    61-63 	Residue name	right	character
     65	Chain identifier		character
     66-69	Residue sequence number	right	integer
     70	Code for insertions of residues		character

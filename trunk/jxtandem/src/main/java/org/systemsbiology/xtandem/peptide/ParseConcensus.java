@@ -12,18 +12,6 @@ public class ParseConcensus {
 
     public static final int SAMPLE_LINES = 20000;
 
-    public static IPolypeptide toPolyPeptide(String s)   {
-       String[] items = s.split("/");
-        Polypeptide pp = new Polypeptide(items[0]);
-       return pp;
-
-    }
-    public static int toCharge(String s)   {
-        String[] items = s.split("/");
-        return  Integer.parseInt(items[1]);
-
-    }
-
     protected static String peptideFromLine(String line) {
         String[] items = line.split(" ");
         return items[1];

@@ -33,6 +33,15 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         String unmods = buildUnmodifiedSequence(s);
         PeptideModification[] mods = new PeptideModification[unmods.length()];
         int charNumber = -1;
+        // handle n terminal mod like n[40]AGHT...
+        if (s.startsWith("n[")) { // n terminal mod
+            int index = s.indexOf("]", 0);
+            String modText = s.substring(2, index);
+            s = s.substring(index + 1);
+            String aa = s.substring(0,1);
+              PeptideModification mod = PeptideModification.fromString(modText + "@" + aa, PeptideModificationRestriction.NTerminal, false);
+            mods[0] = mod;
+          }
         String lastChar = "";
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -40,7 +49,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
                 int index = s.indexOf("]", i);
                 String modText = s.substring(i + 1, index);
                 double offest = Double.parseDouble(modText);
-                PeptideModification mod = PeptideModification.fromString(modText + "@" +  lastChar,PeptideModificationRestriction.Global,false ) ;
+                PeptideModification mod = PeptideModification.fromString(modText + "@" + lastChar, PeptideModificationRestriction.Global, false);
                 if (charNumber >= mods.length)
                     XTandemUtilities.breakHere();
                 mods[charNumber] = mod;
@@ -65,7 +74,12 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
      * @return
      */
     public static String buildUnmodifiedSequence(String s) {
-
+        if (s.startsWith("n")) {    // drop n terminal modifications noke n[40]
+            int end = s.indexOf("]");
+            if (end == -1)
+                throw new IllegalArgumentException("Bad n terminal modification");
+            s = s.substring(end + 1);
+        }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -300,12 +314,12 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
 
         IProteinPosition[] proteinPositions = this.getProteinPositions();
 
-        if(proteinPositions == null)
+        if (proteinPositions == null)
             XTandemUtilities.breakHere();
 
         // add proteins and before and after AAN
-        ((Polypeptide)ret[0]).setContainedInProteins(ProteinPosition.buildPeptidePositions(ret[0],0,proteinPositions));
-        ((Polypeptide)ret[1]).setContainedInProteins(ProteinPosition.buildPeptidePositions(ret[1],bond + 1,proteinPositions));
+        ((Polypeptide) ret[0]).setContainedInProteins(ProteinPosition.buildPeptidePositions(ret[0], 0, proteinPositions));
+        ((Polypeptide) ret[1]).setContainedInProteins(ProteinPosition.buildPeptidePositions(ret[1], bond + 1, proteinPositions));
         return ret;
     }
 
@@ -409,7 +423,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
             sb.append(c);
             PeptideModification mod = m_SequenceModifications[i];
             if (mod != null)
-                sb.append("[" + String.format("%10.3f",mod.getPepideMass()).trim() + "]");
+                sb.append("[" + String.format("%10.3f", mod.getPepideMass()).trim() + "]");
 
 
         }
