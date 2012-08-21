@@ -98,14 +98,18 @@ public class FoundPeptides {
 
         FoundPeptides fps = readFoundPeptides(inp);
         String[] proteins = fps.getMappedProteins();
+        File fs = new File("GoodProteins.txt") ;
+        PrintWriter out = new PrintWriter(new FileWriter(fs));
         for (String id : proteins) {
             System.out.println(id);
+            out.println(id);
             FoundPeptide[] peptides = fps.getPeptides(id);
             for (int i = 0; i < peptides.length; i++) {
                 FoundPeptide foundPeptide = peptides[i];
                 foundPeptide = null;
             }
         }
+        out.close();
     }
 
  }
