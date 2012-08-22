@@ -12,7 +12,7 @@ public class GeneInterval implements Comparable<GeneInterval> {
     private final int m_Start;
     private final int m_End;
 
-    public GeneInterval(String chromosome, int end, int start ) {
+    public GeneInterval(String chromosome, int start, int end ) {
         m_Chromosome = chromosome;
           m_End = end;
         m_Start = start;

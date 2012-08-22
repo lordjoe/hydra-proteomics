@@ -20,9 +20,21 @@ public class BioJavaModel {
 
     private Protein m_Protein;
     private Structure m_Structure;
+    private int m_SequenceLength;
+    private int m_FitLength;
+
 
     public BioJavaModel(final Protein protein) {
         m_Protein = protein;
+        m_SequenceLength = protein.getSequenceLength();
+    }
+
+    public int getSequenceLength() {
+        return m_SequenceLength;
+    }
+
+    public int getFitLength() {
+        return m_FitLength;
     }
 
     public void readFile(File f) {
@@ -89,7 +101,7 @@ public class BioJavaModel {
         double ret = 0;
         Protein protein = getProtein();
         List<Chain> chains = s.getChains();
-         for (Iterator<Chain> iterator = chains.iterator(); iterator.hasNext(); ) {
+        for (Iterator<Chain> iterator = chains.iterator(); iterator.hasNext(); ) {
             Chain chn = iterator.next();
             List<Group> groups = chn.getAtomGroups("amino");
             double fraction = resolveGroups(groups);
@@ -98,17 +110,37 @@ public class BioJavaModel {
 //                    " on chain " + chn.getChainID()
 //
 //            );
-            ret = Math.max(ret,fraction);
+            ret = Math.max(ret, fraction);
 
         }
+        double f2 = (double)getFitLength() / (double )getSequenceLength();
         return ret;
+    }
+
+    public String getGroupSequence(List<Group> groups) {
+        StringBuilder sb = new StringBuilder();
+        for (Group group : groups) {
+            AminoAcidImpl aa = (AminoAcidImpl) group;
+            sb.append(aa.getAminoType());
+
+        }
+        return sb.toString();
     }
 
     public double resolveGroups(List<Group> groups) {
         Protein p = getProtein();
         int matches = 0;
+        int nonmatches = 0;
         String sequence = p.getSequence();
+        int sequenceLength = p.getSequenceLength();
         int length = sequence.length();
+        String chainSequence = getGroupSequence(groups);
+
+        int fitLength = 0;
+        int nonFit = 0;
+        boolean inFit = false;
+
+
         for (int i = 0; i < groups.size(); i++) {
             AminoAcidImpl aa = (AminoAcidImpl) groups.get(i);
             ResidueNumber rn = aa.getResidueNumber();
@@ -121,11 +153,30 @@ public class BioJavaModel {
                 break;
             char seqChar = sequence.charAt(seqNum - 1);
             FastaAminoAcid sa = FastaAminoAcid.fromChar(seqChar);
-             if(fa == sa){
-                 matches++;
-             }
+            if (fa == sa) {
+                if (!inFit) {
+                    fitLength = 1;
+                    inFit = true;
+                    nonFit = 0;
+                }
+                else {
+                  fitLength++;
+                }
+                matches++;
+            }
+            else {
+                nonmatches++;
+                nonFit++;
+                if (!inFit && nonFit > 2) {
+                    m_FitLength = Math.max(m_FitLength,fitLength);
+                    fitLength = 0;
+                    inFit = false;
+                }
+            }
         }
-        return (double )matches / (double ) length;
+        m_FitLength = Math.max(m_FitLength,fitLength);
+
+        return (double) matches / (double) length;
     }
 
 
