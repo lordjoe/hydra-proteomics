@@ -121,6 +121,18 @@ public class KnownGene implements Comparable<KnownGene> {
         return getName().compareTo(o.getName());
     }
 
+    public boolean containsLocation(GeneLocation loc) {
+        if(!loc.getChromosome().equals(getChromosome()))
+            return false;
+        GeneInterval exon = getExon(loc);
+        return exon != null;
+    }
+
+    @Override
+    public String toString() {
+        return   m_ProteinId;
+    }
+
     public static void main(String[] args) {
         String[] lines = GeneUtilities.readInLines(args[0]);
         KnownGene[] knownGenes = GeneUtilities.knownGeneFromLines(lines);
@@ -130,4 +142,5 @@ public class KnownGene implements Comparable<KnownGene> {
         }
 
     }
+
 }

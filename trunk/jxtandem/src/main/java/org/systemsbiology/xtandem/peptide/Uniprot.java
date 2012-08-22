@@ -16,7 +16,7 @@ import java.util.logging.*;
 public class Uniprot {
     public static final Uniprot[] EMPTY_ARRAY = {};
 
-    public static final double GOOD_FIT = 0.4;
+    public static final double GOOD_FIT = 0.3;
     private static final String UNIPROT_SERVER = "http://www.uniprot.org/";
     private static final Logger LOG = Logger.getAnonymousLogger();
 
@@ -185,6 +185,7 @@ public class Uniprot {
     private final String[] m_Models;
     private final Map<String, BioJavaModel> m_IdToMpdel = new HashMap<String, BioJavaModel>();
     private final File m_ModelDirectory = new File("3DModels");
+    private BioJavaModel m_BestModel;
 
     public Uniprot(String line) {
         this(line.split("\t"));
@@ -255,34 +256,42 @@ public class Uniprot {
 
     }
 
-    public static boolean gDidReanalysis;
+    public static int gDidReanalysis;
 
-    public void reanalyze()
-    {
-        if(gDidReanalysis)
+    /**
+     * Walk through onr bad case
+     */
+    public void reanalyze() {
+        if (gDidReanalysis > 1)
             return;
-        gDidReanalysis = true;
+        gDidReanalysis++;
         int[] statistics = new int[3];
-        analyze(statistics ) ;
+        analyze(statistics);   // break here
+    }
+
+    public boolean isGoodFit() {
+        BioJavaModel[] mdls = getAllModels();
+        int sequencelen = getProtein().getSequenceLength();
+        for (int i = 0; i < mdls.length; i++) {
+            BioJavaModel mdl = mdls[i];
+            int fitLength = mdl.getFitLength();
+            if(fitLength > sequencelen / 2)
+                return true;
+            if(fitLength > 50)
+                return true;
+         }
+        return false;
     }
 
 
-    public   void analyze(final int[] statistics ) {
-        Protein protein =  getProtein();
-        String id = protein.getId();
+    public BioJavaModel[] getAllModels() {
+        List<BioJavaModel> holder = new ArrayList<BioJavaModel>();
         final String[] models = getModels();
-        if(models.length == 0)  {
-            statistics[NONE]++;
-            return  ;
-        }
-        double bestFit = 0;
         for (int j = 0; j < models.length; j++) {
             String model = models[j];
             try {
-                BioJavaModel mdl =  getModel(model);
-                double fraction = mdl.resolveChains();
-                bestFit = Math.max(bestFit, fraction);
-
+                BioJavaModel mdl = getModel(model);
+                holder.add(mdl);
             }
             catch (IllegalArgumentException e) {
                 // forgive
@@ -290,12 +299,46 @@ public class Uniprot {
 //                ThreeDModel.downLoad3DModel(model);
 //
         }
-        if (bestFit > GOOD_FIT) {
+
+        BioJavaModel[] ret = new BioJavaModel[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
+
+    public BioJavaModel getBestModel() {
+        return m_BestModel;
+    }
+
+    public void analyze(final int[] statistics) {
+        Protein protein = getProtein();
+        String id = protein.getId();
+        final String[] models = getModels();
+        if (models.length == 0) {
+            statistics[NONE]++;
+            return;
+        }
+        double bestFit = 0;
+        BioJavaModel[] mdls = getAllModels();
+        BioJavaModel best = null;
+        int sequencelen = getProtein().getSequenceLength();
+        for (int i = 0; i < mdls.length; i++) {
+            BioJavaModel mdl = mdls[i];
+            int fitLength = mdl.getFitLength();
+            double fraction = mdl.resolveChains();
+            if(fraction > bestFit) {
+                bestFit =  fraction;
+                best = mdl;
+            }
+            bestFit = Math.max(bestFit, fraction);
+         }
+        if (bestFit > GOOD_FIT || isGoodFit()) {
             statistics[GOOD]++;
+            m_BestModel = best;
+
             System.out.println("XXX" + protein.getId() + " matches " +
                     String.format("%5.3f", bestFit) + " of " + protein.getSequenceLength()
             );
-            if(bestFit < 0.55)
+            if (bestFit < 1.05 * GOOD_FIT)
                 reanalyze();
         }
         else {
@@ -304,7 +347,7 @@ public class Uniprot {
         }
 
         clearModels();
-     }
+    }
 
 
     public void clearModels() {
@@ -363,12 +406,12 @@ public class Uniprot {
             pt.analyze(statistics);
 
 
-         }
+        }
         System.out.println(
-                "good " +  statistics[GOOD] +
-                        " bad " +  statistics[BAD]    +
-                " none " + statistics[NONE]
-         );
+                "good " + statistics[GOOD] +
+                        " bad " + statistics[BAD] +
+                        " none " + statistics[NONE]
+        );
     }
 
 }
