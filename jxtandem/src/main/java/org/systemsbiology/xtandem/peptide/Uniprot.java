@@ -13,30 +13,26 @@ import java.util.logging.*;
  * User: steven
  * Date: 8/16/12
  */
-public class Uniprot
-{
+public class Uniprot {
     public static final Uniprot[] EMPTY_ARRAY = {};
 
-
+    public static final double GOOD_FIT = 0.4;
     private static final String UNIPROT_SERVER = "http://www.uniprot.org/";
     private static final Logger LOG = Logger.getAnonymousLogger();
 
     protected static String run(String tool, ParameterNameValue[] params)
-            throws Exception
-    {
+            throws Exception {
         String location = buildLocation(tool, params);
         return retrieveData(location);
     }
 
     protected static String run(String tool, Collection<ParameterNameValue> params)
-            throws Exception
-    {
+            throws Exception {
         String location = buildLocation(tool, params);
         return retrieveData(location);
     }
 
-    protected static String retrieveDataX(String location) throws IOException, InterruptedException
-    {
+    protected static String retrieveDataX(String location) throws IOException, InterruptedException {
         StringBuilder builder = new StringBuilder();
         URL url = new URL(location);
         LOG.info("Submitting...");
@@ -78,8 +74,7 @@ public class Uniprot
         return builder.toString();
     }
 
-    protected static String retrieveData(String location) throws IOException, InterruptedException
-    {
+    protected static String retrieveData(String location) throws IOException, InterruptedException {
         StringBuilder builder = new StringBuilder();
         URL url = new URL(location);
         LOG.info("Submitting...");
@@ -123,8 +118,7 @@ public class Uniprot
         return builder.toString();
     }
 
-    private static String buildLocation(String tool, ParameterNameValue[] params)
-    {
+    private static String buildLocation(String tool, ParameterNameValue[] params) {
         StringBuilder locationBuilder = new StringBuilder(UNIPROT_SERVER + tool + "/?");
         boolean first = true;
         for (ParameterNameValue pv : params) {
@@ -136,8 +130,7 @@ public class Uniprot
         return locationBuilder.toString();
     }
 
-    private static String buildLocation(String tool, Collection<ParameterNameValue> params)
-    {
+    private static String buildLocation(String tool, Collection<ParameterNameValue> params) {
         StringBuilder locationBuilder = new StringBuilder(UNIPROT_SERVER + tool + "/?");
         boolean first = true;
         for (ParameterNameValue pv : params) {
@@ -149,14 +142,12 @@ public class Uniprot
         return locationBuilder.toString();
     }
 
-    private static class ParameterNameValue
-    {
+    private static class ParameterNameValue {
         private final String name;
         private final String value;
 
         public ParameterNameValue(String name, String value)
-                throws UnsupportedEncodingException
-        {
+                throws UnsupportedEncodingException {
             this.name = name;
             this.value = value;
             //          this.name = URLEncoder.encode(name, "UTF-8");
@@ -165,8 +156,7 @@ public class Uniprot
     }
 
 
-    public static Uniprot getUniprot(String accession)
-    {
+    public static Uniprot getUniprot(String accession) {
         try {
             String s = run("uniprot", new ParameterNameValue[]{
                     //           new ParameterNameValue("format", "tab"),
@@ -180,7 +170,7 @@ public class Uniprot
                 return null;
             final String query = split[1];
             final String[] split1 = query.split("\t");
-            if( split1.length != 3)
+            if (split1.length != 3)
                 return null;
             return new Uniprot(split1);
         }
@@ -193,14 +183,14 @@ public class Uniprot
 
     private final Protein m_Protein;
     private final String[] m_Models;
+    private final Map<String, BioJavaModel> m_IdToMpdel = new HashMap<String, BioJavaModel>();
+    private final File m_ModelDirectory = new File("3DModels");
 
-    public Uniprot(String line)
-     {
+    public Uniprot(String line) {
         this(line.split("\t"));
-     }
+    }
 
-    public Uniprot(String[] split1)
-    {
+    public Uniprot(String[] split1) {
         final String annotation = split1[0];
         final String sequence = split1[2].replace(" ", "");
         m_Protein = Protein.buildProtein(annotation, sequence, "");
@@ -210,10 +200,12 @@ public class Uniprot
         else {
             m_Models = pdbs.split(";");
         }
+        if (!m_ModelDirectory.isDirectory())
+            throw new IllegalStateException("Model directory " + m_ModelDirectory + " does not exist");
+
     }
 
-    protected String getDelimitedModels()
-    {
+    protected String getDelimitedModels() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < m_Models.length; i++) {
             if (i > 0)
@@ -224,19 +216,37 @@ public class Uniprot
         return sb.toString();
     }
 
-    public Protein getProtein()
-    {
+    public Protein getProtein() {
         return m_Protein;
     }
 
-    public String[] getModels()
-    {
+    public String[] getModels() {
         return m_Models;
     }
 
+    public File getModelDirectory() {
+        return m_ModelDirectory;
+    }
+
+
+    /**
+     * @param id
+     * @return
+     * @throws IllegalArgumentException
+     */
+    public BioJavaModel getModel(String id) throws IllegalArgumentException {
+        BioJavaModel mdl = m_IdToMpdel.get(id);
+        if (mdl == null) {
+            mdl = new BioJavaModel(getProtein());
+            File mdr = getModelDirectory();
+            mdl.readFile(new File(mdr, id + ".pdb"));
+            m_IdToMpdel.put(id, mdl);
+        }
+        return mdl;
+    }
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return
                 m_Protein.getId() + "\t" +
                         getDelimitedModels() + "\t" +
@@ -245,9 +255,64 @@ public class Uniprot
 
     }
 
+    public static boolean gDidReanalysis;
 
-    public static Uniprot[] readUniprots()
+    public void reanalyze()
     {
+        if(gDidReanalysis)
+            return;
+        gDidReanalysis = true;
+        int[] statistics = new int[3];
+        analyze(statistics ) ;
+    }
+
+
+    public   void analyze(final int[] statistics ) {
+        Protein protein =  getProtein();
+        String id = protein.getId();
+        final String[] models = getModels();
+        if(models.length == 0)  {
+            statistics[NONE]++;
+            return  ;
+        }
+        double bestFit = 0;
+        for (int j = 0; j < models.length; j++) {
+            String model = models[j];
+            try {
+                BioJavaModel mdl =  getModel(model);
+                double fraction = mdl.resolveChains();
+                bestFit = Math.max(bestFit, fraction);
+
+            }
+            catch (IllegalArgumentException e) {
+                // forgive
+            }
+//                ThreeDModel.downLoad3DModel(model);
+//
+        }
+        if (bestFit > GOOD_FIT) {
+            statistics[GOOD]++;
+            System.out.println("XXX" + protein.getId() + " matches " +
+                    String.format("%5.3f", bestFit) + " of " + protein.getSequenceLength()
+            );
+            if(bestFit < 0.55)
+                reanalyze();
+        }
+        else {
+            statistics[BAD]++;
+
+        }
+
+        clearModels();
+     }
+
+
+    public void clearModels() {
+        m_IdToMpdel.clear();
+    }
+
+
+    public static Uniprot[] readUniprots() {
         String[] lines = FileUtilities.readInLines("Origene.tsv");
         List<Uniprot> holder = new ArrayList<Uniprot>();
         for (int i = 0; i < lines.length; i++) {
@@ -261,8 +326,7 @@ public class Uniprot
 
     }
 
-    private static void downloadUniprots(String pArg) throws IOException
-    {
+    private static void downloadUniprots(String pArg) throws IOException {
         File inp = new File("GoodProteins.txt");
         if (!inp.exists())
             throw new IllegalArgumentException("input file " + pArg + " does not exist");
@@ -286,20 +350,25 @@ public class Uniprot
     }
 
 
-    public static void main(String[] args) throws IOException
-    {
-       // downloadUniprots(args[0]);
+    public static final int GOOD = 0;
+    public static final int BAD = 1;
+    public static final int NONE = 2;
+
+    public static void main(String[] args) throws IOException {
+        // downloadUniprots(args[0]);
         Uniprot[] pts = readUniprots();
+        int[] statistics = new int[3];
         for (int i = 0; i < pts.length; i++) {
             Uniprot pt = pts[i];
-            final String[] models = pt.getModels();
-            for (int j = 0; j < models.length; j++) {
-                String model = models[j];
-                ThreeDModel.downLoad3DModel(model);
+            pt.analyze(statistics);
 
-            }
+
          }
+        System.out.println(
+                "good " +  statistics[GOOD] +
+                        " bad " +  statistics[BAD]    +
+                " none " + statistics[NONE]
+         );
     }
-
 
 }

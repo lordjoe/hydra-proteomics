@@ -15,7 +15,7 @@ public class ProteinPosition implements IProteinPosition {
     public static final String SERIALIZATION_SEPARATOR = "|";
 
     /**
-     * geive a sub peptide of the original peptide at offset build the new position objects
+     * give a sub peptide of the original peptide at offset build the new position objects
      *
      * @param newPeptide   new sub peptide
      * @param offset       offset >= 0
