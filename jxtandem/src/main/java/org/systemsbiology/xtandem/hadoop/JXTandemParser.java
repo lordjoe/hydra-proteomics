@@ -40,6 +40,33 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             counter.increment(1);
         }
 
+        public static final boolean COUNT_AMINO_ACIDS = true;
+
+        public void incrementNumberAminoAcids(Context context, String sequence) {
+            Counter counter = context.getCounter("Parser", "TotalAminoAcids");
+            counter.increment(sequence.length());
+
+            if (COUNT_AMINO_ACIDS) {
+                int[] aaCount = new int[20];
+                for (int i = 0; i < sequence.length(); i++) {
+                    FastaAminoAcid aa = FastaAminoAcid.fromChar(sequence.charAt(i));
+                    if (aa == null)
+                        continue;
+                    int index = FastaAminoAcid.asIndex(aa);
+                    if (index < 0 || index >= 20)
+                        continue;
+                    aaCount[index]++;
+                }
+                for (int i = 0; i < aaCount.length; i++) {
+                    int aaCounts = aaCount[i];
+                    FastaAminoAcid aa = FastaAminoAcid.fromIndex(i);
+                    Counter aacounter = context.getCounter("Parser", "AminoAcid" + aa);
+                    aacounter.increment(aaCounts);
+                }
+            }
+        }
+
+
         public void incrementNumberDecoysProteins(Context context) {
             Counter counter = context.getCounter("Parser", "TotalDecoyProteins");
             counter.increment(1);
@@ -73,6 +100,8 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 
             if (label.toUpperCase().contains("DECOY"))
                 incrementNumberDecoysProteins(context);
+
+            incrementNumberAminoAcids(context, sequence);
             incrementNumberMappedProteins(context);
             FastaHadoopLoader loader = getLoader();
             loader.handleProtein(label, sequence, context);
@@ -82,6 +111,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
                 showStatistics();
             }
         }
+
 
         private void showStatistics() {
             ElapsedTimer elapsed = getElapsed();

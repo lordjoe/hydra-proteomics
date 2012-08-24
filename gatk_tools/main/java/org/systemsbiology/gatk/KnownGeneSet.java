@@ -84,7 +84,17 @@ public class KnownGeneSet {
              KnownGene gene = genes.getGene(uniprotId);
              KnownGene[] gene2 = genes.getGenes(loc);
             if(gene != null)  {
+                GeneInterval[] exons = gene.getExons();
+                StringBuilder sb = new StringBuilder();
 
+                for (int j = 0; j < exons.length; j++) {
+                    GeneInterval exon = exons[j];
+                    String exs = GeneUtilities.locationToGenome(exon);
+                    sb.append(exs);
+                }
+                String genome = sb.toString();
+                String sequence = GeneUtilities.genomeToAminoAcid(  genome);
+                System.out.println(sequence);
             }
             else {
                gene = genes.getGene(loc);

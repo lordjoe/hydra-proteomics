@@ -652,6 +652,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             if (!ret)
                 throw new IllegalStateException("SequenceFinder failed");
             handleCounters(job);
+
             elapsed.showElapsed("Finished SequenceFinder");
             statistics.endJob("SequenceFinder");
             elapsed.reset();
@@ -670,7 +671,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             saveDatabaseSizes(jobs);
             statistics.endJob("MassFinder");
             statistics.endJob("Build Database");
-            if (isDatabaseBuildOnly()) {
+             if (isDatabaseBuildOnly()) {
                 if ("true".equalsIgnoreCase(HadoopUtilities.getProperty(DELETE_OUTPUT_DIRECTORIES_PROPERTY)))
                     deleteRemoteIntermediateDirectories();
                 return;

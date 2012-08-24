@@ -329,62 +329,123 @@ public enum FastaAminoAcid {
 
 
     /**
-     * convert to an index
-     *
-     * @param in !null value
-     * @return 0.. n - 1
-     */
-    public static int asIndex(FastaAminoAcid in) {
-        switch (in) {
-            case A:
-                return 0;
-            case C:
-                return 1;
-            case D: //("aspartate"),
-                return 2;
-            case E:  //"glutamate"),
-                return 3;
-            case F:  //"phenylalanine"),
-                return 4;
-            case G:  //"glycine"),
-                return 5;
-            case H:  //"histidine"),
-                return 6;
-            case I:  //"isoleucine"),
-                return 7;
-            case K:  //"lysine"),
-                return 8;
-            case L:  //"leucine"),
-                return 9;
-            case M:  //"methionine"),
-                return 10;
-            case N:  //"asparagine"),
-                return 11;
-            case P:  //"proline"),
-                return 12;
-            case Q:  //"glutamine"),
-                return 13;
-            case R:  //"arginine"),
-                return 14;
-            case S:  //"serine"),
-                return 15;
-            case T:  //"threonine"),
-                return 16;
-            case V:  //"valine"),
-                return 17;
-            case W:  //"tryptophan"),
-                return 18;
-            case Y:  //"tyrosine"),
-                return 19;
-            case Z:  //"glutamate or glutamine"),
-                return 20;
-            case B:  // "aspartate or asparagine"
-                return 22;
-            case X:  // "aspartate or asparagine"
-                return -1;   // todo id this right
-        }
-        throw new IllegalStateException("Never get here");
-    }
+      * convert to an index
+      *
+      * @param in !null value
+      * @return 0.. n - 1
+      */
+     public static int asIndex(FastaAminoAcid in) {
+         switch (in) {
+             case A:
+                 return 0;
+             case C:
+                 return 1;
+             case D: //("aspartate"),
+                 return 2;
+             case E:  //"glutamate"),
+                 return 3;
+             case F:  //"phenylalanine"),
+                 return 4;
+             case G:  //"glycine"),
+                 return 5;
+             case H:  //"histidine"),
+                 return 6;
+             case I:  //"isoleucine"),
+                 return 7;
+             case K:  //"lysine"),
+                 return 8;
+             case L:  //"leucine"),
+                 return 9;
+             case M:  //"methionine"),
+                 return 10;
+             case N:  //"asparagine"),
+                 return 11;
+             case P:  //"proline"),
+                 return 12;
+             case Q:  //"glutamine"),
+                 return 13;
+             case R:  //"arginine"),
+                 return 14;
+             case S:  //"serine"),
+                 return 15;
+             case T:  //"threonine"),
+                 return 16;
+             case V:  //"valine"),
+                 return 17;
+             case W:  //"tryptophan"),
+                 return 18;
+             case Y:  //"tyrosine"),
+                 return 19;
+             case Z:  //"glutamate or glutamine"),
+                 return 20;
+             case B:  // "aspartate or asparagine"
+                 return 22;
+             case X:  // "aspartate or asparagine"
+                 return -1;   // todo id this right
+         }
+         throw new IllegalStateException("Never get here");
+     }
+    /**
+      * convert to an index
+      *
+      * @param in !null value
+      * @return 0.. n - 1
+      */
+     public static FastaAminoAcid fromIndex(int in) {
+         switch (in) {
+             case 0:
+                 return A;
+             case 1:
+                 return C;
+             case 2: //("aspartate"),
+                 return D;
+             case 3:  //"glutamate"),
+                 return E;
+             case 4:  //"phenylalanine"),
+                 return F;
+             case 5:  //"glycine"),
+                 return G;
+             case 6:  //"histidine"),
+                 return H;
+             case 7:  //"isoleucine"),
+                 return I;
+             case 8:  //"lysine"),
+                 return K;
+             case 9:  //"leucine"),
+                 return L;
+             case 10:  //"methionine"),
+                 return M;
+             case 11:  //"asparagine"),
+                 return N;
+             case 12:  //"proline"),
+                 return P;
+             case 13:  //"glutamine"),
+                 return Q;
+             case 14:  //"arginine"),
+                 return R;
+             case 15:  //"serine"),
+                 return S;
+             case 16:  //"threonine"),
+                 return T;
+             case 17:  //"valine"),
+                 return V;
+             case 18:  //"tryptophan"),
+                 return W;
+             case 19:  //"tyrosine"),
+                 return Y;
+             case 20:   //"glutamate or glutamine"),
+             case 22:   // "aspartate or asparagine"
+             case -1:   // "aspartate or asparagine"
+                    return null;
+//             case Z:  //"glutamate or glutamine"),
+//                 return 20;
+//             case B:  // "aspartate or asparagine"
+//                 return 22;
+//             case X:  // "aspartate or asparagine"
+//                 return -1;   // todo id this right
+         }
+         throw new IllegalStateException("Never get here");
+     }
 
 
     public static FastaAminoAcid[] EMPTY_ARRAY = {};
