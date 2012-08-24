@@ -1,5 +1,6 @@
 package org.systemsbiology.gatk;
 
+import com.sun.jndi.toolkit.url.*;
 import net.sf.picard.reference.*;
 import net.sf.samtools.*;
 import org.broadinstitute.sting.gatk.contexts.*;
@@ -9,6 +10,7 @@ import org.broadinstitute.sting.utils.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.zip.*;
 
 /**
  * PACKAGE_NAME.org.systemsbiology.gatk.GeneUtilities
@@ -46,7 +48,7 @@ public class GeneUtilities {
     public static void guaranteeHeader(SAMFileWriter writer, ReferenceContext ref) {
         SAMFileHeader fileHeader = writer.getFileHeader();
         SAMSequenceDictionary sd = fileHeader.getSequenceDictionary();
-        if(sd.getSequences().isEmpty()) {
+        if (sd.getSequences().isEmpty()) {
             GenomeLocParser gp = ref.getGenomeLocParser();
         }
     }
@@ -66,9 +68,16 @@ public class GeneUtilities {
 
     public static String[] readInLines(File TheFile) {
         try {
-            return readInLines(new FileReader(TheFile));
+            if(TheFile.getName().endsWith(".gz"))
+                return readInLines(new InputStreamReader(new GZIPInputStream(new FileInputStream(TheFile))));
+              else
+                return readInLines(new FileReader(TheFile));
         }
         catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -262,6 +271,21 @@ public class GeneUtilities {
         return new GeneRegion(items[1], items[0]);
     }
 
+    public static String genomeToAminoAcid(String genome)
+    {
+        StringBuilder sb = new StringBuilder();
+
+         for(int i = 0; i < genome.length() - 2; i += 3)   {
+            String cdn = genome.substring(i,i + 3);
+            Codon codon = Codon.valueOf(cdn);
+            String aa = codon.getAminoAcid();
+            if(aa == null)
+                 aa = codon.getAminoAcid(); // break here
+             sb.append(aa);
+        }
+        return sb.toString();
+     }
+
     public static KnownGene[] knownGeneFromLines(String[] lines) {
         List<KnownGene> holder = new ArrayList<KnownGene>();
         for (int i = 0; i < lines.length; i++) {
@@ -277,4 +301,40 @@ public class GeneUtilities {
         holder.toArray(ret);
         return ret;
     }
+
+    public static String locationToGenome(GeneInterval loc) {
+        String fullGenome = chromosomeToGenome( loc.getChromosome());
+        String me = fullGenome.substring(loc.getStart(),loc.getEnd());
+        StringBuilder sb = new StringBuilder(me); // force creat new string so large buffer not held
+        return sb.toString();
+
+    }
+
+    private static final Map<String, String> gLastGenome = new HashMap<String, String>();
+
+    public static String chromosomeToGenome(String chromosome) {
+        String ret = gLastGenome.get(chromosome);
+        if (ret != null)
+            return ret;
+        ret = readChromosome(chromosome);
+        gLastGenome.clear();
+        gLastGenome.put(chromosome, ret);
+        return ret;
+
+    }
+
+    public static final String RESOURCE_LOC = "e:/resources/";
+
+    private static String readChromosome(String chromosome) {
+        File f = new File (RESOURCE_LOC  + chromosome + ".fa.gz");
+        String[] strings = GeneUtilities.readInLines(f);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < strings.length; i++) {
+            String string = strings[i];
+            if(string.startsWith(">"))
+                continue;
+            sb.append(string);
+        }
+        return sb.toString();
+     }
 }

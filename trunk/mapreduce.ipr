@@ -245,6 +245,7 @@
       <module fileurl="file://$PROJECT_DIR$/ConcurrentTools/concurrenttools.iml" filepath="$PROJECT_DIR$/ConcurrentTools/concurrenttools.iml" />
       <module fileurl="file://$PROJECT_DIR$/jxtandem/jxtandem.iml" filepath="$PROJECT_DIR$/jxtandem/jxtandem.iml" />
       <module fileurl="file://$PROJECT_DIR$/mapreduce.iml" filepath="$PROJECT_DIR$/mapreduce.iml" />
+      <module fileurl="file://$PROJECT_DIR$/models3d/models3d.iml" filepath="$PROJECT_DIR$/models3d/models3d.iml" />
       <module fileurl="file://$PROJECT_DIR$/proteos/proteos.iml" filepath="$PROJECT_DIR$/proteos/proteos.iml" />
     </modules>
   </component>
@@ -559,6 +560,17 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpcore/4.2.1/httpcore-4.2.1-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Maven: org.biojava:biojava3-alignment:3.0.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-alignment/3.0.4/biojava3-alignment-3.0.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-alignment/3.0.4/biojava3-alignment-3.0.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-alignment/3.0.4/biojava3-alignment-3.0.4-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: org.biojava:biojava3-core:3.0.4">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-core/3.0.4/biojava3-core-3.0.4.jar!/" />
@@ -568,6 +580,28 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-core/3.0.4/biojava3-core-3.0.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.biojava:biojava3-phylo:3.0.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-phylo/3.0.4/biojava3-phylo-3.0.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-phylo/3.0.4/biojava3-phylo-3.0.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-phylo/3.0.4/biojava3-phylo-3.0.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.biojava:biojava3-structure:3.0.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-structure/3.0.4/biojava3-structure-3.0.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-structure/3.0.4/biojava3-structure-3.0.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-structure/3.0.4/biojava3-structure-3.0.4-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.codehaus.jackson:jackson-core-asl:1.9.8">
@@ -689,6 +723,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-test/2.5.4/spring-test-2.5.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org:forester:0.955">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/forester/0.955/forester-0.955.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/forester/0.955/forester-0.955-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/forester/0.955/forester-0.955-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: oro:oro:2.0.8">
