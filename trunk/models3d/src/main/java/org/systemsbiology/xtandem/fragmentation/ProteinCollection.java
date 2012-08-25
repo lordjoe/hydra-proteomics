@@ -94,9 +94,26 @@ public class ProteinCollection implements IFastaHandler {
         if (!isUniprotIdUsed(uniprotId))
             return;
         Protein prot = Protein.buildProtein(annotation, sequence, null);
-        m_Proteins.put(uniprotId, prot);
+        addProtein(prot);
         getProteinFragmentationDescription(uniprotId); // create as needed
     }
+
+    public void addProtein(Protein prot) {
+        m_Proteins.put(prot.getId(), prot);
+        addProteinFragmentationDescription(prot);
+    }
+
+    public void addProteinFragmentationDescription(Protein prot) {
+        String id = prot.getId();
+        ProteinFragmentationDescription ret = m_UniProtIdToDescription.get(id);
+        if (ret == null) {
+            ret = new ProteinFragmentationDescription(id, this);
+            m_UniProtIdToDescription.put(id, ret);
+            if (SPECIAL_ID_SET.contains(id))  // temporary for now
+                ret.guaranteeFragments();
+        }
+    }
+
 
     protected String getProperty(String name) {
         guaranteeProperties();
@@ -144,7 +161,7 @@ public class ProteinCollection implements IFastaHandler {
     }
 
     public String[] getProteinIds() {
-        String[] strings = m_Proteins.keySet().toArray(new String[0]);
+        String[] strings = m_Proteins.keySet().toArray(new String[m_Proteins.size()]);
         Arrays.sort(strings);
         return strings;
     }
@@ -272,9 +289,9 @@ public class ProteinCollection implements IFastaHandler {
     public static final String[] TWO_INTERESTING = {"Q9Y296"};
     // says 3d model but nothing shown
     public static final String[] THREE_INTERESTING = {
-      //      "A8MT69",
- //           "O14933",
-  //          "O00139" ,
+            //      "A8MT69",
+            //           "O14933",
+            //          "O00139" ,
             "Q9Y3D8",
             "Q9NTM9",
             "O43924",
@@ -290,7 +307,7 @@ public class ProteinCollection implements IFastaHandler {
             "O14556",
             "O14733",
 
-     };
+    };
 
 
     public static void main(String[] args) {
@@ -299,7 +316,7 @@ public class ProteinCollection implements IFastaHandler {
         String[] ids = pc.getProteinIds();
         //     ids = SPECIAL_TEST_PROTEINS; // use only a few
         ids = THREE_INTERESTING; // look at only one case
-       // ids = MORE_PROTEINS;
+        // ids = MORE_PROTEINS;
         ProteinCoveragePageBuilder pb = new ProteinCoveragePageBuilder(pc);
         pb.buildPages(ids);
 

@@ -2,6 +2,8 @@ package org.systemsbiology.xtandem.peptide;
 
 import com.lordjoe.utilities.*;
 import org.systemsbiology.jmol.*;
+import org.systemsbiology.xtandem.fragmentation.*;
+import org.systemsbiology.xtandem.fragmentation.ui.*;
 
 import java.io.*;
 import java.net.*;
@@ -275,11 +277,11 @@ public class Uniprot {
         for (int i = 0; i < mdls.length; i++) {
             BioJavaModel mdl = mdls[i];
             int fitLength = mdl.getFitLength();
-            if(fitLength > sequencelen / 2)
+            if (fitLength > sequencelen / 2)
                 return true;
-            if(fitLength > 50)
+            if (fitLength > 50)
                 return true;
-         }
+        }
         return false;
     }
 
@@ -325,17 +327,17 @@ public class Uniprot {
             BioJavaModel mdl = mdls[i];
             int fitLength = mdl.getFitLength();
             double fraction = mdl.resolveChains();
-            if(fraction > bestFit) {
-                bestFit =  fraction;
+            if (fraction > bestFit) {
+                bestFit = fraction;
                 best = mdl;
             }
             bestFit = Math.max(bestFit, fraction);
-         }
+        }
         if (bestFit > GOOD_FIT || isGoodFit()) {
             statistics[GOOD]++;
             m_BestModel = best;
 
-            System.out.println("XXX" + protein.getId() + " matches " +
+            System.out.println("" + protein.getId() + " matches " +
                     String.format("%5.3f", bestFit) + " of " + protein.getSequenceLength()
             );
             if (bestFit < 1.05 * GOOD_FIT)
@@ -392,6 +394,53 @@ public class Uniprot {
         out.close();
     }
 
+    public static Uniprot[] getGoodModels(Uniprot[] pts) {
+        int[] statistics = new int[3];
+        List<Uniprot> holder = new ArrayList<Uniprot>();
+
+        for (int i = 0; i < pts.length; i++) {
+            Uniprot pt = pts[i];
+            pt.analyze(statistics);
+            if (pt.isGoodFit())
+                holder.add(pt);
+        }
+        Uniprot[] ret = new Uniprot[holder.size()];
+        holder.toArray(ret);
+        System.out.println(
+                "good " + statistics[GOOD] +
+                        " bad " + statistics[BAD] +
+                        " none " + statistics[NONE]
+        );
+        return ret;
+    }
+
+
+    public static void buildModelPages(Uniprot[] pts) {
+        Protein[] proteins = new Protein[pts.length];
+        String[] ids = new String[pts.length];
+        ProteinCollection pc = new ProteinCollection();
+        FoundPeptides fps = FoundPeptides.readFoundPeptides(new File("OrigenePeptides.tsv"));
+        for (int i = 0; i < ids.length; i++) {
+            Uniprot pt = pts[i];
+            Protein protein = pt.getProtein();
+            proteins[i] = protein;
+            String id = protein.getId();
+            FoundPeptide[] peptides = fps.getPeptides(id);
+            ProteinFragmentationDescription pfd = new ProteinFragmentationDescription( id, pc);
+            for (int j = 0; j < peptides.length; j++) {
+                FoundPeptide peptide = peptides[j];
+                IPolypeptide peptide1 = peptide.getPeptide();
+                pfd.addFragment( protein,    peptide1, j);
+            }
+            ids[i] = id;
+            BioJavaModel bestModel = pt.getBestModel();
+            throw new UnsupportedOperationException("Fix This"); // ToDo
+        }
+        ProteinCoveragePageBuilder pb = new ProteinCoveragePageBuilder(pc);
+        pb.buildPages(ids);
+
+    }
+
 
     public static final int GOOD = 0;
     public static final int BAD = 1;
@@ -400,18 +449,9 @@ public class Uniprot {
     public static void main(String[] args) throws IOException {
         // downloadUniprots(args[0]);
         Uniprot[] pts = readUniprots();
-        int[] statistics = new int[3];
-        for (int i = 0; i < pts.length; i++) {
-            Uniprot pt = pts[i];
-            pt.analyze(statistics);
-
-
-        }
-        System.out.println(
-                "good " + statistics[GOOD] +
-                        " bad " + statistics[BAD] +
-                        " none " + statistics[NONE]
-        );
+        Uniprot[] gm = getGoodModels(pts);
+        buildModelPages(gm);
     }
+
 
 }

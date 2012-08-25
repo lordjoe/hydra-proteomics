@@ -126,9 +126,14 @@ public class ProteinFragmentationDescription {
         String sequence = items[1].trim();
 
         Polypeptide fragment = new Polypeptide(sequence);
-        ProteinFragment pf = new ProteinFragment(protein, fragment, index++);
-        m_Fragments.add(pf);
+        addFragment(  protein,  fragment,index++ );
         return index;
+    }
+
+    public void addFragment(Protein protein,IPolypeptide fragment,int index )  {
+        ProteinFragment pf = new ProteinFragment(protein, fragment, index);
+        m_Fragments.add(pf);
+
     }
 
     public ProteinFragment[] getFragments() {
