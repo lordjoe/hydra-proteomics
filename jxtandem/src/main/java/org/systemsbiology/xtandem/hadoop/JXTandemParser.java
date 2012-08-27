@@ -49,7 +49,13 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             if (COUNT_AMINO_ACIDS) {
                 int[] aaCount = new int[20];
                 for (int i = 0; i < sequence.length(); i++) {
-                    FastaAminoAcid aa = FastaAminoAcid.fromChar(sequence.charAt(i));
+                    FastaAminoAcid aa = null;
+                    try {
+                        aa = FastaAminoAcid.fromChar(sequence.charAt(i));
+                    }
+                    catch (BadAminoAcidException e) {
+                        continue;
+                    }
                     if (aa == null)
                         continue;
                     int index = FastaAminoAcid.asIndex(aa);
