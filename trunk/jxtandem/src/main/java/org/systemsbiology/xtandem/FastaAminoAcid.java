@@ -234,7 +234,8 @@ public enum FastaAminoAcid {
      * @param in !null value
      * @return 0.. n - 1
      */
-    public static FastaAminoAcid fromChar(char in) {
+    public static FastaAminoAcid fromChar(char in) throws BadAminoAcidException
+    {
         switch (in) {
             case 'A':
                 return A;
@@ -284,12 +285,12 @@ public enum FastaAminoAcid {
                 return X;
         }
         if (!Character.isLetter(in))
-            throw new IllegalStateException("No Amino acid for char " + in);
+            throw new BadAminoAcidException( in);
 
         if (!Character.isUpperCase(in))
             return fromChar(Character.toUpperCase(in));
 
-        throw new IllegalStateException("No Amino acid for char " + in);
+        throw new BadAminoAcidException( in);
     }
 
 
