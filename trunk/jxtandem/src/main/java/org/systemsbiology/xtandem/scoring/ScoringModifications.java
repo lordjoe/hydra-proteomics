@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem.scoring;
 
 import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.hadoop.*;
 import org.systemsbiology.xtandem.peptide.*;
 
 import java.util.*;
@@ -23,22 +24,22 @@ public class ScoringModifications {
     private String m_ResiduePotentialModifications;
     private PeptideModification[] m_Modifications;
 
-    public ScoringModifications(IParameterHolder holder) {
-        m_NTerminalModificationMass = holder.getFloatParameter(
+    public ScoringModifications(IParameterHolder app) {
+        m_NTerminalModificationMass = app.getFloatParameter(
                 "protein, N-terminal residue modification mass", 0);
-        m_CTerminalModificationMass = holder.getFloatParameter(
+        m_CTerminalModificationMass = app.getFloatParameter(
                 "protein, C-terminal residue modification mass", 0);
-        m_NTerminalCharge = holder.getFloatParameter("protein, cleavage N-terminal mass change", 0);
-        m_CTerminalCharge = holder.getFloatParameter("protein, cleavage C-terminal mass change", 0);
+        m_NTerminalCharge = app.getFloatParameter("protein, cleavage N-terminal mass change", 0);
+        m_CTerminalCharge = app.getFloatParameter("protein, cleavage C-terminal mass change", 0);
 
-        m_ResidueModifications = holder.getIndexedParameters("residue, modification mass");
+        m_ResidueModifications = app.getIndexedParameters("residue, modification mass");
 
-        m_ResiduePotentialModifications = holder.getParameter("residue, potential modification mass");
+        m_ResiduePotentialModifications = app.getParameter("residue, potential modification mass");
 
-        buildModifications();
+        buildModifications(app);
     }
 
-    protected void buildModifications() {
+    protected void buildModifications(IParameterHolder app) {
         if (m_Modifications != null && m_Modifications.length > 0)
             return;
 
@@ -48,7 +49,10 @@ public class ScoringModifications {
             PeptideModification[] peptideModifications = PeptideModification.fromListString(m_ResiduePotentialModifications, PeptideModificationRestriction.Global, false);
             holder.addAll(Arrays.asList(peptideModifications));
         }
-        holder.add(PeptideModification.CYSTEIN_MODIFICATION);
+        boolean doHardCoded = app.getBooleanParameter(JXTandemLauncher.HARDCODED_MODIFICATIONS_PROPERTY,false);
+        if(doHardCoded)    {
+            holder.add(PeptideModification.CYSTEIN_MODIFICATION);
+        }
 
         m_Modifications = new PeptideModification[holder.size()];
         holder.toArray(m_Modifications);
