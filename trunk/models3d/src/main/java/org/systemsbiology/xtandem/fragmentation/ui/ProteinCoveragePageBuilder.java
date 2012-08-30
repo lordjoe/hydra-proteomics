@@ -105,6 +105,8 @@ public class ProteinCoveragePageBuilder {
             else
                 next = null;
             String id = ids[i];
+            if(id == null)
+                continue;
             System.out.println(id);
             String page = showCoveragePage(id, prev, next);
 
@@ -126,7 +128,7 @@ public class ProteinCoveragePageBuilder {
     protected String showCoveragePage(String id, String prev, String next) {
         ProteinCollection proteins = getProteins();
         ProteinFragmentationDescription pfd = proteins.getProteinFragmentationDescription(id);
-        int[] coverageLevels = pfd.getStatistics().getCoverateStatistics();
+        int[] coverageLevels = pfd.getStatistics().getCoverageStatistics();
         for (int i = 0; i < Math.min(MAX_COVERAGE, coverageLevels.length); i++) {
             int coverageLevel = coverageLevels[i];
             m_TotalCoverage[i] += coverageLevel;
@@ -150,6 +152,7 @@ public class ProteinCoveragePageBuilder {
                     System.out.println("problem " + id + " " + e.getMessage());
             }
             catch (IllegalArgumentException e) {
+                e.printStackTrace();
                 if (!e.getMessage().startsWith("Bad amino acid abbreviation"))
                     throw new RuntimeException(e);
                 else

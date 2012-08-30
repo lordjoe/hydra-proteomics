@@ -153,8 +153,10 @@ public class PDBObject extends AsaMolecule {
     }
 
     protected void handleConditions(final String line) {
-        if (!line.startsWith("EXPDTA"))   {
-            setExperimentalType(ExperimentalType.fromString(line.substring(10).trim()));
+        if (line.startsWith("EXPDTA"))   {
+            String trim = line.substring(10).trim();
+            ExperimentalType.fromString(trim);
+            setExperimentalType(ExperimentalType.fromString(trim));
             return;
         }
         String s = null;

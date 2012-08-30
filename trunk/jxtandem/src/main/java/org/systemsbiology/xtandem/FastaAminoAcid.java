@@ -179,9 +179,14 @@ public enum FastaAminoAcid {
                 return null;
               //  throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
              case 'I':  //"isoleucine"),
-                if ("ILE".equalsIgnoreCase(in))
-                    return I;
-                throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
+                 if ("ILE".equalsIgnoreCase(in))
+                     return I;
+                 if ("IPA".equalsIgnoreCase(in))
+                      return UNKNOWN;
+                 if ("IAA".equalsIgnoreCase(in))
+                        return UNKNOWN;
+                  return UNKNOWN;
+             //    throw new IllegalArgumentException("Bad amino acid abbreviation " + in);
             case 'L':  //"leucine"),
                 if ("LYS".equalsIgnoreCase(in))
                     return K;

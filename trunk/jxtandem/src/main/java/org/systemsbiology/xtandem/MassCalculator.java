@@ -17,19 +17,23 @@ public class MassCalculator {
     public static MassCalculator[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = MassCalculator.class;
 
+
+    private static MassType gDefaultMassType = MassType.monoisotopic;
+
+
     private static final MassCalculator[] INSTANCES = new MassCalculator[MassType.values().length];
     public static final PeptideModification CYSTEIN_MONO = PeptideModification.fromString("57.021464@C",PeptideModificationRestriction.Global,true);  // these are fixed modifications
     public static final PeptideModification CYSTEIN_AVERAGE = PeptideModification.fromString("57.0513@C",PeptideModificationRestriction.Global,true); // these are fixed modifications
-
-
-    private static MassType gDefaultMassType = MassType.monoisotopic;
 
     public static MassType getDefaultMassType() {
         return gDefaultMassType;
     }
 
     public static void setDefaultMassType(final MassType pDefaultMassType) {
+        if(pDefaultMassType == gDefaultMassType)
+            return;
         gDefaultMassType = pDefaultMassType;
+        PeptideModification.resetHardCodedModifications();
     }
 
 
@@ -81,6 +85,7 @@ public class MassCalculator {
         addMass("S", 31.9720707, 32.065);
         addMass("P", 30.973762, 30.973761);
         setAminoAcidMasses(_t);
+        checkAminoAcidMasses( );
         switch (_t) {
             case average:
                 addPermanentModifications(CYSTEIN_AVERAGE);
@@ -101,11 +106,14 @@ public class MassCalculator {
         if (m_PermanentModifications.contains(added))
             return;
         m_PermanentModifications.add(added);
+        // this might be a BIG Bud SLewis
+        /*
         char c = added.getAminoAcid().toString().charAt(0);
         int index1 = Character.toUpperCase(c);
         int index2 = Character.toLowerCase(c);
         double newMass = m_pdAaMass[index1] + added.getMassChange();
         m_pdAaMass[index1] = m_pdAaMass[index2] = newMass;
+        */
     }
 
 
@@ -134,7 +142,7 @@ public class MassCalculator {
 
             pdValue['j'] = pdValue['J'] = 0.0;
 
-            pdValue['k'] = pdValue['K'] = calcMass("C6H12ON2");
+            pdValue['k'] = pdValue['K'] = calcMass("C6H12ON2");  //  HO2CCH(NH2)(CH2)4NH2
 
             pdValue['l'] = pdValue['L'] = calcMass("C6H11ON");
 
@@ -231,6 +239,140 @@ public class MassCalculator {
 
     }
 
+    private void checkAminoAcidMasses( ) {
+
+        for (int i = 0; i < m_pdAaMass.length; i++) {
+            checkAminoAcidMasses(m_pdAaMass[i],i);
+
+        }
+    }
+
+    public static final double TOO_BIG_DIFFERENCE = 0.2;
+
+    private void checkAminoAcidMasses(double using,int test ) {
+
+          switch((char)test)  {
+              case 'A'  :
+              case 'a'  :
+                   if(Math.abs(using - 71.0788) > TOO_BIG_DIFFERENCE)
+                      throw new IllegalStateException("Bad mass " + (char)test);
+                  break;
+              case 'B'  :
+              case 'b'  :
+                   if(Math.abs(using - 114.1038) > TOO_BIG_DIFFERENCE)
+                      throw new IllegalStateException("Bad mass " + (char)test);
+                  break;
+              case 'C'  :
+              case 'c'  :
+                   if(Math.abs(using - 103.1388) > TOO_BIG_DIFFERENCE)
+                      throw new IllegalStateException("Bad mass " + (char)test);
+                  break;
+              case 'D'  :
+              case 'd'  :
+                   if(Math.abs(using - 115.0886) > TOO_BIG_DIFFERENCE)
+                      throw new IllegalStateException("Bad mass " + (char)test);
+                  break;
+              case 'E'  :
+              case 'e'  :
+                   if(Math.abs(using - 129.1155) > TOO_BIG_DIFFERENCE)
+                      throw new IllegalStateException("Bad mass " + (char)test);
+                  break;
+              case 'F'  :
+              case 'f'  :
+                   if(Math.abs(using - 147.1766) > TOO_BIG_DIFFERENCE)
+                      throw new IllegalStateException("Bad mass " + (char)test);
+                  break;
+              case 'G'  :
+              case 'g'  :
+                   if(Math.abs(using - 57.0519) > TOO_BIG_DIFFERENCE)
+                      throw new IllegalStateException("Bad mass " + (char)test);
+                  break;
+              case 'H'  :
+               case 'h'  :
+                    if(Math.abs(using - 137.1411) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'I'  :
+               case 'i'  :
+                    if(Math.abs(using - 113.1594) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'K'  :
+               case 'k'  :
+                    if(Math.abs(using - 128.1741) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'L'  :
+               case 'l'  :
+                    if(Math.abs(using - 113.1594) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'M'  :
+               case 'm'  :
+                    if(Math.abs(using - 131.1926) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'N'  :
+               case 'n'  :
+                    if(Math.abs(using - 114.1038) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'O'  :
+               case 'o'  :
+                    if(Math.abs(using - 114.1038) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'P'  :
+               case 'p'  :
+                    if(Math.abs(using - 97.1167) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'Q'  :
+               case 'q'  :
+                    if(Math.abs(using - 128.1307) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'R'  :
+               case 'r'  :
+                    if(Math.abs(using - 156.1875) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'S'  :
+               case 's'  :
+                    if(Math.abs(using - 87.0782) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'T'  :
+               case 't'  :
+                    if(Math.abs(using - 101.1051) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'V'  :
+               case 'v'  :
+                    if(Math.abs(using - 99.1326) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+              case 'W'  :
+               case 'w'  :
+                    if(Math.abs(using - 186.2132) > TOO_BIG_DIFFERENCE)
+                       throw new IllegalStateException("Bad mass " + (char)test);
+                   break;
+               case 'Y'  :
+                case 'y'  :
+                     if(Math.abs(using - 163.1760) > TOO_BIG_DIFFERENCE)
+                        throw new IllegalStateException("Bad mass " + (char)test);
+                    break;
+              case 'Z'  :
+                case 'z'  :
+                     if(Math.abs(using - 128.1307) > TOO_BIG_DIFFERENCE)
+                        throw new IllegalStateException("Bad mass " + (char)test);
+               default:
+                  break;
+          }
+      }
+
+
+
     /**
      * return the mass of a polypeptide
      *
@@ -304,15 +446,15 @@ public class MassCalculator {
         double mas = m_pdAaMass[aa & 0x7F];
         // we already handle the fixed cystein change
 
-//        switch(aa)  {
-//            case 'C'  :
-//            case 'c'  :
-//                mas += PeptideModification.CYSTEIN_MODIFICATION_MASS; // hard code cystein shift
-//                break;
-//            default:
-//                break;
-//
-//        }
+        switch(aa)  {
+            case 'C'  :
+            case 'c'  :
+                mas += PeptideModification.CYSTEIN_MODIFICATION_MASS; // hard code cystein shift
+                break;
+            default:
+                break;
+
+        }
         return mas;
     }
 

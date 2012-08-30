@@ -114,6 +114,16 @@ public class ProteinCollection implements IFastaHandler {
         }
     }
 
+    public void addProteinFragmentationDescription(ProteinFragmentationDescription fg) {
+        String id = fg.getProtein().getId();
+        m_UniProtIdToDescription.put(id, fg);
+    }
+
+    public ProteinFragmentationDescription[] getProteinFragmentationDescriptions() {
+        ProteinFragmentationDescription[] ret = m_UniProtIdToDescription.values().toArray(ProteinFragmentationDescription.EMPTY_ARRAY);
+        return ret;
+    }
+
 
     protected String getProperty(String name) {
         guaranteeProperties();
@@ -155,6 +165,7 @@ public class ProteinCollection implements IFastaHandler {
     public File getPDBDirectory() {
         String name = getProperty(PDB_DIRECTORY_PROPERTY);
         File ret = new File(name);
+        String path = ret.getAbsolutePath();
         if (!ret.exists() || !ret.isDirectory())
             throw new IllegalArgumentException("cannot find PDB directory " + name);
         return ret;
@@ -239,6 +250,10 @@ public class ProteinCollection implements IFastaHandler {
 
     public File getPDBModelFile(String uniprotId) {
         return m_UniProtIdToPDBFile.get(uniprotId);
+    }
+
+    public void addPDBModelFile(String uniprotId, File added) {
+        m_UniProtIdToPDBFile.put(uniprotId, added);
     }
 
     public boolean isUniprotIdUsed(String id) {

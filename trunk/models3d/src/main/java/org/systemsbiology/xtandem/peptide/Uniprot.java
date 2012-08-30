@@ -186,7 +186,7 @@ public class Uniprot {
     private final Protein m_Protein;
     private final String[] m_Models;
     private final Map<String, BioJavaModel> m_IdToMpdel = new HashMap<String, BioJavaModel>();
-    private final File m_ModelDirectory = new File("3DModels");
+    private final File m_ModelDirectory = new File("Models3D");
     private BioJavaModel m_BestModel;
 
     public Uniprot(String line) {
@@ -205,7 +205,6 @@ public class Uniprot {
         }
         if (!m_ModelDirectory.isDirectory())
             throw new IllegalStateException("Model directory " + m_ModelDirectory + " does not exist");
-
     }
 
     protected String getDelimitedModels() {
@@ -272,9 +271,14 @@ public class Uniprot {
     }
 
     public boolean isGoodFit() {
-        BioJavaModel[] mdls = getAllModels();
         int sequencelen = getProtein().getSequenceLength();
-        for (int i = 0; i < mdls.length; i++) {
+        BioJavaModel bestModel = getBestModel();
+        if(bestModel != null)
+            return true;
+
+        BioJavaModel[] mdls = getAllModels();
+
+         for (int i = 0; i < mdls.length; i++) {
             BioJavaModel mdl = mdls[i];
             int fitLength = mdl.getFitLength();
             if (fitLength > sequencelen / 2)
@@ -414,27 +418,35 @@ public class Uniprot {
         return ret;
     }
 
+    public static final int MAX_BUILT_PAGES =  100000;
 
     public static void buildModelPages(Uniprot[] pts) {
         Protein[] proteins = new Protein[pts.length];
         String[] ids = new String[pts.length];
-        ProteinCollection pc = new ProteinCollection();
+          ProteinCollection pc = new ProteinCollection();
         FoundPeptides fps = FoundPeptides.readFoundPeptides(new File("OrigenePeptides.tsv"));
+        File pdbDirectory = pc.getPDBDirectory();
+        int count = 0;
         for (int i = 0; i < ids.length; i++) {
             Uniprot pt = pts[i];
             Protein protein = pt.getProtein();
             proteins[i] = protein;
             String id = protein.getId();
             FoundPeptide[] peptides = fps.getPeptides(id);
-            ProteinFragmentationDescription pfd = new ProteinFragmentationDescription( id, pc);
+            ProteinFragmentationDescription pfd = new ProteinFragmentationDescription( id, pc,protein, peptides);
             for (int j = 0; j < peptides.length; j++) {
                 FoundPeptide peptide = peptides[j];
                 IPolypeptide peptide1 = peptide.getPeptide();
                 pfd.addFragment( protein,    peptide1, j);
             }
+            pc.addProteinFragmentationDescription(pfd);
             ids[i] = id;
             BioJavaModel bestModel = pt.getBestModel();
-            throw new UnsupportedOperationException("Fix This"); // ToDo
+             File added = new File(pdbDirectory, bestModel.getPdbCode() + ".pdb");
+            pc.addPDBModelFile(id, added);
+              if(count++ > MAX_BUILT_PAGES  )
+               break;
+
         }
         ProteinCoveragePageBuilder pb = new ProteinCoveragePageBuilder(pc);
         pb.buildPages(ids);

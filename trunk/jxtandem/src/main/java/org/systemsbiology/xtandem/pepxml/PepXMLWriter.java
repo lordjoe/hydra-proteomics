@@ -7,6 +7,7 @@ import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.scoring.*;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * org.systemsbiology.xtandem.pepxml.PepXMLWriter
@@ -138,10 +139,14 @@ public class PepXMLWriter {
     protected void showModifications(PrintWriter out) {
         IMainData application = getApplication();
         ScoringModifications scoringMods = application.getScoringMods();
-        for(PeptideModification pm :  scoringMods.getModifications())     {
+        PeptideModification[] modifications = scoringMods.getModifications();
+        Arrays.sort(modifications);
+        for(PeptideModification pm : modifications)     {
             showModification(pm,out);
         }
-         for(PeptideModification pm :  PeptideModification.getTerminalModifications())     {
+        PeptideModification.getTerminalModifications();
+        Arrays.sort(modifications);
+        for(PeptideModification pm : PeptideModification.getTerminalModifications())     {
              showModification(pm,out);
          }
     }

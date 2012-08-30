@@ -98,10 +98,17 @@ public class PeptideModification implements Comparable<PeptideModification> {
 
 
 
-    public static final double CYSTEIN_MODIFICATION_MASS = -57.02146;
+    public static final double CYSTEIN_MODIFICATION_MASS =  57.02146;
 
-    public static final PeptideModification CYSTEIN_MODIFICATION = new PeptideModification(FastaAminoAcid.C, CYSTEIN_MODIFICATION_MASS,
-            PeptideModificationRestriction.Global, true);
+     private static PeptideModification gCYSTEIN_MODIFICATION;
+
+    public static PeptideModification getCysteinModification()
+    {
+        if(gCYSTEIN_MODIFICATION == null)
+            gCYSTEIN_MODIFICATION = new PeptideModification(FastaAminoAcid.C, CYSTEIN_MODIFICATION_MASS,
+                         PeptideModificationRestriction.Global, true);
+        return gCYSTEIN_MODIFICATION;
+    }
 
     public static void guaranteeHardCodedModifications() {
         // new PeptideModification(FastaAminoAcid.C, CYSTEIN_MODIFICATION_MASS,
@@ -114,6 +121,15 @@ public class PeptideModification implements Comparable<PeptideModification> {
             new PeptideModification(FastaAminoAcid.E, -MassCalculator.getDefaultCalculator().calcMass("H2O"),
                     PeptideModificationRestriction.NTerminal, false);
         }
+    }
+
+
+    public static void resetHardCodedModifications() {
+        gNTermalModifications.clear();
+        gCTermalModifications.clear();
+         // new PeptideModification(FastaAminoAcid.C, CYSTEIN_MODIFICATION_MASS,
+        //        PeptideModificationRestriction.Global, true);
+        guaranteeHardCodedModifications();
     }
 
 
@@ -152,6 +168,7 @@ public class PeptideModification implements Comparable<PeptideModification> {
 
     private final FastaAminoAcid m_AminoAcid;
     private final double m_MassChange;
+    private final double m_PeptideMass;
     private final boolean m_Fixed;
     private final PeptideModificationRestriction m_Restriction;
 
@@ -182,6 +199,7 @@ public class PeptideModification implements Comparable<PeptideModification> {
         m_MassChange = Double.parseDouble(items[0]);
         m_Restriction = restriction;
         m_Fixed = fixed;
+        m_PeptideMass = computePeptideMass();
     }
 
     private PeptideModification(final FastaAminoAcid pAminoAcid, final double pMassChange) {
@@ -210,6 +228,7 @@ public class PeptideModification implements Comparable<PeptideModification> {
                 break;
         }
         m_Fixed = fixed;
+        m_PeptideMass = computePeptideMass();
     }
 
     /**
@@ -239,7 +258,21 @@ public class PeptideModification implements Comparable<PeptideModification> {
     }
 
     public double getPepideMass() {
-        return getMassChange() + MassCalculator.getDefaultCalculator().getAminoAcidMass(getAminoAcid().getAbbreviation().charAt(0)) ;
+         return m_PeptideMass;
+    }
+
+    private double computePeptideMass() {
+        String abbreviation = getAminoAcid().toString();
+        char aa = abbreviation.charAt(0);
+        MassCalculator defaultCalculator = MassCalculator.getDefaultCalculator();
+        double aminoAcidMass = defaultCalculator.getAminoAcidMass(aa);
+        double massChange = getMassChange();
+        if(aa == 'C' && Math.abs(57 - massChange) < 1)  {
+            aminoAcidMass -= CYSTEIN_MODIFICATION_MASS;
+        }
+
+        double ret = massChange + aminoAcidMass;
+        return ret;
     }
 
     public PeptideModificationRestriction getRestriction() {
@@ -295,7 +328,11 @@ public class PeptideModification implements Comparable<PeptideModification> {
             if (o.getAminoAcid() != null)
                 return 1;
         }
-        int ms1 = getRoundedMassChange();
+        PeptideModificationRestriction r1 = getRestriction();
+        PeptideModificationRestriction r2 = o.getRestriction();
+        if(r1 != r2)
+            return r1.compareTo(r2) ;
+          int ms1 = getRoundedMassChange();
         int ms2 = o.getRoundedMassChange();
         if (ms1 == ms2)
             return 0;
@@ -321,6 +358,8 @@ public class PeptideModification implements Comparable<PeptideModification> {
         int result;
         long temp;
         result = m_AminoAcid != null ? m_AminoAcid.hashCode() : 0;
+        if(getRestriction() != null)
+             result |= getRestriction().hashCode();
         temp = (long)getRoundedMassChange();
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;

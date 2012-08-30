@@ -49,9 +49,9 @@ public class ScoringModifications {
             PeptideModification[] peptideModifications = PeptideModification.fromListString(m_ResiduePotentialModifications, PeptideModificationRestriction.Global, false);
             holder.addAll(Arrays.asList(peptideModifications));
         }
-        boolean doHardCoded = app.getBooleanParameter(JXTandemLauncher.HARDCODED_MODIFICATIONS_PROPERTY,false);
+        boolean doHardCoded = app.getBooleanParameter(JXTandemLauncher.HARDCODED_MODIFICATIONS_PROPERTY,true);
         if(doHardCoded)    {
-            holder.add(PeptideModification.CYSTEIN_MODIFICATION);
+            holder.add(PeptideModification.getCysteinModification());
         }
 
         m_Modifications = new PeptideModification[holder.size()];

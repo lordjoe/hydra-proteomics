@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem.fragmentation;
 
 import com.lordjoe.utilities.*;
+import org.systemsbiology.xtandem.peptide.*;
 
 import java.util.*;
 
@@ -13,13 +14,21 @@ public class CoverageStatistics {
     public static final CoverageStatistics[] EMPTY_ARRAY = {};
 
     private final ProteinFragmentationDescription m_Fragments;
-    private final int[] m_CoverateStatistics;
+    private final int[] m_CoverageStatistics;
     private final PartitionStatistics[] m_DivisionStatistics;
+
+    public CoverageStatistics(ProteinFragmentationDescription fragments,FoundPeptide[] peptides) {
+        m_Fragments = fragments;
+        m_Fragments.buildCoverage(peptides);
+        short[] allCoverage = fragments.getAllCoverage();
+         m_CoverageStatistics = Util.computeStatistics(allCoverage);
+        m_DivisionStatistics = buildPartitionStatistics(allCoverage);
+     }
 
     public CoverageStatistics(ProteinFragmentationDescription fragments) {
         m_Fragments = fragments;
         short[] allCoverage = fragments.getAllCoverage();
-        m_CoverateStatistics = Util.computeStatistics(allCoverage);
+        m_CoverageStatistics = Util.computeStatistics(allCoverage);
         m_DivisionStatistics = buildPartitionStatistics(allCoverage);
     }
 
@@ -27,8 +36,8 @@ public class CoverageStatistics {
         return m_Fragments;
     }
 
-    public int[] getCoverateStatistics() {
-        return m_CoverateStatistics;
+    public int[] getCoverageStatistics() {
+        return m_CoverageStatistics;
     }
 
     public PartitionStatistics getPartitionStatistics(int numberPartitions) {

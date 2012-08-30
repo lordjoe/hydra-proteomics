@@ -18,9 +18,9 @@ public enum ExperimentalType {
 
     public static final String[] TYPES =
             {
-                    "X-RAY  DIFFRACTION",
-                    "FIBER  DIFFRACTION",
-                    "NEUTRON  DIFFRACTION",
+                    "X-RAY DIFFRACTION",
+                    "FIBER DIFFRACTION",
+                    "NEUTRON DIFFRACTION",
                     "ELECTRON  CRYSTALLOGRAPHY",
                     "ELECTRON  MICROSCOPY",
                     "SOLID-STATE  NMR ",
@@ -29,9 +29,15 @@ public enum ExperimentalType {
             };
 
     public static ExperimentalType fromString(String s) {
-        s = s.replace("  ", "_");
-        s = s.replace("_", "_");
-        return valueOf(s);
+        s = s.replace(" ", "_");
+        s = s.replace("-", "_");
+        try {
+            return valueOf(s);
+        }
+        catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+
+        }
 
     }
 
