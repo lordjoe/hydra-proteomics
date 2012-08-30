@@ -476,6 +476,7 @@ public class XTandemUtilities {
         gAverage.put(FastaAminoAcid.valueOf("Y"), 163.1760);
         gAverage.put(FastaAminoAcid.valueOf("Z"), 128.1307);
 
+
     }
 
     private static DataSource gDataSource;

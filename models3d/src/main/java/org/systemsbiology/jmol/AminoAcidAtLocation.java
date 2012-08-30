@@ -95,8 +95,14 @@ public class AminoAcidAtLocation extends AsaSubunit {
 
     @Override
     public String toString() {
-        return  m_AminoAcid.getAbbreviation() + m_Location;
-    }
+        StringBuilder sb = new StringBuilder();
+        sb.append(m_AminoAcid.getAbbreviation());
+        sb.append(Integer.toString(m_Location)) ;
+        ChainEnum chain = getChain();
+        if(chain != null)
+            sb.append(":" + chain) ;
+        return sb.toString();
+       }
 
     public boolean isDiSulphideBond() {
         return m_DiSulphideBond;

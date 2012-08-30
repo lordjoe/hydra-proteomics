@@ -52,6 +52,13 @@ public class ProteinFragmentationDescription {
         m_Statistics = new CoverageStatistics(this);
     }
 
+    public ProteinFragmentationDescription(final String uniprotId, ProteinCollection parent,Protein protein, FoundPeptide[] peptides) {
+        m_UniprotId = uniprotId;
+        m_Parent = parent;
+        m_Protein = protein;
+        m_Statistics = new CoverageStatistics(this, peptides);
+    }
+
     public int getInterestScore() {
         if (getFractionalCoverage() < 0.2)
             return 0;
@@ -126,11 +133,11 @@ public class ProteinFragmentationDescription {
         String sequence = items[1].trim();
 
         Polypeptide fragment = new Polypeptide(sequence);
-        addFragment(  protein,  fragment,index++ );
+        addFragment(protein, fragment, index++);
         return index;
     }
 
-    public void addFragment(Protein protein,IPolypeptide fragment,int index )  {
+    public void addFragment(Protein protein, IPolypeptide fragment, int index) {
         ProteinFragment pf = new ProteinFragment(protein, fragment, index);
         m_Fragments.add(pf);
 
@@ -143,9 +150,9 @@ public class ProteinFragmentationDescription {
     }
 
     public void guaranteeFragments() {
-        File fragmentsDirectory = getParent().getFragmentDirectory();
         if (!m_Fragments.isEmpty())
             return;
+        File fragmentsDirectory = getParent().getFragmentDirectory();
         File fragmentsFile = new File(fragmentsDirectory, getUniprotId() + ".fragments");
         if (fragmentsFile.exists() && fragmentsFile.length() > MINIMUM_LENGTH) {
             String[] lines = FileUtilities.readInLines(fragmentsFile);
@@ -176,7 +183,7 @@ public class ProteinFragmentationDescription {
             ProteinFragment pf = frage[i];
             AminoAcidAtLocation[] aas = new AminoAcidAtLocation[0];
             String sequence = pf.getSequence();
-             try {
+            try {
                 aas = model.getAminoAcidsForSequence(sequence);
             }
             catch (IllegalArgumentException e) {
@@ -185,9 +192,9 @@ public class ProteinFragmentationDescription {
                 throw new RuntimeException(e);
 
             }
-            if (aas == null || aas.length == 0)     {
+            if (aas == null || aas.length == 0) {
                 aas = model.getAminoAcidsForSequence(sequence);  // break here
-                 continue;
+                continue;
             }
             ret.put(pf, aas);
         }
@@ -218,6 +225,23 @@ public class ProteinFragmentationDescription {
         return m_FractionalCoverage;
     }
 
+    private int buildFragment(final FoundPeptide peptide, int index) {
+        Protein protein = getProtein();
+        addFragment(protein, peptide.getPeptide(), index++);
+        return index;
+    }
+
+
+    public void buildCoverage(FoundPeptide[] peptides) {
+        m_Fragments.clear();
+        int index = 0;
+        for (int i = 0; i < peptides.length; i++) {
+            FoundPeptide peptide = peptides[i];
+            index = buildFragment(peptide, index);
+         }
+        buildCoverage();
+    }
+
     public void buildCoverage() {
         ProteinFragment[] fragments = getFragments();
         Protein protein = getProtein();
@@ -245,10 +269,9 @@ public class ProteinFragmentationDescription {
         return ret;
     }
 
-    public SequenceChainMap[] getChainMappings()
-    {
+    public SequenceChainMap[] getChainMappings() {
         PDBObject model = getModel();
-        if(model == null)
+        if (model == null)
             return null;
         SequenceChainMap[] mappings = model.getMappings();
         return mappings;
