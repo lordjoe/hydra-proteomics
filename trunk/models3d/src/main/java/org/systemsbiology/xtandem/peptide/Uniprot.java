@@ -241,8 +241,18 @@ public class Uniprot {
         if (mdl == null) {
             mdl = new BioJavaModel(getProtein());
             File mdr = getModelDirectory();
-            mdl.readFile(new File(mdr, id + ".pdb"));
-            m_IdToMpdel.put(id, mdl);
+            File f = new File(mdr, id + ".pdb");
+            if(f.exists())  {
+                mdl.readFile(f);
+            }
+            else {
+                f = ThreeDModel.downLoad3DModel(mdr,id);
+                if(f.exists())  {
+                        mdl.readFile(f);
+                    }
+
+            }
+             m_IdToMpdel.put(id, mdl);
         }
         return mdl;
     }
@@ -273,12 +283,12 @@ public class Uniprot {
     public boolean isGoodFit() {
         int sequencelen = getProtein().getSequenceLength();
         BioJavaModel bestModel = getBestModel();
-        if(bestModel != null)
+        if (bestModel != null)
             return true;
 
         BioJavaModel[] mdls = getAllModels();
 
-         for (int i = 0; i < mdls.length; i++) {
+        for (int i = 0; i < mdls.length; i++) {
             BioJavaModel mdl = mdls[i];
             int fitLength = mdl.getFitLength();
             if (fitLength > sequencelen / 2)
@@ -361,8 +371,8 @@ public class Uniprot {
     }
 
 
-    public static Uniprot[] readUniprots() {
-        String[] lines = FileUtilities.readInLines("Origene.tsv");
+    public static Uniprot[] readUniprots(File inp) {
+        String[] lines = FileUtilities.readInLines(inp);
         List<Uniprot> holder = new ArrayList<Uniprot>();
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
@@ -398,6 +408,39 @@ public class Uniprot {
         out.close();
     }
 
+    public static  Uniprot[] writeProteins(String[] proteins, PrintWriter out) {
+
+        List<Uniprot> holder = new ArrayList<Uniprot>();
+
+          for (String id : proteins) {
+            Uniprot up = getUniprot(id);
+            if (up != null) {
+                final String x = up.toString();
+                out.println(x);
+               holder.add(up);
+            }
+            else {
+                System.err.println("Cannot find " + id);
+            }
+        }
+        out.close();
+        Uniprot[] ret = new Uniprot[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
+
+    public static  Uniprot[] writeProteins(String[] proteins, File outf) {
+
+        try {
+            PrintWriter out = new PrintWriter(new FileWriter(outf));
+            return writeProteins(proteins, out);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
+
     public static Uniprot[] getGoodModels(Uniprot[] pts) {
         int[] statistics = new int[3];
         List<Uniprot> holder = new ArrayList<Uniprot>();
@@ -418,34 +461,42 @@ public class Uniprot {
         return ret;
     }
 
-    public static final int MAX_BUILT_PAGES =  100000;
+    public static final int MAX_BUILT_PAGES = 100000;
 
-    public static void buildModelPages(Uniprot[] pts) {
+    public static void buildModelPages(Uniprot[] pts, File inp) {
+        FoundPeptides fps  = null;
+        if(inp != null)
+           fps = FoundPeptides.readFoundPeptides(inp);
         Protein[] proteins = new Protein[pts.length];
         String[] ids = new String[pts.length];
-          ProteinCollection pc = new ProteinCollection();
-        FoundPeptides fps = FoundPeptides.readFoundPeptides(new File("OrigenePeptides.tsv"));
-        File pdbDirectory = pc.getPDBDirectory();
+        ProteinCollection pc = new ProteinCollection();
+          File pdbDirectory = pc.getPDBDirectory();
         int count = 0;
         for (int i = 0; i < ids.length; i++) {
             Uniprot pt = pts[i];
             Protein protein = pt.getProtein();
             proteins[i] = protein;
             String id = protein.getId();
-            FoundPeptide[] peptides = fps.getPeptides(id);
-            ProteinFragmentationDescription pfd = new ProteinFragmentationDescription( id, pc,protein, peptides);
+            FoundPeptide[] peptides = FoundPeptide.EMPTY_ARRAY;
+            if(fps != null)
+                 peptides = fps.getPeptides(id);
+
+            ProteinFragmentationDescription pfd = new ProteinFragmentationDescription(id, pc, protein, peptides);
             for (int j = 0; j < peptides.length; j++) {
                 FoundPeptide peptide = peptides[j];
                 IPolypeptide peptide1 = peptide.getPeptide();
-                pfd.addFragment( protein,    peptide1, j);
+                pfd.addFragment(protein, peptide1, j);
             }
             pc.addProteinFragmentationDescription(pfd);
             ids[i] = id;
             BioJavaModel bestModel = pt.getBestModel();
-             File added = new File(pdbDirectory, bestModel.getPdbCode() + ".pdb");
-            pc.addPDBModelFile(id, added);
-              if(count++ > MAX_BUILT_PAGES  )
-               break;
+            if(bestModel != null)  {
+                File added = new File(pdbDirectory, bestModel.getPdbCode() + ".pdb");
+               pc.addPDBModelFile(id, added);
+
+            }
+             if (count++ > MAX_BUILT_PAGES)
+                break;
 
         }
         ProteinCoveragePageBuilder pb = new ProteinCoveragePageBuilder(pc);
@@ -453,6 +504,37 @@ public class Uniprot {
 
     }
 
+    private static void buildPages( File inp) {
+        Uniprot[] pts = readUniprots(inp);
+        Uniprot[] gm = getGoodModels(pts);
+//        buildModelPages(gm,inp);
+        buildModelPages(pts,null);
+     }
+
+    public static Uniprot buildUniprot(String id) {
+        Uniprot up = getUniprot(id);
+
+        return up;
+    }
+
+
+    private static void getUniptotsFromCommaSeparated(String[] args) {
+        File outf = new File(args[0]);
+        String id = args[1];
+        String[] items = id.split(",");
+        Uniprot[] ret = writeProteins(items,outf );
+        for (int i = 0; i < ret.length; i++) {
+           Uniprot uniprot = ret[i];
+
+       }
+    }
+
+
+    public static final String HEPC_IDS =
+            "H0YCK3,Q01629,F5H8E8.G3V3I4,Q9NP84,P06756,P42224,P12757,P31689,Q9UHN6" +
+                    ",Q06787,P23246,O14879,P55210,Q01629,Q9Y6K5,P25963,Q8WYK2,Q03169" +
+                    ",P07996,Q13287,Q13287,P06756,Q9BYX4,P42224,O15162,Q96DX8,P10451" +
+                    ",Q9NYY3,P47928,O15205,O95786,P31689,Q9UHN6,Q14142,P12757 ";
 
     public static final int GOOD = 0;
     public static final int BAD = 1;
@@ -460,9 +542,10 @@ public class Uniprot {
 
     public static void main(String[] args) throws IOException {
         // downloadUniprots(args[0]);
-        Uniprot[] pts = readUniprots();
-        Uniprot[] gm = getGoodModels(pts);
-        buildModelPages(gm);
+        File inp = new File(args[0]);
+        buildPages(inp);
+       // getUniptotsFromCommaSeparated(args);
+
     }
 
 

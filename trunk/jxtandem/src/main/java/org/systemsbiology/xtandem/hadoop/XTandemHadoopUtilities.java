@@ -36,7 +36,7 @@ public class XTandemHadoopUtilities {
     public static Class THIS_CLASS = XTandemHadoopUtilities.class;
 
 
-    public static final String[] EXTENSIONS_TO_CLEAN = { ".scans",".pep.xml",".counters",".hydra",".crc"};
+    public static final String[] EXTENSIONS_TO_CLEAN = {".scans", ".pep.xml", ".counters", ".hydra", ".crc"};
     // sequence files are faster but harder to read - change to true
     // when things word well
     public static final boolean USE_SEQUENCE_INTERMEDIATE_FILES = true;
@@ -60,25 +60,79 @@ public class XTandemHadoopUtilities {
         return HADOOP_INTERNAL_COUNTER_SET.contains(name);
     }
 
+    /**
+     * Framework ot work out why some scans are not scored
+     */
+    public static final String[] NOT_SCORRED_SCANS =
+            {
+                    "1630", //1630.2
+                    "1636", //1636.3
+                    "1642", //1642.4
+                    "1648", //1648.2
+                    "1654", //1654.2
+                    "1660", //1660.3
+                    "1666", //1666.3
+                    "1671", //1671.2
+                    "1676", //1676.2
+                    "1682", //1682.2
+                    "1686", //1686.5
+                    "1688", //1688.2
+                    "1694", //1694.3
+                    "1700", //1700.3
+                    "1706", //1706.2
+                    "1712", //1712.2
+                    "1718", //1718.3
+                    "1723", //1723.3
+                    "1728", //1728.3
+                    "1732", //1732.3
+                    "1734", //1734.2
+                    "1740", //1740.2
+                    "1746", //1746.2
+                    "1752", //1752.2
+                    "1758", //1758.3
+                    "1764", //1764.2
+                    "1765", //1765.2
+                    "1770", //1770.3
+                    "1776", //1776.2
+                    "1781", //1781.3
+                    "1782", //1782.3
+                    "1787", //1787.3
+                    "1790", //1790.3
+                    "1792", //1792.3
+                    "1798", //1798.2
+            };
+
+    private static Set<String> gNotScoredIds = new HashSet<String>(Arrays.asList(NOT_SCORRED_SCANS));
+
+    public static boolean isIdNotScored(String id) {
+        return gNotScoredIds.contains(id);
+    }
+
+    public static boolean isNotScored(ISpectralScan scan) {
+         return isIdNotScored(scan.getId());
+     }
+
+
+
 
     /**
      * delete all files with extensions in  EXTENSIONS_TO_CLEAN
+     *
      * @param fs
      * @param directory
      */
-    public static void cleanFileSystem( FileSystem fs,Path directory)
-    {
+    public static void cleanFileSystem(FileSystem fs, Path directory) {
         try {
             FileStatus[] files = fs.listStatus(directory);
-            if(files == null)
+            if (files == null)
                 return;
             for (int i = 0; i < files.length; i++) {
                 FileStatus file = files[i];
                 Path testPath = file.getPath();
-                String name =  testPath.getName();
+                String name = testPath.getName();
                 for (int j = 0; j < EXTENSIONS_TO_CLEAN.length; j++) {
-                    if(name.endsWith(EXTENSIONS_TO_CLEAN[j]))  {
-                        fs.delete(testPath,true);
+                    if (name.endsWith(EXTENSIONS_TO_CLEAN[j])) {
+                        fs.delete(testPath, true);
                         break;
                     }
 
@@ -91,10 +145,9 @@ public class XTandemHadoopUtilities {
         }
     }
 
-    public static void cleanFile(FileSystem fs,Path directory,String file)
-     {
-          throw new UnsupportedOperationException("Fix This"); // ToDo
-     }
+    public static void cleanFile(FileSystem fs, Path directory, String file) {
+        throw new UnsupportedOperationException("Fix This"); // ToDo
+    }
 
 
 //    public static final String[] MEANINGFUL_COUNTERS =
@@ -134,7 +187,6 @@ public class XTandemHadoopUtilities {
     public static int getMaxScoredPeptides() {
         return gMaxScoredPeptides;
     }
-
 
 
     public static void setMaxScoredPeptides(final int pMaxScoredPeptides) {
@@ -232,8 +284,6 @@ public class XTandemHadoopUtilities {
         else
             return new Path(gDefaultPath, s);
     }
-
-
 
 
     /**
@@ -699,14 +749,14 @@ public class XTandemHadoopUtilities {
      * @param text !null xml fragment
      * @return !null scan
      */
-    public static RawPeptideScan readScan(String text,String url) {
+    public static RawPeptideScan readScan(String text, String url) {
         text = text.trim();
         if (text.startsWith("<scan")) {
             // ignore level 1 scans
             if (text.contains("msLevel=\"1\""))
                 return null;
             TopLevelScanHandler handler = new TopLevelScanHandler();
-            if(url != null)
+            if (url != null)
                 handler.setDefaultURL(url);
             RawPeptideScan rawPeptideScan = null;
             try {
@@ -958,11 +1008,11 @@ public class XTandemHadoopUtilities {
 
 
     public static String dropExtension(String filename) {
-         int index = filename.lastIndexOf(".");
-         if(index == -1)
-             return filename;
-        return filename.substring(0,index);
-     }
+        int index = filename.lastIndexOf(".");
+        if (index == -1)
+            return filename;
+        return filename.substring(0, index);
+    }
 
     public static PrintWriter buildWriter(final TaskInputOutputContext context,
                                           HadoopTandemMain data) {
@@ -980,22 +1030,22 @@ public class XTandemHadoopUtilities {
         return ret;
     }
 
-    public static OutputStream buildOutputStream(TaskInputOutputContext context,String paramsFile,String added) {
+    public static OutputStream buildOutputStream(TaskInputOutputContext context, String paramsFile, String added) {
         final Configuration configuration = context.getConfiguration();
         // note we are reading from hdsf
         HDFSStreamOpener opener = new HDFSStreamOpener(configuration);
 
-           String filePath = opener.buildFilePath(paramsFile);
-         if (added != null)
+        String filePath = opener.buildFilePath(paramsFile);
+        if (added != null)
             paramsFile += added;
-           XTandemMain.addPreLoadOpener(opener);
+        XTandemMain.addPreLoadOpener(opener);
         // note we are reading from hdsf
         safeWrite(context, "Output File", paramsFile);
         HDFSAccessor accesor = opener.getAccesor();
         OutputStream os = accesor.openFileForWrite(paramsFile);
 
         return os;
-     }
+    }
 
     public static PrintWriter buildPrintWriter(TaskInputOutputContext context, String paramsFile, String added) {
 //        String paramsFile = buildOutputFileName(context, data);
@@ -1004,7 +1054,7 @@ public class XTandemHadoopUtilities {
         OutputStream out = buildOutputStream(context, paramsFile, added);
         PrintWriter ret = new PrintWriter(out);
         return ret;
-     }
+    }
 
 
     public static OutputStream buildOutputStream(TaskInputOutputContext context,
@@ -1012,18 +1062,18 @@ public class XTandemHadoopUtilities {
         final Configuration configuration = context.getConfiguration();
         String paramsFile = buildOutputFileName(context, data);
         String hpl = paramsFile.toLowerCase();
-          if (hpl.endsWith(".hydra")) {
-              paramsFile = paramsFile.substring(0, paramsFile.length() - ".hydra".length());
-              hpl = paramsFile.toLowerCase();
-          }
-          if (hpl.endsWith(".mzxml")) {
-              paramsFile = paramsFile.substring(0, paramsFile.length() - ".mzXML".length());
-              hpl = paramsFile.toLowerCase();
-          }
-          if (hpl.endsWith(".mzml")) {
-              paramsFile = paramsFile.substring(0, paramsFile.length() - ".mzml".length());
-              hpl = paramsFile.toLowerCase();
-          }
+        if (hpl.endsWith(".hydra")) {
+            paramsFile = paramsFile.substring(0, paramsFile.length() - ".hydra".length());
+            hpl = paramsFile.toLowerCase();
+        }
+        if (hpl.endsWith(".mzxml")) {
+            paramsFile = paramsFile.substring(0, paramsFile.length() - ".mzXML".length());
+            hpl = paramsFile.toLowerCase();
+        }
+        if (hpl.endsWith(".mzml")) {
+            paramsFile = paramsFile.substring(0, paramsFile.length() - ".mzml".length());
+            hpl = paramsFile.toLowerCase();
+        }
         if (added != null)
             paramsFile += added;
         //      if (host != null || !"null".equals(host)) {
@@ -1035,7 +1085,7 @@ public class XTandemHadoopUtilities {
         OutputStream os = accesor.openFileForWrite(paramsFile);
 
         return os;
-     }
+    }
 
 
     public static void setInputPath(final Job pJob, String pInputFile) throws IOException {
@@ -1048,16 +1098,16 @@ public class XTandemHadoopUtilities {
         FileInputFormat.addInputPath(pJob, ath);
     }
 
-    public static PrintWriter buildPrintWriter(TaskInputOutputContext context,HadoopTandemMain data) {
-           return buildPrintWriter(  context,  data,null);
-      }
+    public static PrintWriter buildPrintWriter(TaskInputOutputContext context, HadoopTandemMain data) {
+        return buildPrintWriter(context, data, null);
+    }
 
 
-    public static PrintWriter buildPrintWriter(TaskInputOutputContext context,HadoopTandemMain data, String added) {
-         OutputStream out = buildOutputStream(context, data, added);
-         PrintWriter ret = new PrintWriter(out);
-         return ret;
-      }
+    public static PrintWriter buildPrintWriter(TaskInputOutputContext context, HadoopTandemMain data, String added) {
+        OutputStream out = buildOutputStream(context, data, added);
+        PrintWriter ret = new PrintWriter(out);
+        return ret;
+    }
 
 
     public static OutputStream buildOutputStream(TaskInputOutputContext context,
@@ -1310,9 +1360,9 @@ public class XTandemHadoopUtilities {
     }
 
 
-    public static String buildCounterFileName(IJobRunner runner,Configuration pConf) {
+    public static String buildCounterFileName(IJobRunner runner, Configuration pConf) {
         String dir = pConf.get(PATH_KEY);
-        if(dir == null)
+        if (dir == null)
             dir = "";
         else
             dir += "/";

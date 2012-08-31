@@ -29,7 +29,7 @@ public interface IScoringAlgorithm
      */
     public MassType getMassType();
 
-    public   boolean isWithinLimits(double scanMass, double mass2);
+    public   boolean isWithinLimits(double scanMass, double mass2,int charge);
 
      /**
       * return the low and high limits of a mass scan

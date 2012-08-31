@@ -94,25 +94,25 @@ public class ScanPrecursorMz implements IScanPrecursorMZ {
      * @return as above
      */
     @Override
-    public boolean isMassWithinRange(double mass,IScoringAlgorithm alg) {
+    public boolean isMassWithinRange(double mass,int charge,IScoringAlgorithm alg) {
           if (m_PrecursorCharge == 0) {
             // try charge 2
             double test1 = (getMassChargeRatio() - XTandemUtilities.getProtonMass()) * 2 + XTandemUtilities.getProtonMass();
-            if (alg.isWithinLimits(test1, mass))
+            if (alg.isWithinLimits(test1, mass,0))
                 return true;
             // try charge 3
               double test2 = (getMassChargeRatio() - XTandemUtilities.getProtonMass()) * 3 + XTandemUtilities.getProtonMass();
-              if (alg.isWithinLimits(test2, mass))
+              if (alg.isWithinLimits(test2,  mass,0))
                   return true;
             // try charge 1 -NOTE THIS IS NEW
               double test3 =  getMassChargeRatio() ;
-              if (alg.isWithinLimits(test3, mass))
+              if (alg.isWithinLimits(test3, mass,0))
                   return true;
             return false; // give up
         }
         else {
             double test = getPrecursorMass();
-            boolean withinLimits = alg.isWithinLimits(test, mass);
+            boolean withinLimits = alg.isWithinLimits(test, mass,m_PrecursorCharge);
             if (withinLimits)
                 return true;
             return false; // give up

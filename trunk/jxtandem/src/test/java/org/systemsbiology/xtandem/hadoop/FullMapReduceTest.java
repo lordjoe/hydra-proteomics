@@ -241,7 +241,7 @@ public class FullMapReduceTest {
         for (int i = 0; i < pPps.length; i++) {
             IPolypeptide pp = pPps[i];
             double matchingMass = pp.getMatchingMass();
-            if (!scoring.isMassWithinRange(matchingMass,scoringAlgorithm))
+            if (!scoring.isMassWithinRange(matchingMass,0,scoringAlgorithm))
                 continue;
             holder.add(pp);
         }

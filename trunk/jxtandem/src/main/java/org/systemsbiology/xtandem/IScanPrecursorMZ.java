@@ -35,7 +35,7 @@ public interface IScanPrecursorMZ {
      * @param mass positive testMass
      * @return as above
      */
-   public boolean isMassWithinRange(double mass,IScoringAlgorithm alg);
+   public boolean isMassWithinRange(double mass,int charge,IScoringAlgorithm alg);
 
     /**
      * make a form suitable to

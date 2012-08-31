@@ -1565,10 +1565,9 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             if (files != null) {
                 System.err.println("Input files " + files);
                 outputFiles = files.split(",");
-            }
-            for (int i = 0; i < outputFiles.length; i++) {
-                outputFiles[i] += ".hydra";
-
+                for (int i = 0; i < outputFiles.length; i++) {
+                    outputFiles[i] += ".hydra";
+                  }
             }
 
         }

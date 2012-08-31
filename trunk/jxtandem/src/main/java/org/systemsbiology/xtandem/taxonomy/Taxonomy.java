@@ -111,7 +111,7 @@ public class Taxonomy implements ITaxonomy {
         //here for backward compatability
         if(getTandem() instanceof XTandemMain ) {
             Scorer scorer = ((XTandemMain) getTandem()).getScoreRunner();
-            return scorer.getPeptidesOfMass( scanmass);
+            return scorer.getPeptidesOfMass( scanmass );
         }
         throw new UnsupportedOperationException("Bad State");  
     }
@@ -131,7 +131,7 @@ public class Taxonomy implements ITaxonomy {
           //here for backward compatability
           if(getTandem() instanceof XTandemMain ) {
               Scorer scorer = ((XTandemMain) getTandem()).getScoreRunner();
-              return scorer.getPeptidesOfMass( scanmass);
+              return scorer.getPeptidesOfMass( scanmass );
           }
           throw new UnsupportedOperationException("Bad State");
      }
@@ -151,7 +151,7 @@ public class Taxonomy implements ITaxonomy {
           //here for backward compatability
           if(getTandem() instanceof XTandemMain ) {
               Scorer scorer = ((XTandemMain) getTandem()).getScoreRunner();
-              IPolypeptide[] peptidesOfMass = scorer.getPeptidesOfMass(interval.getMass());
+              IPolypeptide[] peptidesOfMass = scorer.getPeptidesOfMass(interval.getMass() );
               if(interval.isUnlimited())
                   return peptidesOfMass;
               List<IPolypeptide> holder = new ArrayList<IPolypeptide>();

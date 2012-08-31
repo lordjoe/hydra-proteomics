@@ -96,6 +96,10 @@ public class JXTantemConsolidator extends ConfiguredJobRunner implements IJobRun
                     numberReduceTasks = items.length;
                     job.setPartitionerClass(OutputFilePartitionerClass.class);
                 }
+                else {
+                    numberReduceTasks = 1;
+
+                }
             }
             job.setNumReduceTasks(numberReduceTasks);
 
