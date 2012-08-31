@@ -240,14 +240,21 @@ public class ThreeDModel {
         out.close();
     }
 
-    public static void downLoad3DModel(String id) throws IOException {
-         String urlStr =  DOWNLOAD_MODEL_STRING + id;
-        File fileName = new File(id + ".pdb");
-        if(fileName.exists() && fileName.length() > 1000)
-            return;
-        URL url = new URL(urlStr);
-        String[] strings = FileUtilities.readInLines(url);
-        FileUtilities.writeFileLines(fileName,strings);
+    public static File downLoad3DModel(File parent,String id)   {
+        try {
+            String urlStr =  DOWNLOAD_MODEL_STRING + id;
+            File fileName = new File(parent,id + ".pdb");
+            if(fileName.exists() && fileName.length() > 1000)
+                return null;
+            URL url = new URL(urlStr);
+            String[] strings = FileUtilities.readInLines(url);
+            FileUtilities.writeFileLines(fileName,strings);
+            return fileName;
+        }
+        catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+
+        }
     }
 
      public static final String DOWNLOAD_MODEL_STRING = "http://www.pdb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=";
@@ -257,6 +264,7 @@ public class ThreeDModel {
         if (!models.exists())
             throw new IllegalArgumentException("model file " + args[0] + " does not exist");
         String[] lines = FileUtilities.readInLines(models);
+        File base = new File(System.getProperty("user.dir"));
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
             String[] items = line.split("\t");
@@ -264,7 +272,8 @@ public class ThreeDModel {
             String[] ids = items[1].split(",");
 
             String id = ids[0];
-            downLoad3DModel(id);
+
+            downLoad3DModel(base,id);
             System.out.println("Downloaded "  + id );
         }
        // write3DModelList(models);

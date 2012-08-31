@@ -314,10 +314,17 @@ public class Scorer {
         if (spectrums.length == 0)
             return false;
         // frament is the wrong mass
-        if (!isTheoreticalSpectrumMassScored(pConditionedScan, spectrums[0]))
-            return false;
+        int charge = pConditionedScan.getCharge();
+        for (int i = 0; i < spectrums.length; i++) {
+            ITheoreticalSpectrum spectrum = spectrums[i];
+            int specCharge = spectrum.getCharge();
+            if(charge > 0 && specCharge > charge)
+                continue;
+            if ( isTheoreticalSpectrumMassScored(pConditionedScan, spectrum))
+                return true;
 
-        return true;
+        }
+         return false;
     }
 
 
@@ -335,20 +342,21 @@ public class Scorer {
         if (charge == 0)
             charge = DEFAULT_CHARGE;
         // block charge ion charge == charge
-        if (thisCharge > 1 && thisCharge == charge)
-            return false;
+        // HUH Why do that SLewis 8-31-2012
+     //   if (thisCharge > 1 && thisCharge == charge)
+    //        return false;
 
         double mass = pp.getMass();
         double matchmass = pp.getMatchingMass();
         //  matchmass = mass; // todo !!!!!!!!!!!!!!!!! is this good take out if not
         OriginatingScoredScan pConditionedScan1 = (OriginatingScoredScan) pConditionedScan;
         IScoringAlgorithm algorithm = getAlgorithm();
-        boolean massWithinRange = pConditionedScan1.isMassWithinRange(matchmass, algorithm);
+        boolean massWithinRange = pConditionedScan1.isMassWithinRange(matchmass,charge, algorithm);
         //  matchmass = mass; // todo !!!!!!!!!!!!!!!!! WHY WHY WHY DO I Need this to score all scans xtandem scores
         if (massWithinRange)
             return true;
         // if not then why not
-        return pConditionedScan1.isMassWithinRange(mass, algorithm);
+        return pConditionedScan1.isMassWithinRange(mass,charge, algorithm);
     }
 
     protected boolean isTheoreticalSpectrumScored(final IScoredScan pConditionedScan,
@@ -1186,7 +1194,7 @@ public class Scorer {
             if (pp.getSequence().length() < 2)
                 continue;
             double test_mass = pp.getMatchingMass();
-            if (!m_Algorithm.isWithinLimits(scanmass, test_mass))
+            if (!m_Algorithm.isWithinLimits(scanmass, test_mass,0))
                 continue;
             holder.add(pp);
         }

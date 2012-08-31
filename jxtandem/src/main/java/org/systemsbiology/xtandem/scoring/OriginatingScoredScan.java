@@ -197,10 +197,10 @@ public class OriginatingScoredScan implements IScoredScan, IAddable<IScoredScan>
      * @param mass positive testMass
      * @return as above
      */
-    public boolean isMassWithinRange(double mass, IScoringAlgorithm scorer) {
+    public boolean isMassWithinRange(double mass,int charge, IScoringAlgorithm scorer) {
         final RawPeptideScan raw = getRaw();
         final IScanPrecursorMZ mz = raw.getPrecursorMz();
-        return mz.isMassWithinRange(mass, scorer);
+        return mz.isMassWithinRange(mass,charge, scorer);
     }
 
 

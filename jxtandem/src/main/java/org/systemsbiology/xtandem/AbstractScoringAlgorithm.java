@@ -201,8 +201,10 @@ public abstract  class AbstractScoringAlgorithm implements ITandemScoringAlgorit
      * @return
      */
     @Override
-    public   boolean isWithinLimits(double scanMass, double mass2) {
+    public   boolean isWithinLimits(double scanMass, double mass2,int charge) {
         double del = scanMass - mass2;
+        if(charge > 1)
+            del /= charge;
 
         if (Math.abs(del) < 30)
             XTandemUtilities.breakHere();

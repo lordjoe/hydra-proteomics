@@ -474,9 +474,9 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
      * @param mass positive testMass
      * @return as above
      */
-    public boolean isMassWithinRange(double mass, IScoringAlgorithm scorer) {
+    public boolean isMassWithinRange(double mass,int charge, IScoringAlgorithm scorer) {
         final IScanPrecursorMZ mz = getPrecursorMz();
-        return mz.isMassWithinRange(mass, scorer);
+        return mz.isMassWithinRange(mass,charge, scorer);
     }
 
 

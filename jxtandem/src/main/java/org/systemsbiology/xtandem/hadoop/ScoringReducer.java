@@ -3,10 +3,8 @@ package org.systemsbiology.xtandem.hadoop;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
-//import org.springframework.jdbc.core.simple.*;
 import org.systemsbiology.common.*;
 import org.systemsbiology.hadoop.*;
-
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.ionization.*;
 import org.systemsbiology.xtandem.peptide.*;
@@ -17,6 +15,8 @@ import org.systemsbiology.xtandem.testing.*;
 
 import java.io.*;
 import java.util.*;
+
+//import org.springframework.jdbc.core.simple.*;
 
 /**
  * org.systemsbiology.xtandem.hadoop.ScoringReducer
@@ -32,7 +32,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
             {
                     "VLSKTAGIRVSPLILGGASIGDAWSGFMGSMNK",
                     "QVYHLGIKFALETTDLSEMYPIEYSPYK",
-                        };
+            };
 
     public static final Set<String> INTERESTING_SEQUENCE_SET = new HashSet<String>(Arrays.asList(INTERESTING_SEQUENCES));
 
@@ -48,8 +48,6 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         }
         return false;
     }
-
-
 
 
     // Special output for Josh Patterson LogJam
@@ -132,7 +130,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
             //guaranteeModifiedPeptideTable();
         }
         int task_number = XTandemHadoopUtilities.getTaskNumber(context.getConfiguration());
-         ScoringModifications scoringMods = application.getScoringMods();
+        ScoringModifications scoringMods = application.getScoringMods();
         PeptideModification[] modifications = scoringMods.getModifications();
         m_Modifications = new HashSet<PeptideModification>(Arrays.asList(modifications));
     }
@@ -207,10 +205,10 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         // Debug stuff
         //    if (mass > 2187 && mass < 2192)
         //        XTandemUtilities.breakHere();
-        if (mass == 2319  )
-           XTandemUtilities.breakHere();
- //       if (  mass > 3203  )
- //          XTandemUtilities.breakHere();
+        if (mass == 2319)
+            XTandemUtilities.breakHere();
+        //       if (  mass > 3203  )
+        //          XTandemUtilities.breakHere();
 
         int numberScoredPeptides = 0;
 
@@ -255,11 +253,16 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
                 String textStr = text.toString();
 
 
-                RawPeptideScan scan = XTandemHadoopUtilities.readScan(textStr,null);
+                RawPeptideScan scan = XTandemHadoopUtilities.readScan(textStr, null);
                 if (scan == null)
                     return; // todo or is an exception proper
                 numberScans++;
                 String id = scan.getId();
+
+
+                if (XTandemHadoopUtilities.isNotScored(scan))
+                    XTandemUtilities.breakHere();
+
 
                 // special code to store scans fo rtiming later
                 if (STORING_SCANS) {
@@ -390,6 +393,8 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         return scoring;
     }
 
+    public static int gNumberNotScored = 0;
+
     protected int scoreScan(final Scorer scorer, ITandemScoringAlgorithm sa, final IonUseCounter pCounter, final ITheoreticalSpectrumSet[] pSpectrums, final IScoredScan pConditionedScan) {
         int numberScoredSpectra = 0;
         boolean LOG_INTERMEDIATE_RESULTS = false;
@@ -401,13 +406,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         if (peaks.length == 0)
             return 0; // not scoring this one
         // NOTE this is totally NOT Thread Safe
-        Arrays.fill(Scorer.PEAKS_BY_MASS, 0);
-        // build list of peaks as ints  with the index being the imass
-        for (int i = 0; i < peaks.length; i++) {
-            ISpectrumPeak peak = peaks[i];
-            int imass = TandemKScoringAlgorithm.massChargeRatioAsInt(peak);
-            Scorer.PEAKS_BY_MASS[imass] += peak.getPeak();
-        }
+        fillSpectrumPeaks(peaks);
 
 //        DebugDotProduct logDotProductB = null;
 //        DebugDotProduct logDotProductY = null;
@@ -428,14 +427,34 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
             ITheoreticalSpectrumSet tsSet = pSpectrums[j];
             // debugging test
             IPolypeptide peptide = tsSet.getPeptide();
-            if(isInterestingSequence(peptide))
-                 XTandemUtilities.breakHere();
+            if (isInterestingSequence(peptide))
+                XTandemUtilities.breakHere();
 
 
-            if (scorer.isTheoreticalSpectrumScored(pConditionedScan, tsSet))
+            if (scorer.isTheoreticalSpectrumScored(pConditionedScan, tsSet)) {
                 numberScoredSpectra += scoreOnePeptide(sa, pCounter, pConditionedScan, scan, Scorer.PEAKS_BY_MASS, precursorCharge, tsSet);
+            }
+            else {
+                // for the moment reiterate the code to find out why not scored
+                if (XTandemHadoopUtilities.isNotScored(pConditionedScan.getRaw())) {
+                    XTandemUtilities.breakHere();
+                    boolean notDone = scorer.isTheoreticalSpectrumScored(pConditionedScan, tsSet);
+                    gNumberNotScored++;
+
+                }
+            }
         }
         return numberScoredSpectra;
+    }
+
+    private void fillSpectrumPeaks(ISpectrumPeak[] peaks) {
+        Arrays.fill(Scorer.PEAKS_BY_MASS, 0);
+        // build list of peaks as ints  with the index being the imass
+        for (int i = 0; i < peaks.length; i++) {
+            ISpectrumPeak peak = peaks[i];
+            int imass = TandemKScoringAlgorithm.massChargeRatioAsInt(peak);
+            Scorer.PEAKS_BY_MASS[imass] += peak.getPeak();
+        }
     }
 
     private int scoreOnePeptide(ITandemScoringAlgorithm pSa, final IonUseCounter pCounter, final IScoredScan pConditionedScan, final IMeasuredSpectrum pScan, final double[] pPeaksByMass, final int pPrecursorCharge, final ITheoreticalSpectrumSet pTsSet) {
@@ -470,7 +489,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
             if (pPrecursorCharge != 0 && charge > pPrecursorCharge)
                 continue;
             //     JXTandemLauncher.logMessage(scanid + "\t" + sequence + "\t" + charge);
-               if (maxCharge <=  charge) // if (maxCharge <= charge)  // do NOT score the maximum charge
+            if (maxCharge <= charge) // if (maxCharge <= charge)  // do NOT score the maximum charge
                 continue;
 
             List<DebugMatchPeak> holder = new ArrayList<DebugMatchPeak>();
@@ -598,7 +617,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         while (textIterator.hasNext()) {
             Text text = textIterator.next();
             String textStr = text.toString();
-            RawPeptideScan scan = XTandemHadoopUtilities.readScan(textStr,null);
+            RawPeptideScan scan = XTandemHadoopUtilities.readScan(textStr, null);
             if (scan == null)
                 return true;
 

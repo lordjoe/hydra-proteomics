@@ -23,6 +23,7 @@ public class ScanTagMapper extends AbstractTandemMapper<Writable> {
     public static final int REPORT_INTERVAL_SCANS = 1000;
 
 
+
     /// Some debugging hooks when we walk interesting cases
     public static boolean isMassInteresting(int mass) {
         for (int i = 0; i < INTERESTING_MASSES.length; i++) {
@@ -151,6 +152,10 @@ public class ScanTagMapper extends AbstractTandemMapper<Writable> {
 
 
         String id = scan.getId();
+
+        if(XTandemHadoopUtilities.isNotScored(scan))
+            XTandemUtilities.breakHere();
+
  //       if("8840".equals(id))
 //            XTandemUtilities.breakHere();
         // top level nested scans lack this
