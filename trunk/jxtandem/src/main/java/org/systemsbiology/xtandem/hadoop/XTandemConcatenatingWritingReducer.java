@@ -109,7 +109,12 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
                 System.err.println("Input files " + files);
                 String[] items = files.split(",");
                 m_OutputFiles = items;
-            }
+                  if(items.length == 1)     {
+                      m_OutputFiles = null;
+                      application.setParameter(BiomlReporter.FORCED_OUTPUT_NAME_PARAMETER, items[0]);
+                      m_UseMultipleOutputFiles = false;
+                  }
+               }
 
         }
         String fileName = conf.get(BiomlReporter.FORCED_OUTPUT_NAME_PARAMETER);
@@ -201,7 +206,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
                 //               System.err.println("key " + keyStr + " index " + index + " m_OutputFiles.length " + m_OutputFiles.length);
                 fileIndex = Integer.parseInt(keyStr.substring(0, index));
                 System.err.println("fileIndex " + fileIndex);
-                if (fileIndex >= 0 && fileIndex < m_OutputFiles.length) {
+                if (isUseMultipleOutputFiles() && fileIndex >= 0 && fileIndex < m_OutputFiles.length) {
                     usedFileName = m_OutputFiles[fileIndex];
                     System.err.println("usedFileName " + usedFileName);
                     setWriters(context, app, usedFileName);

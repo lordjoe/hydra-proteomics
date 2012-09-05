@@ -303,6 +303,10 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         m_TaxonomyName = notes.get("protein, taxon");
         m_SpectrumPath = notes.get("spectrum, path"); //, "test_spectra.mgf");
         m_OutputPath = notes.get("output, path"); //, "output.xml");
+        // little hack to separate real tandem and hydra results
+        if(m_OutputPath != null)
+             m_OutputPath = m_OutputPath.replace(".tandem.xml",".hydra.xml");
+
         m_OutputResults = notes.get("output, results");
 
         String requiredPrefix = getRequiredPathPrefix();

@@ -64,6 +64,9 @@ public class BiomlReporter {
             return absoluteName;
 
          String name = pParameters.getParameter("output, path");
+          // little hack to separate real tandem and hydra results
+        if(name != null)
+            name = name.replace(".tandem.xml",".hydra.xml");
         if("full_tandem_output_path".equals(name)) {
             System.err.println("output matches input file");
             return name;
