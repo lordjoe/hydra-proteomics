@@ -12,7 +12,7 @@ import java.util.*;
  * <p/>
  * Shrake, A., and J. A. Rupley. "Environment and Exposure to Solvent
  * of Protein Atoms. Lysozyme and Insulin." JMB (1973) 79:351-371.
- * Adapted from the Pythin Code of
+ * Adapted from the Python Code of
  * http://boscoh.com/protein/asapy
  * <p/>
  * Date: 7/11/12

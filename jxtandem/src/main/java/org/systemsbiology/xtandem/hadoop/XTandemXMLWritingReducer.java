@@ -71,7 +71,15 @@ public class XTandemXMLWritingReducer extends AbstractTandemReducer {
             String files = conf.get(JXTandemLauncher.INPUT_FILES_PROPERTY);
              if (files != null) {
                  String[] items = files.split(",");
-                 m_OutputFiles = items;
+                 if(items.length > 1)  {
+                     m_OutputFiles = items;
+                    m_UseMultipleOutputFiles = items.length > 1;
+
+                 }
+                 else {
+                     m_OutputFile = items[0];
+                 }
+
               }
 
         }

@@ -93,13 +93,14 @@ public class ProteinCollection implements IFastaHandler {
         String uniprotId = parseAnnotation(annotation);
         if (!isUniprotIdUsed(uniprotId))
             return;
-        Protein prot = Protein.buildProtein(annotation, sequence, null);
-        addProtein(prot);
+        Protein prot = Protein.buildProtein(uniprotId, sequence, null);
+         addProtein(prot);
         getProteinFragmentationDescription(uniprotId); // create as needed
     }
 
     public void addProtein(Protein prot) {
-        m_Proteins.put(prot.getId(), prot);
+        String id = prot.getId();
+        m_Proteins.put(id, prot);
         addProteinFragmentationDescription(prot);
     }
 
