@@ -58,9 +58,11 @@ public class ScoringComparisonReport {
         Set<String> jxtandemOnly = new HashSet<String>(xTandemScored);
         jxtandemOnly.removeAll(xTandemScored);
 
-        System.out.println("xtandemOnly");
-        for (String key : xtandemOnly)
-            System.out.println(key);
+        String[] xtandemOnlyIds = xtandemOnly.toArray(new String[0]) ;
+        Arrays.sort(xtandemOnlyIds);
+        System.out.println("xtandemOnly " + xtandemOnlyIds.length);
+        for (String key : xtandemOnlyIds)
+            System.out.println("\"" + key + "\",");
 
         System.out.println("jxtandemOnly");
         for (String key : jxtandemOnly)

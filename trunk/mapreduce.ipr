@@ -613,6 +613,28 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-structure/3.0.4/biojava3-structure-3.0.4-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Maven: org.biojava:bytecode:1.8.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/bytecode/1.8.2/bytecode-1.8.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/bytecode/1.8.2/bytecode-1.8.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/bytecode/1.8.2/bytecode-1.8.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.biojava:core:1.8.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/core/1.8.2/core-1.8.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/core/1.8.2/core-1.8.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/core/1.8.2/core-1.8.2-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: org.codehaus.jackson:jackson-core-asl:1.9.8">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/jackson/jackson-core-asl/1.9.8/jackson-core-asl-1.9.8.jar!/" />
