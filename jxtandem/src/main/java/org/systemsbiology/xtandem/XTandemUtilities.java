@@ -42,7 +42,9 @@ public class XTandemUtilities {
     public static final int MAXIMUM_SEQUENCE_PEPTIDES = 40; // ignore peptides larger than this
     public static final int MAX_SCORED_MASS = 5000;
 
-    private static IMZToInteger gDefaultConverter = TandemKScoringAlgorithm.K_SCORING_CONVERTER;
+
+
+      private static IMZToInteger gDefaultConverter = TandemKScoringAlgorithm.K_SCORING_CONVERTER;
 
     public static final Comparator OBJECT_STRING_COMPARATOR = new ObjectStringComparator();
 

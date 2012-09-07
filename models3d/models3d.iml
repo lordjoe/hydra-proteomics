@@ -51,6 +51,57 @@
     <orderEntry type="module" module-name="proteos" />
     <orderEntry type="module" module-name="jxtandem" />
     <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
+    <orderEntry type="module" module-name="concurrenttools" />
+    <orderEntry type="module" module-name="jxtandem" />
+    <orderEntry type="module" module-name="proteos" />
     <orderEntry type="library" name="Maven: commons-dbcp:commons-dbcp:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: commons-pool:commons-pool:1.3" level="project" />
     <orderEntry type="module" module-name="concurrenttools" />
@@ -96,6 +147,8 @@
     <orderEntry type="library" name="Maven: org.biojava:biojava3-core:3.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.biojava:biojava3-phylo:3.0.4" level="project" />
     <orderEntry type="library" name="Maven: org:forester:0.955" level="project" />
+    <orderEntry type="library" name="Maven: org.biojava:core:1.8.2" level="project" />
+    <orderEntry type="library" name="Maven: org.biojava:bytecode:1.8.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-test:2.5.4" level="project" />
   </component>
 </module>
