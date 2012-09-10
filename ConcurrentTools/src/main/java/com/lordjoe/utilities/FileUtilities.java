@@ -176,6 +176,22 @@ public abstract class FileUtilities {
     }
 
     /**
+     * make sure a file f exists, is  a file and can be read
+     * @param f  !null file
+     */
+    public static void guaranteeExistingFile(File f)  throws IllegalArgumentException
+    {
+        if(f == null)
+            throw new IllegalArgumentException("null argument to guaranteeExistingFile");
+        if(!f.exists())
+            throw new IllegalArgumentException("File " + f.getAbsolutePath() + " does not exist");
+        if(!f.isFile())
+            throw new IllegalArgumentException("File " + f.getAbsolutePath() + " is not a file");
+        if(!f.canRead())
+            throw new IllegalArgumentException("File " + f.getAbsolutePath() + " cannot be read");
+    }
+
+    /**
      * generate an MD5 digest of a specific file
      *
      * @param theFile !null readable file of length <  Integer,MAX_VALUE

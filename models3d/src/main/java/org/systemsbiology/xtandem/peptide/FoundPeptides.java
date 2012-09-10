@@ -18,11 +18,16 @@ public class FoundPeptides {
              String line = rdr.readLine();
              while (line != null) {
                  String[] items = line.split("\t");
+                 if(items.length < 3)   {
+                     line = rdr.readLine();
+                     continue;
+                 }
                  IPolypeptide peptide1 = FoundPeptide.toPolyPeptide(items[0]);
                  int charge = Integer.parseInt(items[2]);
                  String[] proteins = items[1].split("/");
-                 for (int i = 1; i < proteins.length; i++) {
-                     String proteinId = proteins[i];
+            //     for (int i = 1; i < proteins.length; i++) {
+                     for (int i = 0; i < proteins.length; i++) {
+                      String proteinId = proteins[i];
                      FoundPeptide fp = new FoundPeptide(peptide1, proteinId, charge);
                      fps.addPeptide(fp);
                  }

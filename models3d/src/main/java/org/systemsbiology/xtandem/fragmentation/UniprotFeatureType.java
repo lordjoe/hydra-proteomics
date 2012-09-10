@@ -1,48 +1,66 @@
 package org.systemsbiology.xtandem.fragmentation;
 
+import java.util.*;
+
 /**
  * org.systemsbiology.xtandem.fragmentation.UniprotFeatureType
  * User: steven
  * Date: 9/7/12
  */
 public enum UniprotFeatureType {
-    CHAIN,DOMAIN,
-    VARIANT,
-    COMPBIAS,
-    TRANSMEM,
-    SIGNAL,
-    COILED,MOTIF,
-    NP_BIND,
-    BINDING,
     ACT_SITE,
+    BINDING,
+    CARBOHYD,
+    CA_BIND,
+    CHAIN,
+    COILED,
+    COMPBIAS,
+    CONFLICT,
+    CROSSLNK,
+    DISULFID,
+    DNA_BIND,
+    DOMAIN,
+    HELIX,
     INIT_MET,
+    INTRAMEM,
     LIPID,
     METAL,
-    ZN_FING,
-    DISULFID,
-    PROPEP,
-    CARBOHYD,
-    TOPO_DOM,
-    REPEAT,
-    REGION,
-    NON_TER,
-    STRAND,
-    HELIX,
-    CONFLICT,
-    TURN,
     MOD_RES,
-    VAR_SEQ,
-    NON_CONS,
-    SITE,
+    MOTIF,
     MUTAGEN,
-    UNSURE,
-    CROSSLNK,
-    TRANSIT,
+    NON_CONS,
+    NON_STD,
+    NON_TER,
+    NP_BIND,
     PEPTIDE,
-    DNA_BIND,
-    CA_BIND,
-    INTRAMEM,
-    NON_STD;
+    PROPEP,
+    REGION,
+    REPEAT,
+    SIGNAL,
+    SITE,
+    STRAND,
+    TOPO_DOM,
+    TRANSIT,
+    TRANSMEM,
+    TURN,
+    UNSURE,
+    VARIANT,
+    VAR_SEQ,
+    ZN_FING,
+    ;
     public static final UniprotFeatureType[] EMPTY_ARRAY = {};
 
+    public static void showAllFeatures() {
+         UniprotFeatureType[] values = UniprotFeatureType.values();
+         String[] names = new String[values.length];
+         for (int i = 0; i < values.length; i++) {
+             names[i]  = values[i].toString();
+
+         }
+         Arrays.sort(names);
+         for (int i = 0; i < names.length; i++) {
+             String value = names[i];
+             System.out.println(value  + ",");
+         }
+     }
 }
