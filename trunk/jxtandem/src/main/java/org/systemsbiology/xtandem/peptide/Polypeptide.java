@@ -26,6 +26,19 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         }
     }
 
+    public static final Comparator<IPolypeptide> STRING_COMPARATOR = new StringComparator();
+
+    public static class StringComparator implements Comparator<IPolypeptide> {
+        private StringComparator() {
+        }
+
+        @Override
+        public int compare(final IPolypeptide o1, final IPolypeptide o2) {
+            int ret = o1.toString().compareTo(o2.toString());
+            return ret;
+        }
+    }
+
     public static IPolypeptide fromString(String s)
     {
         if(s.contains("["))

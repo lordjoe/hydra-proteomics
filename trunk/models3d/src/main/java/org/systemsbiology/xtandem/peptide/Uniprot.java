@@ -1,7 +1,10 @@
 package org.systemsbiology.xtandem.peptide;
 
 import com.lordjoe.utilities.*;
+import org.biojava.bio.seq.*;
+import org.biojava.bio.symbol.*;
 import org.systemsbiology.jmol.*;
+import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 import org.systemsbiology.xtandem.fragmentation.ui.*;
 
@@ -21,6 +24,12 @@ public class Uniprot {
     public static final double GOOD_FIT = 0.3;
     private static final String UNIPROT_SERVER = "http://www.uniprot.org/";
     private static final Logger LOG = Logger.getAnonymousLogger();
+
+    public static final double MINIMUM_FRAGMENT_MASS = 600;
+    public static final double MAXIMUM_FRAGMENT_MASS = 5000;
+    public static final double MINIMUM_FRAGMENT_LENGTH = 6;
+    public static final double MAXIMUM_FRAGMENT_LENGTH = 50;
+
 
     protected static String run(String tool, ParameterNameValue[] params)
             throws Exception {
@@ -184,10 +193,17 @@ public class Uniprot {
 
 
     private final Protein m_Protein;
+    private final ProteinAminoAcid[] m_AminoAcids;
     private final String[] m_Models;
+
     private final Map<String, BioJavaModel> m_IdToMpdel = new HashMap<String, BioJavaModel>();
     private final File m_ModelDirectory = new File("Models3D");
     private BioJavaModel m_BestModel;
+    private final Set<IPolypeptide> m_Detected = new HashSet<IPolypeptide>();
+    private final Set<IPolypeptide> m_Theoretical = new HashSet<IPolypeptide>();
+    private final Set<String> m_TheoreticalSequences = new HashSet<String>();
+    private boolean m_BadPeptide;
+    private Sequence m_Sequence;
 
     public Uniprot(String line) {
         this(line.split("\t"));
@@ -196,7 +212,6 @@ public class Uniprot {
     public Uniprot(String[] split1) {
         final String annotation = split1[0];
         final String sequence = split1[2].replace(" ", "");
-        m_Protein = Protein.buildProtein(annotation, sequence, "");
         String pdbs = split1[1].trim();
         if (pdbs.length() == 0)
             m_Models = new String[0];
@@ -205,6 +220,99 @@ public class Uniprot {
         }
         if (!m_ModelDirectory.isDirectory())
             throw new IllegalStateException("Model directory " + m_ModelDirectory + " does not exist");
+
+        m_Protein = Protein.buildProtein(annotation, sequence, "");
+        buildTheoreticalPeptides(PeptideBondDigester.getDigester("Trypsin"));
+        int seqLength = sequence.length();
+        FastaAminoAcid[] fastaAminoAcids = FastaAminoAcid.asAminoAcids(sequence);
+        m_AminoAcids = new ProteinAminoAcid[fastaAminoAcids.length];
+        for (int i = 0; i < fastaAminoAcids.length; i++) {
+            m_AminoAcids[i] = new ProteinAminoAcid(fastaAminoAcids[i], i);
+
+        }
+
+    }
+
+    protected void buildTheoreticalPeptides(PeptideBondDigester trypsin) {
+        IPolypeptide[] digest = trypsin.digest(getProtein());
+        for (int i = 0; i < digest.length; i++) {
+            IPolypeptide pp = digest[i];
+            if (isPeptideAcceptable(pp)) {
+                m_Theoretical.add(pp);
+                m_TheoreticalSequences.add(pp.getSequence());
+            }
+        }
+    }
+
+    public boolean isBadPeptide() {
+        return m_BadPeptide;
+    }
+
+    public void setBadPeptide(boolean badPeptide) {
+        m_BadPeptide = badPeptide;
+    }
+
+    public Sequence getSequence() {
+        return m_Sequence;
+    }
+
+    public void setSequence(Sequence sequence) {
+        m_Sequence = sequence;
+        Feature[] fts = SwissProt.getAnalyzedFeatures(sequence);
+        for (int i = 0; i < fts.length; i++) {
+            Feature ft = fts[i];
+            handleFeature(ft);
+        }
+    }
+
+    protected void handleFeature(Feature ft) {
+        UniprotFeatureType type = SwissProt.getFeatureType(ft);
+        switch (type) {
+            case TRANSMEM:
+            case STRAND:
+            case TURN:
+            case HELIX:
+                handleFeature(ft, type);
+                break;
+            default:
+                throw new IllegalStateException("never get here");
+        }
+    }
+
+    protected void handleFeature(Feature ft, UniprotFeatureType expected) {
+        UniprotFeatureType type = SwissProt.getFeatureType(ft);
+
+        if (type != expected)
+            throw new IllegalArgumentException("must have type " + expected);
+        setFeatureAtLocation(ft, type);
+    }
+
+
+    private void setFeatureAtLocation(Feature ft, UniprotFeatureType type) {
+        Location location = ft.getLocation();
+        int min = location.getMin();
+        int max = location.getMin();
+        ProteinAminoAcid[] aminoAcids = getAminoAcids();
+        for (int i = min; i < max; i++) {
+            ProteinAminoAcid aminoAcid = aminoAcids[i];
+            aminoAcid.addFeature(type);
+        }
+    }
+
+    protected void handleTurn(Feature ft) {
+        UniprotFeatureType type = SwissProt.getFeatureType(ft);
+        if (type != UniprotFeatureType.TURN)
+            throw new IllegalArgumentException("must have type " + UniprotFeatureType.TURN);
+        throw new UnsupportedOperationException("Fix This"); // ToDo
+    }
+
+    protected boolean isPeptideAcceptable(IPolypeptide pp) {
+        int length = pp.getSequenceLength();
+        if (length < MINIMUM_FRAGMENT_LENGTH)
+            return false;
+        if (length > MAXIMUM_FRAGMENT_LENGTH)
+            return false;
+        return true;
     }
 
     protected String getDelimitedModels() {
@@ -216,6 +324,68 @@ public class Uniprot {
 
         }
         return sb.toString();
+    }
+
+    public boolean isDetected(IPolypeptide pp) {
+        return m_Detected.contains(pp);
+    }
+
+    public boolean isAminoAcidDetected(int index) {
+        return m_AminoAcids[index].isDetected();
+    }
+
+    public FastaAminoAcid getAnimoAcid(int index) {
+        return m_AminoAcids[index].getAminoAcid();
+    }
+
+    public ProteinAminoAcid[] getAminoAcids() {
+        return m_AminoAcids;
+    }
+
+
+    public int getDetectedCount() {
+        int sum = 0;
+        ProteinAminoAcid[] aminoAcids = getAminoAcids();
+        for (int i = 0; i < aminoAcids.length; i++) {
+            boolean d = aminoAcids[i].isDetected();
+            if (d)
+                sum++;
+        }
+        return sum;
+    }
+
+    public int getFirstDetected() {
+        ProteinAminoAcid[] aminoAcids = getAminoAcids();
+        for (int i = 0; i < aminoAcids.length; i++) {
+            boolean d = aminoAcids[i].isDetected();
+            if (d)
+                return i;
+        }
+        return -1;
+    }
+
+    public int getLastDetected() {
+        ProteinAminoAcid[] aminoAcids = getAminoAcids();
+        for (int i = aminoAcids.length - 1; i >= 0; i--) {
+            boolean d = aminoAcids[i].isDetected();
+            if (d)
+                return i;
+        }
+        return -1;
+    }
+
+    public IPolypeptide[] getTheoretical() {
+        IPolypeptide[] iPolypeptides = m_Theoretical.toArray(IPolypeptide.EMPTY_ARRAY);
+        Arrays.sort(iPolypeptides, Polypeptide.STRING_COMPARATOR);
+        return iPolypeptides;
+
+    }
+
+    public IPolypeptide[] getDetected() {
+        IPolypeptide[] iPolypeptides = m_Detected.toArray(IPolypeptide.EMPTY_ARRAY);
+        Arrays.sort(iPolypeptides, Polypeptide.STRING_COMPARATOR);
+        return iPolypeptides;
+
     }
 
     public Protein getProtein() {
@@ -242,17 +412,17 @@ public class Uniprot {
             mdl = new BioJavaModel(getProtein());
             File mdr = getModelDirectory();
             File f = new File(mdr, id + ".pdb");
-            if(f.exists())  {
+            if (f.exists()) {
                 mdl.readFile(f);
             }
             else {
-                f = ThreeDModel.downLoad3DModel(mdr,id);
-                if(f.exists())  {
-                        mdl.readFile(f);
-                    }
+                f = ThreeDModel.downLoad3DModel(mdr, id);
+                if (f.exists()) {
+                    mdl.readFile(f);
+                }
 
             }
-             m_IdToMpdel.put(id, mdl);
+            m_IdToMpdel.put(id, mdl);
         }
         return mdl;
     }
@@ -325,6 +495,29 @@ public class Uniprot {
         return m_BestModel;
     }
 
+
+    public void addFoundPeptide(IPolypeptide peptide) {
+        m_Detected.add(peptide);
+        String pst = peptide.getSequence();
+        Protein protein = getProtein();
+        String id = protein.getId();
+        String prost = protein.getSequence();
+        int index = prost.indexOf(pst);
+        if (index == -1) {
+            //  System.out.println("BAD PEPTIDE " + pst + "  NOT IN " + id);
+            setBadPeptide(true);
+            return;
+            // throw new IllegalStateException("sequence needs ot occur once " + pst);
+        }
+        while (index > -1) {
+            for (int i = index; i < (index + pst.length()); i++) {
+                m_AminoAcids[i].setDetected(true);
+            }
+            index = prost.indexOf(pst, index + 1);
+        }
+    }
+
+
     public void analyze(final int[] statistics) {
         Protein protein = getProtein();
         String id = protein.getId();
@@ -370,18 +563,21 @@ public class Uniprot {
         m_IdToMpdel.clear();
     }
 
+    public String getId() {
+        return getProtein().getId();
+    }
 
-    public static Uniprot[] readUniprots(File inp) {
+
+    public static Map<String, Uniprot> readUniprots(File inp) {
         String[] lines = FileUtilities.readInLines(inp);
-        List<Uniprot> holder = new ArrayList<Uniprot>();
+        Map<String, Uniprot> holder = new HashMap<String, Uniprot>();
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
             Uniprot up = new Uniprot(line);
-            holder.add(up);
+            Protein protein = up.getProtein();
+            holder.put(up.getId(), up);
         }
-        Uniprot[] ret = new Uniprot[holder.size()];
-        holder.toArray(ret);
-        return ret;
+        return holder;
 
     }
 
@@ -408,16 +604,16 @@ public class Uniprot {
         out.close();
     }
 
-    public static  Uniprot[] writeProteins(String[] proteins, PrintWriter out) {
+    public static Uniprot[] writeProteins(String[] proteins, PrintWriter out) {
 
         List<Uniprot> holder = new ArrayList<Uniprot>();
 
-          for (String id : proteins) {
+        for (String id : proteins) {
             Uniprot up = getUniprot(id);
             if (up != null) {
                 final String x = up.toString();
                 out.println(x);
-               holder.add(up);
+                holder.add(up);
             }
             else {
                 System.err.println("Cannot find " + id);
@@ -429,7 +625,7 @@ public class Uniprot {
         return ret;
     }
 
-    public static  Uniprot[] writeProteins(String[] proteins, File outf) {
+    public static Uniprot[] writeProteins(String[] proteins, File outf) {
 
         try {
             PrintWriter out = new PrintWriter(new FileWriter(outf));
@@ -464,13 +660,13 @@ public class Uniprot {
     public static final int MAX_BUILT_PAGES = 100000;
 
     public static void buildModelPages(Uniprot[] pts, File inp) {
-        FoundPeptides fps  = null;
-        if(inp != null)
-           fps = FoundPeptides.readFoundPeptides(inp);
+        FoundPeptides fps = null;
+        if (inp != null)
+            fps = FoundPeptides.readFoundPeptides(inp);
         Protein[] proteins = new Protein[pts.length];
         String[] ids = new String[pts.length];
         ProteinCollection pc = new ProteinCollection();
-          File pdbDirectory = pc.getPDBDirectory();
+        File pdbDirectory = pc.getPDBDirectory();
         int count = 0;
         for (int i = 0; i < ids.length; i++) {
             Uniprot pt = pts[i];
@@ -478,8 +674,8 @@ public class Uniprot {
             proteins[i] = protein;
             String id = protein.getId();
             FoundPeptide[] peptides = FoundPeptide.EMPTY_ARRAY;
-            if(fps != null)
-                 peptides = fps.getPeptides(id);
+            if (fps != null)
+                peptides = fps.getPeptides(id);
 
             ProteinFragmentationDescription pfd = new ProteinFragmentationDescription(id, pc, protein, peptides);
             for (int j = 0; j < peptides.length; j++) {
@@ -490,12 +686,12 @@ public class Uniprot {
             pc.addProteinFragmentationDescription(pfd);
             ids[i] = id;
             BioJavaModel bestModel = pt.getBestModel();
-            if(bestModel != null)  {
+            if (bestModel != null) {
                 File added = new File(pdbDirectory, bestModel.getPdbCode() + ".pdb");
-               pc.addPDBModelFile(id, added);
+                pc.addPDBModelFile(id, added);
 
             }
-             if (count++ > MAX_BUILT_PAGES)
+            if (count++ > MAX_BUILT_PAGES)
                 break;
 
         }
@@ -504,12 +700,13 @@ public class Uniprot {
 
     }
 
-    private static void buildPages( File inp) {
-        Uniprot[] pts = readUniprots(inp);
+    private static void buildPages(File inp) {
+        Map<String, Uniprot> stringUniprotMap = readUniprots(inp);
+        Uniprot[] pts = stringUniprotMap.values().toArray(Uniprot.EMPTY_ARRAY);
         Uniprot[] gm = getGoodModels(pts);
 //        buildModelPages(gm,inp);
-        buildModelPages(pts,null);
-     }
+        buildModelPages(pts, null);
+    }
 
     public static Uniprot buildUniprot(String id) {
         Uniprot up = getUniprot(id);
@@ -522,11 +719,11 @@ public class Uniprot {
         File outf = new File(args[0]);
         String id = args[1];
         String[] items = id.split(",");
-        Uniprot[] ret = writeProteins(items,outf );
+        Uniprot[] ret = writeProteins(items, outf);
         for (int i = 0; i < ret.length; i++) {
-           Uniprot uniprot = ret[i];
+            Uniprot uniprot = ret[i];
 
-       }
+        }
     }
 
 
@@ -540,11 +737,74 @@ public class Uniprot {
     public static final int BAD = 1;
     public static final int NONE = 2;
 
+
+    public static Uniprot[] findUnterestingUniprots(File sp, Map<String, Uniprot> idToUniprot) {
+        Sequence[] ret = SwissProt.readInterestingSequences(sp);
+        Map<String, Uniprot> testUniProts = new HashMap<String, Uniprot>();
+        for (int i = 0; i < ret.length; i++) {
+            Sequence sequence = ret[i];
+            String name = sequence.getName();
+            Uniprot pt = idToUniprot.get(name);
+            if (pt == null || pt.isBadPeptide()) {
+                System.out.println("Bad id " + name);
+                continue;
+            }
+            pt.setSequence(sequence);
+            testUniProts.put(name, pt);
+
+        }
+        return idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
+    }
+
+
     public static void main(String[] args) throws IOException {
         // downloadUniprots(args[0]);
         File inp = new File(args[0]);
-        buildPages(inp);
-       // getUniptotsFromCommaSeparated(args);
+        FileUtilities.guaranteeExistingFile(inp);
+
+        File peptides = new File(args[1]);
+        FileUtilities.guaranteeExistingFile(peptides);
+
+        File sp = new File(args[2]);
+        FileUtilities.guaranteeExistingFile(sp);
+
+        int nBad = 0;
+
+        FoundPeptides fps = FoundPeptides.readFoundPeptides(peptides);
+        Map<String, Uniprot> idToUniprot = readUniprots(inp);
+        Uniprot[] pts = idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
+        for (int i = 0; i < pts.length; i++) {
+            Uniprot pt = pts[i];
+            Protein protein = pt.getProtein();
+            String id = protein.getId();
+            FoundPeptide[] peptides1 = fps.getPeptides(id);
+            for (int j = 0; j < peptides1.length; j++) {
+                FoundPeptide fp = peptides1[j];
+                pt.addFoundPeptide(fp.getPeptide());
+            }
+            int len = protein.getSequenceLength();
+            int nd = pt.getDetectedCount();
+            int fd = pt.getFirstDetected();
+            int ld = pt.getLastDetected();
+            if (pt.isBadPeptide()) {
+                nBad++;
+                idToUniprot.remove(pt.getId());
+                continue;
+            }
+            double coverage = (double) nd / (double) len;
+            System.out.println(pt.getId() + " " + String.format("%6.3f", coverage));
+
+        }
+
+        Uniprot[] interesting = findUnterestingUniprots(sp, idToUniprot);
+
+        for (int i = 0; i < interesting.length; i++) {
+            Uniprot uniprot = interesting[i];
+
+        }
+        System.out.println("Total " + pts.length + " bad " + nBad + " modeled " + interesting.length);
+        //     buildPages(inp);
+        // getUniptotsFromCommaSeparated(args);
 
     }
 
