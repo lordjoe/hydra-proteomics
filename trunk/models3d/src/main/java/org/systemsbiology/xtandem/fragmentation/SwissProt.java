@@ -223,6 +223,12 @@ public class SwissProt {
                       UniprotFeatureType.STRAND,
                        UniprotFeatureType.HELIX,
                       UniprotFeatureType.TURN,
+                      UniprotFeatureType.COILED,
+                                            UniprotFeatureType.DISULFID,
+                                            UniprotFeatureType.INTRAMEM,
+                                            UniprotFeatureType.PROPEP,
+                                            UniprotFeatureType.ZN_FING,
+     //                                       UniprotFeatureType.BINDING,
 
               };
 

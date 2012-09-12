@@ -107,6 +107,12 @@ public interface  IPolypeptide {
      */
     public String getSequence();
 
+    /**
+     * return the unmodified version
+     * @return
+     */
+    public IPolypeptide getUnModified();
+
 
     /**
      * return a list of contained proteins

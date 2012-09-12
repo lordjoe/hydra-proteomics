@@ -467,6 +467,13 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         return m_Sequence;
     }
 
+
+    @Override
+    public IPolypeptide getUnModified() {
+        return this;
+    }
+
+
 //    /**
 //     * return the sequence before the start of length maxLength or less
 //     *

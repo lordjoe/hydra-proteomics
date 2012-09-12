@@ -367,6 +367,13 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         return getModifiedSequence();
     }
 
+
+
+    @Override
+    public IPolypeptide getUnModified() {
+        return new Polypeptide(getSequence());
+    }
+
     /**
      * deibbrately hide the manner a peptide is cleaved to
      * support the possibility of the sequence pointing to the protein as

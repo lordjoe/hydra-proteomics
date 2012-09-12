@@ -30,6 +30,46 @@ public class Uniprot {
     public static final double MINIMUM_FRAGMENT_LENGTH = 6;
     public static final double MAXIMUM_FRAGMENT_LENGTH = 50;
 
+    public static final Comparator<Feature> BY_POSITION = new FeaturePositionComparator();
+    public static final Comparator<Location> LOC_BY_POSITION = new LocationPositionComparator();
+
+    /**
+     * choose lowest location
+     */
+    private static class FeaturePositionComparator implements Comparator<Feature> {
+        @Override
+        public int compare(Feature o1, Feature o2) {
+            if (o1 == o2)
+                return 0;
+            Location l1 = o1.getLocation();
+            Location l2 = o2.getLocation();
+            int ret = LOC_BY_POSITION.compare(l1, l2);
+            if (ret != 0)
+                return ret;
+            return o1.getType().compareTo(o2.getType());
+        }
+    }
+
+    /**
+     * choose lowest location
+     */
+    private static class LocationPositionComparator implements Comparator<Location> {
+        @Override
+        public int compare(Location o1, Location o2) {
+            if (o1 == o2)
+                return 0;
+            Integer mn1 = o1.getMin();
+            Integer mn2 = o2.getMin();
+            int ret = mn1.compareTo(mn2);
+            if (ret != 0)
+                return ret;
+            Integer mx1 = o1.getMax();
+            Integer mx2 = o2.getMax();
+            return mx1.compareTo(mx2);
+
+        }
+    }
+
 
     protected static String run(String tool, ParameterNameValue[] params)
             throws Exception {
@@ -204,6 +244,7 @@ public class Uniprot {
     private final Set<String> m_TheoreticalSequences = new HashSet<String>();
     private boolean m_BadPeptide;
     private Sequence m_Sequence;
+    private Feature[] m_InterestingFeatures;
 
     public Uniprot(String line) {
         this(line.split("\t"));
@@ -227,21 +268,38 @@ public class Uniprot {
         FastaAminoAcid[] fastaAminoAcids = FastaAminoAcid.asAminoAcids(sequence);
         m_AminoAcids = new ProteinAminoAcid[fastaAminoAcids.length];
         for (int i = 0; i < fastaAminoAcids.length; i++) {
-            m_AminoAcids[i] = new ProteinAminoAcid(fastaAminoAcids[i], i);
+            FastaAminoAcid aa = fastaAminoAcids[i];
+            m_AminoAcids[i] = new ProteinAminoAcid(aa, i);
+            // cleavage code - not for lastt
+            if (i == fastaAminoAcids.length - 1)
+                continue;
+            if (aa == FastaAminoAcid.K || aa == FastaAminoAcid.R) {
+                if (fastaAminoAcids[i + 1] != FastaAminoAcid.P)
+                    m_AminoAcids[i].setPotentialCleavage(true);
+            }
 
         }
 
     }
 
+    private static int gTotalUnacceptable;
+    private static int gTotalPrptides;
+
     protected void buildTheoreticalPeptides(PeptideBondDigester trypsin) {
         IPolypeptide[] digest = trypsin.digest(getProtein());
+        int numberUnacceptable = 0;
         for (int i = 0; i < digest.length; i++) {
             IPolypeptide pp = digest[i];
             if (isPeptideAcceptable(pp)) {
                 m_Theoretical.add(pp);
                 m_TheoreticalSequences.add(pp.getSequence());
             }
+            else {
+                numberUnacceptable++;
+            }
         }
+        gTotalPrptides += digest.length;
+        gTotalUnacceptable += numberUnacceptable;
     }
 
     public boolean isBadPeptide() {
@@ -259,10 +317,16 @@ public class Uniprot {
     public void setSequence(Sequence sequence) {
         m_Sequence = sequence;
         Feature[] fts = SwissProt.getAnalyzedFeatures(sequence);
+        List<Feature> holder = new ArrayList<Feature>();
+
         for (int i = 0; i < fts.length; i++) {
             Feature ft = fts[i];
+            holder.add(ft);
             handleFeature(ft);
         }
+        m_InterestingFeatures = new Feature[holder.size()];
+        holder.toArray(m_InterestingFeatures);
+        Arrays.sort(m_InterestingFeatures, BY_POSITION);
     }
 
     protected void handleFeature(Feature ft) {
@@ -275,7 +339,8 @@ public class Uniprot {
                 handleFeature(ft, type);
                 break;
             default:
-                throw new IllegalStateException("never get here");
+                handleFeature(ft, type);
+                //        throw new IllegalStateException("never get here");
         }
     }
 
@@ -290,21 +355,33 @@ public class Uniprot {
 
     private void setFeatureAtLocation(Feature ft, UniprotFeatureType type) {
         Location location = ft.getLocation();
-        int min = location.getMin();
-        int max = location.getMin();
+        int min = location.getMin() - 1;
+        int max = location.getMax() ;
         ProteinAminoAcid[] aminoAcids = getAminoAcids();
-        for (int i = min; i < max; i++) {
-            ProteinAminoAcid aminoAcid = aminoAcids[i];
-            aminoAcid.addFeature(type);
+        switch(type)  {
+            case DISULFID:
+                ProteinAminoAcid mnaa = aminoAcids[min];
+                if(mnaa.getAminoAcid() != FastaAminoAcid.C)
+                    throw new IllegalStateException("should be cys");
+                mnaa.addFeature(type);
+                ProteinAminoAcid mxaa = aminoAcids[max - 1];
+                if(mxaa.getAminoAcid() != FastaAminoAcid.C)
+                      throw new IllegalStateException("should be cys");
+                mxaa.addFeature(type);
+                 break;
+               case ZN_FING:
+                 aminoAcids[min].addFeature(type);
+                 aminoAcids[max - 1].addFeature(type);
+                  break;
+             default:
+                for (int i = min; i < max; i++) {
+                    if (!location.contains(i))
+                        continue;
+                    ProteinAminoAcid aminoAcid = aminoAcids[i];
+                    aminoAcid.addFeature(type);
+                }
         }
-    }
-
-    protected void handleTurn(Feature ft) {
-        UniprotFeatureType type = SwissProt.getFeatureType(ft);
-        if (type != UniprotFeatureType.TURN)
-            throw new IllegalArgumentException("must have type " + UniprotFeatureType.TURN);
-        throw new UnsupportedOperationException("Fix This"); // ToDo
-    }
+      }
 
     protected boolean isPeptideAcceptable(IPolypeptide pp) {
         int length = pp.getSequenceLength();
@@ -510,8 +587,24 @@ public class Uniprot {
             // throw new IllegalStateException("sequence needs ot occur once " + pst);
         }
         while (index > -1) {
-            for (int i = index; i < (index + pst.length()); i++) {
-                m_AminoAcids[i].setDetected(true);
+            int endIndex = index + pst.length();
+            if (index > 0 && m_AminoAcids[index - 1].isPotentialCleavage())
+                m_AminoAcids[index - 1].setObservedCleavage(true);
+
+            for (int i = index; i < endIndex; i++) {
+                ProteinAminoAcid aa = m_AminoAcids[i];
+                aa.setDetected(true);
+                // ignore missed near start or end
+                if (aa.isPotentialCleavage() && i > index + 1) {
+                    if (i < endIndex - 1) {
+                        if (i < endIndex - 2) {
+                            aa.setMissedCleavage(true);
+        //                    System.out.println(peptide.getSequence());
+                        }
+                    }
+                    else
+                        aa.setObservedCleavage(true);
+                }
             }
             index = prost.indexOf(pst, index + 1);
         }
@@ -746,7 +839,7 @@ public class Uniprot {
             String name = sequence.getName();
             Uniprot pt = idToUniprot.get(name);
             if (pt == null || pt.isBadPeptide()) {
-                System.out.println("Bad id " + name);
+     //           System.out.println("Bad id " + name);
                 continue;
             }
             pt.setSequence(sequence);
@@ -755,6 +848,349 @@ public class Uniprot {
         }
         return idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
     }
+
+    public boolean hasFeature(UniprotFeatureType ft) {
+          for (int i = 0; i < m_AminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = m_AminoAcids[i];
+            if (aminoAcid.hasFeature(ft))
+                return true;
+        }
+        return false;
+    }
+
+    public int countFeature(UniprotFeatureType ft) {
+        int count = 0;
+        for (int i = 0; i < m_AminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = m_AminoAcids[i];
+            if (aminoAcid.hasFeature(ft))
+                count++;
+        }
+        return count;
+    }
+
+    public int countObservedCleavageFeature(UniprotFeatureType ft) {
+        int count = 0;
+        for (int i = 0; i < m_AminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = m_AminoAcids[i];
+            if (!aminoAcid.isObservedCleavage())
+                continue;
+            if (aminoAcid.hasFeature(ft))
+                count++;
+        }
+        return count;
+    }
+
+    public int countPotentialCleavageFeature(UniprotFeatureType ft) {
+        int count = 0;
+        for (int i = 0; i < m_AminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = m_AminoAcids[i];
+            if (!aminoAcid.isPotentialCleavage())
+                continue;
+            if (aminoAcid.hasFeature(ft))
+                count++;
+        }
+        return count;
+    }
+
+    public int countDetectedFeature(UniprotFeatureType ft) {
+        int count = 0;
+        for (int i = 0; i < m_AminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = m_AminoAcids[i];
+            if (!aminoAcid.isDetected())
+                continue;
+            if (aminoAcid.hasFeature(ft))
+                count++;
+        }
+        return count;
+    }
+
+    public int countDetected() {
+        int count = 0;
+        for (int i = 0; i < m_AminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = m_AminoAcids[i];
+            if (!aminoAcid.isDetected())
+                continue;
+            count++;
+        }
+        return count;
+    }
+
+    public int countObservedCleavages() {
+        int count = 0;
+        for (int i = 0; i < m_AminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = m_AminoAcids[i];
+            if (!aminoAcid.isObservedCleavage())
+                continue;
+            count++;
+        }
+        return count;
+    }
+
+    public int countMissedCleavages() {
+        int count = 0;
+        for (int i = 0; i < m_AminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = m_AminoAcids[i];
+            if (!aminoAcid.isMissedCleavage())
+                continue;
+            count++;
+        }
+        return count;
+    }
+
+    public int countPotentialCleavages() {
+        int count = 0;
+        for (int i = 0; i < m_AminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = m_AminoAcids[i];
+            if (!aminoAcid.isPotentialCleavage())
+                continue;
+            count++;
+        }
+        return count;
+    }
+
+    public int getDetectedPeptideCount() {
+        return m_Detected.size();
+    }
+
+    public int getTheoreticalPeptideCount() {
+        return m_Theoretical.size();
+    }
+
+
+    public int getSequenceLength() {
+        return getProtein().getSequenceLength();
+    }
+
+    public static Map<UniprotFeatureType, FisherTable> handleFeatures(Uniprot[] pts) {
+        UniprotFeatureType[] fts = SwissProt.ANALYZED_FEATURES;
+        Map<UniprotFeatureType, FisherTable> ret = new HashMap<UniprotFeatureType, FisherTable>();
+        for (int i = 0; i < fts.length; i++) {
+            UniprotFeatureType ft = fts[i];
+            FisherTable fisherTable = handleFeatures(pts, ft);
+            ret.put(ft, fisherTable);
+        }
+        return ret;
+    }
+
+    public static Map<UniprotFeatureType, FisherTable> handleObservedCleavages(Uniprot[] pts) {
+        UniprotFeatureType[] fts = SwissProt.ANALYZED_FEATURES;
+        Map<UniprotFeatureType, FisherTable> ret = new HashMap<UniprotFeatureType, FisherTable>();
+        for (int i = 0; i < fts.length; i++) {
+            UniprotFeatureType ft = fts[i];
+            FisherTable fisherTable = handleObservedCleavages(pts, ft);
+            ret.put(ft, fisherTable);
+        }
+        return ret;
+    }
+
+    public static Map<UniprotFeatureType, FisherTable> handleMissedCleavages(Uniprot[] pts) {
+        UniprotFeatureType[] fts = SwissProt.ANALYZED_FEATURES;
+        Map<UniprotFeatureType, FisherTable> ret = new HashMap<UniprotFeatureType, FisherTable>();
+        for (int i = 0; i < fts.length; i++) {
+            UniprotFeatureType ft = fts[i];
+            FisherTable fisherTable = handleMissedCleavages(pts, ft);
+            ret.put(ft, fisherTable);
+        }
+        return ret;
+    }
+
+    protected void addToTable(UniprotFeatureType ft, FisherTable tb) {
+        int ftDetected = 0;
+        int ftNotDetected = 0;
+        int notFtDetected = 0;
+        int notFtNotDetected = 0;
+
+        for (int i = 0; i < m_AminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = m_AminoAcids[i];
+            if (aminoAcid.hasFeature(ft)) {
+                if (aminoAcid.isDetected()) {
+                    ftDetected++;
+                }
+                else {
+                    ftNotDetected++;
+                }
+
+            }
+            else {
+                if (aminoAcid.isDetected()) {
+                    notFtDetected++;
+                }
+                else {
+                    notFtNotDetected++;
+                }
+
+            }
+        }
+        tb.addTo(notFtNotDetected, notFtDetected, ftNotDetected, ftDetected);
+
+    }
+
+    protected void addObservedCleavagesToTable(UniprotFeatureType ft, FisherTable tb) {
+        int ftDetected = 0;
+        int ftNotDetected = 0;
+        int notFtDetected = 0;
+        int notFtNotDetected = 0;
+
+        for (int i = 0; i < m_AminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = m_AminoAcids[i];
+            if (!aminoAcid.isPotentialCleavage())
+                continue;
+            if (aminoAcid.hasFeature(ft)) {
+                if (aminoAcid.isObservedCleavage()) {
+                    ftDetected++;
+                }
+                else {
+                    ftNotDetected++;
+                }
+
+            }
+            else {
+                if (aminoAcid.isObservedCleavage()) {
+                    notFtDetected++;
+                }
+                else {
+                    notFtNotDetected++;
+                }
+
+            }
+        }
+        tb.addTo(notFtNotDetected, notFtDetected, ftNotDetected, ftDetected);
+
+    }
+
+
+    protected void addMissedCleavagesToTable(UniprotFeatureType ft, FisherTable tb) {
+        int ftDetected = 0;
+        int ftNotDetected = 0;
+        int notFtDetected = 0;
+        int notFtNotDetected = 0;
+
+        for (int i = 0; i < m_AminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = m_AminoAcids[i];
+            if (!aminoAcid.isPotentialCleavage())
+                continue;
+            if (aminoAcid.hasFeature(ft)) {
+                if (aminoAcid.isMissedCleavage()) {
+                    ftDetected++;
+                }
+                else {
+                    ftNotDetected++;
+                }
+
+            }
+            else {
+                if (aminoAcid.isMissedCleavage()) {
+                    notFtDetected++;
+                }
+                else {
+                    notFtNotDetected++;
+                }
+
+            }
+        }
+        tb.addTo(notFtNotDetected, notFtDetected, ftNotDetected, ftDetected);
+
+    }
+
+    private static FisherTable handleFeatures(Uniprot[] pts, UniprotFeatureType ft) {
+        int numberProteinsShowing = 0;
+        List<Double> featureDetected = new ArrayList<Double>();
+        List<Double> totalDetected = new ArrayList<Double>();
+
+        FisherTable ret = new FisherTable();
+
+        for (int i = 0; i < pts.length; i++) {
+            Uniprot pt = pts[i];
+  //          if(!pt.hasFeature(ft)) continue;
+
+
+            int seen = pt.countFeature(ft);
+            int dc = pt.countDetected();
+            if (dc == 0 || seen == 0)
+                continue;
+            numberProteinsShowing++;
+            int detected = pt.countDetectedFeature(ft);
+            double frac = (double) detected / (double) seen;
+            featureDetected.add(frac);
+
+            int sequenceLength = pt.getSequenceLength();
+            double total = (double) dc / (double) sequenceLength;
+            totalDetected.add(total);
+
+            pt.addToTable(ft, ret);
+
+
+        }
+        Double[] fd = new Double[featureDetected.size()];
+        featureDetected.toArray(fd);
+
+        Double[] td = new Double[totalDetected.size()];
+        totalDetected.toArray(td);
+
+//        System.out.println(ft);
+//        for (int i = 0; i < td.length; i++) {
+//            Double tdb = td[i];
+//            Double fdb = fd[i];
+//            System.out.println(String.format("%6.3f", fdb) + " of " + String.format("%6.3f", tdb));
+//        }
+        return ret;
+    }
+
+
+    private static FisherTable handleObservedCleavages(Uniprot[] pts, UniprotFeatureType ft) {
+
+        FisherTable ret = new FisherTable();
+
+        for (int i = 0; i < pts.length; i++) {
+            Uniprot pt = pts[i];
+    //        if(!pt.hasFeature(ft)) continue;
+
+            pt.addObservedCleavagesToTable(ft, ret);
+         }
+        return ret;
+    }
+
+    private static FisherTable handleMissedCleavages(Uniprot[] pts, UniprotFeatureType ft) {
+
+        FisherTable ret = new FisherTable();
+
+        for (int i = 0; i < pts.length; i++) {
+            Uniprot pt = pts[i];
+  //          if(!pt.hasFeature(ft)) continue;
+
+            pt.addMissedCleavagesToTable(ft, ret) ;
+         }
+        return ret;
+    }
+
+    private static void showFeatures(Map<UniprotFeatureType, FisherTable> mpx) {
+         UniprotFeatureType[] fts = SwissProt.ANALYZED_FEATURES;
+         for (int i = 0; i < fts.length; i++) {
+             UniprotFeatureType ft = fts[i];
+             FisherTable fisherTable = mpx.get(ft);
+             double prob = fisherTable.getProbability();
+             double total = fisherTable.sum();
+             if(total == 0)
+                 return;
+             int[] values = fisherTable.getValues();
+             double detected = (values[FisherTable.NOT_PRESENT_DECTECTED] + values[FisherTable.PRESENT_DECTECTED]) / total;
+             double pFeature = (double) (values[FisherTable.PRESENT_NOT_DECTECTED] + values[FisherTable.PRESENT_DECTECTED]);
+             if(pFeature == 0)
+                 return;
+             double fdetected = (values[FisherTable.PRESENT_DECTECTED]) / pFeature;
+
+             System.out.println(ft.toString() +
+                     " prob " + String.format("%6.1e", prob) +
+                     " fdetect " + String.format("%6.3f", fdetected) +
+                     " detect " + String.format("%6.3f", detected) +
+                     " number "  + (int)total   +
+                     " detected "  + values[FisherTable.PRESENT_DECTECTED]
+
+
+             );
+
+         }
+     }
 
 
     public static void main(String[] args) throws IOException {
@@ -792,11 +1228,25 @@ public class Uniprot {
                 continue;
             }
             double coverage = (double) nd / (double) len;
-            System.out.println(pt.getId() + " " + String.format("%6.3f", coverage));
+        //    System.out.println(pt.getId() + " " + String.format("%6.3f", coverage));
 
         }
 
         Uniprot[] interesting = findUnterestingUniprots(sp, idToUniprot);
+
+        System.out.println("Features");
+        Map<UniprotFeatureType, FisherTable> mpx = handleFeatures(interesting);
+        showFeatures(mpx);
+
+        System.out.println("Observed Cleavages");
+        Map<UniprotFeatureType, FisherTable> obsCleave = handleObservedCleavages(interesting);
+        showFeatures(obsCleave);
+
+        System.out.println("Missed Cleavages");
+        Map<UniprotFeatureType, FisherTable> missCleave = handleMissedCleavages(interesting);
+        showFeatures(missCleave);
+
+
 
         for (int i = 0; i < interesting.length; i++) {
             Uniprot uniprot = interesting[i];
@@ -807,6 +1257,7 @@ public class Uniprot {
         // getUniptotsFromCommaSeparated(args);
 
     }
+
 
 
 }
