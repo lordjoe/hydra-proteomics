@@ -262,6 +262,10 @@ public class IDOnlyProtein implements IProtein {
         return null;
     }
 
+    @Override
+    public IPolypeptide getUnModified() {
+        return this;
+    }
 
     /**
      * return the number of bionds in the sequence

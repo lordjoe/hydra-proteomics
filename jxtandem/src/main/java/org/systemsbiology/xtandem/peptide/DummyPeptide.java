@@ -35,6 +35,11 @@ public class DummyPeptide implements IPolypeptide {
 
 
 
+    @Override
+    public IPolypeptide getUnModified() {
+        return this;
+    }
+
     /**
       * !null validity may be unknown
       * @return

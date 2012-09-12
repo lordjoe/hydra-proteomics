@@ -17,11 +17,38 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid> {
     private final FastaAminoAcid m_AminoAcid;
     private final int m_Location;
     private boolean m_Detected;
-    private final Set<UniprotFeatureType> m_Features = new HashSet<UniprotFeatureType>();
+    private boolean m_PotentialCleavage;
+    private boolean m_MissedCleavage;
+    private boolean m_ObservedCleavage;
+     private final Set<UniprotFeatureType> m_Features = new HashSet<UniprotFeatureType>();
 
     public ProteinAminoAcid(FastaAminoAcid aminoAcid, int location) {
         m_AminoAcid = aminoAcid;
         m_Location = location;
+    }
+
+    public boolean isPotentialCleavage() {
+        return m_PotentialCleavage;
+    }
+
+    public void setPotentialCleavage(boolean potentialCleavage) {
+        m_PotentialCleavage = potentialCleavage;
+    }
+
+    public boolean isMissedCleavage() {
+        return m_MissedCleavage;
+    }
+
+    public void setMissedCleavage(boolean missedCleavage) {
+        m_MissedCleavage = missedCleavage;
+    }
+
+    public boolean isObservedCleavage() {
+        return m_ObservedCleavage;
+    }
+
+    public void setObservedCleavage(boolean observedCleavage) {
+        m_ObservedCleavage = observedCleavage;
     }
 
     public boolean isDetected() {
@@ -78,5 +105,20 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid> {
         if(oloc != loc)
             return loc < oloc ? -1 : 1;
         return getAminoAcid().compareTo(o.getAminoAcid());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getAminoAcid().toString());
+        if(!m_Features.isEmpty()) {
+            sb.append("[");
+            for (UniprotFeatureType f  : m_Features) {
+                sb.append(f.toString().charAt(0));
+            }
+            sb.append("]");
+        }
+        return sb.toString();
+
     }
 }
