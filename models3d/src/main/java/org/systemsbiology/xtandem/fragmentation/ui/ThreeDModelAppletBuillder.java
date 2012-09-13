@@ -13,12 +13,12 @@ import java.io.*;
 public class ThreeDModelAppletBuillder extends AbstractHtmlFragmentHolder {
     public static final ThreeDModelAppletBuillder[] EMPTY_ARRAY = {};
 
-    private final AminoAcidAtLocation[] m_Locations;
+    private final IAminoAcidAtLocation[] m_Locations;
     private final ProteinFragmentationDescription m_PFD;
     private final ScriptWriter m_ScriptWriter = new ScriptWriter();
     private final int m_Index;
 
-    public ThreeDModelAppletBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription pfd, AminoAcidAtLocation[] locs, int index) {
+    public ThreeDModelAppletBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription pfd, IAminoAcidAtLocation[] locs, int index) {
         super(page);
         m_PFD = pfd;
         m_Locations = locs;

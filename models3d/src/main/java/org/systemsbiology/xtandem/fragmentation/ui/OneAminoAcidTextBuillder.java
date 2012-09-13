@@ -26,7 +26,7 @@ public class OneAminoAcidTextBuillder extends SVGFragmentBuilder {
     private final String m_AminoAcid;
     private final int m_Coverage;
     private final SequenceChainMap m_Mapping;
-    private final AminoAcidAtLocation m_AAMapping;
+    private final IAminoAcidAtLocation m_AAMapping;
 
     public OneAminoAcidTextBuillder(OneAminoAcidFragmentBuillder parent, int xpos, String aminoAcid, int coverage,
                                     SequenceChainMap mapping) {
@@ -36,7 +36,7 @@ public class OneAminoAcidTextBuillder extends SVGFragmentBuilder {
         m_Coverage = coverage;
         m_Mapping = mapping;
         if(mapping != null) {
-            AminoAcidAtLocation[] chainMappings = mapping.getChainMappings();
+            IAminoAcidAtLocation[] chainMappings = mapping.getChainMappings();
             if(chainMappings.length > 0)   {
                  m_AAMapping = chainMappings[0];
             }

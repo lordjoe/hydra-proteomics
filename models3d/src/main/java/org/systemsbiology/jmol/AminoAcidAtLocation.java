@@ -10,7 +10,7 @@ import java.util.*;
  * User: steven
  * Date: 5/15/12
  */
-public class AminoAcidAtLocation extends AsaSubunit {
+public class AminoAcidAtLocation extends AsaSubunit implements IAminoAcidAtLocation {
     public static final AminoAcidAtLocation[] EMPTY_ARRAY = {};
 
     /**
@@ -18,12 +18,12 @@ public class AminoAcidAtLocation extends AsaSubunit {
      * @param locs !null locs
      * @return   represented sequence
      */
-    public static ChainEnum[] toChains(AminoAcidAtLocation[] locs)
+    public static ChainEnum[] toChains(IAminoAcidAtLocation[] locs)
     {
         Set<ChainEnum> holder = new HashSet<ChainEnum>();
 
         for (int i = 0; i < locs.length; i++) {
-            AminoAcidAtLocation loc = locs[i];
+            IAminoAcidAtLocation loc = locs[i];
             holder.add(loc.getChain());
         }
         ChainEnum[] ret = new ChainEnum[holder.size()];
@@ -35,11 +35,11 @@ public class AminoAcidAtLocation extends AsaSubunit {
      * @param locs !null locs
      * @return   represented sequence
      */
-    public static String toSequence(AminoAcidAtLocation[] locs)
+    public static String toSequence(IAminoAcidAtLocation[] locs)
     {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < locs.length; i++) {
-            AminoAcidAtLocation loc = locs[i];
+            IAminoAcidAtLocation loc = locs[i];
             sb.append(loc.getAminoAcid().toString());
         }
         return sb.toString();
@@ -50,6 +50,8 @@ public class AminoAcidAtLocation extends AsaSubunit {
     private SecondaryStructure m_Structure = SecondaryStructure.NONE;
     private final ChainEnum m_Chain;
     private boolean m_DiSulphideBond;
+    private boolean m_PotentialCleavage;
+    private boolean m_Detected;
     private boolean m_SometimesMissedCleavage;
 
     public AminoAcidAtLocation(ChainEnum chain,FastaAminoAcid aminoAcid  ) {
@@ -63,6 +65,22 @@ public class AminoAcidAtLocation extends AsaSubunit {
 //    }
 
 
+    public boolean isPotentialCleavage() {
+        return m_PotentialCleavage;
+    }
+
+    public void setPotentialCleavage(boolean potentialCleavage) {
+        m_PotentialCleavage = potentialCleavage;
+    }
+
+    public boolean isDetected() {
+        return m_Detected;
+    }
+
+    public void setDetected(boolean detected) {
+        m_Detected = detected;
+    }
+
     public SecondaryStructure getStructure() {
         return m_Structure;
     }
@@ -71,14 +89,17 @@ public class AminoAcidAtLocation extends AsaSubunit {
         m_Structure = structure;
     }
 
+    @Override
     public ChainEnum getChain() {
         return m_Chain;
     }
 
+    @Override
     public FastaAminoAcid getAminoAcid() {
         return m_AminoAcid;
     }
 
+    @Override
     public int getLocation() {
         return m_Location;
     }
@@ -104,6 +125,7 @@ public class AminoAcidAtLocation extends AsaSubunit {
         return sb.toString();
        }
 
+    @Override
     public boolean isDiSulphideBond() {
         return m_DiSulphideBond;
     }
@@ -112,6 +134,7 @@ public class AminoAcidAtLocation extends AsaSubunit {
         m_DiSulphideBond = diSulphideBond;
     }
 
+    @Override
     public boolean isSometimesMissedCleavage() {
         return m_SometimesMissedCleavage;
     }

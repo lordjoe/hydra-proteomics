@@ -5,7 +5,6 @@ import org.systemsbiology.asa.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 import org.systemsbiology.xtandem.peptide.*;
-import org.systemsbiology.xtandem.taxonomy.*;
 
 import java.io.*;
 import java.util.*;
@@ -141,13 +140,13 @@ public class PDBObject extends AsaMolecule {
             String line = lines[i];
             handleStructure(line);
         }
-        List<AminoAcidAtLocation> holder = new ArrayList<AminoAcidAtLocation>();
+        List<IAminoAcidAtLocation> holder = new ArrayList<IAminoAcidAtLocation>();
 
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
             handleResidues(line, holder);
         }
-        AminoAcidAtLocation[] ret = new AminoAcidAtLocation[holder.size()];
+        IAminoAcidAtLocation[] ret = new IAminoAcidAtLocation[holder.size()];
         holder.toArray(ret);
         buildSequenceMappings();
     }
@@ -163,7 +162,7 @@ public class PDBObject extends AsaMolecule {
     }
 
 
-    protected void handleResidues(String line, List<AminoAcidAtLocation> holder) {
+    protected void handleResidues(String line, List<IAminoAcidAtLocation> holder) {
         if (!line.startsWith("SEQRES"))
             return;
         String s = null;
@@ -183,7 +182,7 @@ public class PDBObject extends AsaMolecule {
             if(s.length() > 0) {
                 FastaAminoAcid fa = FastaAminoAcid.fromAbbreviation(s);
                 if(fa != null) {
-                    AminoAcidAtLocation aa = new AminoAcidAtLocation(chainId,fa);
+                    IAminoAcidAtLocation aa = new AminoAcidAtLocation(chainId,fa);
                      chain.addAminoAcidAtSeqres(aa);
 
                 }
@@ -252,7 +251,7 @@ public class PDBObject extends AsaMolecule {
              }
         }
 
-        AminoAcidAtLocation[] locations = subUnit.getLocations();
+        IAminoAcidAtLocation[] locations = subUnit.getLocations();
          //       if (seqence.contains("X"))
         //           return;
         //       if (chainSeq.contains("X"))
@@ -278,7 +277,7 @@ public class PDBObject extends AsaMolecule {
                     int zeroBassed = i - 1;
                     SequenceChainMap mapping = getMapping(zeroBassed);
                     FastaAminoAcid seqaa = FastaAminoAcid.fromChar(seqence.charAt(zeroBassed));
-                    AminoAcidAtLocation bx = locations[bindex - 1];  // zero based
+                    IAminoAcidAtLocation bx = locations[bindex - 1];  // zero based
                     FastaAminoAcid baa = bx.getAminoAcid();
                     if (seqaa == baa) {
                         mapping.addChainMapping(ch, bx);
@@ -503,7 +502,7 @@ HELIX	1-5	"HELIX"		character
         AminoAcidAtLocation[] locations = chain.getLocations();
         int start = -1;
         for (int i = 0; i < locations.length; i++) {
-            AminoAcidAtLocation aa = locations[i];
+            IAminoAcidAtLocation aa = locations[i];
             int loc = aa.getLocation();
             String res = aa.getAminoAcid().getAbbreviation();
             if (Residue.equals(res)) {
@@ -594,7 +593,7 @@ HELIX	1-5	"HELIX"		character
         AminoAcidAtLocation[] locations = chain.getLocations();
         int start = -1;
         for (int i = 0; i < locations.length; i++) {
-            AminoAcidAtLocation aa = locations[i];
+            IAminoAcidAtLocation aa = locations[i];
             int loc = aa.getLocation();
             String res = aa.getAminoAcid().getAbbreviation();
             if (Residue.equals(res)) {
@@ -731,15 +730,15 @@ HELIX	1-5	"HELIX"		character
 //        return ret;
 //    }
 
-    public AminoAcidAtLocation[] getAminoAcidsForSequence(String foundSequence) {
+    public IAminoAcidAtLocation[] getAminoAcidsForSequence(String foundSequence) {
         for (ProteinSubunit su : getSubUnits()) {
-            AminoAcidAtLocation[] ret = su.internalAminoAcidsForSequence(foundSequence);
+            IAminoAcidAtLocation[] ret = su.internalAminoAcidsForSequence(foundSequence);
             if (ret != null)
                 return ret;
 
         }
         for (ProteinSubunit su : getSubUnits()) {
-            AminoAcidAtLocation[] ret = su.getAminoAcidsForCloseSequence(foundSequence);
+            IAminoAcidAtLocation[] ret = su.getAminoAcidsForCloseSequence(foundSequence);
             if (ret != null)
                 return ret;
 
@@ -821,14 +820,14 @@ HELIX	1-5	"HELIX"		character
     public static void main(String[] args) throws Exception {
         File f = new File(args[0]);
         PDBObject obj = new PDBObject(f, null);
-        List<AminoAcidAtLocation[]> holder = new ArrayList<AminoAcidAtLocation[]>();
+        List<IAminoAcidAtLocation[]> holder = new ArrayList<IAminoAcidAtLocation[]>();
 
         for (int i = 0; i < SOUGHT_SEQUENCES.length; i++) {
             String foundSequence = SOUGHT_SEQUENCES[i];
-            AminoAcidAtLocation[] locs = obj.getAminoAcidsForSequence(foundSequence);
+            IAminoAcidAtLocation[] locs = obj.getAminoAcidsForSequence(foundSequence);
             holder.add(locs);
         }
-        AminoAcidAtLocation[][] ret = new AminoAcidAtLocation[holder.size()][];
+        IAminoAcidAtLocation[][] ret = new IAminoAcidAtLocation[holder.size()][];
         holder.toArray(ret);
         ScriptWriter sw = new ScriptWriter();
         String script = sw.writeScript(obj, SOUGHT_SEQUENCES);

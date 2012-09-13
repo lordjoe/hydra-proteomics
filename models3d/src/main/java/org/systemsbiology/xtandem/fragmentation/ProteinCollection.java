@@ -94,7 +94,7 @@ public class ProteinCollection implements IFastaHandler {
         if (!isUniprotIdUsed(uniprotId))
             return;
         Protein prot = Protein.buildProtein(uniprotId, sequence, null);
-         addProtein(prot);
+        addProtein(prot);
         getProteinFragmentationDescription(uniprotId); // create as needed
     }
 
@@ -223,6 +223,10 @@ public class ProteinCollection implements IFastaHandler {
     }
 
     protected void loadPeptideAtlasTranslationList() {
+        String name = getProperty(UNIPROT_MAPPING_FILE_PROPERTY);
+        File ret = new File(name);
+        if (!ret.exists())
+            return;
         File translations = this.getUniprotTranslationFile();
         String[] lines = FileUtilities.readInLines(translations);
         for (int i = 1; i < lines.length; i++) {
@@ -233,6 +237,10 @@ public class ProteinCollection implements IFastaHandler {
     }
 
     protected void loadPDBTranslationList() {
+        String name = getProperty(MODEL_LIST_PROPERTY);
+        File ret = new File(name);
+        if (!ret.exists())
+            return;
         File translations = this.getPDBMappingFile();
         String[] lines = FileUtilities.readInLines(translations);
         for (int i = 1; i < lines.length; i++) {
@@ -325,17 +333,75 @@ public class ProteinCollection implements IFastaHandler {
 
     };
 
+    protected static void updateProteinFragmentationDescription(ProteinFragmentationDescription pfd, Uniprot upt) {
+   //     throw new UnsupportedOperationException("Fix This"); // ToDo
+    }
+
 
     public static void main(String[] args) {
+        // downloadUniprots(args[0]);
+        // downloadUniprots(args[0]);
+        File inp = new File(args[0]);
+        FileUtilities.guaranteeExistingFile(inp);
+
+        File peptides = new File(args[1]);
+        FileUtilities.guaranteeExistingFile(peptides);
+
+        File sp = new File(args[2]);
+        FileUtilities.guaranteeExistingFile(sp);
+
+        int nBad = 0;
+
+        FoundPeptides fps = FoundPeptides.readFoundPeptides(peptides);
+        Map<String, Uniprot> idToUniprot = Uniprot.readUniprots(inp);
+        Uniprot[] pts = idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
+        for (int i = 0; i < pts.length; i++) {
+            Uniprot pt = pts[i];
+            Protein protein = pt.getProtein();
+            String id = protein.getId();
+            FoundPeptide[] peptides1 = fps.getPeptides(id);
+            for (int j = 0; j < peptides1.length; j++) {
+                FoundPeptide fp = peptides1[j];
+                pt.addFoundPeptide(fp.getPeptide());
+            }
+            int len = protein.getSequenceLength();
+            int nd = pt.getDetectedCount();
+            int fd = pt.getFirstDetected();
+            int ld = pt.getLastDetected();
+            if (pt.isBadPeptide()) {
+                nBad++;
+                idToUniprot.remove(pt.getId());
+                continue;
+            }
+            double coverage = (double) nd / (double) len;
+            //    System.out.println(pt.getId() + " " + String.format("%6.3f", coverage));
+
+        }
+
+        Map<String, Uniprot> interestingUniprots = Uniprot.findUnterestingUniprots(sp, idToUniprot);
+        Uniprot[] interesting = interestingUniprots.values().toArray(Uniprot.EMPTY_ARRAY);
+        String[] ids = interestingUniprots.keySet().toArray(new String[interestingUniprots.size()]);
+        Arrays.sort(ids);
+
         ProteinCollection pc = new ProteinCollection();
         pc.loadData();
-        String[] ids = pc.getProteinIds();
-        //     ids = SPECIAL_TEST_PROTEINS; // use only a few
-        ids = THREE_INTERESTING; // look at only one case
+        for (int i = 0; i < ids.length; i++) {
+            String id = ids[i];
+            Uniprot upt = interestingUniprots.get(id);
+            FoundPeptide[] peptidesX = upt.getFound();
+            Protein protein = upt.getProtein();
+            ProteinFragmentationDescription pfd = new ProteinFragmentationDescription(id, pc, protein, peptidesX);
+            pc.addProteinFragmentationDescription(pfd);
+            if (upt != null) {
+                updateProteinFragmentationDescription(pfd, upt);
+
+            }
+        }
         // ids = MORE_PROTEINS;
         ProteinCoveragePageBuilder pb = new ProteinCoveragePageBuilder(pc);
         pb.buildPages(ids);
 
     }
+
 
 }

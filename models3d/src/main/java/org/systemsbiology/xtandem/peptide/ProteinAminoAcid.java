@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem.peptide;
 
 import org.biojava.bio.symbol.*;
+import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 
@@ -11,7 +12,7 @@ import java.util.*;
  * User: steven
  * Date: 9/10/12
  */
-public class ProteinAminoAcid implements Comparable<ProteinAminoAcid> {
+public class ProteinAminoAcid implements Comparable<ProteinAminoAcid>,IAminoAcidAtLocation {
     public static final ProteinAminoAcid[] EMPTY_ARRAY = {};
 
     private final FastaAminoAcid m_AminoAcid;
@@ -20,7 +21,7 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid> {
     private boolean m_PotentialCleavage;
     private boolean m_MissedCleavage;
     private boolean m_ObservedCleavage;
-     private final Set<UniprotFeatureType> m_Features = new HashSet<UniprotFeatureType>();
+    private final Set<UniprotFeatureType> m_Features = new HashSet<UniprotFeatureType>();
 
     public ProteinAminoAcid(FastaAminoAcid aminoAcid, int location) {
         m_AminoAcid = aminoAcid;
@@ -96,6 +97,21 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid> {
     public boolean inLocation(Location loc)
     {
         throw new UnsupportedOperationException("Fix This"); // ToDo
+    }
+
+    @Override
+    public ChainEnum getChain() {
+        return null;
+    }
+
+    @Override
+    public boolean isDiSulphideBond() {
+        return hasFeature(UniprotFeatureType.DISULFID);
+    }
+
+    @Override
+    public boolean isSometimesMissedCleavage() {
+        return isMissedCleavage();
     }
 
     @Override

@@ -14,11 +14,11 @@ import java.util.*;
 public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHolder {
     public static final ThreeDModelCompositeAppletBuillder[] EMPTY_ARRAY = {};
 
-    private final Map<ProteinFragment, AminoAcidAtLocation[]> m_FragmentLocations;
+    private final Map<ProteinFragment, IAminoAcidAtLocation[]> m_FragmentLocations;
     private final ProteinFragmentationDescription m_PFD;
     private final ScriptWriter m_ScriptWriter = new ScriptWriter();
 
-    public ThreeDModelCompositeAppletBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription pfd, final Map<ProteinFragment, AminoAcidAtLocation[]> fragments) {
+    public ThreeDModelCompositeAppletBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription pfd, final Map<ProteinFragment, IAminoAcidAtLocation[]> fragments) {
         super(page);
         m_FragmentLocations = fragments;
         m_PFD = pfd;
@@ -35,12 +35,12 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
     @Override
     public void addStartText(final Appendable out, final Object... data) {
         try {
-            List<AminoAcidAtLocation[]> holder = new ArrayList<AminoAcidAtLocation[]>();
+            List<IAminoAcidAtLocation[]> holder = new ArrayList<IAminoAcidAtLocation[]>();
             for (ProteinFragment pf : m_FragmentLocations.keySet()) {
                 holder.add(m_FragmentLocations.get(pf));
             }
 
-            AminoAcidAtLocation[][] locations = new AminoAcidAtLocation[holder.size()][];
+            IAminoAcidAtLocation[][] locations = new IAminoAcidAtLocation[holder.size()][];
             holder.toArray(locations);
             ProteinFragmentationDescription pfd = getPFD();
             String hilightText = m_ScriptWriter.writeHilightText(pfd);

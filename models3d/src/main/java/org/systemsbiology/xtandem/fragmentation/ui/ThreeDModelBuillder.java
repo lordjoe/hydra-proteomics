@@ -3,7 +3,6 @@ package org.systemsbiology.xtandem.fragmentation.ui;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 
-import java.io.*;
 import java.util.*;
 
 /**
@@ -15,7 +14,7 @@ public class ThreeDModelBuillder extends AbstractHtmlFragmentHolder {
     public static final ThreeDModelBuillder[] EMPTY_ARRAY = {};
 
     private final ProteinFragmentationDescription m_Fragments;
-    private final Map<ProteinFragment, AminoAcidAtLocation[]> m_FragmentLocations;
+    private final Map<ProteinFragment, IAminoAcidAtLocation[]> m_FragmentLocations;
     private PDBObject m_Model;
 
     public ThreeDModelBuillder(final IHtmlFragmentHolder page, ProteinFragmentationDescription pfd) {

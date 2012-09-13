@@ -34,7 +34,7 @@ public class ScriptWriter {
         return "[" + cvalue + "," + cvalue + ",80]";
     }
 
-    private final Map<AminoAcidAtLocation, Integer> m_UsedPositions = new HashMap<AminoAcidAtLocation, Integer>();
+    private final Map<IAminoAcidAtLocation, Integer> m_UsedPositions = new HashMap<IAminoAcidAtLocation, Integer>();
 
     public String writeScript(PDBObject original, String[] foundSequences) {
         m_UsedPositions.clear();
@@ -43,7 +43,7 @@ public class ScriptWriter {
         appendScriptHeader(original, quoteNewLines, sb);
         for (int i = 0; i < foundSequences.length; i++) {
             String foundSequence = foundSequences[i];
-            AminoAcidAtLocation[] highlited = original.getAminoAcidsForSequence(foundSequence);
+            IAminoAcidAtLocation[] highlited = original.getAminoAcidsForSequence(foundSequence);
             appendScriptHilight(highlited, COLOR_NAMES[i & COLOR_NAMES.length], sb);
             sb.append("\n");
         }
@@ -53,7 +53,7 @@ public class ScriptWriter {
 
 
     public static String buildFragmentSelectMenu(ProteinFragmentationDescription pfd) {
-        Map<ProteinFragment, AminoAcidAtLocation[]> aminoAcidLocations = pfd.getAminoAcidLocations();
+        Map<ProteinFragment, IAminoAcidAtLocation[]> aminoAcidLocations = pfd.getAminoAcidLocations();
         ProteinFragment[] proteinFragments = aminoAcidLocations.keySet().toArray(ProteinFragment.EMPTY_ARRAY);
         Arrays.sort(proteinFragments);
         StringBuilder sb = new StringBuilder();
@@ -75,7 +75,7 @@ public class ScriptWriter {
 
 
     public static String buildFragmentFunctionStrings(ProteinFragmentationDescription pfd) {
-        Map<ProteinFragment, AminoAcidAtLocation[]> aminoAcidLocations = pfd.getAminoAcidLocations();
+        Map<ProteinFragment, IAminoAcidAtLocation[]> aminoAcidLocations = pfd.getAminoAcidLocations();
         ProteinFragment[] proteinFragments = aminoAcidLocations.keySet().toArray(ProteinFragment.EMPTY_ARRAY);
         Arrays.sort(proteinFragments);
         StringBuilder sb = new StringBuilder();
@@ -186,9 +186,9 @@ public class ScriptWriter {
             short corg = coverage[i];
             if (corg > 0) {
                 SequenceChainMap mapping = original.getMapping(i);
-                AminoAcidAtLocation[] chainMappings = mapping.getChainMappings();
+                IAminoAcidAtLocation[] chainMappings = mapping.getChainMappings();
                 for (int j = 0; j < chainMappings.length; j++) {
-                    AminoAcidAtLocation aa = chainMappings[j];
+                    IAminoAcidAtLocation aa = chainMappings[j];
                     String coverageColor = getCoverageColor(corg);
                     if (appendScriptHilight(aa, coverageColor, sb)) ;
                     sb.append("\\\n");
@@ -223,7 +223,7 @@ public class ScriptWriter {
         AsaSubunit[] su = original.getAccessibleSubunits();
         for (int i = 0; i < su.length; i++) {
             AsaSubunit corg = su[i];
-            if (corg instanceof AminoAcidAtLocation) {
+            if (corg instanceof IAminoAcidAtLocation) {
                 AminoAcidAtLocation aa = (AminoAcidAtLocation) corg;
                 if (!aa.isAccessible()) {
                     appendScriptHilight(aa, "red", sb);
@@ -276,8 +276,8 @@ public class ScriptWriter {
         AsaSubunit[] su = original.getAccessibleSubunits();
         for (int i = 0; i < su.length; i++) {
             AsaSubunit corg = su[i];
-            if (corg instanceof AminoAcidAtLocation) {
-                AminoAcidAtLocation aa = (AminoAcidAtLocation) corg;
+            if (corg instanceof IAminoAcidAtLocation) {
+                IAminoAcidAtLocation aa = (IAminoAcidAtLocation) corg;
                 if (aa.isSometimesMissedCleavage())
                     appendScriptHilight(aa, "green", sb);
                 else
@@ -314,17 +314,17 @@ public class ScriptWriter {
 
 
     public String writeHilightText(ProteinFragmentationDescription pfd) {
-        Map<ProteinFragment, AminoAcidAtLocation[]> aminoAcidLocations = pfd.getAminoAcidLocations();
+        Map<ProteinFragment, IAminoAcidAtLocation[]> aminoAcidLocations = pfd.getAminoAcidLocations();
         ProteinFragment[] proteinFragments = aminoAcidLocations.keySet().toArray(ProteinFragment.EMPTY_ARRAY);
         Arrays.sort(proteinFragments);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < proteinFragments.length; i++) {
             ProteinFragment pf = proteinFragments[i];
             sb.append("HilightFragment" + (pf.getIndex() + 1) + "=\'\\\n");
-            AminoAcidAtLocation[] highlited = aminoAcidLocations.get(pf);
+            IAminoAcidAtLocation[] highlited = aminoAcidLocations.get(pf);
             String colorName = COLOR_NAMES[i % COLOR_NAMES.length];
             for (int j = 0; j < highlited.length; j++) {
-                AminoAcidAtLocation aa = highlited[j];
+                IAminoAcidAtLocation aa = highlited[j];
                 appendScriptHilight(aa, colorName, sb);
                 sb.append("\\\n");   // app end to javascript string
 
@@ -337,7 +337,7 @@ public class ScriptWriter {
 
 
     public String writeScript(ProteinFragmentationDescription pfd) {
-        Map<ProteinFragment, AminoAcidAtLocation[]> aminoAcidLocations = pfd.getAminoAcidLocations();
+        Map<ProteinFragment, IAminoAcidAtLocation[]> aminoAcidLocations = pfd.getAminoAcidLocations();
         ProteinFragment[] proteinFragments = aminoAcidLocations.keySet().toArray(ProteinFragment.EMPTY_ARRAY);
         Arrays.sort(proteinFragments);
         StringBuilder sb = new StringBuilder();
@@ -366,7 +366,7 @@ public class ScriptWriter {
     }
 
 
-    public String writeScript(ProteinFragmentationDescription pfd, AminoAcidAtLocation[] highlited, int index) {
+    public String writeScript(ProteinFragmentationDescription pfd, IAminoAcidAtLocation[] highlited, int index) {
         m_UsedPositions.clear();
         StringBuilder sb = new StringBuilder();
         PDBObject original = pfd.getModel();
@@ -376,7 +376,7 @@ public class ScriptWriter {
         return sb.toString();
     }
 
-    public int getHilight(AminoAcidAtLocation loc) {
+    public int getHilight(IAminoAcidAtLocation loc) {
         int ret = 1;
         Integer val = m_UsedPositions.get(loc);
         if (val != null) {
@@ -386,9 +386,9 @@ public class ScriptWriter {
         return ret;
     }
 
-    private void appendScriptHilight(AminoAcidAtLocation[] hilighted, String colorName, Appendable sb) {
+    private void appendScriptHilight(IAminoAcidAtLocation[] hilighted, String colorName, Appendable sb) {
         for (int i = 0; i < hilighted.length; i++) {
-            AminoAcidAtLocation aa = hilighted[i];
+            IAminoAcidAtLocation aa = hilighted[i];
             appendScriptHilight(aa, colorName, sb);
             try {
                 sb.append("\n");
@@ -400,7 +400,7 @@ public class ScriptWriter {
         }
     }
 
-    private boolean appendScriptHilight(AminoAcidAtLocation aa, String colorName, Appendable sb) {
+    private boolean appendScriptHilight(IAminoAcidAtLocation aa, String colorName, Appendable sb) {
         if (aa.getLocation() == -1)
             return false;
         int used = getHilight(aa);

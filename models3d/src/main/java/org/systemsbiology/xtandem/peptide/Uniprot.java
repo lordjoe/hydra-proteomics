@@ -240,6 +240,7 @@ public class Uniprot {
     private final File m_ModelDirectory = new File("Models3D");
     private BioJavaModel m_BestModel;
     private final Set<IPolypeptide> m_Detected = new HashSet<IPolypeptide>();
+    private final Set<FoundPeptide> m_Found = new HashSet<FoundPeptide>();
     private final Set<IPolypeptide> m_Theoretical = new HashSet<IPolypeptide>();
     private final Set<String> m_TheoreticalSequences = new HashSet<String>();
     private boolean m_BadPeptide;
@@ -465,6 +466,13 @@ public class Uniprot {
 
     }
 
+
+    public FoundPeptide[] getFound() {
+        FoundPeptide[] iPolypeptides = m_Found.toArray(FoundPeptide.EMPTY_ARRAY);
+          return iPolypeptides;
+
+    }
+
     public Protein getProtein() {
         return m_Protein;
     }
@@ -578,6 +586,7 @@ public class Uniprot {
         String pst = peptide.getSequence();
         Protein protein = getProtein();
         String id = protein.getId();
+        m_Found.add(new FoundPeptide(peptide,id,0));
         String prost = protein.getSequence();
         int index = prost.indexOf(pst);
         if (index == -1) {
@@ -831,7 +840,7 @@ public class Uniprot {
     public static final int NONE = 2;
 
 
-    public static Uniprot[] findUnterestingUniprots(File sp, Map<String, Uniprot> idToUniprot) {
+    public static  Map<String, Uniprot>  findUnterestingUniprots(File sp, Map<String, Uniprot> idToUniprot) {
         Sequence[] ret = SwissProt.readInterestingSequences(sp);
         Map<String, Uniprot> testUniProts = new HashMap<String, Uniprot>();
         for (int i = 0; i < ret.length; i++) {
@@ -846,7 +855,8 @@ public class Uniprot {
             testUniProts.put(name, pt);
 
         }
-        return idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
+        return testUniProts;
+    //    return idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
     }
 
     public boolean hasFeature(UniprotFeatureType ft) {
@@ -1232,7 +1242,8 @@ public class Uniprot {
 
         }
 
-        Uniprot[] interesting = findUnterestingUniprots(sp, idToUniprot);
+        Map<String, Uniprot> unterestingUniprots = findUnterestingUniprots(sp, idToUniprot);
+        Uniprot[] interesting = unterestingUniprots.values().toArray(Uniprot.EMPTY_ARRAY);;
 
         System.out.println("Features");
         Map<UniprotFeatureType, FisherTable> mpx = handleFeatures(interesting);

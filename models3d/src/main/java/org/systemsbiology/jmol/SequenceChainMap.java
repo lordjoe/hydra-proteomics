@@ -1,7 +1,6 @@
 package org.systemsbiology.jmol;
 
 import org.systemsbiology.xtandem.*;
-import org.systemsbiology.xtandem.hadoop.*;
 import org.systemsbiology.xtandem.peptide.*;
 
 import java.util.*;
@@ -17,7 +16,7 @@ public class SequenceChainMap  implements Comparable<SequenceChainMap> {
     private final Protein m_Protein;
     private final int m_Pos;
     private final FastaAminoAcid m_AA;
-    private final Map<ChainEnum,AminoAcidAtLocation> m_ChainMappings = new HashMap<ChainEnum, AminoAcidAtLocation>();
+    private final Map<ChainEnum,IAminoAcidAtLocation> m_ChainMappings = new HashMap<ChainEnum, IAminoAcidAtLocation>();
 
     public SequenceChainMap(Protein protein, int pos, FastaAminoAcid AA) {
         m_Protein = protein;
@@ -37,7 +36,7 @@ public class SequenceChainMap  implements Comparable<SequenceChainMap> {
         return m_AA;
     }
 
-    public AminoAcidAtLocation getChainMapping(ChainEnum chain)
+    public IAminoAcidAtLocation getChainMapping(ChainEnum chain)
       {
          return m_ChainMappings.get(chain);
       }
@@ -46,7 +45,7 @@ public class SequenceChainMap  implements Comparable<SequenceChainMap> {
          return m_ChainMappings.values().toArray(AminoAcidAtLocation.EMPTY_ARRAY);
       }
 
-    public void addChainMapping(ChainEnum chain,AminoAcidAtLocation added)
+    public void addChainMapping(ChainEnum chain,IAminoAcidAtLocation added)
     {
         m_ChainMappings.put(chain,added);
     }
