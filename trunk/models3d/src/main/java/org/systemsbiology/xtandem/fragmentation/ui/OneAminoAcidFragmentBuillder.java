@@ -127,7 +127,7 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     public void addStartText(Appendable out, Object... data) {
         try {
             indent(out);
-            AminoAcidAtLocation aaMapping = getAAMapping();
+            IAminoAcidAtLocation aaMapping = getAAMapping();
              out.append("<rect ");
             out.append(" style=\"fill:" + getFillColor() + ";\" ");
             out.append("width=\"" + CoverageFragment.AMINO_ACID_WIDTH + "\" height=\"" + CoverageFragment.AMINO_ACID_HEIGHT + "\" ");

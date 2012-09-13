@@ -173,15 +173,15 @@ public class ProteinFragmentationDescription {
     }
 
 
-    public Map<ProteinFragment, AminoAcidAtLocation[]> getAminoAcidLocations() {
+    public Map<ProteinFragment, IAminoAcidAtLocation[]> getAminoAcidLocations() {
         PDBObject model = getModel();
-        Map<ProteinFragment, AminoAcidAtLocation[]> ret = new HashMap<ProteinFragment, AminoAcidAtLocation[]>();
+        Map<ProteinFragment, IAminoAcidAtLocation[]> ret = new HashMap<ProteinFragment, IAminoAcidAtLocation[]>();
         if (model == null)
             return ret;
         ProteinFragment[] frage = getFragments();
         for (int i = 0; i < frage.length; i++) {
             ProteinFragment pf = frage[i];
-            AminoAcidAtLocation[] aas = new AminoAcidAtLocation[0];
+            IAminoAcidAtLocation[] aas = new IAminoAcidAtLocation[0];
             String sequence = pf.getSequence();
             try {
                 aas = model.getAminoAcidsForSequence(sequence);

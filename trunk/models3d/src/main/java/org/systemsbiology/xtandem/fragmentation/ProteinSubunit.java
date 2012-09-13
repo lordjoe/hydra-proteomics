@@ -31,9 +31,9 @@ public class ProteinSubunit {
 
     private final ChainEnum m_Chain;
     private final Protein m_Protein;
-    private final List<AminoAcidAtLocation> m_Locations = new ArrayList<AminoAcidAtLocation>();
-    private final List<AminoAcidAtLocation> m_Seqres = new ArrayList<AminoAcidAtLocation>();
-    private Map<Integer, AminoAcidAtLocation> m_LocToAminoAcid = new HashMap<Integer, AminoAcidAtLocation>();
+    private final List<IAminoAcidAtLocation> m_Locations = new ArrayList<IAminoAcidAtLocation>();
+    private final List<IAminoAcidAtLocation> m_Seqres = new ArrayList<IAminoAcidAtLocation>();
+    private Map<Integer, IAminoAcidAtLocation> m_LocToAminoAcid = new HashMap<Integer, IAminoAcidAtLocation>();
     private   String m_Sequence;
  //   private final  ChainEnum[] m_ChainSet; // only non-null if multiple chains
     private int m_MinLoc = 0;
@@ -44,7 +44,7 @@ public class ProteinSubunit {
   //      m_ChainSet = null;
     }
 
-    public ProteinSubunit(final ChainEnum chain, Protein prot, final AminoAcidAtLocation[] locations) {
+    public ProteinSubunit(final ChainEnum chain, Protein prot, final IAminoAcidAtLocation[] locations) {
        this( prot,chain);
         m_Locations.addAll(Arrays.asList(locations));
         m_Sequence = AminoAcidAtLocation.toSequence(locations);
@@ -58,9 +58,9 @@ public class ProteinSubunit {
 
 
 
-    public void addAminoAcidAtLocation(AminoAcidAtLocation added)   {
+    public void addAminoAcidAtLocation(IAminoAcidAtLocation added)   {
         if(!m_Locations.isEmpty())      {
-            AminoAcidAtLocation top = m_Locations.get(m_Locations.size() - 1);
+            IAminoAcidAtLocation top = m_Locations.get(m_Locations.size() - 1);
             if(top.getAminoAcid() == added.getAminoAcid()) {
                 if(top.getLocation() == added.getLocation())
                     return;
@@ -71,7 +71,7 @@ public class ProteinSubunit {
     }
 
 
-    public void addAminoAcidAtSeqres(AminoAcidAtLocation added)   {
+    public void addAminoAcidAtSeqres(IAminoAcidAtLocation added)   {
          m_Seqres.add(added);
       }
 
@@ -82,10 +82,10 @@ public class ProteinSubunit {
 
     public String getSeqresSequence()
     {
-         AminoAcidAtLocation[] aas = getSeqres();
+         IAminoAcidAtLocation[] aas = getSeqres();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < aas.length; i++) {
-            AminoAcidAtLocation aa = aas[i];
+            IAminoAcidAtLocation aa = aas[i];
             sb.append(aa.getAminoAcid().toString());
         }
         return sb.toString();
@@ -126,24 +126,24 @@ public class ProteinSubunit {
         return m_MinLoc;
     }
 
-    public AminoAcidAtLocation getAminoAcidAtLocation(int loc) {
+    public IAminoAcidAtLocation getAminoAcidAtLocation(int loc) {
         return m_LocToAminoAcid.get(loc);
     }
 
 
-    public AminoAcidAtLocation[] getAminoAcidsForSequence(String foundSequence) {
-        AminoAcidAtLocation[] ret = internalAminoAcidsForSequence(foundSequence);
+    public IAminoAcidAtLocation[] getAminoAcidsForSequence(String foundSequence) {
+        IAminoAcidAtLocation[] ret = internalAminoAcidsForSequence(foundSequence);
         if (ret != null)
             return ret;
         return getAminoAcidsForCloseSequence(foundSequence);
     }
 
-    public AminoAcidAtLocation[] internalAminoAcidsForSequence(String foundSequence) {
+    public IAminoAcidAtLocation[] internalAminoAcidsForSequence(String foundSequence) {
         FastaAminoAcid[] aas = FastaAminoAcid.asAminoAcids(foundSequence);
         for (int i = 0; i < m_Locations.size() - aas.length; i++) {
-            AminoAcidAtLocation test = m_Locations.get(i);
+            IAminoAcidAtLocation test = m_Locations.get(i);
             if (test.getLocation() != -1 && test.getAminoAcid() == aas[0]) {
-                AminoAcidAtLocation[] ret = maybeBuildSequence(aas, i);
+                IAminoAcidAtLocation[] ret = maybeBuildSequence(aas, i);
                 if (ret != null)
                     return ret;
             }
@@ -157,7 +157,7 @@ public class ProteinSubunit {
      * @param foundSequence
      * @return
      */
-    public AminoAcidAtLocation[] getAminoAcidsForCloseSequence(String foundSequence) {
+    public IAminoAcidAtLocation[] getAminoAcidsForCloseSequence(String foundSequence) {
         String modelSequence = getSequence();
         SmithWaterman sw = new SmithWaterman(modelSequence, foundSequence);
         List<SimpleChainingMatch> matches = sw.getMatches();
@@ -183,11 +183,11 @@ public class ProteinSubunit {
     }
 
 
-    private AminoAcidAtLocation[] maybeBuildSequence(FastaAminoAcid[] aas, int start) {
-        List<AminoAcidAtLocation> holder = new ArrayList<AminoAcidAtLocation>();
+    private IAminoAcidAtLocation[] maybeBuildSequence(FastaAminoAcid[] aas, int start) {
+        List<IAminoAcidAtLocation> holder = new ArrayList<IAminoAcidAtLocation>();
         holder.add(m_Locations.get(start));
         for (int i = 1; i < aas.length; i++) {
-            AminoAcidAtLocation test = m_Locations.get(start + i);
+            IAminoAcidAtLocation test = m_Locations.get(start + i);
             if (test.getLocation() != -1 && test.getAminoAcid() == aas[i]) {
                 holder.add(test);
             }
@@ -196,7 +196,7 @@ public class ProteinSubunit {
             }
         }
 
-        AminoAcidAtLocation[] ret = new AminoAcidAtLocation[holder.size()];
+        IAminoAcidAtLocation[] ret = new IAminoAcidAtLocation[holder.size()];
         holder.toArray(ret);
         return ret;
     }
