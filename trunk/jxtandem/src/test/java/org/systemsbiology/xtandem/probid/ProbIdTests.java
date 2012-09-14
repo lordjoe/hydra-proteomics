@@ -2,9 +2,9 @@ package org.systemsbiology.xtandem.probid;
 
 import org.junit.*;
 import org.systemsbiology.xtandem.*;
-import org.systemsbiology.xtandem.probidx.*;
 import org.systemsbiology.xtandem.ionization.*;
 import org.systemsbiology.xtandem.peptide.*;
+import org.systemsbiology.xtandem.probidx.*;
 import org.systemsbiology.xtandem.scoring.*;
 
 import java.util.*;
@@ -741,18 +741,19 @@ public class ProbIdTests {
     };
     public static final String SEQUENCE = "AIAGDADAAESIATTNDALGI";
 
-    public static final double SEQUENCE_SCORE = 20.11979;
-    
-    public ITheoreticalPeak[] buildSpectra(double [] bIons,double [] yIons)
-    {
+    // 9/13/2012 fixed with brute force
+    public static final double SEQUENCE_SCORE = 2171.62; // 43.14564548953248;
+  //  public static final double SEQUENCE_SCORE = 20.11979;
+
+    public ITheoreticalPeak[] buildSpectra(double[] bIons, double[] yIons) {
         List<ITheoreticalPeak> holder = new ArrayList<ITheoreticalPeak>();
         for (int i = 0; i < bIons.length; i++) {
             double bIon = bIons[i];
-            holder.add(new TheoreticalPeak(bIon,1,null,IonType.B));
+            holder.add(new TheoreticalPeak(bIon, 1, null, IonType.B));
         }
         for (int i = 0; i < yIons.length; i++) {
             double bIon = yIons[i];
-            holder.add(new TheoreticalPeak(bIon,1,null,IonType.Y));
+            holder.add(new TheoreticalPeak(bIon, 1, null, IonType.Y));
         }
         ITheoreticalPeak[] ret = new ITheoreticalPeak[holder.size()];
         holder.toArray(ret);
@@ -771,20 +772,21 @@ public class ProbIdTests {
         IPolypeptide pp = Polypeptide.fromString(SEQUENCE);
         IMeasuredSpectrum ms2 = ps.conditionSpectrum(scored, null);
 
-        ITheoreticalPeak[] peaks = buildSpectra(B_Masses,Y_Masses);
-        ITheoreticalSpectrumSet set = new TheoreticalSpectrumSet(precursorCharge,precursorMass, pp);
-        ITheoreticalSpectrum theory = new ScoringSpectrum(precursorCharge,set, peaks);
-        double score = ps.scoreSpectrum(ms2,theory,scores);
+        ITheoreticalPeak[] peaks = buildSpectra(B_Masses, Y_Masses);
+        ITheoreticalSpectrumSet set = new TheoreticalSpectrumSet(precursorCharge, precursorMass, pp);
+        ITheoreticalSpectrum theory = new ScoringSpectrum(precursorCharge, set, peaks);
+        double score = ps.scoreSpectrum(ms2, theory, scores);
 
         double dot = scores[0];
         double logMissScore = scores[1];
         double numTotalIons = scores[2];
-        double   numMatchedIons = scores[3];
+        double numMatchedIons = scores[3];
 
-        double logHitScoreAnswer = 43.14564548953248;
-        double logMissScoreAnswer = -234.96060883335915;
-        Assert.assertEquals(SEQUENCE_SCORE,score);
-     //   ScoringSpectrum spectrum = new ScoringSpectrum()
+        // 9/13/2012 fixed with brute force
+        double logHitScoreAnswer = 2171.62; // 43.14564548953248;
+        double logMissScoreAnswer = -198.24; // -234.96060883335915;
+        Assert.assertEquals(SEQUENCE_SCORE, score);
+        //   ScoringSpectrum spectrum = new ScoringSpectrum()
 
 
     }

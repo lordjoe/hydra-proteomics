@@ -1,7 +1,9 @@
 package org.systemsbiology.xtandem.fragmentation;
 
 import com.lordjoe.utilities.*;
+import org.forester.go.*;
 import org.systemsbiology.fasta.*;
+import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.ui.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.taxonomy.*;
@@ -333,8 +335,15 @@ public class ProteinCollection implements IFastaHandler {
 
     };
 
-    protected static void updateProteinFragmentationDescription(ProteinFragmentationDescription pfd, Uniprot upt) {
-   //     throw new UnsupportedOperationException("Fix This"); // ToDo
+    protected static  void updateProteinFragmentationDescription(ProteinFragmentationDescription pfd, Uniprot upt) {
+        ProteinAminoAcid[] aminoAcids = upt.getAminoAcids();
+        Protein protein = upt.getProtein();
+        SequenceChainMap[] mappedAAs = new  SequenceChainMap[aminoAcids.length];
+        for (int i = 0; i < aminoAcids.length; i++) {
+            ProteinAminoAcid aminoAcid = aminoAcids[i];
+            mappedAAs[i] = new SequenceChainMap(protein,aminoAcid) ;
+        }
+        pfd.setSequenceFromSwissProt(mappedAAs);
     }
 
 

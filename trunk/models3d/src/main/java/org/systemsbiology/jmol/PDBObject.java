@@ -182,7 +182,7 @@ public class PDBObject extends AsaMolecule {
             if(s.length() > 0) {
                 FastaAminoAcid fa = FastaAminoAcid.fromAbbreviation(s);
                 if(fa != null) {
-                    IAminoAcidAtLocation aa = new AminoAcidAtLocation(chainId,fa);
+                    IAminoAcidAtLocation aa = new ProteinAminoAcid(chainId,fa);
                      chain.addAminoAcidAtSeqres(aa);
 
                 }
@@ -205,11 +205,13 @@ public class PDBObject extends AsaMolecule {
         AminoAcidAtLocation[] seqres = subUnit.getSeqres();
         for (int i = 0; i < seqres.length - 1; i++) {
             AminoAcidAtLocation seqre = seqres[i];
+            ProteinAminoAcid pa = seqre.getProteinAminoAcid();
             FastaAminoAcid aa = seqre.getAminoAcid();
+
             if(aa == FastaAminoAcid.K || aa == FastaAminoAcid.R)  {
                 FastaAminoAcid nextAA = seqres[i + 1].getAminoAcid();
                 if(nextAA != FastaAminoAcid.P)  {
-                    seqre.setSometimesMissedCleavage(true);
+                    pa.setPotentialCleavage(true);
                 }
             }
         }
@@ -520,7 +522,7 @@ HELIX	1-5	"HELIX"		character
         }
         for (int i = start; i < Math.min(locations.length, start + length); i++) {
             AminoAcidAtLocation aa = locations[i];
-            aa.setStructure(SecondaryStructure.HELIX);
+            aa.setStructure(UniprotFeatureType.HELIX);
         }
 
     }
@@ -608,7 +610,7 @@ HELIX	1-5	"HELIX"		character
         //        throw new IllegalStateException("cannot find " + Residue + ResNum);
         for (int k = start; k < locations.length; k++) {
             AminoAcidAtLocation aa = locations[k];
-            aa.setStructure(SecondaryStructure.SHEET);
+            aa.setStructure(UniprotFeatureType.STRAND);
             String res = aa.getAminoAcid().getAbbreviation();
             int loc = aa.getLocation();
             if (res.equals(ResidueEnd)) {
@@ -667,13 +669,13 @@ HELIX	1-5	"HELIX"		character
         FastaAminoAcid aa = FastaAminoAcid.fromAbbreviation(resType);
         if (aa == null)
             return null;
-        final AminoAcidAtLocation asaSubunit;
-        asaSubunit = new AminoAcidAtLocation(chainId, aa);
+        final ProteinAminoAcid asaSubunit;
+        asaSubunit = new ProteinAminoAcid(chainId, aa);
         asaSubunit.setLocation(pos);
         ProteinSubunit subUnit = getSubUnit(chainId);
         subUnit.addAminoAcidAtLocation(asaSubunit);
         //     AminoAcidAtLocation test = subUnit.getAminoAcidAtLocation(pos);
-        return asaSubunit;
+         return new AminoAcidAtLocation(chainId,asaSubunit);
     }
 
 

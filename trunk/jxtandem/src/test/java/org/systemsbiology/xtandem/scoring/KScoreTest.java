@@ -369,6 +369,9 @@ public class KScoreTest
         main.loadScoringTest();
         main.loadSpectra();
         XTandemDebugging.setDebugging(true, main);
+        File log = new File("log1.txt");
+        if(!log.exists())
+            return;
         XTandemDebugging.loadXTandemValues("log1.txt");
         Scorer scoreRunner = main.getScoreRunner();
         scoreRunner.score();

@@ -131,10 +131,12 @@ public class MassCalculatorTest {
         Assert.assertEquals(114.1038, total, DELTA);
 
         total = mc.getAminoAcidMass('C');
-       total += PeptideModification.CYSTEIN_MODIFICATION_MASS;
+     //  total += PeptideModification.CYSTEIN_MODIFICATION_MASS;
         // this change is hard coded
 
-        Assert.assertEquals(103.1388, total, 0.1);
+
+        Assert.assertEquals(160.1602, total, 0.1);      //  PeptideModification.CYSTEIN_MODIFICATION_MASS preadded
+     //   Assert.assertEquals(103.1388, total, 0.1);
 
         total = mc.getAminoAcidMass('D');
         Assert.assertEquals(115.0886, total, DELTA);
@@ -265,10 +267,18 @@ public class MassCalculatorTest {
         final FastaAminoAcid[] aminoiAcidses = FastaAminoAcid.values();
         for (int i = 0; i < aminoiAcidses.length; i++) {
             FastaAminoAcid a = aminoiAcidses[i];
-            double m1 = XTandemUtilities.getAminoAcidMass(a, MassType.average);
-            double m2 = XTandemUtilities.getAminoAcidMass(a, MassType.monoisotopic);
-            double del = Math.abs(m1 - m2);
-            Assert.assertEquals(m1, m2, 0.2);
+            if(a == FastaAminoAcid.UNKNOWN  || a == FastaAminoAcid.X )
+                continue;
+            try {
+                double m1 = XTandemUtilities.getAminoAcidMass(a, MassType.average);
+                double m2 = XTandemUtilities.getAminoAcidMass(a, MassType.monoisotopic);
+                double del = Math.abs(m1 - m2);
+                Assert.assertEquals(m1, m2, 0.2);
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+
+            }
 
         }
 

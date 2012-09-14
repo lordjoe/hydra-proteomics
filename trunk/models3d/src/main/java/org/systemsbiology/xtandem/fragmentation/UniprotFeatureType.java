@@ -48,6 +48,19 @@ public enum UniprotFeatureType {
     VAR_SEQ,
     ZN_FING,
     ;
+
+    public boolean isStructure()
+    {
+        switch (this)   {
+            case HELIX:
+            case TURN:
+            case STRAND:
+            case COILED:
+                   return true;
+            default:
+                return false;
+        }
+    }
     public static final UniprotFeatureType[] EMPTY_ARRAY = {};
 
     public static void showAllFeatures() {

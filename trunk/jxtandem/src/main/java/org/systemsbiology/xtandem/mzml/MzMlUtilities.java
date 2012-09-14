@@ -377,6 +377,27 @@ public class MzMlUtilities {
              if ("".equals(pValue))
                  return;
           }
+        tag = "lowest m/z value";
+        if (tag.equalsIgnoreCase(pName)) {
+            raw.setLowMz((Double.parseDouble(pValue)));
+            return;
+        }
+        tag = "highest m/z value";
+          if (tag.equalsIgnoreCase(pName)) {
+              raw.setHighMz((Double.parseDouble(pValue)));
+              return;
+          }
+
+        tag = "scan m/z lower limit";
+           if (tag.equalsIgnoreCase(pName)) {
+               raw.setLowMz((Double.parseDouble(pValue)));
+               return;
+           }
+        tag = "scan m/z upper limit";
+            if (tag.equalsIgnoreCase(pName)) {
+                raw.setHighMz((Double.parseDouble(pValue)));
+                return;
+            }
 
        throw new UnsupportedOperationException("Cannot handle data of type " + pName);
     }

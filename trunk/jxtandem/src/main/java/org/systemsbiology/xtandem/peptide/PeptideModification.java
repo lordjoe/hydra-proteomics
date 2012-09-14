@@ -98,7 +98,7 @@ public class PeptideModification implements Comparable<PeptideModification> {
 
 
 
-    public static final double CYSTEIN_MODIFICATION_MASS =  57.02146;
+    public static final double CYSTEIN_MODIFICATION_MASS =  57.02146;  // alkylation of cysteine
 
      private static PeptideModification gCYSTEIN_MODIFICATION;
 

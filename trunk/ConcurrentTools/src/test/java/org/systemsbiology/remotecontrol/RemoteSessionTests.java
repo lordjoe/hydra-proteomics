@@ -36,6 +36,8 @@ public class RemoteSessionTests {
             String localizedMessage = e.getLocalizedMessage();
             if (localizedMessage.contains("Connection timed out: connect"))
                 return null;
+            if (localizedMessage.contains("Permission denied"))
+                return null;
             throw new RuntimeException(e);
         }
     }

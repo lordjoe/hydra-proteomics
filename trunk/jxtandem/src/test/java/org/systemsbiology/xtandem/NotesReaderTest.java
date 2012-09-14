@@ -38,7 +38,7 @@ public class NotesReaderTest
         DEFAULT_MAP.put("spectrum, parent monoisotopic mass error minus", "2.0");
         DEFAULT_MAP.put("spectrum, parent monoisotopic mass isotope error", "yes");
         DEFAULT_MAP.put("spectrum, fragment monoisotopic mass error units", "Daltons");
-        DEFAULT_MAP.put("spectrum, parent monoisotopic mass error units", "ppm");
+        DEFAULT_MAP.put("spectrum, parent monoisotopic mass error units", "Daltons");  // was ppm
         DEFAULT_MAP.put("spectrum, fragment mass type", "monoisotopic");
         DEFAULT_MAP.put("spectrum, dynamic range", "100.0");
         DEFAULT_MAP.put("spectrum, total peaks", "50");
