@@ -2,6 +2,8 @@ package org.systemsbiology.jmol;
 
 import org.systemsbiology.asa.*;
 import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.fragmentation.*;
+import org.systemsbiology.xtandem.peptide.*;
 
 import java.util.*;
 
@@ -44,20 +46,20 @@ public class AminoAcidAtLocation extends AsaSubunit implements IAminoAcidAtLocat
         }
         return sb.toString();
     }
+//
+//    private final FastaAminoAcid m_AminoAcid;
+//    private int m_Location = -1;
+//    private SecondaryStructure m_Structure = SecondaryStructure.NONE;
+//    private final ChainEnum m_Chain;
+//    private boolean m_DiSulphideBond;
+//    private boolean m_PotentialCleavage;
+//    private boolean m_Detected;
+//    private boolean m_SometimesMissedCleavage;
 
-    private final FastaAminoAcid m_AminoAcid;
-    private int m_Location = -1;
-    private SecondaryStructure m_Structure = SecondaryStructure.NONE;
-    private final ChainEnum m_Chain;
-    private boolean m_DiSulphideBond;
-    private boolean m_PotentialCleavage;
-    private boolean m_Detected;
-    private boolean m_SometimesMissedCleavage;
-
-    public AminoAcidAtLocation(ChainEnum chain,FastaAminoAcid aminoAcid  ) {
-        super(chain,aminoAcid.toString(),0);
-        m_AminoAcid = aminoAcid;
-        m_Chain = chain;
+    private final ProteinAminoAcid m_ProteinAminoAcid;
+    public AminoAcidAtLocation(ChainEnum chain,ProteinAminoAcid pa) {
+        super(chain,pa.getAminoAcid().toString(),0);
+        m_ProteinAminoAcid  = pa;
     }
 //
 //    public AminoAcidAtLocation(FastaAminoAcid aminoAcid, int location) {
@@ -66,49 +68,44 @@ public class AminoAcidAtLocation extends AsaSubunit implements IAminoAcidAtLocat
 
 
     public boolean isPotentialCleavage() {
-        return m_PotentialCleavage;
+        return m_ProteinAminoAcid.isPotentialCleavage();
     }
 
-    public void setPotentialCleavage(boolean potentialCleavage) {
-        m_PotentialCleavage = potentialCleavage;
-    }
+
 
     public boolean isDetected() {
-        return m_Detected;
+        return  m_ProteinAminoAcid.isDetected();
     }
 
-    public void setDetected(boolean detected) {
-        m_Detected = detected;
+
+    public UniprotFeatureType getStructure() {
+        return  m_ProteinAminoAcid.getStructure();
     }
 
-    public SecondaryStructure getStructure() {
-        return m_Structure;
-    }
-
-    public void setStructure(final SecondaryStructure structure) {
-        m_Structure = structure;
+    public void setStructure(final UniprotFeatureType structure) {
+        m_ProteinAminoAcid.setStructure(structure);
     }
 
     @Override
     public ChainEnum getChain() {
-        return m_Chain;
+        return m_ProteinAminoAcid.getChain();
     }
 
     @Override
     public FastaAminoAcid getAminoAcid() {
-        return m_AminoAcid;
+        return  m_ProteinAminoAcid.getAminoAcid();
     }
 
     @Override
     public int getLocation() {
-        return m_Location;
+        return m_ProteinAminoAcid.getLocation();
     }
 
     public void setLocation(int location) {
-        if(m_Location == -1)
-            m_Location = location;
+        if(getLocation() == -1)
+            m_ProteinAminoAcid.setLocation(location);
         else   {
-            if( m_Location == location)
+            if( getLocation() == location)
                 return;
             throw new IllegalStateException("Location already set");
         }
@@ -117,8 +114,8 @@ public class AminoAcidAtLocation extends AsaSubunit implements IAminoAcidAtLocat
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(m_AminoAcid.getAbbreviation());
-        sb.append(Integer.toString(m_Location)) ;
+        sb.append(getAminoAcid().getAbbreviation());
+        sb.append(Integer.toString(getLocation())) ;
         ChainEnum chain = getChain();
         if(chain != null)
             sb.append(":" + chain) ;
@@ -127,25 +124,30 @@ public class AminoAcidAtLocation extends AsaSubunit implements IAminoAcidAtLocat
 
     @Override
     public boolean isDiSulphideBond() {
-        return m_DiSulphideBond;
+        return   m_ProteinAminoAcid.isDiSulphideBond();
     }
 
-    public void setDiSulphideBond(boolean diSulphideBond) {
-        m_DiSulphideBond = diSulphideBond;
+    public void setDiSulphideBond(boolean doIt)  {
+        ProteinAminoAcid pa = getProteinAminoAcid();
+        if(doIt) {
+            if(!pa.hasFeature(UniprotFeatureType.DISULFID))
+                pa.addFeature(UniprotFeatureType.DISULFID);
+        }
+        else {
+            pa.removeFeature(UniprotFeatureType.DISULFID);
+        }
     }
+
+
 
     @Override
     public boolean isSometimesMissedCleavage() {
-        return m_SometimesMissedCleavage;
+        return   m_ProteinAminoAcid.isSometimesMissedCleavage();
     }
 
-    public void setSometimesMissedCleavage(boolean sometimesMissedCleavage) {
-        m_SometimesMissedCleavage = sometimesMissedCleavage;
+    public ProteinAminoAcid getProteinAminoAcid() {
+        return m_ProteinAminoAcid;
     }
-
-
-
-
 
     //
 //    @Override

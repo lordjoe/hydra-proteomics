@@ -1,6 +1,7 @@
 package org.systemsbiology.jmol;
 
 import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.fragmentation.*;
 
 /**
  * org.systemsbiology.jmol.IAminoAcidAtLocation
@@ -23,4 +24,9 @@ public interface IAminoAcidAtLocation {
     public boolean isDetected();
 
     public boolean isSometimesMissedCleavage();
+
+    public UniprotFeatureType getStructure();
+
+    public void setStructure(final UniprotFeatureType structure);
+
 }

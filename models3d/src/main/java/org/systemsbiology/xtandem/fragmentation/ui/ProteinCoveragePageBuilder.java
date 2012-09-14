@@ -205,6 +205,7 @@ public class ProteinCoveragePageBuilder {
         }
 
         new CoverageColorsLabel(body);
+        new HelixandTurnLabel(body);
         if(model != null)  {
             new SingleTagBuillder(body, "p");
             new SecondaryStructureLabel(body);

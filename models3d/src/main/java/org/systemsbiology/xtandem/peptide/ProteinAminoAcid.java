@@ -16,7 +16,8 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid>,IAminoAcid
     public static final ProteinAminoAcid[] EMPTY_ARRAY = {};
 
     private final FastaAminoAcid m_AminoAcid;
-    private final int m_Location;
+    private int m_Location;
+    private ChainEnum  m_Chain;
     private boolean m_Detected;
     private boolean m_PotentialCleavage;
     private boolean m_MissedCleavage;
@@ -24,9 +25,20 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid>,IAminoAcid
     private final Set<UniprotFeatureType> m_Features = new HashSet<UniprotFeatureType>();
 
     public ProteinAminoAcid(FastaAminoAcid aminoAcid, int location) {
+       this(null,aminoAcid,location);
+    }
+
+
+    public ProteinAminoAcid(ChainEnum chain,FastaAminoAcid aminoAcid) {
+        this(chain,aminoAcid,0);
+     }
+
+    public ProteinAminoAcid(ChainEnum chain,FastaAminoAcid aminoAcid, int location) {
         m_AminoAcid = aminoAcid;
         m_Location = location;
+        m_Chain = chain;
     }
+
 
     public boolean isPotentialCleavage() {
         return m_PotentialCleavage;
@@ -86,6 +98,28 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid>,IAminoAcid
     }
 
 
+    public UniprotFeatureType getStructure() {
+        for (UniprotFeatureType type  : m_Features) {
+            if(type.isStructure())
+                return type;
+         }
+        return null;
+    }
+
+    public void setStructure(final UniprotFeatureType structure) {
+        // only one allowed
+        UniprotFeatureType prev = getStructure();
+        if(prev != null)  {
+            if(prev == structure)
+                return;
+        }
+        else {
+            addFeature(structure);
+        }
+    }
+
+
+
     public UniprotFeatureType[] getFeatures( )
     {
         UniprotFeatureType[] uniprotFeatureTypes = m_Features.toArray(UniprotFeatureType.EMPTY_ARRAY);
@@ -101,7 +135,16 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid>,IAminoAcid
 
     @Override
     public ChainEnum getChain() {
-        return null;
+        return m_Chain;
+    }
+
+    public void setChain(final ChainEnum chain) {
+        m_Chain = chain;
+    }
+
+
+    public void setLocation(final int location) {
+        m_Location = location;
     }
 
     @Override

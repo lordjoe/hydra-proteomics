@@ -43,6 +43,8 @@ public class ProteinFragmentationDescription {
     private short[] m_Coverage;
     private double m_FractionalCoverage; // fraction of amino acids in any fragment
     private PDBObject m_Model;
+    private SequenceChainMap[] m_SequenceFromSwissProt;
+
     private final CoverageStatistics m_Statistics;
 
     public ProteinFragmentationDescription(final String uniprotId, ProteinCollection parent) {
@@ -269,10 +271,19 @@ public class ProteinFragmentationDescription {
         return ret;
     }
 
+    public SequenceChainMap[] getSequenceFromSwissProt() {
+        return m_SequenceFromSwissProt;
+    }
+
+    public void setSequenceFromSwissProt(final SequenceChainMap[] sequenceFromSwissProt) {
+        m_SequenceFromSwissProt = sequenceFromSwissProt;
+    }
+
     public SequenceChainMap[] getChainMappings() {
         PDBObject model = getModel();
-        if (model == null)
-            return null;
+        if (model == null)   {
+              return m_SequenceFromSwissProt;
+        }
         SequenceChainMap[] mappings = model.getMappings();
         return mappings;
     }

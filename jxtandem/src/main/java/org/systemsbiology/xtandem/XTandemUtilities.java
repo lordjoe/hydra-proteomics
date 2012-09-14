@@ -2,7 +2,6 @@ package org.systemsbiology.xtandem;
 
 
 import com.lordjoe.utilities.*;
-import org.systemsbiology.common.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.bioml.*;
 import org.systemsbiology.xtandem.bioml.sax.*;
@@ -10,8 +9,6 @@ import org.systemsbiology.xtandem.hadoop.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.sax.*;
 import org.systemsbiology.xtandem.scoring.*;
-//import org.systemsbiology.xtandem.taxonomy.*;
-//import org.springframework.jdbc.core.simple.*;
 
 import javax.sql.*;
 import java.io.*;
@@ -19,6 +16,9 @@ import java.lang.reflect.*;
 import java.text.*;
 import java.util.*;
 import java.util.zip.*;
+
+//import org.systemsbiology.xtandem.taxonomy.*;
+//import org.springframework.jdbc.core.simple.*;
 
 
 /**
@@ -43,8 +43,7 @@ public class XTandemUtilities {
     public static final int MAX_SCORED_MASS = 5000;
 
 
-
-      private static IMZToInteger gDefaultConverter = TandemKScoringAlgorithm.K_SCORING_CONVERTER;
+    private static IMZToInteger gDefaultConverter = TandemKScoringAlgorithm.K_SCORING_CONVERTER;
 
     public static final Comparator OBJECT_STRING_COMPARATOR = new ObjectStringComparator();
 
@@ -54,6 +53,7 @@ public class XTandemUtilities {
 
     /**
      * if true the sequence IS semitryptic is false it may be
+     *
      * @param pPp !null sequence
      * @return as above
      */
@@ -65,7 +65,8 @@ public class XTandemUtilities {
 
     /**
      * are all observed modifications in the set
-     * @param pMp !null modified peptide
+     *
+     * @param pMp            !null modified peptide
      * @param pModifications !nulset of allowed modifications
      * @return true of all mods are in the set
      */
@@ -73,29 +74,28 @@ public class XTandemUtilities {
         PeptideModification[] modifications = pMp.getModifications();
         int sequenceLength = pMp.getSequenceLength();
         // ignore terminal modifications
-        for (int i = 1; i < Math.min(sequenceLength - 1,modifications.length); i++) {
+        for (int i = 1; i < Math.min(sequenceLength - 1, modifications.length); i++) {
             PeptideModification modification = modifications[i];
-            if(modification != null) {
-                if(!pModifications.contains(modification))  {
-                     rerunComparisons(  modification, pModifications);
+            if (modification != null) {
+                if (!pModifications.contains(modification)) {
+                    rerunComparisons(modification, pModifications);
                     pModifications.contains(modification);
                     return false;
                 }
-             }
+            }
         }
         return true;
     }
 
-    public static String findPeptide(File dbDirectory,String peptide)
-    {
-         if(!dbDirectory.exists() || !dbDirectory.isDirectory())
-             throw new IllegalStateException("bad directory");
+    public static String findPeptide(File dbDirectory, String peptide) {
+        if (!dbDirectory.exists() || !dbDirectory.isDirectory())
+            throw new IllegalStateException("bad directory");
         File[] files = dbDirectory.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            if(file.getName().endsWith(".peptide")) {
-                String ret = findPeptideInFile(file,peptide);
-                if(ret != null)
+            if (file.getName().endsWith(".peptide")) {
+                String ret = findPeptideInFile(file, peptide);
+                if (ret != null)
                     return ret;
             }
         }
@@ -106,18 +106,17 @@ public class XTandemUtilities {
         String[] itens = FileUtilities.readInLines(pFile);
         for (int i = 0; i < itens.length; i++) {
             String iten = itens[i];
-            if(iten.startsWith(peptide))
+            if (iten.startsWith(peptide))
                 return pFile.getName();
         }
         return null; // not found
     }
 
-    protected static final void rerunComparisons(PeptideModification modification,Set<PeptideModification> pModifications)
-    {
-          for(PeptideModification mod : pModifications)   {
-              if(modification.equals(mod))
-                  return;
-          }
+    protected static final void rerunComparisons(PeptideModification modification, Set<PeptideModification> pModifications) {
+        for (PeptideModification mod : pModifications) {
+            if (modification.equals(mod))
+                return;
+        }
     }
 
     private static class ObjectStringComparator implements Comparator {
@@ -173,8 +172,8 @@ public class XTandemUtilities {
             }
             switch (c) {
                 case '|':
-                     sb.append("_");
-                     break;
+                    sb.append("_");
+                    break;
                 // so it can be parsed
                 case '\"':
                 case '\'':
@@ -644,27 +643,30 @@ public class XTandemUtilities {
 
     /**
      * debug only do not normally call
+     *
      * @param mass
      * @param added
      * @param msg
      */
-    public static void mayBeShowAddedMassX(double mass,double added,String msg)
-    {
+    public static void mayBeShowAddedMassX(double mass, double added, String msg) {
 //         if(true)
 //             throw new UnsupportedOperationException("Fix This"); // ToDo
-         if(SHOW_MASS_CALCULATION)
-             System.out.println(String.format("%10.2f",mass) + " " + String.format("%10.2f",added) + " " + msg);
+        if (SHOW_MASS_CALCULATION)
+            System.out.println(String.format("%10.2f", mass) + " " + String.format("%10.2f", added) + " " + msg);
     }
+
     public static double calculateMatchingMass(double mass) {
         double added = XTandemUtilities.getCleaveCMass();
-  //      mayBeShowAddedMassX(  mass,  added,"getCleaveCMass");
+        //      mayBeShowAddedMassX(  mass,  added,"getCleaveCMass");
         mass += added;
         added = XTandemUtilities.getCleaveNMass();
-   //     mayBeShowAddedMassX(  mass,  added,"getCleaveNMass");
-        mass += added;;
+        //     mayBeShowAddedMassX(  mass,  added,"getCleaveNMass");
+        mass += added;
+        ;
         added = XTandemUtilities.getProtonMass();
-    //    mayBeShowAddedMassX(  mass,  added,"getProtonMass");
-        mass += added;;
+        //    mayBeShowAddedMassX(  mass,  added,"getProtonMass");
+        mass += added;
+        ;
         return mass;
     }
 
@@ -718,15 +720,15 @@ public class XTandemUtilities {
 
     /**
      * throw an exception after the date use for testing patched to the coed when you do not wsnt to forget them
+     *
      * @param year  like 2012 - 1900 internally subtacted
      * @param month j1-12 1 internally subtracted
-     * @param day  1-31
+     * @param day   1-31
      */
-    public static void workUntil(int year,int month,int day)
-    {
+    public static void workUntil(int year, int month, int day) {
         Date now = new Date();
-        Date stopWorking = new Date(year - 1900,month - 1,day);
-        if(now.after(stopWorking))
+        Date stopWorking = new Date(year - 1900, month - 1, day);
+        if (now.after(stopWorking))
             throw new IllegalStateException("Temporary patch has expired");
     }
 
@@ -1202,12 +1204,37 @@ public class XTandemUtilities {
     public static String extractTag(String tagName, String xml) {
         String startStr = tagName + "=\"";
         int index = xml.indexOf(startStr);
-        if (index == -1)
-            throw new IllegalArgumentException("cannot find tag " + tagName);
+        if (index == -1) {
+            String xmlLc = xml.toLowerCase();
+            if (xmlLc.equals(xml))
+                throw new IllegalArgumentException("cannot find tag " + tagName);
+            String tagLc = tagName.toLowerCase();
+              return  extractTag(tagLc,xmlLc); // rey without case
+        }
         index += startStr.length();
         int endIndex = xml.indexOf("\"", index);
         if (endIndex == -1)
             throw new IllegalArgumentException("cannot terminate tag " + tagName);
+        // new will uncouple old and long string
+        return new String(xml.substring(index, endIndex));
+    }
+
+    /**
+     * grab a tag that might not exist
+     * @param tagName
+     * @param xml
+     * @return
+     */
+    public static String maybeExtractTag(String tagName, String xml) {
+        String startStr = tagName + "=\"";
+        int index = xml.indexOf(startStr);
+        if (index == -1) {
+            return null;
+        }
+        index += startStr.length();
+        int endIndex = xml.indexOf("\"", index);
+        if (endIndex == -1)
+            return null;
         // new will uncouple old and long string
         return new String(xml.substring(index, endIndex));
     }
@@ -2549,8 +2576,10 @@ use contrast angle - controls the use of contrast angle duplicate spectrum delet
     }
 
     public static final double CHARGE_COMPENSATION_CONSTANT = 0.95;
+
     /**
      * what tandem does to guess the charge on a spectrum
+     *
      * @param sp
      * @param precursorMz
      * @return
@@ -2586,14 +2615,14 @@ use contrast angle - controls the use of contrast angle duplicate spectrum delet
     public static void main(String[] args) {
         for (int i = 1; i < args.length; i++) {
             String arg = args[i];
-            String file = findPeptide(new File(args[0]),arg );
+            String file = findPeptide(new File(args[0]), arg);
             System.out.println(file + " " + arg);
         }
 
-       // showFragmentMass(args[0], args[1]);
+        // showFragmentMass(args[0], args[1]);
         // handleXTandemListing(args[0]);
         // XTandemUtilities.guaranteeMGFParse("E:/ForSteven/11_411_1.mgf");
-      //  XTandemScoringReport report = XTandemUtilities.readXTandemFile("E:/ForSteven/HoopmanSample/klc_103007c_cptac_3A_yeast_01.2012_03_06_20_00_54.t.xml");
+        //  XTandemScoringReport report = XTandemUtilities.readXTandemFile("E:/ForSteven/HoopmanSample/klc_103007c_cptac_3A_yeast_01.2012_03_06_20_00_54.t.xml");
 
 //        for (int i = 0; i < args.length; i++) {
 //            String arg = args[i];

@@ -166,7 +166,7 @@ public class ProbIdScoringAlgorithm extends AbstractScoringAlgorithm  {
         for (int i = 0; i < peaks.length; i++) {
             ISpectrumPeak peak = peaks[i];
             for (int j = 0; j < pepSeq.length(); j++) {
-                char c = Character.toUpperCase(pepSeq.charAt(i));
+                char c = Character.toUpperCase(pepSeq.charAt(j));
                 switch(c)  {
                     case  'W' :
                        returnScore += Math.log(peak.getPeak());

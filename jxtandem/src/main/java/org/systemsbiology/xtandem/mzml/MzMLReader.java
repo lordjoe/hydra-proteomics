@@ -72,7 +72,12 @@ public class MzMLReader implements TagEndListener<SpectrumInterface> {
         sb.append(FRAGMENT_POSTFIX);
 
         String id = XTandemUtilities.extractTag("id", spectrumFragment);
-        int level  = Integer.parseInt(XTandemUtilities.extractTag("mslevel", spectrumFragment));
+        String mslevel = XTandemUtilities.maybeExtractTag("mslevel", spectrumFragment);
+        if(mslevel == null) {
+            // ok may be
+            mslevel = XTandemUtilities.maybeExtractTag("name=\"ms level\" value=", spectrumFragment);
+        }
+        int level  = Integer.parseInt(mslevel);
 
         InputStream inp = XTandemUtilities.stringToInputStream(sb.toString());
         MzMLReader rdr = new MzMLReader(inp);

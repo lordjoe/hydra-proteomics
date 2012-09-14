@@ -14,7 +14,7 @@
 	<note type="input" label="spectrum, parent monoisotopic mass isotope error">yes</note>
 	<note type="input" label="spectrum, fragment monoisotopic mass error units">Daltons</note>
 	<note>The value for this parameter may be 'Daltons' or 'ppm': all other values are ignored</note>
-	<note type="input" label="spectrum, parent monoisotopic mass error units">ppm</note>
+	<note type="input" label="spectrum, parent monoisotopic mass error units">Daltons</note>  <!-- was ppm -->
 		<note>The value for this parameter may be 'Daltons' or 'ppm': all other values are ignored</note>
 	<note type="input" label="spectrum, fragment mass type">monoisotopic</note>
 		<note>values are monoisotopic|average </note>

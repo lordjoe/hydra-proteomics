@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem.fragmentation.ui;
 
 import org.systemsbiology.xtandem.fragmentation.*;
+import org.systemsbiology.xtandem.peptide.*;
 
 import javax.xml.ws.*;
 import java.util.*;
@@ -66,7 +67,9 @@ public class ProteinFragmentLine {
 
     public String getSequence()
     {
-        String fullSequence = getFragments().getProtein().getSequence();
+        ProteinFragmentationDescription fragments = getFragments();
+        Protein protein = fragments.getProtein();
+        String fullSequence = protein.getSequence();
         int start = getStart();
         int end = getEnd();
         return fullSequence.substring(start, end);
