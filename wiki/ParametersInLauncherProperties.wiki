@@ -1,8 +1,15 @@
 #summary The file Launcher.properties in HYDRA_HOME/data has hydra specific parameters.
+#labels Featured,Phase-Deploy
 
 = Introduction =
 
 Hydra maintains a separation of parameters for proteomic search, which are specified in a passed xml file capable of being used by other search engines such as tandem and properties 
+
+= Specifying the Cluster =
+
+The  _italic_ remoteBaseDirectory _italic_ property determines where on the cluster the code is run.
+* If not specified the code will run on the local box
+* If the 
 
 = Details =
 {{{
@@ -76,7 +83,7 @@ compressIntermediateFiles=true
  # maps to "mapred.child.java.opts", "-Xmx" + maxMamory + "m"
 maxClusterMemory=3600
 }}}
-_italic_
+ 
 
 == Properties passed to Hadoop tasks == 
 These are handled passed to Hadoop as defined properties in the command line with the text DEFINE_ removed from the property name - this is the
@@ -101,9 +108,10 @@ DEFINE_org.systemsbiology.algorithm=org.systemsbiology.xtandem.TandemKScoringAlg
 # when yes each input file goes to a separate output file
 DEFINE_org.systemsbiology.xtandem.MultipleOutputFiles=yes
 }}}
-_italic_
-
-_italic_
+== Properties for use with  Amazon Elastic Map Reduce  == 
+These are ignored unless remoteBaseDirectory starts with 3n://
+indicating that the code is to execute on an instance of Elastic Map Reduce.
+*bold* TODO Document How to set up AWS *bold*
 {{{
 #
 # Used only when using Amazon Elastic Map Reduce
@@ -118,4 +126,4 @@ DEFINE_org.systemsbiology.aws.KeepClusterAfterJob=yes
 #DEFINE_org.systemsbiology.tandem.hadoop.PrebuiltJar=Mar300846_0.jar
 DEFINE_org.systemsbiology.aws.InstanceSize=large
 }}}
-_italic_
+ 
