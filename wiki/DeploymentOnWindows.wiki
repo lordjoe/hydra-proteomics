@@ -1,0 +1,13 @@
+#summary This page describes using the Window deployer to deploy Hydra on windows machine.
+
+= Introduction =
+
+There is a windows installer program which will allow windows users to deploy on a windows machine. This code automates some of the manual steps required for deployment on a Linux or Mac machine. 
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
