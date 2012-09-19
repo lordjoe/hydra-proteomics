@@ -9,7 +9,6 @@ The downloadable file [http://code.google.com/p/hydra-proteomics/downloads/detai
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Hydra needs to be run from the directory where the data files are stored. In general paths may be relative or absolute but the code works best when the spectral files _mzml,mzXML,or mgf_ files are in the current directory.  Hydra also expects a file _Launcher.properties_ in the current directory. The properties are hydra and cluster specific and the same properties may be used for many runs.
+   Alternatively edit the shell script _hydra.bat_ or _hydra.sh_ in hydra's bin to reference an absolute location of the _Launcher.properties_ file.
+   
