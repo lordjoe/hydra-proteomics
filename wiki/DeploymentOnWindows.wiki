@@ -19,4 +19,4 @@ Download Hydra_Installer.exe and execute it:
 
 
 = Configuration =
-Hydra may be configured either by editing a Launcher.properties file with the data or by setting user preferences on the system. The program configure 
+Hydra may be configured either by editing a Launcher.properties file with the data or by setting user preferences on the system. The program configure _configure.bat_ in the bin directory does this. Running it with no arguments lists the variables which may be configured. Passwords are encrypted before being stored. running configure with the argument *test*  will access hdfs, create a directory and a file with known content, read the file and then delete it verifying good access.
