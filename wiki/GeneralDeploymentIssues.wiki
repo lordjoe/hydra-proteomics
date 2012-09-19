@@ -15,6 +15,6 @@ Hydra is designed to function as a pluggable replacement for the X!Tandem search
 
 == Executing the script ==
   * run the program from the directory containing the spectrum files or its immediate parent directory.
-  * Files referenced in the parameters file _italic_ usually tandem.xml _italic_ should have paths relative to the directory in which the code runs.
+  * Files referenced in the parameters file _usually tandem.xml_ should have paths relative to the directory in which the code runs.
   * parameters describing the Hadoop cluster and Hydra specific parameters are described in a config file, 
  
