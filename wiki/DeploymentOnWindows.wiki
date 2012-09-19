@@ -6,14 +6,17 @@ There is a windows installer program which will allow windows users to deploy on
 
 = Requirements=
 
-Hadoop is linux centric program and hard codes some linux commands. In order to run the hydra client or any other Hadoop based program Cygwin or some other tool to add common unix commands must be installed. Cygwin is available at 
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
-
+Hadoop is linux centric program and hard codes some linux commands. In order to run the hydra client or any other Hadoop based program Cygwin or some other tool to add common unix commands must be installed. Cygwin is available at [http://www.cygwin.com/ cygwin.com]
+  
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Download Hydra_Installer.exe and execute it:
+  * It will allow you to choose where the hydra client is installed
+  * The environment variable HYDRA_HOME is added to the environment as the install directory for hydra.
+  * %HYDRA_HOME%\bin is added to the path
+  * a program group is added which includes an uninstaller
+  * hydra is run from the command line
+
+
+= Configuration =
+Hydra may be configured either by editing a Launcher.properties file with the data or by setting user preferences on the system. The program configure 
