@@ -260,7 +260,7 @@ public class RemoteSession implements UserInfo {
 
     public static void main(String[] args) {
         String user =  RemoteUtilities.getUser(); // "training";  //
-        String password =  RemoteUtilities.getPassword(); // "training";  //
+       String password =  RemoteUtilities.getPassword(); // "training";  //
         String host =  RemoteUtilities.getHost(); // "192.168.244.128"; // "hadoop1";
         RemoteSession rs = new RemoteSession(host, user, password);
          rs.setConnected(true);
