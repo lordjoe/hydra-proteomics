@@ -29,6 +29,8 @@ import java.util.prefs.*;
 public class JXTandemLauncher implements IStreamOpener { //extends AbstractParameterHolder implements IParameterHolder {
     public static final JXTandemLauncher[] EMPTY_ARRAY = {};
 
+    public static final String HYDRA_VERSION = "1.0.0";
+
     public static final String USE_SEPARATE_FILES_STRING = "full_tandem_output_path";
     public static final String ALGORITHMS_PROPERTY = "org.systemsbiology.algorithm";
     public static final String TURN_ON_SCAN_OUTPUT_PROPERTY = "org.systemsbiology.xtandem.SaveScansData";
@@ -1382,9 +1384,28 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     protected static void handleArguments(String[] args) {
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
+            // print the version and exit
+            if("version".equals(arg))  {
+                System.out.println("Hydra Version = " + HYDRA_VERSION);
+                System.exit(0);
+            }
+            // Clear user properties and exit
+            if("clear_properties".equals(arg))  {
+                clearProperties();
+                System.exit(0);
+            }
+        }
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
             handleArgument(arg);
         }
     }
+
+    private static void clearProperties() {
+        throw new UnsupportedOperationException("Fix This"); // ToDo
+        // }
+    }
+
 
     protected static void handleArgument(final String pArg) {
         if (pArg.startsWith("params=")) {

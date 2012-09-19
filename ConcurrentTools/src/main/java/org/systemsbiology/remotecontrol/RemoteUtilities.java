@@ -1,6 +1,7 @@
 package org.systemsbiology.remotecontrol;
 
 import com.lordjoe.utilities.*;
+import org.systemsbiology.hadoop.*;
 
 import java.io.*;
 import java.util.*;
@@ -22,7 +23,7 @@ public class RemoteUtilities {
                     " - path should be the name of the a path on hdfs  " +
                     " - port should be the port of  hdfs - 9000 is the default " +
                     " - hadoop_home should be the value of what you get when you say echo $HADOOP_HOME  " +
-                           "";
+                    "";
 
 
     public static final String USER_STRING = "user";
@@ -33,73 +34,82 @@ public class RemoteUtilities {
     public static final String HADOOP_HOME = "hadoop_home";
     public static final String DEFAULT_PATH_STRING = "default_path";
 
- //   private static Properties gAccessProperties;
+    //   private static Properties gAccessProperties;
 
 
     private static void validateProperties(final Properties pP) {
-        if ( getProperty(USER_STRING) == null)
+        if (getProperty(USER_STRING) == null)
             throw new IllegalStateException(EDIT_REMOTE_PRPOERTIES);
-        if ( getProperty(PASSWORD_STRING) == null)
+        if (getProperty(PASSWORD_STRING) == null)
             throw new IllegalStateException(EDIT_REMOTE_PRPOERTIES);
-        if ( getProperty(HOST_STRING) == null)
+        if (getProperty(HOST_STRING) == null)
             throw new IllegalStateException(EDIT_REMOTE_PRPOERTIES);
-        if ( getProperty(DEFAULT_PATH_STRING) == null)
+        if (getProperty(DEFAULT_PATH_STRING) == null)
             throw new IllegalStateException(EDIT_REMOTE_PRPOERTIES);
-        if ( getProperty(PORT_STRING) == null)
+        if (getProperty(PORT_STRING) == null)
             throw new IllegalStateException(EDIT_REMOTE_PRPOERTIES);
     }
 
 
+    private static void validatePreferences() {
+        if (getProperty(USER_STRING) == null)
+            throw new IllegalStateException(EDIT_REMOTE_PRPOERTIES);
+        if (getProperty(PASSWORD_STRING) == null)
+            throw new IllegalStateException(EDIT_REMOTE_PRPOERTIES);
+        if (getProperty(HOST_STRING) == null)
+            throw new IllegalStateException(EDIT_REMOTE_PRPOERTIES);
+        if (getProperty(DEFAULT_PATH_STRING) == null)
+            throw new IllegalStateException(EDIT_REMOTE_PRPOERTIES);
+        if (getProperty(PORT_STRING) == null)
+            throw new IllegalStateException(EDIT_REMOTE_PRPOERTIES);
+    }
 
 
-    public static void setProperty(String name,String value)
-    {
+    public static void setProperty(String name, String value) {
         Preferences prefs = Preferences.userNodeForPackage(RemoteUtilities.class);
-        if(PASSWORD_STRING.equals(name))
+        if (PASSWORD_STRING.equals(name))
             value = Encrypt.encryptString(value);
-          prefs.put(name, value);
+        prefs.put(name, value);
 
     }
 
-    public static String getProperty(String name)
-    {
+    public static String getProperty(String name) {
         Preferences prefs = Preferences.userNodeForPackage(RemoteUtilities.class);
         String BadValue = "Set " + name;
         String s = prefs.get(name, BadValue);
-        if(BadValue.equals(s))
+        if (BadValue.equals(s))
             return null;
         return s;
     }
 
 
     public static String getUser() {
-        return  getProperty(USER_STRING);
-     }
+           return getProperty(USER_STRING);
+    }
 
     public static String getPassword() {
-        String encrypted = getProperty(PASSWORD_STRING);
-        if(encrypted == null)
+           String encrypted = getProperty(PASSWORD_STRING);
+        if (encrypted == null)
             return null;
         return Encrypt.decryptString(encrypted);
-     }
+    }
 
     public static String getHost() {
-         return  getProperty(HOST_STRING);
-       }
+        return getProperty(HOST_STRING);
+    }
+
     public static String getJobTracker() {
-         return  getProperty(JOB_TRACKER_STRING);
-       }
+        return getProperty(JOB_TRACKER_STRING);
+    }
 
     public static int getPort() {
-        return  Integer.parseInt(getProperty(PORT_STRING));
+        return Integer.parseInt(getProperty(PORT_STRING));
     }
 
     public static String getDefaultPath() {
-        return  getProperty(DEFAULT_PATH_STRING);
+        return getProperty(DEFAULT_PATH_STRING);
 
     }
-
-
 
 
     public static final String[] EEXCLUDED_JARS_LIST = {
@@ -217,42 +227,104 @@ public class RemoteUtilities {
         prefs.put(key, value);
     }
 
-    private static void buildPreferences(Preferences prefs, final String[] args) {
-        if (args.length == 0)
-            throw new IllegalStateException("usage user=<user_name> password=<password> host=<hadoop_launcher>");
+    /**
+     * @param prefs
+     * @param args
+     * @return true if test needed
+     */
+    private static boolean buildPreferences(Preferences prefs, final String[] args) {
+        if (args.length == 0) {
+            usage();
+            return false;
+        }
+        boolean testNeeded = false;
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
+            if ("test".equals(arg)) {
+                testNeeded = true;
+                continue;
+            }
             String[] items = arg.split("=");
             if (items.length != 2)
                 throw new IllegalStateException("bad property spec " + arg);
             handlePreference(prefs, items[0], items[1]);
         }
+        return testNeeded;
     }
 
     private static boolean testPreferences(Preferences prefs) {
         String user = getProperty(USER_STRING);
-        if (user == null || user.length() == 0  )
+        if (user == null || user.length() == 0)
             return false;
         String password = getProperty(PASSWORD_STRING);
-        if (password == null || password.length() == 0  )
+        if (password == null || password.length() == 0)
             return false;
         String host = getProperty(HOST_STRING);
-        if (host == null || host.length() == 0  )
+        if (host == null || host.length() == 0)
             return false;
         String path = getProperty(DEFAULT_PATH_STRING);
-        if (path == null || path.length() == 0  )
+        if (path == null || path.length() == 0)
             return false;
         String port = getProperty(PORT_STRING);
-        if (port == null || port.length() == 0  )
+        if (port == null || port.length() == 0)
             return false;
         return true;
     }
 
     protected static void usage() {
         System.out.println("Usage:");
-        System.out.println("java ... org.systemsbiology.remotecontrol.RemoteUtilities host=glados jobtracker=glados:9001 port=9000 user=slewis password=secret path=/users/hdfs");
+        System.out.println("java ... org.systemsbiology.remotecontrol.RemoteUtilities \"host=glados\" \"jobtracker=glados:9001\" \"port=9000\" \"user=slewis\" \"password=secret\" \"path=/users/hdfs\"");
         System.out.println("or any subset of the above");
     }
+
+
+    public static final String TEST_CONTENT =
+            "Mary had a little lamb,\n" +
+                    "little lamb, little lamb,\n" +
+                    "Mary had a little lamb,\n" +
+                    "whose fleece was white as snow.\n" +
+                    "And everywhere that Mary went,\n" +
+                    "Mary went, Mary went,\n" +
+                    "and everywhere that Mary went,\n" +
+                    "the lamb was sure to go.";
+    public static final String FILE_NAME = "little_lamb.txt";
+
+
+    public static void hdfsReadTest() {
+        String host = getHost();
+        String password = getPassword();
+        String user = getUser();
+        String path = getDefaultPath();
+        String jobtracker = getJobTracker();
+        int port = getPort();
+        HDFSAccessor access = new HDFSAccessor(host, port);
+        String BASE_DIRECTORY = path + "/test/";
+        String filePath = BASE_DIRECTORY + FILE_NAME;
+        access.guaranteeDirectory(path);
+
+        if (!access.exists(path))
+            throw new IllegalStateException("Directory Create failed");
+
+        access.writeToFileSystem(filePath, TEST_CONTENT);
+
+        if (!access.exists(filePath))
+            throw new IllegalStateException("File Create failed");
+
+        String result = access.readFromFileSystem(filePath);
+        if (result == null)
+            throw new IllegalStateException("File read failed");
+
+        if (!result.equals(TEST_CONTENT))
+            throw new IllegalStateException("File content not as expected");
+
+
+        access.deleteFile(filePath);
+
+        if (access.exists(filePath))
+            throw new IllegalStateException("File Delete failed");
+    }
+
+
 
 
     /**
@@ -265,16 +337,20 @@ public class RemoteUtilities {
         }
 
         Preferences prefs = Preferences.userNodeForPackage(RemoteUtilities.class);
-  //      if (!testPreferences(prefs))
-         buildPreferences(prefs, args);
+        //      if (!testPreferences(prefs))
+        boolean testNeeded = buildPreferences(prefs, args);
         String home = getProperty("hadoop_home");
         String host = getHost();
         String password = getPassword();
         String user = getUser();
         String path = getDefaultPath();
         String jobtracker = getJobTracker();
-          int port = getPort();
+        int port = getPort();
+        validatePreferences();
+        if (testNeeded) {
+            hdfsReadTest();
         }
+    }
 
 
 }

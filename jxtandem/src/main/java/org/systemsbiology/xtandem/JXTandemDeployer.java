@@ -69,34 +69,44 @@ public class JXTandemDeployer extends Deployer {
     @Override
     protected void buildCommandLine(final Class mainClass, final String[] args, final StringBuffer pSb) {
         if (isQuiet()) {
-             pSb.append(/* "jre" + WINDOWS_DIRECTORY_SEPARATOR + "bin" + WINDOWS_DIRECTORY_SEPARATOR + */ "javaw ");
-         }
-         else {
-             pSb.append(/* "jre\\bin\\" + */ "java ");
-         }
-         pSb.append(" -Xmx1024m -Xms128m -cp %q4path% " + mainClass.getName() + " ");
-         for (int i = 2; i < args.length; i++) {
-             pSb.append(" " + args[i]);
-         }
-         pSb.append(" config=%HYDRA_HOME%/data/Launcher.properties jar=%HYDRA_HOME%/data/Hydra.jar params=%1 %2 %3 %4 \n");
+            pSb.append(/* "jre" + WINDOWS_DIRECTORY_SEPARATOR + "bin" + WINDOWS_DIRECTORY_SEPARATOR + */ "javaw ");
+        }
+        else {
+            pSb.append(/* "jre\\bin\\" + */ "java ");
+        }
+        pSb.append(" -Xmx1024m -Xms128m -cp %q4path% " + mainClass.getName() + " ");
+        for (int i = 2; i < args.length; i++) {
+            pSb.append(" " + args[i]);
+        }
+         if (mainClass == JXTandemLauncher.class)    {
+             pSb.append(" config=%HYDRA_HOME%/data/Launcher.properties jar=%HYDRA_HOME%/data/Hydra.jar ");
+            pSb.append("params=%1 %2 %3 %4 \n");
+        }
+        else
+            pSb.append("%1 %2 %3 %4 \n");
 
 
     }
 
 
-
     protected String buildShellCommandLine(final Class mainClass, final String[] args) {
         StringBuilder pSb = new StringBuilder();
 
-         pSb.append("java ");
+        pSb.append("java ");
         pSb.append(" -Xmx1024m   ");
         pSb.append(" -cp $q4path " + mainClass.getName() + " ");
         for (int i = 2; i < args.length; i++) {
             pSb.append(" " + args[i].replace('%', '$'));
         }
-        pSb.append("config=$HYDRA_HOME/data/Launcher.properties jar=$HYDRA_HOME/data/Hydra.jar  params=$1 $2 $3 $4 $5 $6 $7 $8\n");
+        if (mainClass == JXTandemLauncher.class)   {
+            pSb.append("config=$HYDRA_HOME/data/Launcher.properties jar=$HYDRA_HOME/data/Hydra.jar  ");
+            pSb.append("params=$1 $2 $3 $4 $5 $6 $7 $8\n");
+        }
+        else
+            pSb.append("$1 $2 $3 $4 $5 $6 $7 $8\n");
+
         return pSb.toString();
-     }
+    }
 
 
     @Override
@@ -104,15 +114,15 @@ public class JXTandemDeployer extends Deployer {
         super.deploy(pDeployDir, mainClass, pRightArgs);
         String deployPath = pDeployDir.getAbsolutePath();
         File[] data = new File("installer").listFiles();
-        if(data == null)
+        if (data == null)
             throw new IllegalStateException("installer must be a subdirectory of user.dir and hold Launcher.properties");
-        File datadir = new File(pDeployDir,"data");
+        File datadir = new File(pDeployDir, "data");
         datadir.mkdirs();
         for (int i = 0; i < data.length; i++) {
             File file = data[i];
-            FileUtilities.copyFile(file,new File(datadir,file.getName()));
+            FileUtilities.copyFile(file, new File(datadir, file.getName()));
         }
-         HadoopDeployer.makeHadoopJar(datadir.getAbsolutePath() + "/Hydra.jar");
+        HadoopDeployer.makeHadoopJar(datadir.getAbsolutePath() + "/Hydra.jar");
     }
 
     public static void main(String[] args) {

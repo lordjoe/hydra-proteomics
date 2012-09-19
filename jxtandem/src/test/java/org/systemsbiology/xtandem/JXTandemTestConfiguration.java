@@ -21,11 +21,15 @@ public class JXTandemTestConfiguration {
     public static boolean isHDFSAccessible() {
 
         HDFSAccessor access = null;
-        String connStr = RemoteUtilities.getHost() + ":" +  RemoteUtilities.getPort() + ":" + RemoteUtilities.getUser() + ":" + RemoteUtilities.getPassword();
+        String host = RemoteUtilities.getHost();
+        int port = RemoteUtilities.getPort();
+        String user = RemoteUtilities.getUser();
+        RemoteUtilities.getPassword()
+        String connStr = host + ":" + port + ":" + user + ":" + RemoteUtilities.getPassword();
         Boolean ret = gConditionToAvailability.get(connStr);
         if (ret == null) {
             try {
-                access = new HDFSAccessor(RemoteUtilities.getHost(), RemoteUtilities.getPort());
+                access = new HDFSAccessor(host, port);
                 ret = Boolean.TRUE;
             }
             catch (Exception e) {

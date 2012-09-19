@@ -1,5 +1,7 @@
 package com.lordjoe.utilities;
 
+import org.systemsbiology.remotecontrol.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -384,14 +386,14 @@ public class Deployer {
         //  config=%HYDRA_HOME%/Launcher.properties config=%HYDRA_HOME%/data/JXTandem.jar
     }
 
-    public void makeRunners(File[] pathLibs, File deployDir, final Class mainClass, String[] args) {
+    public void makeRunners(File[] pathLibs, File deployDir, final Class mainClass,final String commandName, String[] args) {
         File binDir = new File(deployDir, "bin");
         binDir.mkdirs();
         String bf = buildBatchFile(pathLibs, deployDir, mainClass, args);
-        File rb = new File(binDir, "hydra.bat");
+        File rb = new File(binDir, commandName + ".bat");
         writeFile(rb, bf);
         String sf = buildShellFile(pathLibs, deployDir, mainClass, args);
-        File rs = new File(binDir, "hydra.sh");
+        File rs = new File(binDir,  commandName + ".sh");
         writeFile(rs, sf);
     }
 
@@ -400,8 +402,10 @@ public class Deployer {
         String deployPath = pDeployDir.getAbsolutePath();
         pDeployDir.mkdirs();
         File[] pathLibs = deployLibraries(pDeployDir);
-        makeRunners(pathLibs, pDeployDir, mainClass, pRightArgs);
-    }
+        makeRunners(pathLibs, pDeployDir, mainClass,"hydra", pRightArgs);
+        // add configure code
+        makeRunners(pathLibs, pDeployDir, RemoteUtilities.class,"configure", pRightArgs);
+     }
 
     public static void main(String[] args) throws Exception {
         //   testRegex();
