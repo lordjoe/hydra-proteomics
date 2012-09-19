@@ -1,0 +1,15 @@
+#summary This page describes how to run Hydra
+
+= Introduction =
+
+Hydra reads and executes from the same files and directory as XTandem but reads one added file _Launcher.properties_ which has parameters describing the Hadoop cluster and setting hydra specific variables.
+
+= Sample Data =
+The downloadable file [http://code.google.com/p/hydra-proteomics/downloads/detail?name=SampleHydraData.ZIP&can=2&q= SampleHydraData.ZIP] is a very small sample which may be used for testing hydra. It has a small search space and was used in development to allow rapid execution. The archive contains a _Launcher.properties_ which *must be edited* to match the user's cluster
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
