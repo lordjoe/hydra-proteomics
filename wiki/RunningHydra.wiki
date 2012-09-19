@@ -1,4 +1,5 @@
 #summary This page describes how to run Hydra
+#labels Featured,Phase-Deploy
 
 = Introduction =
 
@@ -7,8 +8,20 @@ Hydra reads and executes from the same files and directory as XTandem but reads 
 = Sample Data =
 The downloadable file [http://code.google.com/p/hydra-proteomics/downloads/detail?name=SampleHydraData.ZIP&can=2&q= SampleHydraData.ZIP] is a very small sample which may be used for testing hydra. It has a small search space and was used in development to allow rapid execution. The archive contains a _Launcher.properties_ which *must be edited* to match the user's cluster
 
-= Details =
+= Running =
 
 Hydra needs to be run from the directory where the data files are stored. In general paths may be relative or absolute but the code works best when the spectral files _mzml,mzXML,or mgf_ files are in the current directory.  Hydra also expects a file _Launcher.properties_ in the current directory. The properties are hydra and cluster specific and the same properties may be used for many runs.
    Alternatively edit the shell script _hydra.bat_ or _hydra.sh_ in hydra's bin to reference an absolute location of the _Launcher.properties_ file.
    
+= First Test - Running Locally =
+
+Hadoop has the ability to run _VERY SLOWLY_ on a single machine. As long as the samples are small, this is a reasonable mode for testing the configuration.
+   * make sure hydra is installed properly
+   * download and extract the sample data as described above
+   * open the file _Launcher.properties_ in the sample data directory
+   * make sure the line containing remoteBaseDirectory starts with *#*. This comments out the line.
+   * open a shell window and *cd* to the sample directory.
+   * type *hydra tandem.xml*
+   * you should see the following:
+{{{
+}}}
