@@ -15,6 +15,7 @@ The  _italic_ remoteBaseDirectory _italic_ property determines where on the clus
 Note - needed only if running on a remote cluster
    * *remote* host is the address of the main node on the cluster
    * *remotePort* is the job tracker port
+   * *remoteJobTracker* may be found in the Hadoop configuration file *mapred-site.xml* as the property *mapred.job.tracker*.
    * *remoteUser* user authorized to use the remote host
    * *encryptedRemotePassword* is a string encrypting the users remote password - it is only used on the client and may be obtained by running the config command file in the n=bin deployment of using java to run org.systemsbiology.remotecontrol.RemoteUtilities and specifying password=<mypassword> (for example password=secret). The program will give an encrypted string to use.
 {{{
