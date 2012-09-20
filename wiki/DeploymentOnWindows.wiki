@@ -6,7 +6,7 @@ There is a windows installer program which will allow windows users to deploy on
 
 = Requirements=
 
-Hadoop is linux centric program and hard codes some linux commands. In order to run the hydra client or any other Hadoop based program Cygwin or some other tool to add common unix commands must be installed. Cygwin is available at [http://www.cygwin.com/ cygwin.com]
+Hadoop is linux centric program and hard codes some linux commands. In order to run the hydra client or any other Hadoop based program Cygwin or some other tool to add common unix commands must be installed. Cygwin is available at [http://www.cygwin.com/ cygwin.com]. Also the directory *c:\cygwin\bin* must be in the path to allow windows to use unix commands. Test this by opening a command window and typing *ls*.
   
 = Details =
 
