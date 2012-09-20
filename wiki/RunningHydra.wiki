@@ -59,3 +59,6 @@ Score Combiner took  4.93 sec
 Consolidator took  1.96 sec
 Total Scoring took 13.75 sec
 }}}
+
+== Talking to HDFS ==
+The distribution ships with a shell script (sh or bat file) to allow setup and testing of a configuration. This allows setting of Java preferences defining the Hadoop cluster. Most of the parameters can also be set in the _Launcher.properties_ file but configuration will remember the values. 
