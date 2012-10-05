@@ -271,6 +271,11 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
                     writer.append(onlyKey, text);
                 }
 
+                // Find out who the user really is
+                String userName = System.getProperty("user.name");
+                context.getCounter("Performance","UserIs." + userName).increment(1);
+                // counter will tell name of user
+
 
                 context.getCounter("Performance", "TotalScans").increment(1);
 
