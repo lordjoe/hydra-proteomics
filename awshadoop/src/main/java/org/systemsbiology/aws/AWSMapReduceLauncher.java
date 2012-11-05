@@ -22,7 +22,8 @@ public class AWSMapReduceLauncher implements IHadoopController {
     public static final int ONE_HOUR = 60 * 60 * 1000;
     public static final long MAX_RUN_TIME = 24 * ONE_HOUR; // 24 hours
 
-    public static final String DEFAULT_HADOOP_VERSION = "0.20";
+ //   public static final String DEFAULT_HADOOP_VERSION =  "0.20.205";   // "0.20"; //
+    public static final String DEFAULT_HADOOP_VERSION = "1.0.3";
 
 
     private static final int DEFAULT_NUMBER_INSTANCES = 3;
@@ -770,7 +771,7 @@ public class AWSMapReduceLauncher implements IHadoopController {
             if (cluster != null) {
                 flowInstancesConfig.setKeepJobFlowAliveWhenNoSteps(cluster.isKeepJobFlowAliveWhenNoSteps());
                 flowInstancesConfig.setHadoopVersion(cluster.getHadoopVersion());
-                flowInstancesConfig.setEc2KeyName(cluster.getEc2KeyName());
+                  flowInstancesConfig.setEc2KeyName(cluster.getEc2KeyName());
                 //           flowInstancesConfig.setMasterInstanceType(cluster.getMasterInstanceType());
                 //           flowInstancesConfig.setSlaveInstanceType(cluster.getSlaveInstanceType());
                 //           flowInstancesConfig.setInstanceCount(cluster.getInstanceCount());
