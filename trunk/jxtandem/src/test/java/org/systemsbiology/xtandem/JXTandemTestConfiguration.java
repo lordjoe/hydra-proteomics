@@ -24,7 +24,7 @@ public class JXTandemTestConfiguration {
         String host = RemoteUtilities.getHost();
         int port = RemoteUtilities.getPort();
         String user = RemoteUtilities.getUser();
-        RemoteUtilities.getPassword()
+   //     RemoteUtilities.getPassword()
         String connStr = host + ":" + port + ":" + user + ":" + RemoteUtilities.getPassword();
         Boolean ret = gConditionToAvailability.get(connStr);
         if (ret == null) {
