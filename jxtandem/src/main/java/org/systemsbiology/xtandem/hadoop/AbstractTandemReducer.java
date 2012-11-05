@@ -3,6 +3,7 @@ package org.systemsbiology.xtandem.hadoop;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.util.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
 
@@ -68,6 +69,12 @@ public abstract class AbstractTandemReducer  extends Reducer<Text, Text, Text, T
         ap.setJobName(context.getJobName());
         String defaultPath = conf.get(XTandemHadoopUtilities.PATH_KEY);
         XTandemHadoopUtilities.setDefaultPath(defaultPath);
+
+
+        // sneaky trick to extract the version
+        String version = VersionInfo.getVersion();
+        context.getCounter("Performance",  "Version-" + version ).increment(1);
+
 
         if(defaultPath.startsWith("s3n://"))  {
             try {
