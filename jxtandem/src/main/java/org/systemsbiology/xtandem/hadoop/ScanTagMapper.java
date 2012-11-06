@@ -71,6 +71,9 @@ public class ScanTagMapper extends AbstractTandemMapper<Writable> {
         // sneaky trick to extract the version
         String version = VersionInfo.getVersion();
         context.getCounter("Performance",  "Version-" + version ).increment(1);
+         // sneaky trick to extract the user
+        String uname = System.getProperty("user.name");
+        context.getCounter("Performance",  "User-" + uname ).increment(1);
 
         // Only do this once
         if (XTandemHadoopUtilities.isFirstMapTask(context)) {

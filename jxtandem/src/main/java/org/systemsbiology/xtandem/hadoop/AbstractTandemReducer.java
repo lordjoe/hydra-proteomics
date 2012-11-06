@@ -74,6 +74,9 @@ public abstract class AbstractTandemReducer  extends Reducer<Text, Text, Text, T
         // sneaky trick to extract the version
         String version = VersionInfo.getVersion();
         context.getCounter("Performance",  "Version-" + version ).increment(1);
+        // sneaky trick to extract the user
+        String uname = System.getProperty("user.name");
+        context.getCounter("Performance",  "User-" + uname ).increment(1);
 
 
         if(defaultPath.startsWith("s3n://"))  {
