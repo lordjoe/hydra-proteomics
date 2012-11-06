@@ -1202,17 +1202,31 @@ public class Uniprot {
          }
      }
 
+    public static final String SAMPLE = "java Uniprot" + "  Origene.tsv GoodPeptides.txt  OrigeneData.dat";
 
     public static void main(String[] args) throws IOException {
         // downloadUniprots(args[0]);
+
+
+        if(args.length < 3) {
+                 UsageGenerator.showUsage(SAMPLE,
+                         "proteins <tab delimited uniptotid\tsequence>",
+                         "peptides <tab delimited uniptotid\tsequence>",
+                         "sp <todo fix>"
+
+                 );
+                return;
+        }
+
         File inp = new File(args[0]);
-        FileUtilities.guaranteeExistingFile(inp);
+         FileUtilities.guaranteeExistingFile(inp);
 
-        File peptides = new File(args[1]);
-        FileUtilities.guaranteeExistingFile(peptides);
+         File peptides = new File(args[1]);
+         FileUtilities.guaranteeExistingFile(peptides);
 
-        File sp = new File(args[2]);
-        FileUtilities.guaranteeExistingFile(sp);
+         File sp = new File(args[2]);
+         FileUtilities.guaranteeExistingFile(sp);
+
 
         int nBad = 0;
 
