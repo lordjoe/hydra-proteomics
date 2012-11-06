@@ -347,9 +347,21 @@ public class ProteinCollection implements IFastaHandler {
     }
 
 
+    public static final String SAMPLE = "java ProteinCollection" + "  Origene.tsv GoodPeptides.txt  OrigeneData.dat";
+
     public static void main(String[] args) {
         // downloadUniprots(args[0]);
         // downloadUniprots(args[0]);
+
+        if(args.length < 3) {
+                 UsageGenerator.showUsage(SAMPLE,
+                         "proteins <tab delimited uniptotid\tsequence>",
+                         "peptides <tab delimited uniptotid\tsequence>",
+                         "sp <todo fix>"
+
+                 );
+                return;
+        }
         File inp = new File(args[0]);
         FileUtilities.guaranteeExistingFile(inp);
 
@@ -361,9 +373,9 @@ public class ProteinCollection implements IFastaHandler {
 
         int nBad = 0;
 
-        FoundPeptides fps = FoundPeptides.readFoundPeptides(peptides);
         Map<String, Uniprot> idToUniprot = Uniprot.readUniprots(inp);
-        Uniprot[] pts = idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
+        FoundPeptides fps = FoundPeptides.readFoundPeptides(peptides);
+         Uniprot[] pts = idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
         for (int i = 0; i < pts.length; i++) {
             Uniprot pt = pts[i];
             Protein protein = pt.getProtein();

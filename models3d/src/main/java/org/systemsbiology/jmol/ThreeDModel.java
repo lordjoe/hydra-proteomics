@@ -259,7 +259,20 @@ public class ThreeDModel {
 
      public static final String DOWNLOAD_MODEL_STRING = "http://www.pdb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=";
 
+    public static final String SAMPLE = "java ThreeDModel" + "  PdbModelsList.txt";
+
+
     public static void main(String[] args) throws Exception {
+
+        if(args.length < 1) {
+                 UsageGenerator.showUsage(SAMPLE,
+                         "models <tab delimited uniptotid\tcommas delimited pdb model is list>",
+                         "O00198\t2L58,2L5B"
+
+                 );
+                return;
+        }
+
         File models = new File(args[0]);
         if (!models.exists())
             throw new IllegalArgumentException("model file " + args[0] + " does not exist");
