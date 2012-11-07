@@ -9,6 +9,7 @@ import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.input.*;
 import org.apache.hadoop.mapreduce.lib.output.*;
 import org.apache.hadoop.util.*;
+import org.systemsbiology.hadoop.*;
 
 import java.awt.*;
 import java.io.*;
@@ -21,7 +22,7 @@ import java.util.*;
  * @author Steve Lewis
  * @date Oct 11, 2010
  */
-public class NShotTest {
+public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
     public static NShotTest[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = NShotTest.class;
 
@@ -181,7 +182,7 @@ public class NShotTest {
     }
 
 
-    public static void runNShotTest(Configuration conf,String[] args)  throws Exception
+    public   int runJob(Configuration conf,String[] args)  throws Exception
     {
         AbstractNShotInputFormat.setNumberKeys(20);
         AbstractNShotInputFormat.setNumberSplits(5);
@@ -235,13 +236,29 @@ public class NShotTest {
 
         boolean ans = job.waitForCompletion(true);
         int ret = ans ? 0 : 1;
-
+       return ret;
     }
+
+    /**
+     * Execute the command with the given arguments.
+     *
+     * @param args command specific arguments.
+     * @return exit code.
+     * @throws Exception
+     */
+    @Override
+    public int run(final String[] args) throws Exception {
+        Configuration conf = new Configuration();
+        //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
+        return runJob(conf, args);
+    }
+
+
 
     public static void main(String[] args) throws Exception
     {
         Configuration conf = new Configuration();
-         runNShotTest(  conf,  args);
+        new NShotTest().runJob(  conf,  args);
     }
 }
 
