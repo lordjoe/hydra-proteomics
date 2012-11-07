@@ -2,6 +2,7 @@ package org.systemsbiology.remotecontrol;
 
 import com.jcraft.jsch.*;
 import org.systemsbiology.hadoop.*;
+import org.systemsbiology.hadoopgenerated.*;
 
 /**
  * org.systemsbiology.remotecontrol.RemoteSession
@@ -258,6 +259,25 @@ public class RemoteSession implements UserInfo {
 
       */
 
+
+    private static void runNShotTest(final IHadoopController pHc) {
+        Class<NShotTest> mainClass = NShotTest.class;
+        String jobName = mainClass.getSimpleName();
+
+
+        IHadoopJob job = HadoopJob.buildJob(
+                mainClass,
+                "FeeFie.txt",     // data on hdfs
+                "jobs",      // jar location
+                "NShot"             // output location - will have outputN added
+
+        );
+        pHc.runJob(job);
+    }
+
+
+
+
     public static void main(String[] args) {
         String user =  RemoteUtilities.getUser(); // "training";  //
        String password =  RemoteUtilities.getPassword(); // "training";  //
@@ -276,7 +296,8 @@ public class RemoteSession implements UserInfo {
       //    runStatisticalWordCount(hc);
       //  runMotifLocator(hc);
      //  runSubstringCount(hc);
-        runWordCount(hc);
+       // runWordCount(hc);
+        runNShotTest(hc);
        // runProbes(hc);
        //  runYeastHowdahProcess(hc);
        //  runHumanHowdahProcess(hc);
