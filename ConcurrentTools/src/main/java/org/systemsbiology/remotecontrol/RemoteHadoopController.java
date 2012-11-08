@@ -110,6 +110,9 @@ public class RemoteHadoopController implements IHadoopController {
 
         hdfsAccessor.guaranteeDirectory(emptyOutputDirectory);
 
+        // todo fix this total hack
+        if("org.systemsbiology.hadoopgenerated.NShotTest".equals(job.getMainClass() ))
+                 hdfsAccessor.expunge(s); // which is it
         //      String cmd = HADOOP_COMMAND + "fs -mkdir " + s;
         //      ech.execCommand(cmd, IOutputListener.DEFAULT_LISTENERS);
 

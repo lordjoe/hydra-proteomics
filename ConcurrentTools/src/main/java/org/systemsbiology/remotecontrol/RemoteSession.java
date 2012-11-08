@@ -25,6 +25,16 @@ public class RemoteSession implements UserInfo {
         m_Host = pHost;
         m_User = pUser;
         m_Password = pPassword;
+
+        //
+        // http://stackoverflow.com/questions/8360913/weird-java-net-socketexception-permission-denied-connect-error-when-running-groo
+        // There is a known bug in JDK 1.7 related to IPv6.
+        //
+        //Adding -Djava.net.preferIPv4Stack=true in VM Options should fix the problem.
+        //
+        String property = System.getProperty("java.version");
+        if(property.startsWith("1.7."))
+                System.setProperty("java.net.preferIPv4Stack","true");
         try {
             m_Session = m_JSCH.getSession(m_User, m_Host, m_Port);
             m_Session.setUserInfo(this);
@@ -265,13 +275,14 @@ public class RemoteSession implements UserInfo {
         String jobName = mainClass.getSimpleName();
 
 
-        IHadoopJob job = HadoopJob.buildJob(
+          HadoopJob job = HadoopJob.buildJob(
                 mainClass,
                 "FeeFie.txt",     // data on hdfs
-                "jobs",      // jar location
-                "NShot"             // output location - will have outputN added
+                "jobs",       // jar location
+                RemoteUtilities.getDefaultPath() + "/output"            // output location - will have outputN added
 
         );
+
         pHc.runJob(job);
     }
 
@@ -284,6 +295,8 @@ public class RemoteSession implements UserInfo {
         String host =  RemoteUtilities.getHost(); // "192.168.244.128"; // "hadoop1";
         RemoteSession rs = new RemoteSession(host, user, password);
          rs.setConnected(true);
+
+
 
         final IHadoopController hc = new RemoteHadoopController(rs);
      //   String path = RemoteUtilities.guaranteeClassPath(hc,"/user/howdah/lib");

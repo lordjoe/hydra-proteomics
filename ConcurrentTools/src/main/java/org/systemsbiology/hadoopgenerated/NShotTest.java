@@ -84,6 +84,7 @@ public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
                 }
 
                 writeKeyValue(context, dkey, dValue, "CreationDate", name);
+                writeKeyValue(context, dkey,dValue,"user",System.getProperty("user.name"));
                 writeKeyValue(context, dkey,dValue,"user.dir",System.getProperty("user.dir"));
                 writeKeyValue(context, dkey,dValue,"os.arch",System.getProperty("os.arch"));
                 writeKeyValue(context, dkey,dValue,"os.name",System.getProperty("os.name"));
@@ -182,6 +183,10 @@ public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
     }
 
 
+    //
+    // call with
+    // /home/www/hadoop/bin/hadoop  jar jobs/Nov071552_0.jar  org.systemsbiology.hadoopgenerated.NShotTest FeeFie.txt /user/howdah/JXTandem/output
+
     public   int runJob(Configuration conf,String[] args)  throws Exception
     {
         AbstractNShotInputFormat.setNumberKeys(20);
@@ -216,10 +221,6 @@ public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
                     new Path(otherArgs[0]));
         }
 
-
-        if(otherArgs.length > 1)    {
-            FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
-        }
 
         String athString = otherArgs[otherArgs.length - 1];
         File out = new File(athString);
