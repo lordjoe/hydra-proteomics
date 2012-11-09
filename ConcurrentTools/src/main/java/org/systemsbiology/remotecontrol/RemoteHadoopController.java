@@ -107,8 +107,8 @@ public class RemoteHadoopController implements IHadoopController {
         String s = job.getOutputDirectory();
         String emptyOutputDirectory = HDFSUtilities.getEmptyOutputDirectory(s, hdfsAccessor);
 
-
-        hdfsAccessor.guaranteeDirectory(emptyOutputDirectory);
+       //      _ think this is bad
+       // hdfsAccessor.guaranteeDirectory(emptyOutputDirectory);
 
         // todo fix this total hack
         if("org.systemsbiology.hadoopgenerated.NShotTest".equals(job.getMainClass() ))
@@ -117,6 +117,8 @@ public class RemoteHadoopController implements IHadoopController {
         //      ech.execCommand(cmd, IOutputListener.DEFAULT_LISTENERS);
 
         job.setEmptyOutputDirectory(emptyOutputDirectory);
+        job.setOutputDirectory(emptyOutputDirectory);
+        hdfsAccessor.expunge(emptyOutputDirectory);
 
         String command = job.buildCommandString();
         System.out.println(command);

@@ -4,6 +4,8 @@ import com.jcraft.jsch.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.hadoopgenerated.*;
 
+import java.io.*;
+
 /**
  * org.systemsbiology.remotecontrol.RemoteSession
  * User: steven
@@ -18,23 +20,13 @@ public class RemoteSession implements UserInfo {
     private final String m_Password;
     private int m_Port = 22;
     private Session m_Session;
-//    private FTPChannel m_FTPChannel;
+    //    private FTPChannel m_FTPChannel;
     private boolean m_Connected;
 
     public RemoteSession(final String pHost, final String pUser, final String pPassword) {
         m_Host = pHost;
         m_User = pUser;
         m_Password = pPassword;
-
-        //
-        // http://stackoverflow.com/questions/8360913/weird-java-net-socketexception-permission-denied-connect-error-when-running-groo
-        // There is a known bug in JDK 1.7 related to IPv6.
-        //
-        //Adding -Djava.net.preferIPv4Stack=true in VM Options should fix the problem.
-        //
-        String property = System.getProperty("java.version");
-        if(property.startsWith("1.7."))
-                System.setProperty("java.net.preferIPv4Stack","true");
         try {
             m_Session = m_JSCH.getSession(m_User, m_Host, m_Port);
             m_Session.setUserInfo(this);
@@ -130,12 +122,12 @@ public class RemoteSession implements UserInfo {
     }
 
     public static boolean runNShot(final IHadoopController pHc) {
-     //   pHc.guaranteeFilesOnHDFS(new File("E:/data/Moby"), "/user/slewis/moby", "/user/slewis/moby");
+        //   pHc.guaranteeFilesOnHDFS(new File("E:/data/Moby"), "/user/slewis/moby", "/user/slewis/moby");
         IHadoopJob job = HadoopJob.buildJob(
                 CapitalWordCount.class,
                 RemoteUtilities.getDefaultPath() + "/moby",     // data on hdfs
                 "/users/slewis/jobs",      // jar location
-                 RemoteUtilities.getDefaultPath()             // output location - will have outputN added
+                RemoteUtilities.getDefaultPath()             // output location - will have outputN added
 
         );
 
@@ -144,13 +136,13 @@ public class RemoteSession implements UserInfo {
     }
 
     private static boolean runWordCount(final IHadoopController pHc) {
-     //   pHc.guaranteeFilesOnHDFS(new File("E:/data/Moby"), "/user/slewis/moby", "/user/slewis/moby");
+        //   pHc.guaranteeFilesOnHDFS(new File("E:/data/Moby"), "/user/slewis/moby", "/user/slewis/moby");
         IHadoopJob job = HadoopJob.buildJob(
                 CapitalWordCount.class,
-   //             RemoteUtilities.getDefaultPath() + "/moby",     // data on hdfs
-               "/user/howdah"  + "/moby",     // data on hdfs
+                //             RemoteUtilities.getDefaultPath() + "/moby",     // data on hdfs
+                "/user/howdah" + "/moby",     // data on hdfs
                 "/users/slewis/jobs",      // jar location
-                 RemoteUtilities.getDefaultPath() + "/output"             // output location - will have outputN added
+                RemoteUtilities.getDefaultPath() + "/output"             // output location - will have outputN added
 
         );
 
@@ -159,12 +151,12 @@ public class RemoteSession implements UserInfo {
     }
 
     private static boolean runSubstringCount(final IHadoopController pHc) {
-     //   pHc.guaranteeFilesOnHDFS(new File("E:/data/Moby"), "/user/slewis/moby", "/user/slewis/moby");
+        //   pHc.guaranteeFilesOnHDFS(new File("E:/data/Moby"), "/user/slewis/moby", "/user/slewis/moby");
         IHadoopJob job = HadoopJob.buildJob(
                 SubstringCount.class,
                 "/user/howdah" + "/BigText.txt",     // data on hdfs
                 "/users/slewis/jobs",      // jar location
-                 RemoteUtilities.getDefaultPath()             // output location - will have outputN added
+                RemoteUtilities.getDefaultPath()             // output location - will have outputN added
 
         );
 
@@ -188,12 +180,12 @@ public class RemoteSession implements UserInfo {
 //    }
 
     private static boolean runProbes(final IHadoopController pHc) {
-      //  pHc.guaranteeFilesOnHDFS(new File("E:/data/probes"), "/home/training/probes", "/home/training/hdfsprobes");
+        //  pHc.guaranteeFilesOnHDFS(new File("E:/data/probes"), "/home/training/probes", "/home/training/hdfsprobes");
         IHadoopJob job = HadoopJob.buildJob(
                 HadoopProbe.class,
                 RemoteUtilities.getDefaultPath() + "/hdfsprobes",     // data on hdfs
                 "/user/howdah/jobs",      // jar location
-                RemoteUtilities.getDefaultPath()  ,            // output location - will have outputN added
+                RemoteUtilities.getDefaultPath(),            // output location - will have outputN added
                 "-D org.systemsbiology.configfile=" + RemoteUtilities.getDefaultPath() + "/config/HowdahStatisticalWordCount.config"
 
         );
@@ -203,71 +195,68 @@ public class RemoteSession implements UserInfo {
     }
 
 
-
-
     private static boolean runShakesphear(final IHadoopController pHc) {
-      //   pHc.guaranteeFiles(new File("E:/Code/config"), "/user/howdah/config");
-      //   pHc.guaranteeFiles(new File("E:/Code/YeastReports"), "/user/howdah/YeastReports");
-      //   pHc.guaranteeFilesOnHDFS(new File("E:/Code/YeastData"), "/user/howdah/small_yeast", "/user/howdah/small_yeast");
-   //      pHc.guaranteeFilesOnHDFS(new File("E:/Code/YeastReports"), "/user/howdah/config", "/user/howdah/YeastReports");
+        //   pHc.guaranteeFiles(new File("E:/Code/config"), "/user/howdah/config");
+        //   pHc.guaranteeFiles(new File("E:/Code/YeastReports"), "/user/howdah/YeastReports");
+        //   pHc.guaranteeFilesOnHDFS(new File("E:/Code/YeastData"), "/user/howdah/small_yeast", "/user/howdah/small_yeast");
+        //      pHc.guaranteeFilesOnHDFS(new File("E:/Code/YeastReports"), "/user/howdah/config", "/user/howdah/YeastReports");
 
 
-         IHadoopJob job = HadoopJob.buildJob(org.systemsbiology.couldera.training.index.LineIndexer.class,
-                 "/user/training/input",  // data on hdfs
-                   RemoteUtilities.getDefaultPath() +  "/jobs",          // jar location
-                 "/user/training/shak"               // output location - will have outputN added
+        IHadoopJob job = HadoopJob.buildJob(org.systemsbiology.couldera.training.index.LineIndexer.class,
+                "/user/training/input",  // data on hdfs
+                RemoteUtilities.getDefaultPath() + "/jobs",          // jar location
+                "/user/training/shak"               // output location - will have outputN added
 
 
-         );
+        );
 
 
-         return pHc.runJob(job);
-     }
-
+        return pHc.runJob(job);
+    }
 
 
     /*
-    private static void runYeastHowdahProcess(IHadoopController launcher) {
-          Class<PartitioningHowdahTask> mainClass = PartitioningHowdahTask.class;
-          String jobName = mainClass.getSimpleName();
+  private static void runYeastHowdahProcess(IHadoopController launcher) {
+        Class<PartitioningHowdahTask> mainClass = PartitioningHowdahTask.class;
+        String jobName = mainClass.getSimpleName();
 
-           IHadoopJob job = HadoopJob.buildJob(
-                  mainClass,
-                  "/user/howdah/YeastData",     // data on hdfs
-               //   "/user/howdah/YeastSmallData",     // data on hdfs
-                //  "YeastSmallData",     // data on hdfs
-                   "jobs",      // jar location
-                  "yeast_output2",             // output location - will have outputN added
-                    "-D",
-                  "org.systemsbiology.configfile=/user/howdah/config/HowdahBreaks.config",     // Config file
+         IHadoopJob job = HadoopJob.buildJob(
+                mainClass,
+                "/user/howdah/YeastData",     // data on hdfs
+             //   "/user/howdah/YeastSmallData",     // data on hdfs
+              //  "YeastSmallData",     // data on hdfs
+                 "jobs",      // jar location
+                "yeast_output2",             // output location - will have outputN added
                   "-D",
-                  "org.systemsbiology.reportfile=/user/howdah/yeastreportlarge.xml"  // report file
-          );
-          launcher.runJob(job);
-      }
+                "org.systemsbiology.configfile=/user/howdah/config/HowdahBreaks.config",     // Config file
+                "-D",
+                "org.systemsbiology.reportfile=/user/howdah/yeastreportlarge.xml"  // report file
+        );
+        launcher.runJob(job);
+    }
 
 
-    private static void runHumanHowdahProcess(IHadoopController launcher) {
-          Class<PartitioningHowdahTask> mainClass = PartitioningHowdahTask.class;
-          String jobName = mainClass.getSimpleName();
+  private static void runHumanHowdahProcess(IHadoopController launcher) {
+        Class<PartitioningHowdahTask> mainClass = PartitioningHowdahTask.class;
+        String jobName = mainClass.getSimpleName();
 
-           IHadoopJob job = HadoopJob.buildJob(
-                  mainClass,
-                    "/user/www/TCGA-AA-3681-01A-01W-0900-09_IlluminaGA-DNASeq_exome.sorted.sam" ,
-                //   "/user/howdah/NA19239Small",     // data on hdfs
-               //   "/user/howdah/YeastSmallData",     // data on hdfs
-                //  "YeastSmallData",     // data on hdfs
-                    "jobs",      // jar location
-                  "/user/howdah/human_output",             // output location - will have outputN added
-                    "-D",
-                  "org.systemsbiology.configfile=config/HowdahHumanBreaks.config",     // Config file
+         IHadoopJob job = HadoopJob.buildJob(
+                mainClass,
+                  "/user/www/TCGA-AA-3681-01A-01W-0900-09_IlluminaGA-DNASeq_exome.sorted.sam" ,
+              //   "/user/howdah/NA19239Small",     // data on hdfs
+             //   "/user/howdah/YeastSmallData",     // data on hdfs
+              //  "YeastSmallData",     // data on hdfs
+                  "jobs",      // jar location
+                "/user/howdah/human_output",             // output location - will have outputN added
                   "-D",
-                  "org.systemsbiology.reportfile=/user/howdah/NA19239Small.xml"  // report file
-          );
-          launcher.runJob(job);
-      }
+                "org.systemsbiology.configfile=config/HowdahHumanBreaks.config",     // Config file
+                "-D",
+                "org.systemsbiology.reportfile=/user/howdah/NA19239Small.xml"  // report file
+        );
+        launcher.runJob(job);
+    }
 
-      */
+    */
 
 
     private static void runNShotTest(final IHadoopController pHc) {
@@ -275,45 +264,49 @@ public class RemoteSession implements UserInfo {
         String jobName = mainClass.getSimpleName();
 
 
-          HadoopJob job = HadoopJob.buildJob(
+        String outDir = RemoteUtilities.getDefaultPath() + "/NShot";
+        String jarLocation = "jobs";
+        IHadoopJob job = HadoopJob.buildJob(
                 mainClass,
                 "FeeFie.txt",     // data on hdfs
-                "jobs",       // jar location
-                RemoteUtilities.getDefaultPath() + "/output"            // output location - will have outputN added
+                jarLocation,      // jar location
+                outDir             // output location - will have outputN added
 
         );
+
+        // make a small jar file
+        File jarFile = HadoopDeployer.makeClassOnlyHadoopJar(jarLocation + "/NShot.jar", "org.systemsbiology.hadoopgenerated", "org.systemsbiology.hadoop");
+        String jarString = jarFile.toString().replace("\\", "/");
+        job.setJarFile(jarString);
+
 
         pHc.runJob(job);
     }
 
 
-
-
     public static void main(String[] args) {
-        String user =  RemoteUtilities.getUser(); // "training";  //
-       String password =  RemoteUtilities.getPassword(); // "training";  //
-        String host =  RemoteUtilities.getHost(); // "192.168.244.128"; // "hadoop1";
+        String user = RemoteUtilities.getUser(); // "training";  //
+        String password = RemoteUtilities.getPassword(); // "training";  //
+        String host = RemoteUtilities.getHost(); // "192.168.244.128"; // "hadoop1";
         RemoteSession rs = new RemoteSession(host, user, password);
-         rs.setConnected(true);
-
-
+        rs.setConnected(true);
 
         final IHadoopController hc = new RemoteHadoopController(rs);
-     //   String path = RemoteUtilities.guaranteeClassPath(hc,"/user/howdah/lib");
-       // File test = new File("AverageWordLength.txt");
-      //  hc.copyDirectoryToHDFS(test,"/user/training/avg.txt");
-      //   runShakesphear(hc);
-    //      runYeastBreaks(hc);
-       // runSimGenerator(hc);
-       // runClouderaYeastBreaks(hc);
-      //    runStatisticalWordCount(hc);
-      //  runMotifLocator(hc);
-     //  runSubstringCount(hc);
-       // runWordCount(hc);
+        //   String path = RemoteUtilities.guaranteeClassPath(hc,"/user/howdah/lib");
+        // File test = new File("AverageWordLength.txt");
+        //  hc.copyDirectoryToHDFS(test,"/user/training/avg.txt");
+        //   runShakesphear(hc);
+        //      runYeastBreaks(hc);
+        // runSimGenerator(hc);
+        // runClouderaYeastBreaks(hc);
+        //    runStatisticalWordCount(hc);
+        //  runMotifLocator(hc);
+        //  runSubstringCount(hc);
+        // runWordCount(hc);
         runNShotTest(hc);
-       // runProbes(hc);
-       //  runYeastHowdahProcess(hc);
-       //  runHumanHowdahProcess(hc);
+        // runProbes(hc);
+        //  runYeastHowdahProcess(hc);
+        //  runHumanHowdahProcess(hc);
     }
 
 }

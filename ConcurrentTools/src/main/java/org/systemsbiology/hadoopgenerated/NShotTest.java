@@ -11,7 +11,6 @@ import org.apache.hadoop.mapreduce.lib.output.*;
 import org.apache.hadoop.util.*;
 import org.systemsbiology.hadoop.*;
 
-import java.awt.*;
 import java.io.*;
 import java.text.*;
 import java.util.*;
@@ -22,11 +21,11 @@ import java.util.*;
  * @author Steve Lewis
  * @date Oct 11, 2010
  */
-public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
+public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
     public static NShotTest[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = NShotTest.class;
 
-    public static final String  DATE_FORMAT = "MMMddHHmm";
+    public static final String DATE_FORMAT = "MMMddHHmm";
 
 
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
@@ -40,8 +39,7 @@ public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
         }
     }
 
-    public static void writeKeyValue(Reducer.Context context,Text key,Text value,String keyText,String valueStr)
-    {
+    public static void writeKeyValue(Reducer.Context context, Text key, Text value, String keyText, String valueStr) {
         try {
             key.set(keyText);
             value.set(valueStr);
@@ -58,8 +56,21 @@ public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
 
     }
 
+
     public static class Reduce extends Reducer<Text, Text, Text, Text> {
         private boolean m_DateSent;
+
+        @Override
+        protected void setup(Context context) throws IOException, InterruptedException {
+            super.setup(context);
+            // sneaky trick to extract the version
+            String version = VersionInfo.getVersion();
+            context.getCounter("Performance", "Hadoop Version-" + version).increment(1);
+            // sneaky trick to extract the user
+            String uname = System.getProperty("user.name");
+            context.getCounter("Performance", "User-" + uname).increment(1);
+
+        }
 
         /**
          * This method is called once for each key. Most applications will define
@@ -73,7 +84,7 @@ public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
             if (!m_DateSent) {
                 Text dkey = new Text("CreationDate");
                 Text dValue = new Text();
-                   SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
+                SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
                 String name = df.format(new Date());
                 try {
                     df.parse(name);
@@ -84,11 +95,9 @@ public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
                 }
 
                 writeKeyValue(context, dkey, dValue, "CreationDate", name);
-                writeKeyValue(context, dkey,dValue,"user",System.getProperty("user.name"));
-                writeKeyValue(context, dkey,dValue,"user.dir",System.getProperty("user.dir"));
-                writeKeyValue(context, dkey,dValue,"os.arch",System.getProperty("os.arch"));
-                writeKeyValue(context, dkey,dValue,"os.name",System.getProperty("os.name"));
-
+                writeKeyValue(context, dkey, dValue, "user.dir", System.getProperty("user.dir"));
+                writeKeyValue(context, dkey, dValue, "os.arch", System.getProperty("os.arch"));
+                writeKeyValue(context, dkey, dValue, "os.name", System.getProperty("os.name"));
 
 
 //                dkey.set("ip");
@@ -182,15 +191,12 @@ public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
 
     }
 
+    public static final int NUMBER_KEYS = 1000 * 1000 * 30;
+    public static final int NUMBER_SPLITS = 10;
 
-    //
-    // call with
-    // /home/www/hadoop/bin/hadoop  jar jobs/Nov071552_0.jar  org.systemsbiology.hadoopgenerated.NShotTest FeeFie.txt /user/howdah/JXTandem/output
-
-    public   int runJob(Configuration conf,String[] args)  throws Exception
-    {
-        AbstractNShotInputFormat.setNumberKeys(20);
-        AbstractNShotInputFormat.setNumberSplits(5);
+    public int runJob(Configuration conf, String[] args) throws Exception {
+        AbstractNShotInputFormat.setNumberKeys(NUMBER_KEYS);
+        AbstractNShotInputFormat.setNumberSplits(NUMBER_SPLITS);
 
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 //        if (otherArgs.length != 2) {
@@ -198,7 +204,7 @@ public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
 //            System.exit(2);
 //        }
         Job job = new Job(conf, "Generated data");
-          job.setJarByClass(NShotTest.class);
+        job.setJarByClass(NShotTest.class);
 
         job.setMapperClass(Map.class);
         job.setReducerClass(Reduce.class);
@@ -222,22 +228,26 @@ public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
         }
 
 
+        if (otherArgs.length > 1) {
+            FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
+        }
+
         String athString = otherArgs[otherArgs.length - 1];
         File out = new File(athString);
         if (out.exists()) {
-             expungeDirectory(out);
+            expungeDirectory(out);
             out.delete();
         }
 
         Path outputDir = new Path(athString);
 
 
-         FileOutputFormat.setOutputPath(job, outputDir);
+        FileOutputFormat.setOutputPath(job, outputDir);
 
 
         boolean ans = job.waitForCompletion(true);
         int ret = ans ? 0 : 1;
-       return ret;
+        return ret;
     }
 
     /**
@@ -255,11 +265,9 @@ public class NShotTest  extends ConfiguredJobRunner implements IJobRunner {
     }
 
 
-
-    public static void main(String[] args) throws Exception
-    {
+    public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
-        new NShotTest().runJob(  conf,  args);
+        new NShotTest().runJob(conf, args);
     }
 }
 

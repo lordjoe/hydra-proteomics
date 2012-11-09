@@ -354,6 +354,54 @@ public class HadoopDeployer {
         }
     }
 
+    public static void deployClassesToJar(File deployDir,String... loadedPackages) {
+        try {
+            File parentFile = deployDir.getParentFile();
+            if(parentFile != null)
+                 parentFile.mkdirs();
+
+            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(deployDir));
+
+            String javaHome = System.getProperty("java.home");
+            String classpath = System.getProperty("java.class.path");
+            String[] pathItems = null;
+            if (classpath.contains(";")) {
+                pathItems = classpath.split(";");
+            }
+            else {
+                if (classpath.contains(":")) {
+                    pathItems = classpath.split(":");   // Linux stlye
+                }
+                else {
+                    String[] items = {classpath};
+                    pathItems = items; // only 1 I guess
+                }
+            }
+            File[] pathLibs = filterClassPath(pathItems, javaHome);
+            Set<String> holder = new HashSet<String>();
+            for (int i = 0; i < loadedPackages.length; i++) {
+                String replace = loadedPackages[i].replace(".", "/");
+                holder.add(replace);
+
+            }
+
+   //           ignore libraries
+//            copyLibraries(out, pathLibs);
+            File[] pathDirectories = filterClassPathDirectories(pathItems, javaHome);
+            for (int i = 0; i < pathDirectories.length; i++) {
+                File pathDirectory = pathDirectories[i];
+                copySpecifiesLibraryDirectory("", pathDirectory, out, holder);
+            }
+            out.flush();
+            out.close();
+
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
+
     public static String nextPath(String s, String name) {
         if (s == null || s.length() == 0)
             return name;
@@ -380,9 +428,42 @@ public class HadoopDeployer {
     }
 
 
-    public static void makeHadoopJar(final String pJarName) {
+    private static void copySpecifiesLibraryDirectory(final String s, final File dir, final ZipOutputStream pOut,Set<String> paths) throws IOException {
+        File[] list = dir.listFiles();
+        if (list == null) return;
+        for (int i = 0; i < list.length; i++) {
+            File file = list[i];
+            if (file.isDirectory()) {
+                final String np = nextPath(s, file.getName());
+                copySpecifiesLibraryDirectory(np, file, pOut, paths);
+            }
+            else {
+                 if(!paths.contains(s))
+                    continue;
+                final String np = nextPath(s, file.getName());
+                ZipEntry ze = new ZipEntry(np);
+                pOut.putNextEntry(ze);
+                copyFile(file, pOut);
+                pOut.closeEntry();
+            }
+        }
+    }
+
+
+    public static File makeHadoopJar(final String pJarName) {
         File deployDir = new File(pJarName);
         deployLibrariesToJar(deployDir);
+        return deployDir;
+    }
+
+    /**
+     * make a small jar for debugging
+     * @param pJarName
+     */
+    public static File makeClassOnlyHadoopJar(final String pJarName,String... loadedClasses) {
+        File deployDir = new File(pJarName);
+        deployClassesToJar(deployDir, loadedClasses);
+        return deployDir;
     }
 
     public static void main(String[] args) {
