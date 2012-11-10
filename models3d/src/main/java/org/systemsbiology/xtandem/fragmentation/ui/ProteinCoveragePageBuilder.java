@@ -292,7 +292,7 @@ public class ProteinCoveragePageBuilder {
         return fileName;
     }
 
-
+    // todo make a test not a main
     public static final String DESIRED_SEQUENCE =
             "MEGSEPVAAHQGEEASCSSWGTGSTNKNLPIMSTASVEIDDALYSRQRYVLGDTAMQKMA" +
                     "KSHVFLSGMGGLGLEIAKNLVLAGIKAVTIHDTEKCQAWDLGTNFFLSEDDVVNKRNRAE" +
