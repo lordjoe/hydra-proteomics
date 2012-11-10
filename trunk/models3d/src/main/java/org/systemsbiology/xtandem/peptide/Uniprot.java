@@ -125,6 +125,37 @@ public class Uniprot {
         return builder.toString();
     }
 
+
+    public static String retrieveSequence(String uiprotId)
+    {
+        String location = UNIPROT_SERVER + "/uniprot/" + uiprotId + ".fasta";
+        try {
+            String ret = retrieveData(  location);
+            if(ret.startsWith(">"))  {
+                String[] items = ret.split("\n");
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < items.length; i++) {
+                    String item = items[i];
+                    if(item.startsWith(">"))
+                        continue;
+                    sb.append(item);
+                }
+                return sb.toString();
+            }
+            if(ret.contains("<h2 class=\"error\">404 Not Found</h2>"))
+                return null; // not fount
+            throw new IllegalStateException("bad uniprot response");
+        }
+        catch (IOException e) {
+            return null;
+
+        }
+        catch (InterruptedException e) {
+            return null;
+
+        }
+    }
+
     protected static String retrieveData(String location) throws IOException, InterruptedException {
         StringBuilder builder = new StringBuilder();
         URL url = new URL(location);

@@ -11,39 +11,50 @@ import java.util.*;
 public class FoundPeptides {
     public static final FoundPeptides[] EMPTY_ARRAY = {};
 
-    public static FoundPeptides readFoundPeptides(File inp)  {
-         try {
-             FoundPeptides fps = new FoundPeptides();
-             LineNumberReader rdr = new LineNumberReader(new InputStreamReader(new FileInputStream(inp)));
-             String line = rdr.readLine();
-             while (line != null) {
-                 String[] items = line.split("\t");
-                 if(items.length < 3)   {
-                     line = rdr.readLine();
-                     continue;
-                 }
-                 IPolypeptide peptide1 = FoundPeptide.toPolyPeptide(items[0]);
-                 int charge = Integer.parseInt(items[2]);
-                 String[] proteins = items[1].split("/");
-            //     for (int i = 1; i < proteins.length; i++) {
-                     for (int i = 0; i < proteins.length; i++) {
-                      String proteinId = proteins[i];
-                     FoundPeptide fp = new FoundPeptide(peptide1, proteinId, charge);
-                     fps.addPeptide(fp);
-                 }
-                 line = rdr.readLine();
-             }
-             return fps;
-         }
-         catch (IOException e) {
-             throw new RuntimeException(e);
+    public static FoundPeptides readFoundPeptides(File inp) {
+        try {
+            InputStream fr = new FileInputStream(inp);
+            return extractFoundPeptides(fr);
+        }
+        catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
 
-         }
-         catch (NumberFormatException e) {
-             throw new RuntimeException(e);
+        }
+    }
 
-         }
-     }
+    public static FoundPeptides extractFoundPeptides(InputStream fr) {
+        try {
+            FoundPeptides fps = new FoundPeptides();
+            LineNumberReader rdr = new LineNumberReader(new InputStreamReader(fr));
+            String line = rdr.readLine();
+            while (line != null) {
+                String[] items = line.split("\t");
+                if (items.length < 3) {
+                    line = rdr.readLine();
+                    continue;
+                }
+                IPolypeptide peptide1 = FoundPeptide.toPolyPeptide(items[0]);
+                int charge = Integer.parseInt(items[2]);
+                String[] proteins = items[1].split("/");
+                //     for (int i = 1; i < proteins.length; i++) {
+                for (int i = 0; i < proteins.length; i++) {
+                    String proteinId = proteins[i];
+                    FoundPeptide fp = new FoundPeptide(peptide1, proteinId, charge);
+                    fps.addPeptide(fp);
+                }
+                line = rdr.readLine();
+            }
+            return fps;
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+        catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
 
 
     private final Map<String, List<FoundPeptide>> m_ProteinToPeptide = new HashMap<String, List<FoundPeptide>>();
@@ -66,11 +77,11 @@ public class FoundPeptides {
         String[] proteins = getProteins();
         List<String> holder = new ArrayList<String>();
         for (String id : proteins) {
-            if(id.contains("DECOY"))
+            if (id.contains("DECOY"))
                 continue;
-            if(id.contains("UNMAPPED"))
+            if (id.contains("UNMAPPED"))
                 continue;
-            if(id.startsWith("sp|"))
+            if (id.startsWith("sp|"))
                 continue;
             holder.add(id);
         }
@@ -78,7 +89,7 @@ public class FoundPeptides {
         String[] ret = new String[holder.size()];
         holder.toArray(ret);
         return ret;
-      }
+    }
 
     public void addPeptide(FoundPeptide added) {
         String protein = added.getProteinId();
@@ -103,7 +114,7 @@ public class FoundPeptides {
 
         FoundPeptides fps = readFoundPeptides(inp);
         String[] proteins = fps.getMappedProteins();
-        File fs = new File("GoodProteins.txt") ;
+        File fs = new File("GoodProteins.txt");
         PrintWriter out = new PrintWriter(new FileWriter(fs));
         for (String id : proteins) {
             System.out.println(id);
@@ -115,7 +126,7 @@ public class FoundPeptides {
             }
         }
         out.close();
-        fs = new File("GoodPeptides.txt") ;
+        fs = new File("GoodPeptides.txt");
         out = new PrintWriter(new FileWriter(fs));
         for (String id : proteins) {
             System.out.println(id);
@@ -127,6 +138,6 @@ public class FoundPeptides {
             }
         }
         out.close();
-     }
+    }
 
- }
+}
