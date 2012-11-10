@@ -128,9 +128,12 @@ public class Uniprot {
 
     public static String retrieveSequence(String uiprotId)
     {
-        String location = UNIPROT_SERVER + "/uniprot/" + uiprotId + ".fasta";
+        String location = UNIPROT_SERVER + "uniprot/" + uiprotId + ".fasta";
         try {
             String ret = retrieveData(  location);
+            if(ret.length() == 0)
+                return null; // not found
+
             if(ret.startsWith(">"))  {
                 String[] items = ret.split("\n");
                 StringBuilder sb = new StringBuilder();
