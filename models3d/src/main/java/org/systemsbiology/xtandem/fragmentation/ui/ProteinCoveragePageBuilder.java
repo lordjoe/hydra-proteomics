@@ -105,7 +105,7 @@ public class ProteinCoveragePageBuilder {
             else
                 next = null;
             String id = ids[i];
-            if(id == null)
+            if (id == null)
                 continue;
             System.out.println(id);
             String page = showCoveragePage(id, prev, next);
@@ -206,7 +206,7 @@ public class ProteinCoveragePageBuilder {
 
         new CoverageColorsLabel(body);
         new HelixandTurnLabel(body);
-        if(model != null)  {
+        if (model != null) {
             new SingleTagBuillder(body, "p");
             new SecondaryStructureLabel(body);
         }
@@ -290,6 +290,39 @@ public class ProteinCoveragePageBuilder {
         }
         System.out.println();
         return fileName;
+    }
+
+
+    public static final String DESIRED_SEQUENCE =
+            "MEGSEPVAAHQGEEASCSSWGTGSTNKNLPIMSTASVEIDDALYSRQRYVLGDTAMQKMA" +
+                    "KSHVFLSGMGGLGLEIAKNLVLAGIKAVTIHDTEKCQAWDLGTNFFLSEDDVVNKRNRAE" +
+                    "AVLKHIAELNPYVHVTSSSVPFNETTDLSFLDKYQCVVLTEMKLPLQKKINDFCRSQCPP" +
+                    "IKFISADVHGIWSRLFCDFGDEFEVLDTTGEEPKEIFISNITQANPGIVTCLENHPHKLE" +
+                    "TGQFLTFREINGMTGLNGSIQQITVISPFSFSIGDTTELEPYLHGGIAVQVKTPKTVFFE" +
+                    "SLERQLKHPKCLIVDFSNPEAPLEIHTAMLALDQFQEKYSRKPNVGCQQDSEELLKLATS" +
+                    "ISETLEEKPDVNADIVHWLSWTAQGFLSPLAAAVGGVASQEVLKAVTGKFSPLCQWLYLE" +
+                    "AADIVESLGKPECEEFLPRGDRYDALRACIGDTLCQKLQNLNIFLVGCGAIGCEMLKNFA" +
+                    "LLGVGTSKEKGMITVTDPDLIEKSNLNRQFLFRPHHIQKPKSYTAADATLKINSQIKIDA" +
+                    "HLNKVCPTTETIYNDEFYTKQDVIITALDNVEARRYVDSRCLANLRPLLDSGTMGTKGHT" +
+                    "EVIVPHLTESYNSHRDPPEEEIPFCTLKSFPAAIEHTIQWARDKFESSFSHKPSLFNKFW" +
+                    "QTYSSAEEVLQKIQSGHSLEGCFQVIKLLSRRPRNWSQCVELARLKFEKYFNHKALQLLH" +
+                    "CFPLDIRLKDGSLFWQSPKRPPSPIKFDLNEPLHLSFLQNAAKLYATVYCIPFAEEDLSA" +
+                    "DALLNILSEVKIQEFKPSNKVVQTDETARKPDHVPISSEDERNAIFQLEKAILSNEATKS" +
+                    "DLQMAVLSFEKDDDHNGHIDFITAASNLRAKMYSIEPADRFKTKRIAGKIIPAIATTTAT" +
+                    "VSGLVALEMIKVTGGYPFEAYKNCFLNLAIPIVVFTETTEVRKTKIRNGISFTIWDRWTV" +
+                    "HGKEDFTLLDFINAVKEKYGIEPTMVVQGVKMLYVPVMPGHAKRLKLTMHKLVKPTTEKK" +
+                    "YVDLTVSFAPDIDGDEDLPGPPVRYYFSHDTD";
+
+
+    public static void main(String[] args) {
+        String seq = Uniprot.retrieveSequence("A0AVTX1");
+        if (seq != null)
+            throw new IllegalStateException("problem"); // ToDo change
+        seq = Uniprot.retrieveSequence("A0AVT1");
+        if (seq == null)
+            throw new IllegalStateException("problem"); // ToDo change
+        if(!DESIRED_SEQUENCE.equals(seq))
+            throw new IllegalStateException("problem"); // ToDo change
     }
 
 
