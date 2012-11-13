@@ -100,7 +100,9 @@ public class RemoteHadoopController implements IHadoopController {
         // set twice max memory
         conf.set("mapred.child.ulimit",  Long.toString((Integer.parseInt(maxMamory) * 2048 )  + 200 * 1024 ) );  // in kb
          // DO NOT - DO NOT SET   -xx:-UseGCOverheadLimit   leads to error - Error reading task outputhttp://glad
-        conf.set("mapred.child.java.opts", "-Xmx" + maxMamory + "m"); // NEVER DO THIS!!!! +   " -xx:-UseGCOverheadLimit");
+        conf.set("mapred.child.java.opts", "-Xmx" + maxMamory + "m" + " "
+             + "-Djava.net.preferIPv4Stack=true"
+        ); // NEVER DO THIS!!!! +   " -xx:-UseGCOverheadLimit");
     //    conf.set("mapred.job.reuse.jvm.num.tasks", "1");
 
         IFileSystem hdfsAccessor = getHDFSAccessor();
