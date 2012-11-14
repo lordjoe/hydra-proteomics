@@ -80,12 +80,13 @@ public class TestHadoopRunner {
           }
         hfs.expunge("TestOut");
 
-        NShotTest.runNShotTest(conf, args);
-
-        String output = hfs.readFromFileSystem("TestOut/part-r-00000");
-        String[] split = output.split("\n");
-        Assert.assertEquals(24,split.length);
-        Assert.assertEquals("foo0\tbar0",split[4]);
+        throw new UnsupportedOperationException("Fix This"); // ToDo
+//        NShotTest.runNShotTest(conf, args);
+//
+//        String output = hfs.readFromFileSystem("TestOut/part-r-00000");
+//        String[] split = output.split("\n");
+//        Assert.assertEquals(24,split.length);
+//        Assert.assertEquals("foo0\tbar0",split[4]);
 
     }
 

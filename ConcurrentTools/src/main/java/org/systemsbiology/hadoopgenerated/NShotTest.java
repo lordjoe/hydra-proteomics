@@ -98,6 +98,7 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
                 writeKeyValue(context, dkey, dValue, "user.dir", System.getProperty("user.dir"));
                 writeKeyValue(context, dkey, dValue, "os.arch", System.getProperty("os.arch"));
                 writeKeyValue(context, dkey, dValue, "os.name", System.getProperty("os.name"));
+                writeKeyValue(context, dkey, dValue, "user.name", System.getProperty("user.name"));
 
 
 //                dkey.set("ip");
