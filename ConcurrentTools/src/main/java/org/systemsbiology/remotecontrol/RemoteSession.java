@@ -284,6 +284,31 @@ public class RemoteSession implements UserInfo {
         pHc.runJob(job);
     }
 
+    private static void runHadoopTest(final IHadoopController pHc,String[] args) {
+        Class<HadoopTest> mainClass = HadoopTest.class;
+        String jobName = mainClass.getSimpleName();
+
+
+        String outDir = RemoteUtilities.getDefaultPath() + "/NShot";
+        String jarLocation = "jobs";
+        IHadoopJob job = HadoopJob.buildJob(
+                mainClass,
+                "FeeFie.txt",     // data on hdfs
+                jarLocation,      // jar location
+                outDir,             // output location - will have outputN added
+                args
+
+        );
+
+        // make a small jar file
+        File jarFile = HadoopDeployer.makeClassOnlyHadoopJar(jarLocation + "/HadoopTest.jar", "org.systemsbiology.hadoopgenerated" );
+        String jarString = jarFile.toString().replace("\\", "/");
+        job.setJarFile(jarString);
+
+
+        pHc.runJob(job);
+    }
+
 
     public static void main(String[] args) {
         String user = RemoteUtilities.getUser(); // "training";  //
@@ -304,7 +329,8 @@ public class RemoteSession implements UserInfo {
         //  runMotifLocator(hc);
         //  runSubstringCount(hc);
         // runWordCount(hc);
-        runNShotTest(hc);
+        // runNShotTest(hc);
+        runHadoopTest(hc,args);
         // runProbes(hc);
         //  runYeastHowdahProcess(hc);
         //  runHumanHowdahProcess(hc);
