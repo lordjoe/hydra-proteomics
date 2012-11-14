@@ -262,7 +262,8 @@ public class RemoteSession implements UserInfo {
     private static void runNShotTest(final IHadoopController pHc) {
         Class<NShotTest> mainClass = NShotTest.class;
         String jobName = mainClass.getSimpleName();
-
+        RemoteUtilities.setProperty(RemoteUtilities.DEFAULT_PATH_STRING,"/users/attila/");
+        String foo = RemoteUtilities.getDefaultPath() ;
 
         String outDir = RemoteUtilities.getDefaultPath() + "/NShot";
         String jarLocation = "jobs";

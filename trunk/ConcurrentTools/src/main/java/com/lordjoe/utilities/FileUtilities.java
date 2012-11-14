@@ -3311,7 +3311,7 @@ public abstract class FileUtilities {
             }
         }
         finally {
-            System.out.println();
+        //    System.out.println();
             in.close();
             out.close();
         }
