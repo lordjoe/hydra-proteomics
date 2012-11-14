@@ -17,6 +17,14 @@ import java.util.*;
 
 /**
  * org.systemsbiology.hadoopgenerated.NShotTest
+ *   Locally the arguments are
+ *         -DNumberKeys=100000  - number of keys
+ *         -DNumberSplits=50
+ *         -DNumberReducers=3
+ *         SomeEmptyLocalDirectory
+ *
+ *      Use the following command line
+ *         /home/www/hadoop/bin/hadoop  jar jobs/HadoopTest.jar  org.systemsbiology.hadoopgenerated.HadoopTest -DNumberKeys=100000 -DNumberSplits=50 -DNumberReducers=3 FeeFie.txt /user/howdah/NShot/output1
  *
  * @author Steve Lewis
  * @date Oct 11, 2010

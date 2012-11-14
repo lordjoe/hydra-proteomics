@@ -3,10 +3,11 @@ package org.systemsbiology.remotecontrol;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.hdfs.*;
- import org.systemsbiology.common.*;
+import org.apache.hadoop.util.*;
+import org.systemsbiology.common.*;
 import org.systemsbiology.hadoop.*;
 
- import java.io.*;
+import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
@@ -31,7 +32,7 @@ public class RemoteHadoopController implements IHadoopController {
     public RemoteHadoopController(final RemoteSession pSession) {
         m_Session = pSession;
         m_HDFSAccessor = new HDFSAccessor(m_Session.getHost(), RemoteUtilities.getPort());
-      //  m_FTPAccessor = new FTPWrapper(m_Session.getUser(), m_Session.getPassword(), m_Session.getHost());
+        //  m_FTPAccessor = new FTPWrapper(m_Session.getUser(), m_Session.getPassword(), m_Session.getHost());
     }
 
     public RemoteSession getSession() {
@@ -53,13 +54,13 @@ public class RemoteHadoopController implements IHadoopController {
 
     @Override
     public boolean runJobs(final IHadoopJob[] jobs) {
-        if(jobs == null)
+        if (jobs == null)
             return true; // nothing to do
         boolean ret = true;
         for (int i = 0; i < jobs.length; i++) {
             IHadoopJob job = jobs[i];
-            ret &= runJob( job);
-            if(!ret)
+            ret &= runJob(job);
+            if (!ret)
                 return ret;
         }
         return ret;
@@ -70,7 +71,6 @@ public class RemoteHadoopController implements IHadoopController {
     public boolean runJob(IHadoopJob job) {
         String jarFile = job.getJarFile();
         InputStream is = null;
-        Configuration conf = new Configuration();
         File jar = null;
         if (jarFile != null && jarFile.startsWith("res://")) {
             String substring = jarFile.substring("res://".length());
@@ -85,36 +85,21 @@ public class RemoteHadoopController implements IHadoopController {
         if (!jar.exists())
             throw new IllegalStateException("Jar file " + jar + " does not exist");
         //      guaranteeFiles(inputs, job.getFilesDirectory());
-        conf.set("mapred.jar", jarFile);
-        //     }
-
-
-        conf.set("fs.default.name", "hdfs://" + RemoteUtilities.getHost() + ":" + RemoteUtilities.getPort());
-        String jobTracker = RemoteUtilities.getJobTracker();
-        conf.set("mapred.job.tracker", jobTracker);
-
-        String maxMamory =  HadoopUtilities.getProperty("maxClusterMemory");
-        if(maxMamory == null)
-               maxMamory = "1024";
-
-        // set twice max memory
-        conf.set("mapred.child.ulimit",  Long.toString((Integer.parseInt(maxMamory) * 2048 )  + 200 * 1024 ) );  // in kb
-         // DO NOT - DO NOT SET   -xx:-UseGCOverheadLimit   leads to error - Error reading task outputhttp://glad
-        conf.set("mapred.child.java.opts", "-Xmx" + maxMamory + "m" + " "
-             + "-Djava.net.preferIPv4Stack=true"
-        ); // NEVER DO THIS!!!! +   " -xx:-UseGCOverheadLimit");
-    //    conf.set("mapred.job.reuse.jvm.num.tasks", "1");
+        Configuration conf = buildConfiguration(jarFile);
+        //    conf.set("mapred.job.reuse.jvm.num.tasks", "1");
 
         IFileSystem hdfsAccessor = getHDFSAccessor();
         String s = job.getOutputDirectory();
         String emptyOutputDirectory = HDFSUtilities.getEmptyOutputDirectory(s, hdfsAccessor);
 
-       //      _ think this is bad
-       // hdfsAccessor.guaranteeDirectory(emptyOutputDirectory);
+        //      _ think this is bad
+        // hdfsAccessor.guaranteeDirectory(emptyOutputDirectory);
 
         // todo fix this total hack
-        if("org.systemsbiology.hadoopgenerated.NShotTest".equals(job.getMainClass() ))
-                 hdfsAccessor.expunge(s); // which is it
+        if ("org.systemsbiology.hadoopgenerated.NShotTest".equals(job.getMainClass()))
+            hdfsAccessor.expunge(s); // which is it
+        if ("org.systemsbiology.hadoopgenerated.HadoopTest".equals(job.getMainClass()))
+            hdfsAccessor.expunge(s); // which is it
         //      String cmd = HADOOP_COMMAND + "fs -mkdir " + s;
         //      ech.execCommand(cmd, IOutputListener.DEFAULT_LISTENERS);
 
@@ -129,13 +114,29 @@ public class RemoteHadoopController implements IHadoopController {
         String[] allArgs = job.getAllArgs();
 
         try {
-            Class<? extends IJobRunner> mClass =  (Class<? extends IJobRunner>)Class.forName(mainClass);
-            IJobRunner realMain = mClass.newInstance();
+            Class<?> mainCls = Class.forName(mainClass);
+            if (IJobRunner.class.isAssignableFrom(mainCls)) {
+                Class<? extends IJobRunner> mClass = (Class<? extends IJobRunner>) mainCls;
+                IJobRunner realMain = mClass.newInstance();
 
-            int result = realMain.runJob(conf, allArgs);
-             ((HadoopJob)job).setJob(realMain.getJob());
-            return result == 0;
-  //            if (result.contains("Job Failed"))
+                int result = realMain.runJob(conf, allArgs);
+                ((HadoopJob) job).setJob(realMain.getJob());
+                return result == 0;
+            }
+            else {
+                if (Tool.class.isAssignableFrom(mainCls)) {
+                    Tool realMain = (Tool) mainCls.newInstance();
+                    String[] args = buildArgsFromConf(emptyOutputDirectory, conf, allArgs);
+
+                    int result = realMain.run(args);
+                    return result == 0;
+                }
+                else {
+                    throw new UnsupportedOperationException("Fix This"); // ToDo
+
+                }
+            }
+            //            if (result.contains("Job Failed"))
 //                throw new IllegalStateException(result);
 //            System.out.println(result);
         }
@@ -148,13 +149,13 @@ public class RemoteHadoopController implements IHadoopController {
 
         }
         catch (IllegalAccessException e) {
-             throw new RuntimeException(e);
+            throw new RuntimeException(e);
 
-         }
+        }
         catch (Exception e) {
-             throw new RuntimeException(e);
+            throw new RuntimeException(e);
 
-         }
+        }
 
 
         // get the output
@@ -174,9 +175,57 @@ public class RemoteHadoopController implements IHadoopController {
         //  System.out.println("DONE!!!");
     }
 
+    private String[] buildArgsFromConf(String emptyOutputDirectory, Configuration conf, String[] allArgs) {
+
+        String maxMamory = HadoopUtilities.getProperty("maxClusterMemory");
+        if (maxMamory == null)
+            maxMamory = "1024";
+        List<String> holder = new ArrayList<String>();
+
+        // set twice max memory
+        String value = Long.toString((Integer.parseInt(maxMamory) * 2048) + 200 * 1024);
+        holder.add("-Dmapred.child.ulimit=" + value);  // in kb
+        // DO NOT - DO NOT SET   -xx:-UseGCOverheadLimit   leads to error - Error reading task outputhttp://glad
+        holder.add("-Dmapred.child.java.opts=" + "Xmx" + maxMamory + "m");
+        holder.add("-Djava.net.preferIPv4Stack=true");
+
+        for (int i =  0; i < allArgs.length ; i++) {
+            String allArg = allArgs[i];
+            holder.add(allArg);
+        }
+
+        String[] ret = new String[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
+
+    private Configuration buildConfiguration(String jarFile) {
+        Configuration conf = new Configuration();
+        conf.set("mapred.jar", jarFile);
+        //     }
+
+
+        conf.set("fs.default.name", "hdfs://" + RemoteUtilities.getHost() + ":" + RemoteUtilities.getPort());
+        String jobTracker = RemoteUtilities.getJobTracker();
+        conf.set("mapred.job.tracker", jobTracker);
+
+        String maxMamory = HadoopUtilities.getProperty("maxClusterMemory");
+        if (maxMamory == null)
+            maxMamory = "1024";
+
+        // set twice max memory
+        Long.toString((Integer.parseInt(maxMamory) * 2048) + 200 * 1024);
+        conf.set("mapred.child.ulimit", Long.toString((Integer.parseInt(maxMamory) * 2048) + 200 * 1024));  // in kb
+        // DO NOT - DO NOT SET   -xx:-UseGCOverheadLimit   leads to error - Error reading task outputhttp://glad
+        conf.set("mapred.child.java.opts", "-Xmx" + maxMamory + "m" + " "
+                + "-Djava.net.preferIPv4Stack=true"
+        ); // NEVER DO THIS!!!! +   " -xx:-UseGCOverheadLimit");
+        return conf;
+    }
+
 
     private void guaranteeEmptyDirectory(String dir) {
-         IFileSystem accessor = getHDFSAccessor();
+        IFileSystem accessor = getHDFSAccessor();
         accessor.expunge(dir);
     }
 
