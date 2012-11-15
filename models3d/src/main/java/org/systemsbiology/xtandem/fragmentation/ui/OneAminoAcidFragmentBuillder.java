@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem.fragmentation.ui;
 
 import org.systemsbiology.jmol.*;
+import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 import org.w3c.css.sac.*;
 import sun.awt.*;
@@ -51,7 +52,8 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
                     "Sheet",  //  SECONDARY_STRUCTURE_SHEET
                     "DiSulphide",   //SECONDARY_STRUCTURE_DISULPHIDE
                     "Missed Cleavage",   //SECONDARY_STRUCTURE_MISSED_CLEAVAGE
-            };
+                    "Turn",   //SECONDARY_STRUCTURE_MISSED_CLEAVAGE
+             };
 
 
     public static final String TAG = "text";
@@ -90,11 +92,18 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     }
 
     public String getAminoAcid() {
-        return getAAMapping().getAminoAcid().toString();
+        IAminoAcidAtLocation aaMapping = getAAMapping();
+        if(aaMapping == null)
+            return null;
+        FastaAminoAcid aminoAcid = aaMapping.getAminoAcid();
+        return aminoAcid.toString();
     }
 
     public int getCoverage() {
-       if(getAAMapping().isDetected())
+        IAminoAcidAtLocation aaMapping = getAAMapping();
+        if(aaMapping == null)
+            return 0;
+        if(aaMapping.isDetected())
            return 1;
        else
            return 0;
@@ -182,7 +191,9 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     @Override
     protected void appendAllBuilders(final Appendable out, final Object[] data) {
         try {
-            out.append(getAminoAcid());
+            String aminoAcid = getAminoAcid();
+            if(aminoAcid != null)
+                out.append(aminoAcid);
         }
         catch (IOException e) {
             throw new RuntimeException(e);

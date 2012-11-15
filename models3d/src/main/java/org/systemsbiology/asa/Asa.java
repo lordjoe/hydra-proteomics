@@ -216,8 +216,12 @@ def find_neighbor_indices(atoms, probe, k):
         double constant = 4.0 * Math.PI / sphere_points.length;
         Point3d test_point = new Point3d(0, 0, 0);
         List<AsaAtom> areas = new ArrayList<AsaAtom>();
+        System.err.println("Number atoms = " + atoms.length);
         for (int i = 0; i < atoms.length; i++) {
             AsaAtom atom_i = atoms[i];
+            if(i % 1000 == 0)
+                System.err.println("Working on = " + i);
+
             Point3d pos = atom_i.getPos();
             int[] neighbor_indices = find_neighbor_indices(atoms, probe, i);
             int n_neighbor = neighbor_indices.length;
