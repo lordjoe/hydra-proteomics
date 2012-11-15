@@ -75,9 +75,9 @@ public class ProteinSubunit {
          m_Seqres.add(added);
       }
 
-    public AminoAcidAtLocation[] getSeqres()
+    public IAminoAcidAtLocation[] getSeqres()
     {
-        return m_Seqres.toArray(AminoAcidAtLocation.EMPTY_ARRAY);
+        return m_Seqres.toArray(IAminoAcidAtLocation.EMPTY_ARRAY);
     }
 
     public String getSeqresSequence()
@@ -99,8 +99,8 @@ public class ProteinSubunit {
         return m_Chain;
     }
 
-    public AminoAcidAtLocation[] getLocations() {
-        return m_Locations.toArray(AminoAcidAtLocation.EMPTY_ARRAY);
+    public IAminoAcidAtLocation[] getLocations() {
+        return m_Locations.toArray(IAminoAcidAtLocation.EMPTY_ARRAY);
     }
 
     public String getSequence() {

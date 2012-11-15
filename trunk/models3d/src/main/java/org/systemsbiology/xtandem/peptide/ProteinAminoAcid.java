@@ -4,6 +4,7 @@ import org.biojava.bio.symbol.*;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.fragmentation.*;
+import org.w3c.css.sac.*;
 
 import java.util.*;
 
@@ -38,6 +39,13 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid>,IAminoAcid
         m_Location = location;
         m_Chain = chain;
     }
+
+
+    @Override
+    public ProteinAminoAcid getProteinAminoAcid() {
+        return this;
+    }
+
 
 
     public boolean isPotentialCleavage() {
@@ -142,7 +150,7 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid>,IAminoAcid
         m_Chain = chain;
     }
 
-
+    @Override
     public void setLocation(final int location) {
         m_Location = location;
     }
@@ -151,6 +159,16 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid>,IAminoAcid
     public boolean isDiSulphideBond() {
         return hasFeature(UniprotFeatureType.DISULFID);
     }
+
+    @Override
+     public void setDiSulphideBond(final boolean doit) {
+         if(doit)
+             addFeature(UniprotFeatureType.DISULFID);
+        else
+             m_Features.remove(UniprotFeatureType.DISULFID);
+
+     }
+
 
     @Override
     public boolean isSometimesMissedCleavage() {

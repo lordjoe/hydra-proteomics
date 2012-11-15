@@ -202,9 +202,9 @@ public class PDBObject extends AsaMolecule {
 
     private void buildSequenceMappings(ProteinSubunit subUnit, ChainEnum ch) {
         String chainSeq = subUnit.getSequence();
-        AminoAcidAtLocation[] seqres = subUnit.getSeqres();
+        IAminoAcidAtLocation[] seqres = subUnit.getSeqres();
         for (int i = 0; i < seqres.length - 1; i++) {
-            AminoAcidAtLocation seqre = seqres[i];
+            IAminoAcidAtLocation seqre = seqres[i];
             ProteinAminoAcid pa = seqre.getProteinAminoAcid();
             FastaAminoAcid aa = seqre.getAminoAcid();
 
@@ -235,7 +235,7 @@ public class PDBObject extends AsaMolecule {
                  int zeroBassed = i - 1;
                  SequenceChainMap mapping = getMapping(zeroBassed);
                  FastaAminoAcid seqaa = FastaAminoAcid.fromChar(seqence.charAt(zeroBassed));
-                 AminoAcidAtLocation bx = seqres[bindex - 1];  // zero based
+                 IAminoAcidAtLocation bx = seqres[bindex - 1];  // zero based
 
                  FastaAminoAcid baa = bx.getAminoAcid();
                  bx.setLocation(bindex);
@@ -418,10 +418,10 @@ SSBOND	1-6	"SSBOND"		character
 
         s = line.substring(73, 78).trim();
         double length = Double.parseDouble(s);
-        AminoAcidAtLocation[] locations = chain.getLocations();
+        IAminoAcidAtLocation[] locations = chain.getLocations();
         int start = -1;
         for (int i = 0; i < locations.length; i++) {
-            AminoAcidAtLocation aa = locations[i];
+            IAminoAcidAtLocation aa = locations[i];
             int loc = aa.getLocation();
             String res = aa.getAminoAcid().getAbbreviation();
             if ("CYS".equals(res)) {
@@ -436,7 +436,7 @@ SSBOND	1-6	"SSBOND"		character
         if (start == -1)
             throw new IllegalStateException("cannot find " + Residue + ResNum);
         for (int i = start; i < locations.length; i++) {
-            AminoAcidAtLocation aa = locations[i];
+            IAminoAcidAtLocation aa = locations[i];
             String res = aa.getAminoAcid().getAbbreviation();
             int loc = aa.getLocation();
             if ("CYS".equals(res)) {
@@ -501,7 +501,7 @@ HELIX	1-5	"HELIX"		character
 
         s = line.substring(71, 76).trim();
         int length = Integer.parseInt(s);
-        AminoAcidAtLocation[] locations = chain.getLocations();
+        IAminoAcidAtLocation[] locations = chain.getLocations();
         int start = -1;
         for (int i = 0; i < locations.length; i++) {
             IAminoAcidAtLocation aa = locations[i];
@@ -521,7 +521,7 @@ HELIX	1-5	"HELIX"		character
             // throw new IllegalStateException("cannot find " + Residue + ResNum);
         }
         for (int i = start; i < Math.min(locations.length, start + length); i++) {
-            AminoAcidAtLocation aa = locations[i];
+            IAminoAcidAtLocation aa = locations[i];
             aa.setStructure(UniprotFeatureType.HELIX);
         }
 
@@ -592,7 +592,7 @@ HELIX	1-5	"HELIX"		character
         if (s.length() > 0)
             HelixType = Integer.parseInt(s);
 
-        AminoAcidAtLocation[] locations = chain.getLocations();
+        IAminoAcidAtLocation[] locations = chain.getLocations();
         int start = -1;
         for (int i = 0; i < locations.length; i++) {
             IAminoAcidAtLocation aa = locations[i];
@@ -609,7 +609,7 @@ HELIX	1-5	"HELIX"		character
             return;
         //        throw new IllegalStateException("cannot find " + Residue + ResNum);
         for (int k = start; k < locations.length; k++) {
-            AminoAcidAtLocation aa = locations[k];
+            IAminoAcidAtLocation aa = locations[k];
             aa.setStructure(UniprotFeatureType.STRAND);
             String res = aa.getAminoAcid().getAbbreviation();
             int loc = aa.getLocation();

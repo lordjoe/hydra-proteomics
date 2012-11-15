@@ -65,7 +65,8 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             out.append("    showSolventAccess = \'" + solventScript + "\';\n");
                 out.append("    showCoverage = \'" + coveragescript + "\';\n");
                out.append("    window.defaultloadscript = showAminoAcids;\n");
-            out.append("    jmolInitialize(\"../../\");\n");
+            // force use of signed jar
+            out.append("    jmolInitialize(\"../../\",\"JMolAppletSigned.jar\");\n");
             out.append("    jmolApplet([\"924\",\"678\"], loadText + \'select all;color translucent[80,80,80] white;select all ;wireframe on;spacefill 30%;ribbon off;\' + window.defaultloadscript,jmol_id);\n");
             out.append(
                     "\tfunction runScript( ) {\n" +
