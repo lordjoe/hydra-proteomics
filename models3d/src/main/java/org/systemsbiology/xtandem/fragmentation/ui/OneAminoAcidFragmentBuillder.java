@@ -84,6 +84,7 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
         }
         else {
             m_AAMapping = null;
+            throw new UnsupportedOperationException("Fix This"); // ToDo
         }
         setX(xpos);
         CoverageFragment cf = getParentOfType(CoverageFragment.class);
@@ -94,7 +95,7 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     public String getAminoAcid() {
         IAminoAcidAtLocation aaMapping = getAAMapping();
         if(aaMapping == null)
-            return null;
+            throw new UnsupportedOperationException("Fix This"); // ToDo
         FastaAminoAcid aminoAcid = aaMapping.getAminoAcid();
         return aminoAcid.toString();
     }
@@ -102,7 +103,7 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     public int getCoverage() {
         IAminoAcidAtLocation aaMapping = getAAMapping();
         if(aaMapping == null)
-            return 0;
+            throw new UnsupportedOperationException("Fix This"); // ToDo
         if(aaMapping.isDetected())
            return 1;
        else
