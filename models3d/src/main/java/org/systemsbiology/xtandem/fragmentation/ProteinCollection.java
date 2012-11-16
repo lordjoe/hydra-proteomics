@@ -408,6 +408,9 @@ public class ProteinCollection implements IFastaHandler {
         pc.loadData();
         for (int i = 0; i < ids.length; i++) {
             String id = ids[i];
+            // this case takes a long time to handle
+            if("O00151".equals(id))  // todo take out
+                continue;
             Uniprot upt = interestingUniprots.get(id);
             FoundPeptide[] peptidesX = upt.getFound();
             Protein protein = upt.getProtein();

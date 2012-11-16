@@ -165,6 +165,10 @@ public class ProteinFragmentationDescription {
             return;
         }
         String[] lines = downloadProteinFragments();
+        if(lines == null) {
+             lines = downloadProteinFragments();
+            throw new UnsupportedOperationException("Fix This"); // ToDo
+        }
         if (lines.length < 2) {
             System.out.println("No fragments for " + getUniprotId());
         }
