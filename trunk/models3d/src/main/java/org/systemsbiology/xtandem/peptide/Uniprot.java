@@ -519,6 +519,7 @@ public class Uniprot {
         return m_ModelDirectory;
     }
 
+    public static final boolean DOWNLOAD_MODELS = false;
 
     /**
      * @param id
@@ -535,6 +536,9 @@ public class Uniprot {
                 mdl.readFile(f);
             }
             else {
+                if(!DOWNLOAD_MODELS)
+                    return null;
+
                 f = ThreeDModel.downLoad3DModel(mdr, id);
                 if (f.exists()) {
                     mdl.readFile(f);
@@ -596,7 +600,8 @@ public class Uniprot {
             String model = models[j];
             try {
                 BioJavaModel mdl = getModel(model);
-                holder.add(mdl);
+                if(mdl != null)
+                    holder.add(mdl);
             }
             catch (IllegalArgumentException e) {
                 // forgive
@@ -664,10 +669,16 @@ public class Uniprot {
         }
         double bestFit = 0;
         BioJavaModel[] mdls = getAllModels();
+        if(mdls.length == 0)     {
+            clearModels();
+            return;
+        }
         BioJavaModel best = null;
         int sequencelen = getProtein().getSequenceLength();
         for (int i = 0; i < mdls.length; i++) {
             BioJavaModel mdl = mdls[i];
+            if(mdl == null)
+                continue;
             int fitLength = mdl.getFitLength();
             double fraction = mdl.resolveChains();
             if (fraction > bestFit) {

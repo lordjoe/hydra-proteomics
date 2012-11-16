@@ -46,7 +46,7 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             String hilightText = m_ScriptWriter.writeHilightText(pfd);
             String scriptx = m_ScriptWriter.writeScript(pfd);
             String coveragescript = m_ScriptWriter.writeScript(pfd, pfd.getAllCoverage());
-            String solventScript = m_ScriptWriter.writeSolventAccessScript(pfd );
+     //       String solventScript = m_ScriptWriter.writeSolventAccessScript(pfd );
             String solventAtomicScript = m_ScriptWriter.writeSolventAtomicAccessScript(pfd );
             String hydrophobicityScript = m_ScriptWriter.writeHydrophobicityScript(pfd )  ;
                 //    script = script.replace("\n","\\\n");
@@ -62,11 +62,11 @@ public class ThreeDModelCompositeAppletBuillder extends AbstractHtmlFragmentHold
             out.append("    showAminoAcids = \'select all;color translucent[80,80,80] white;\' + fragments.join(\' \'); \n");
             out.append("    showSolventAtomicAccess = \'" + solventAtomicScript + "\';\n");
             out.append("    showHydrophobicity = \'" + hydrophobicityScript + "\';\n");
-            out.append("    showSolventAccess = \'" + solventScript + "\';\n");
+    //        out.append("    showSolventAccess = \'" + solventScript + "\';\n");
                 out.append("    showCoverage = \'" + coveragescript + "\';\n");
                out.append("    window.defaultloadscript = showAminoAcids;\n");
             // force use of signed jar
-            out.append("    jmolInitialize(\"../../\",\"JMolAppletSigned.jar\");\n");
+            out.append("    jmolInitialize(\"../Codebase/\",\"JMolAppletSigned.jar\");\n");
             out.append("    jmolApplet([\"924\",\"678\"], loadText + \'select all;color translucent[80,80,80] white;select all ;wireframe on;spacefill 30%;ribbon off;\' + window.defaultloadscript,jmol_id);\n");
             out.append(
                     "\tfunction runScript( ) {\n" +

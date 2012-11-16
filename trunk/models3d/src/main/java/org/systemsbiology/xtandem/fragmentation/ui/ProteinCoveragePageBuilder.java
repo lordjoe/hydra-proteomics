@@ -56,6 +56,9 @@ public class ProteinCoveragePageBuilder {
     public void showCoverage(String id) {
         ProteinCollection pc = getProteins();
         ProteinFragmentationDescription pfd = pc.getProteinFragmentationDescription(id);
+        if(pfd == null)
+            throw new UnsupportedOperationException("Fix This"); // // ToDo Is this expected
+
         Protein prot = pfd.getProtein();
         ProteinFragment[] fragments = pfd.getFragments();
 //         for (int i = 0; i < fragments.length; i++) {
@@ -128,6 +131,9 @@ public class ProteinCoveragePageBuilder {
     protected String showCoveragePage(String id, String prev, String next) {
         ProteinCollection proteins = getProteins();
         ProteinFragmentationDescription pfd = proteins.getProteinFragmentationDescription(id);
+        if(pfd == null)
+            return null; // ToDo Is this expected
+
         int[] coverageLevels = pfd.getStatistics().getCoverageStatistics();
         for (int i = 0; i < Math.min(MAX_COVERAGE, coverageLevels.length); i++) {
             int coverageLevel = coverageLevels[i];
@@ -205,7 +211,7 @@ public class ProteinCoveragePageBuilder {
         }
 
         new CoverageColorsLabel(body);
-        new HelixandTurnLabel(body);
+    //    new HelixandTurnLabel(body);
         if (model != null) {
             new SingleTagBuillder(body, "p");
             new SecondaryStructureLabel(body);
@@ -253,6 +259,8 @@ public class ProteinCoveragePageBuilder {
             String id = ids[i];
             String page = pages[i];
             ProteinFragmentationDescription pd = proteins.getProteinFragmentationDescription(id);
+            if(pd == null)
+                throw new UnsupportedOperationException("Fix This"); // ToDo Is this expected
             if (pd.getModel() != null) {
                 idWith3dModel.add(pd);
                 pageWith3dModel.add(page);

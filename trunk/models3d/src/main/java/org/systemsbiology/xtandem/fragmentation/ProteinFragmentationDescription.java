@@ -42,6 +42,7 @@ public class ProteinFragmentationDescription {
     private final List<ProteinFragment> m_Fragments = new ArrayList<ProteinFragment>();
     private short[] m_Coverage;
     private double m_FractionalCoverage; // fraction of amino acids in any fragment
+    private File m_ModelFile;
     private PDBObject m_Model;
     private SequenceChainMap[] m_SequenceFromSwissProt;
 
@@ -59,6 +60,11 @@ public class ProteinFragmentationDescription {
         m_Parent = parent;
         m_Protein = protein;
         m_Statistics = new CoverageStatistics(this, peptides);
+        int index = 0;
+        for (int i = 0; i < peptides.length; i++) {
+            FoundPeptide peptide = peptides[i];
+            index =  buildFragment(peptide,index);
+        }
     }
 
     public int getInterestScore() {
@@ -100,6 +106,14 @@ public class ProteinFragmentationDescription {
 
     public void setModel(PDBObject model) {
         m_Model = model;
+    }
+
+    public File getModelFile() {
+        return m_ModelFile;
+    }
+
+    public void setModelFile(File modelFile) {
+        m_ModelFile = modelFile;
     }
 
     public static final String ID_STRING = "%UNIPROT_ID%";

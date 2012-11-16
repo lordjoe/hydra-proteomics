@@ -3,6 +3,7 @@ package org.systemsbiology.xtandem.fragmentation.ui;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.fragmentation.*;
+import org.systemsbiology.xtandem.peptide.*;
 import org.w3c.css.sac.*;
 import sun.awt.*;
 
@@ -58,7 +59,7 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
 
     public static final String TAG = "text";
 
-//    private final String m_AminoAcid;
+    private final String m_AminoAcid;
 //    private final int m_Coverage;
     private final SequenceChainMap m_Mapping;
     private final IAminoAcidAtLocation  m_AAMapping;
@@ -68,15 +69,16 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
                                         SequenceChainMap mapping,boolean  misssedCleavage) {
 
         super(parent, TAG);
-//        m_AminoAcid = new String(aminoAcid);
+        m_AminoAcid = new String(aminoAcid);
 //        m_Coverage = coverage;
         m_Mapping = mapping;
 //        m_MisssedCleavage = misssedCleavage;
         if (mapping != null) {
             IAminoAcidAtLocation[] chainMappings = mapping.getChainMappings();
-            if (chainMappings.length > 0) {
+            if (chainMappings.length >  0) {
                 m_AAMapping = chainMappings[0];
-
+                 if(m_AAMapping instanceof ProteinAminoAcid)
+                     ((ProteinAminoAcid)m_AAMapping).setDetected(coverage > 0);
             }
             else {
                 m_AAMapping = null;
@@ -95,7 +97,7 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     public String getAminoAcid() {
         IAminoAcidAtLocation aaMapping = getAAMapping();
         if(aaMapping == null)
-            throw new UnsupportedOperationException("Fix This"); // ToDo
+            return m_AminoAcid;
         FastaAminoAcid aminoAcid = aaMapping.getAminoAcid();
         return aminoAcid.toString();
     }
@@ -103,7 +105,7 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     public int getCoverage() {
         IAminoAcidAtLocation aaMapping = getAAMapping();
         if(aaMapping == null)
-            throw new UnsupportedOperationException("Fix This"); // ToDo
+            return 0;
         if(aaMapping.isDetected())
            return 1;
        else
@@ -181,7 +183,13 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
         int textCoverage = getCoverage();
 
 
-        sb.append(" style=\"fill:" + getCoverageColor(textCoverage) + ";background-color:" + getFillColor() + ";\" ");
+        String fillColor = getFillColor();
+        if(fillColor.contains(SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_DISULPHIDE]))
+            fillColor = getFillColor(); // break here
+        String coverageColor = getCoverageColor(textCoverage);
+        sb.append(" style=\"fill:" + coverageColor +
+            //    ";background-color:" + fillColor +
+                ";\" ");
         sb.append(" text-anchor=\"middle\" ");
         sb.append(getTransformText());
         //     sb.append(" transform=\"translate(" + getX() + "," + getHeight() + ")\" ");

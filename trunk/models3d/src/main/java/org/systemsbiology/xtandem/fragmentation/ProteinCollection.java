@@ -1,7 +1,6 @@
 package org.systemsbiology.xtandem.fragmentation;
 
 import com.lordjoe.utilities.*;
-import org.forester.go.*;
 import org.systemsbiology.fasta.*;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.ui.*;
@@ -97,7 +96,7 @@ public class ProteinCollection implements IFastaHandler {
             return;
         Protein prot = Protein.buildProtein(uniprotId, sequence, null);
         addProtein(prot);
-        getProteinFragmentationDescription(uniprotId); // create as needed
+        guaranteeProteinFragmentationDescription(uniprotId); // create as needed
     }
 
     public void addProtein(Protein prot) {
@@ -120,6 +119,7 @@ public class ProteinCollection implements IFastaHandler {
     public void addProteinFragmentationDescription(ProteinFragmentationDescription fg) {
         String id = fg.getProtein().getId();
         m_UniProtIdToDescription.put(id, fg);
+
     }
 
     public ProteinFragmentationDescription[] getProteinFragmentationDescriptions() {
@@ -186,18 +186,26 @@ public class ProteinCollection implements IFastaHandler {
     }
 
 
-    public ProteinFragmentationDescription getProteinFragmentationDescription(String id) {
-        ProteinFragmentationDescription ret = m_UniProtIdToDescription.get(id);
-        if (ret == null) {
-            ret = new ProteinFragmentationDescription(id, this);
-            m_UniProtIdToDescription.put(id, ret);
-            if (SPECIAL_ID_SET.contains(id))  // temporary for now
-                ret.guaranteeFragments();
-        }
+    public ProteinFragmentationDescription guaranteeProteinFragmentationDescription(String id) {
+        ProteinFragmentationDescription ret = getProteinFragmentationDescription(id);
+        if (ret != null)
+            return ret;
+
+        ret = new ProteinFragmentationDescription(id, this);
+        m_UniProtIdToDescription.put(id, ret);
+        if (SPECIAL_ID_SET.contains(id))  // temporary for now
+            ret.guaranteeFragments();
+
         if (ret.getProtein() == null)
             ret.setProtein(getProtein(id));
         maybeAd3DModel(ret);
         return ret;
+    }
+
+
+    public ProteinFragmentationDescription getProteinFragmentationDescription(String id) {
+        ProteinFragmentationDescription ret = m_UniProtIdToDescription.get(id);
+          return ret;
     }
 
     protected void maybeAd3DModel(ProteinFragmentationDescription ret) {
@@ -335,13 +343,13 @@ public class ProteinCollection implements IFastaHandler {
 
     };
 
-    protected static  void updateProteinFragmentationDescription(ProteinFragmentationDescription pfd, Uniprot upt) {
+    protected static void updateProteinFragmentationDescription(ProteinFragmentationDescription pfd, Uniprot upt) {
         ProteinAminoAcid[] aminoAcids = upt.getAminoAcids();
         Protein protein = upt.getProtein();
-        SequenceChainMap[] mappedAAs = new  SequenceChainMap[aminoAcids.length];
+        SequenceChainMap[] mappedAAs = new SequenceChainMap[aminoAcids.length];
         for (int i = 0; i < aminoAcids.length; i++) {
             ProteinAminoAcid aminoAcid = aminoAcids[i];
-            mappedAAs[i] = new SequenceChainMap(protein,aminoAcid) ;
+            mappedAAs[i] = new SequenceChainMap(protein, aminoAcid);
         }
         pfd.setSequenceFromSwissProt(mappedAAs);
     }
@@ -353,14 +361,14 @@ public class ProteinCollection implements IFastaHandler {
         // downloadUniprots(args[0]);
         // downloadUniprots(args[0]);
 
-        if(args.length < 3) {
-                 UsageGenerator.showUsage(SAMPLE,
-                         "proteins <tab delimited uniptotid\tsequence>",
-                         "peptides <tab delimited uniptotid\tsequence>",
-                         "sp <todo fix>"
+        if (args.length < 3) {
+            UsageGenerator.showUsage(SAMPLE,
+                    "proteins <tab delimited uniptotid\tsequence>",
+                    "peptides <tab delimited uniptotid\tsequence>",
+                    "sp <todo fix>"
 
-                 );
-                return;
+            );
+            return;
         }
         File inp = new File(args[0]);
         FileUtilities.guaranteeExistingFile(inp);
@@ -375,7 +383,7 @@ public class ProteinCollection implements IFastaHandler {
 
         Map<String, Uniprot> idToUniprot = Uniprot.readUniprots(inp);
         FoundPeptides fps = FoundPeptides.readFoundPeptides(peptides);
-         Uniprot[] pts = idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
+        Uniprot[] pts = idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
         for (int i = 0; i < pts.length; i++) {
             Uniprot pt = pts[i];
             Protein protein = pt.getProtein();
@@ -403,25 +411,37 @@ public class ProteinCollection implements IFastaHandler {
         Uniprot[] interesting = interestingUniprots.values().toArray(Uniprot.EMPTY_ARRAY);
         String[] ids = interestingUniprots.keySet().toArray(new String[interestingUniprots.size()]);
         Arrays.sort(ids);
+        int[] statistics = new int[3];
 
         ProteinCollection pc = new ProteinCollection();
         pc.loadData();
         for (int i = 0; i < ids.length; i++) {
             String id = ids[i];
             // this case takes a long time to handle
-            if("O00151".equals(id))  // todo take out
+            if ("O00151".equals(id))  // todo take out
                 continue;
+
+            if ("A2RUC4".equals(id))
+                    id = ids[i];  // break here
+
             Uniprot upt = interestingUniprots.get(id);
             FoundPeptide[] peptidesX = upt.getFound();
             Protein protein = upt.getProtein();
+            upt.analyze(statistics);
             ProteinFragmentationDescription pfd = new ProteinFragmentationDescription(id, pc, protein, peptidesX);
             pc.addProteinFragmentationDescription(pfd);
+            BioJavaModel bestModel = upt.getBestModel();
+            if(bestModel != null)   {
+                File file = bestModel.getFile();
+                pfd.setModelFile(file) ;
+                pc.addPDBModelFile(id,file);
+             }
             if (upt != null) {
                 updateProteinFragmentationDescription(pfd, upt);
 
             }
-        }
-        // ids = MORE_PROTEINS;
+          }
+          // ids = MORE_PROTEINS;
         ProteinCoveragePageBuilder pb = new ProteinCoveragePageBuilder(pc);
         pb.buildPages(ids);
 

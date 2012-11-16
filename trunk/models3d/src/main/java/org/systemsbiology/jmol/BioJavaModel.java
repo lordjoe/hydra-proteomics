@@ -22,6 +22,7 @@ public class BioJavaModel {
     private Structure m_Structure;
     private int m_SequenceLength;
     private int m_FitLength;
+    private File m_File;
 
 
     public BioJavaModel(final Protein protein) {
@@ -38,6 +39,8 @@ public class BioJavaModel {
     }
 
     public void readFile(File f) {
+
+        m_File = f;
         if (!f.exists())
             throw new IllegalArgumentException("file " + f + " does not exist");
         try {
@@ -48,6 +51,10 @@ public class BioJavaModel {
             throw new RuntimeException(e);
 
         }
+    }
+
+    public File getFile() {
+        return m_File;
     }
 
     public Protein getProtein() {

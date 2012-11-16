@@ -157,7 +157,11 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid>,IAminoAcid
 
     @Override
     public boolean isDiSulphideBond() {
-        return hasFeature(UniprotFeatureType.DISULFID);
+        boolean ret = hasFeature(UniprotFeatureType.DISULFID);
+        if(ret)
+            return true; // what happens next   break here
+        else
+            return false;
     }
 
     @Override
@@ -185,17 +189,28 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid>,IAminoAcid
     }
 
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getAminoAcid().toString());
-        if(!m_Features.isEmpty()) {
-            sb.append("[");
-            for (UniprotFeatureType f  : m_Features) {
-                sb.append(f.toString().charAt(0));
-            }
-            sb.append("]");
+     public String toString() {
+         StringBuilder sb = new StringBuilder();
+         sb.append(getAminoAcid().getAbbreviation());
+         sb.append(Integer.toString(getLocation())) ;
+         ChainEnum chain = getChain();
+         if(chain != null)
+             sb.append(":" + chain) ;
+         return sb.toString();
         }
-        return sb.toString();
 
-    }
+
+//    @Override
+//    public String toString() {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append(getAminoAcid().toString());
+//        if(!m_Features.isEmpty()) {
+//            sb.append("[");
+//            for (UniprotFeatureType f  : m_Features) {
+//                sb.append(f.toString().charAt(0));
+//            }
+//            sb.append("]");
+//        }
+//        return sb.toString();
+//    }
 }
