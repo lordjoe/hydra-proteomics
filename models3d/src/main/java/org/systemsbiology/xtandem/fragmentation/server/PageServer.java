@@ -39,11 +39,12 @@ public class PageServer extends HttpServlet {
             throws ServletException, IOException {
 
         String requestURI = req.getRequestURI();
-        if(uriHandled(requestURI,req,   rsp))
-           return;
-        String ret = null;
+          String ret = null;
         String uniprot = req.getParameter("uniprot");
-
+        if(uniprot == null)  {
+            serveEmptyPage(rsp);
+            return;
+        }
 
 
         String s2 = req.getParameter("fragments");
@@ -55,27 +56,27 @@ public class PageServer extends HttpServlet {
 
     }
 
-    private boolean uriHandled(final String requestURI, final HttpServletRequest req, final HttpServletResponse rsp) {
-        try {
-            if("/".equals(requestURI))  {
-                serveEmptyPage(  rsp );
-                return true; // handled
-            }
-            if(requestURI.startsWith("/"))   {
-                serveFile(req, rsp);
-                 return true; // handled
-             }
-
-            if (true)
-                throw new UnsupportedOperationException("Fix This"); // ToDo
-
-            return false;
-        }
-        catch ( Exception e) {
-            throw new RuntimeException(e);
-
-        }
-    }
+//    private boolean uriHandled(final String requestURI, final HttpServletRequest req, final HttpServletResponse rsp) {
+//        try {
+//            if("/".equals(requestURI))  {
+//                serveEmptyPage(  rsp );
+//                return true; // handled
+//            }
+//            if(requestURI.startsWith("/"))   {
+//                serveFile(req, rsp);
+//                 return true; // handled
+//             }
+//
+//            if (true)
+//                throw new UnsupportedOperationException("Fix This"); // ToDo
+//
+//            return false;
+//        }
+//        catch ( Exception e) {
+//            throw new RuntimeException(e);
+//
+//        }
+//    }
 
     protected void serveFile(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -258,7 +259,7 @@ public class PageServer extends HttpServlet {
      //   ServletHolder holder2 = new ServletHolder(new FileServlet());
         Context root = new Context(server, "/svlt", Context.SESSIONS);
         root.addServlet(holder, "/");
-        handlers.setHandlers(new Handler[] { resource_handler,root });
+        handlers.setHandlers(new Handler[] { root,resource_handler,new DefaultHandler() });
 
 
  //        HandlerList handlers = new HandlerList();
@@ -272,6 +273,12 @@ public class PageServer extends HttpServlet {
         return server;
     }
 
+    /**
+     * start in the directory above the pages directory
+     * The JmolAppletSigned jars should be in a directory called CodeBase inside that directory
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         Server server = launchServer();
         server.join();

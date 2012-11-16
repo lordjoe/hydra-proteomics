@@ -51,10 +51,15 @@ public class SequenceChainMap  implements Comparable<SequenceChainMap> {
 
     public IAminoAcidAtLocation getChainMapping(ChainEnum chain)
       {
+
          return m_ChainMappings.get(chain);
       }
     public IAminoAcidAtLocation[] getChainMappings()
       {
+          if(m_ChainMappings.isEmpty())  {
+              ProteinAminoAcid added = new ProteinAminoAcid(ChainEnum.A, getAA(), getPos());
+              addChainMapping(ChainEnum.A, added);
+           }
          return m_ChainMappings.values().toArray(IAminoAcidAtLocation.EMPTY_ARRAY);
       }
 

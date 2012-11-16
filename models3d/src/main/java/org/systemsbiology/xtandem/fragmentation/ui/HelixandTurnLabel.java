@@ -9,7 +9,7 @@ import java.io.*;
  */
 public class HelixandTurnLabel extends SVGRootBuilder {
     public static final HelixandTurnLabel[] EMPTY_ARRAY = {};
-    public static final int DEFAULT_WIDTH = 1000;
+    public static final int DEFAULT_WIDTH = 401;
     public static final int DEFAULT_HEIGHT = 30;
 
     public HelixandTurnLabel(IHtmlFragmentHolder parent) {

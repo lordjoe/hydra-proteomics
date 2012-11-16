@@ -109,7 +109,7 @@ public class ScriptWriter {
         sb.append("jmolRadioGroup([\n" +
                 "\n" +
                 "     [ [setAndScript,showCoverage], \"Coverage\"] ,\n" +
-                "     [ [setAndScript,showSolventAccess], \"Solvent Access\"] ,\n" +
+       //         "     [ [setAndScript,showSolventAccess], \"Solvent Access\"] ,\n" +
                 "     [ [setAndScript,showSolventAtomicAccess], \"Solvent Atomic Access\"] ,\n" +
                 "     [ [setAndScript,showHydrophobicity], \"Hydrophobicity\"] ,\n" +
                 " \t  [ [setAndScript,showAminoAcids] , \"Peptides\",  \"checked\"] \n" +
@@ -212,6 +212,8 @@ public class ScriptWriter {
     }
 
     public String writeSolventAccessScript(ProteinFragmentationDescription pfd) {
+        if(true)
+            throw new UnsupportedOperationException("This is not very useful use writeSolventAtomicAccessScript");
         m_UsedPositions.clear();
         PDBObject original = pfd.getModel();
         StringBuilder sb = new StringBuilder();
