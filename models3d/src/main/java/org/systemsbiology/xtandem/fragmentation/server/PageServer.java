@@ -39,7 +39,7 @@ public class PageServer extends HttpServlet {
             throws ServletException, IOException {
 
         String requestURI = req.getRequestURI();
-          String ret = null;
+        String ret = null;
         String uniprot = req.getParameter("uniprot");
         if(uniprot == null)  {
             serveEmptyPage(rsp);

@@ -1,7 +1,7 @@
-package org.systemsbiology.xtandem.fragmentation.ui;
+package org.systemsbiology.xtandem.fragmentation.ui.form;
 
 /**
- * org.systemsbiology.xtandem.fragmentation.ui.HtmlInputTypes
+ * org.systemsbiology.xtandem.fragmentation.ui.form.HtmlInputTypes
  * User: steven
  * Date: 11/12/12
  */

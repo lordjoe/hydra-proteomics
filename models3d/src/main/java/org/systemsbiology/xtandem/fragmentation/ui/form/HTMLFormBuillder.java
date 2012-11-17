@@ -1,4 +1,6 @@
-package org.systemsbiology.xtandem.fragmentation.ui;
+package org.systemsbiology.xtandem.fragmentation.ui.form;
+
+import org.systemsbiology.xtandem.fragmentation.ui.*;
 
 import java.io.*;
 
@@ -20,7 +22,7 @@ public class HTMLFormBuillder extends AbstractHtmlFragmentHolder {
     }
 
     protected void addSubmitButton() {
-
+       new SubmitButtonBuilder(this);
     }
 
     public String getActionUrl() {
