@@ -63,6 +63,11 @@ public abstract class AbstractHtmlFragmentHolder implements IHtmlFragmentHolder 
         return m_UniqueId;
     }
 
+    public void clear()
+    {
+        m_Builders.clear();
+    }
+
 
     public abstract void addStartText(final Appendable out, final Object... data);
 

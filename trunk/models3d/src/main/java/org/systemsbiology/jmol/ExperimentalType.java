@@ -25,7 +25,8 @@ public enum ExperimentalType {
                     "ELECTRON  MICROSCOPY",
                     "SOLID-STATE  NMR ",
                     "SOLUTION  NMR ",
-                    "SOLUTION  SCATTERING"
+                    "THEORETICAL_MODEL",
+                     "SOLUTION  SCATTERING"
             };
 
     public static ExperimentalType fromString(String s) {
