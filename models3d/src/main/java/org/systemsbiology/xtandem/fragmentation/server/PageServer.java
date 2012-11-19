@@ -42,13 +42,17 @@ public class PageServer extends HttpServlet {
         String ret = null;
         String uniprot = req.getParameter("uniprot");
         if(uniprot == null)  {
-            serveEmptyPage(rsp);
+            // let someone else handle it
+            Request base_request = (req instanceof Request) ? (Request)req:HttpConnection.getCurrentConnection().getRequest();
+            base_request.setHandled(false);
+         //   serveEmptyPage(rsp);
             return;
         }
 
 
         String s2 = req.getParameter("fragments");
         File page = new File(PAGE_DIRECTORY,uniprot + ".html");
+        String path = page.getAbsolutePath();
         if(page.exists())
             servePage(  rsp,   page);
         else
@@ -247,7 +251,7 @@ public class PageServer extends HttpServlet {
         server.addConnector(connector);
 
         ResourceHandler resource_handler = new ResourceHandler();
-         resource_handler.setWelcomeFiles(new String[]{ "index.html" });
+        resource_handler.setWelcomeFiles(new String[]{ "index.html" });
 
         resource_handler.setResourceBase(".");
 
@@ -257,7 +261,7 @@ public class PageServer extends HttpServlet {
 
         ServletHolder holder = new ServletHolder(new PageServer());
      //   ServletHolder holder2 = new ServletHolder(new FileServlet());
-        Context root = new Context(server, "/svlt", Context.SESSIONS);
+        Context root = new Context(server, "/", Context.SESSIONS);
         root.addServlet(holder, "/");
         handlers.setHandlers(new Handler[] { root,resource_handler,new DefaultHandler() });
 
