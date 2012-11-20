@@ -12,6 +12,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 /**
  * com.lordjoe.server.RestianServer
@@ -22,12 +23,37 @@ import java.net.*;
  * @author Steve Lewis
  * @date Nov 28, 2007
  */
+/*
+Try this form
+ <form id="5667777777461" ACTION="/svlt/handle"   method="get" >
+ Uniprot Id: <input type="text" name="uniprot" value="A2RUC4" ></input><br>
+ Fragments:<br>
+ <textarea name="fragments" rows="20" cols="70">
+ A[43.0]GQHLPVPR
+ DAQYLYLK
+ EEQFFSSVFR
+ EQFMQHLYPQR
+ EQFM[147.0]QHLYPQR
+ FPEFFKEEQFFSSVFR
+ FPEFFKEEQFFSSVFR
+ GDIKFPEFFK
+ GDIKFPEFFK
+ GDIKFPEFFKEEQFFSSVFR
+ YEC[160.0]SLEAGDVLFIPALWFH
+ YEC[160.0]SLEAGDVLFIPALWFH
+ </textarea><br>
+ <input type="submit">
+ </form>
+ */
 public class PageServer extends HttpServlet {
     public static PageServer[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = PageServer.class;
 
+    public static final String SERVLET_URI = "/svlt";
+
     private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
-    public static final File PAGE_DIRECTORY = new File("Pages");
+    public static final File PAGE_DIRECTORY = new File("pages");
+
 
     protected void doGet(HttpServletRequest pHttpServletRequest, HttpServletResponse rsp)
             throws ServletException, IOException {
@@ -39,26 +65,78 @@ public class PageServer extends HttpServlet {
             throws ServletException, IOException {
 
         String requestURI = req.getRequestURI();
+        if(shouldForward(req,requestURI)) {
+            if(requestURI.contains(SERVLET_URI))   {
+                String newPage = requestURI.replace(SERVLET_URI,"") ;
+                redirect(newPage,    rsp);
+
+            }
+            else {
+                serveFile(req, rsp);
+
+            }
+              return;
+        }
+
         String ret = null;
         String uniprot = req.getParameter("uniprot");
-        if(uniprot == null)  {
-            // let someone else handle it
-            Request base_request = (req instanceof Request) ? (Request)req:HttpConnection.getCurrentConnection().getRequest();
-            base_request.setHandled(false);
-         //   serveEmptyPage(rsp);
-            return;
-        }
+//        if(uniprot == null || "".equals(uniprot))  {
+//            // let someone else handle it
+//            Request base_request = (req instanceof Request) ? (Request)req:HttpConnection.getCurrentConnection().getRequest();
+//            base_request.setHandled(false);
+//            String newPage = requestURI.replace(SERVLET_URI,"") ;
+//            forward(newPage, req, rsp);
+//           //   serveEmptyPage(rsp);
+//            return;
+//        }
 
 
         String s2 = req.getParameter("fragments");
         File page = new File(PAGE_DIRECTORY,uniprot + ".html");
         String path = page.getAbsolutePath();
-        if(page.exists())
-            servePage(  rsp,   page);
-        else
+        if(page.exists()) {
+            String newPage =   PAGE_DIRECTORY + "/" + page.getName() ;
+            redirect(newPage,    rsp);
+
+        }
+          else
             serveEmptyPage(rsp);
 
     }
+
+    private boolean shouldForward(HttpServletRequest req, String requestURI) {
+        if(requestURI.contains((".html")))
+            return true;
+          String uniprot = req.getParameter("uniprot");
+        if(uniprot == null || "".equals(uniprot))  {
+             return true;
+        }
+         return false;
+    }
+
+    /**
+     *
+     * @param newPage
+     * @param aRequest
+     * @param aResponse
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void forward(
+      String newPage, HttpServletRequest aRequest, HttpServletResponse aResponse
+    ) throws ServletException, IOException {
+      RequestDispatcher dispatcher = aRequest.getRequestDispatcher(newPage);
+      dispatcher.forward(aRequest, aResponse);
+    }
+
+
+    private void redirect(  String newPage,  HttpServletResponse aResponse
+    ) throws IOException {
+      String urlWithSessionID = aResponse.encodeRedirectURL(newPage);
+      aResponse.sendRedirect( urlWithSessionID );
+    }
+
+
 
 //    private boolean uriHandled(final String requestURI, final HttpServletRequest req, final HttpServletResponse rsp) {
 //        try {
@@ -144,7 +222,7 @@ public class PageServer extends HttpServlet {
         }
         finally {
             // Gently close streams.
-            close(output);
+              close(output);
             close(input);
         }
     }
@@ -155,9 +233,7 @@ public class PageServer extends HttpServlet {
                 resource.close();
             }
             catch (IOException e) {
-                // Do your thing with the exception. Print it, log it or mail it.
-                e.printStackTrace();
-            }
+             }
         }
     }
 
@@ -219,7 +295,7 @@ public class PageServer extends HttpServlet {
     protected void service(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 
         String requestedFile = req.getRequestURI();
-        System.err.println(requestedFile);
+    //    System.err.println(requestedFile);
         super.service(req, resp);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
@@ -259,10 +335,10 @@ public class PageServer extends HttpServlet {
         handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
         server.setHandler(handlers);
 
-        ServletHolder holder = new ServletHolder(new PageServer());
+        ServletHolder holder = new ServletHolder(new PageServer( ));
      //   ServletHolder holder2 = new ServletHolder(new FileServlet());
-        Context root = new Context(server, "/", Context.SESSIONS);
-        root.addServlet(holder, "/");
+        Context root = new Context(server, SERVLET_URI, Context.SESSIONS);
+        root.addServlet(holder, "/*");
         handlers.setHandlers(new Handler[] { root,resource_handler,new DefaultHandler() });
 
 
