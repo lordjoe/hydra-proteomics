@@ -152,11 +152,12 @@ public class RemoteSession implements UserInfo {
 
     private static boolean runSubstringCount(final IHadoopController pHc) {
         //   pHc.guaranteeFilesOnHDFS(new File("E:/data/Moby"), "/user/slewis/moby", "/user/slewis/moby");
+        String temporaryDirectory = pHc.getTemporaryDirectory();
         IHadoopJob job = HadoopJob.buildJob(
                 SubstringCount.class,
                 "/user/howdah" + "/BigText.txt",     // data on hdfs
                 "/users/slewis/jobs",      // jar location
-                RemoteUtilities.getDefaultPath()             // output location - will have outputN added
+                temporaryDirectory           // output location - will have outputN added
 
         );
 
@@ -289,13 +290,13 @@ public class RemoteSession implements UserInfo {
         String jobName = mainClass.getSimpleName();
 
 
-        String outDir = RemoteUtilities.getDefaultPath() + "/NShot";
-        String jarLocation = "jobs";
+        String temporaryDirectory = pHc.getTemporaryDirectory();
+         String jarLocation = "jobs";
         IHadoopJob job = HadoopJob.buildJob(
                 mainClass,
                 "FeeFie.txt",     // data on hdfs
                 jarLocation,      // jar location
-                outDir,             // output location - will have outputN added
+                temporaryDirectory,             // output location - will have outputN added
                 args
 
         );

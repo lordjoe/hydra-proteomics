@@ -459,7 +459,7 @@ public class HadoopTest extends Configured implements Tool {
 
         String numberKeys = conf.get("NumberKeys");
         if (numberKeys != null)
-            setNumberKeys(Integer.parseInt(numberKeys));
+            setNumberKeys(Long.parseLong(numberKeys));
         String numberSplits = conf.get("NumberSplits");
         if (numberSplits != null)
             setNumberSplits(Integer.parseInt(numberSplits));
