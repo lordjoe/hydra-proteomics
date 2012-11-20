@@ -13,8 +13,9 @@ public enum ExperimentalType {
     ELECTRON_MICROSCOPY,
     SOLID_STATE_NMR,
     SOLUTION_NMR,
+    THEORETICAL_MODEL,
     SOLUTION_SCATTERING;
-    public static final ExperimentalType[] EMPTY_ARRAY = {};
+     public static final ExperimentalType[] EMPTY_ARRAY = {};
 
     public static final String[] TYPES =
             {
@@ -25,7 +26,7 @@ public enum ExperimentalType {
                     "ELECTRON  MICROSCOPY",
                     "SOLID-STATE  NMR ",
                     "SOLUTION  NMR ",
-                    "THEORETICAL_MODEL",
+                    "THEORETICAL MODEL",
                      "SOLUTION  SCATTERING"
             };
 
