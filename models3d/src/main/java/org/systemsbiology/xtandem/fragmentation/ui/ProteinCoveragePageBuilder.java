@@ -178,7 +178,7 @@ public class ProteinCoveragePageBuilder {
             body.addString("<a href=\"" + next + ".html\" >Next</a>\n");
 
         body.addString("<h1>" + pb.getTitle() + "</h1>\n");
-        body.addString("<h3>" + protein.getAnnotation() + "</h3>\n");
+        body.addString("<h3>" + protein.getAnnotationX() + "</h3>\n");
         String chainstr = "";
         if (model == null) {
             new HTMLHeaderHolder(body, "No 3D Model Found", 1);

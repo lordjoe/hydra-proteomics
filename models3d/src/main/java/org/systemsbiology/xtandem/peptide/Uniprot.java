@@ -297,7 +297,7 @@ public class Uniprot {
         if (!m_ModelDirectory.isDirectory())
             throw new IllegalStateException("Model directory " + m_ModelDirectory + " does not exist");
 
-        m_Protein = Protein.buildProtein(annotation, sequence, "");
+        m_Protein = Protein.buildProtein(annotation,annotation, sequence, "");
         buildTheoreticalPeptides(PeptideBondDigester.getDigester("Trypsin"));
         int seqLength = sequence.length();
         FastaAminoAcid[] fastaAminoAcids = FastaAminoAcid.asAminoAcids(sequence);
