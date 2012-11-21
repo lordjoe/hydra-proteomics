@@ -96,7 +96,7 @@ public class RemoteHadoopController implements IHadoopController {
         // hdfsAccessor.guaranteeDirectory(emptyOutputDirectory);
 
         // todo fix this total hack
-        if ("org.systemsbiology.hadoopgenerated.NShotTest".equals(job.getMainClass()))
+        if ("org.systemsbiology.hadoopgenerated.HadoopTest".equals(job.getMainClass()))
             hdfsAccessor.expunge(s); // which is it
         if ("org.systemsbiology.hadoopgenerated.HadoopTest".equals(job.getMainClass()))
             hdfsAccessor.expunge(s); // which is it
@@ -127,9 +127,10 @@ public class RemoteHadoopController implements IHadoopController {
                 if (Tool.class.isAssignableFrom(mainCls)) {
                     Tool realMain = (Tool) mainCls.newInstance();
                     String[] args = buildArgsFromConf(emptyOutputDirectory, conf, allArgs);
-
-                    int result = realMain.run(args);
-                    return result == 0;
+                    WrappedToolRunner tr = new WrappedToolRunner(realMain);
+                    int result = tr.runJob(conf, allArgs);
+                    ((HadoopJob) job).setJob(tr.getJob());
+                     return result == 0;
                 }
                 else {
                     throw new UnsupportedOperationException("Fix This"); // ToDo

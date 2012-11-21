@@ -268,8 +268,10 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
      */
     @Override
     public int run(final String[] args) throws Exception {
-        Configuration conf = new Configuration();
-        //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
+        Configuration conf = getConf();
+         if(conf == null)
+             conf = new Configuration();
+         //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
         return runJob(conf, args);
     }
 
