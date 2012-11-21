@@ -200,7 +200,7 @@ public class FastaLoader implements IFastaHandler {
         IPeptideDigester digester = getDigester();
         digester.setNumberMissedCleavages(NUMBER_MISSED_CLEAVAGES);
 
-        IProtein prot = Protein.getProtein(  annotation, sequence, null);
+        IProtein prot = Protein.getProtein(  annotation,  annotation, sequence, null);
         int startPosition = 0;
         String lastSequence = "";
         IPolypeptide[] pps = digester.digest(prot);

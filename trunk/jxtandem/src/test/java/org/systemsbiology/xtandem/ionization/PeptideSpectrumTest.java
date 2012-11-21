@@ -61,6 +61,7 @@ public class PeptideSpectrumTest {
     // results from   http://db.systemsbiology.net:8080/proteomicsToolkit/FragIonServlet.html
     //
     public static final String ONE_SEQUENCE = "GLSDGEWQQVLNVWGK";
+    public static final String ID = "ABCS";
 
     // numbers from
     // http://db.systemsbiology.net:8080/proteomicsToolkit/FragIonServlet.html
@@ -216,7 +217,7 @@ public class PeptideSpectrumTest {
         XTandemMain main = new XTandemMain(XTandemUtilities.getResourceStream("input3.xml"),"input2.xml");
         main.loadScoringTest();
         main.loadSpectra();
-          IProtein test = Protein.getProtein(  null, ONE_SEQUENCE, null);
+          IProtein test = Protein.getProtein(ID,  null, ONE_SEQUENCE, null);
         SequenceUtilities su = main.getSequenceUtilities();
         double wholeMass = su.getSequenceMass(test);
         double delWhole = 1814.89519 - wholeMass;
@@ -258,7 +259,7 @@ public class PeptideSpectrumTest {
         XTandemMain main = new XTandemMain(XTandemUtilities.getResourceStream("input3.xml"),"input2.xml");
         main.loadScoringTest();
         main.loadSpectra();
-        IProtein test = Protein.getProtein(  null, ONE_SEQUENCE, null);
+        IProtein test = Protein.getProtein( ID, null, ONE_SEQUENCE, null);
         SequenceUtilities su = main.getSequenceUtilities();
         double wholeMass = su.getSequenceMass(test);
         double delWhole = 1814.89519 - wholeMass;
@@ -298,7 +299,7 @@ public class PeptideSpectrumTest {
         XTandemMain main = new XTandemMain(XTandemUtilities.getResourceStream("input3.xml"),"input2.xml");
         main.loadScoringTest();
         main.loadSpectra();
-        IProtein test = Protein.getProtein(  null, ONE_SEQUENCE, null);
+        IProtein test = Protein.getProtein( ID, null, ONE_SEQUENCE, null);
         SequenceUtilities su = main.getSequenceUtilities();
         double wholeMass = su.getSequenceMass(test);
         double delWhole = 1814.89519 - wholeMass;
@@ -338,7 +339,7 @@ public class PeptideSpectrumTest {
         XTandemMain main = new XTandemMain(XTandemUtilities.getResourceStream("input3.xml"),"input2.xml");
         main.loadScoringTest();
         main.loadSpectra();
-         IProtein test = Protein.getProtein(  null, ONE_SEQUENCE, null);
+         IProtein test = Protein.getProtein(ID,  null, ONE_SEQUENCE, null);
         SequenceUtilities su = main.getSequenceUtilities();
         double wholeMass = su.getSequenceMass(test);
         double delWhole = 1814.89519 - wholeMass;
@@ -378,7 +379,7 @@ public class PeptideSpectrumTest {
         XTandemMain main = new XTandemMain(XTandemUtilities.getResourceStream("input3.xml"),"input2.xml");
         main.loadScoringTest();
         main.loadSpectra();
-         IProtein test = Protein.getProtein(  null, ONE_SEQUENCE, null);
+         IProtein test = Protein.getProtein(ID,  null, ONE_SEQUENCE, null);
         SequenceUtilities su = main.getSequenceUtilities();
         double wholeMass = su.getSequenceMass(test);
         double delWhole = 1814.89519 - wholeMass;
@@ -418,7 +419,7 @@ public class PeptideSpectrumTest {
     @Test
     public void constructedIonizerTest() {
         IPeptideDigester digester = PeptideBondDigester.getDigester("[KR]|{P}");
-        IProtein test = Protein.getProtein(  null, SEQUENCE1, null);
+        IProtein test = Protein.getProtein( ID, null, SEQUENCE1, null);
         IPolypeptide[] polypeptides = digester.digest(test);
         XTandemMain main = new XTandemMain(XTandemUtilities.getResourceStream("input3.xml"),"input2.xml");
         main.loadScoringTest();
@@ -510,7 +511,7 @@ public class PeptideSpectrumTest {
         XTandemMain main = new XTandemMain(XTandemUtilities.getResourceStream("input3.xml"),"input2.xml");
         main.loadScoringTest();
         main.loadSpectra();
-        IProtein test = Protein.getProtein(  null, "VPETTRINYVGEPTGWVSGK", null);
+        IProtein test = Protein.getProtein( ID, null, "VPETTRINYVGEPTGWVSGK", null);
         SequenceUtilities su = main.getSequenceUtilities();
         double wholeMass = su.getSequenceMass(test);
         double delWhole = 1814.89519 - wholeMass;

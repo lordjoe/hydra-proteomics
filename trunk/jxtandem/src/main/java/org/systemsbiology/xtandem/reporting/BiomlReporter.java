@@ -350,7 +350,7 @@ public class BiomlReporter {
         double expected = scan.getExpectedValue();
         out.print("expect=\"" + XTandemUtilities.formatScientific(expected, 1) + "\" ");
         if (parentProtein != null)
-            out.print("label=\"" + truncateString(parentProtein.getAnnotation()) + "\" ");
+            out.print("label=\"" + truncateString(parentProtein.getId()) + "\" ");
         out.print("type=\"model\" ");
         final double factor = scan.getNormalizationFactor();
         final IMeasuredSpectrum spectrum = scan.getNormalizedRawScan();
@@ -371,7 +371,7 @@ public class BiomlReporter {
         out.print("id=\"" + raw.getId() + ".1" + "\" ");
         if (parentProtein != null) {
       //      out.print("uid=\"" + parentProtein.getUUid() + "\" ");
-            out.print("label=\"" + truncateString(parentProtein.getAnnotation()) + "\" ");
+            out.print("label=\"" + truncateString(parentProtein.getId()) + "\" ");
         }
         out.print("sumI=\"" + XTandemUtilities.formatDouble(Math.log10(sumIntensity), 2) + "\" ");
         out.println("  >");

@@ -138,7 +138,7 @@ public class FastaHadoopLoader {
         if (containsInterestingSequence(sequence))
             XTandemUtilities.breakHere();
 
-        IProtein prot = Protein.getProtein(annotation, sequence, null);
+        IProtein prot = Protein.getProtein( annotation, annotation, sequence, null);
         IPolypeptide[] pps = digester.digest(prot);
         PeptideModification[] modifications1 = getModifications();
         for (int i = 0; i < pps.length; i++) {
