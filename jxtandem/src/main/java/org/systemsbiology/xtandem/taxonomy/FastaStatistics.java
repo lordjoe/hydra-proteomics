@@ -70,7 +70,7 @@ public class FastaStatistics implements IFastaHandler {
     public void handleProtein(final String annotation, final String sequence) {
         m_ProteinLengthStatistics.addItem(sequence.length());
         IPeptideDigester digester = getDigester();
-        IProtein prot = Protein.getProtein(annotation, sequence, null);
+        IProtein prot = Protein.getProtein( annotation, annotation, sequence, null);
         IPolypeptide[] pps = digester.digest(prot);
         Arrays.sort(pps);
         for (int i = 0; i < pps.length; i++) {

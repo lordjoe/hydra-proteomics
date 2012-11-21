@@ -80,8 +80,8 @@ public class Protein extends Polypeptide implements IProtein {
 //     }
 //
 //
-    public static Protein getProtein(String pAnnotation, String pSequence, String url) {
-        return buildProtein(pAnnotation, pSequence, url);
+    public static Protein getProtein(String id,String pAnnotation, String pSequence, String url) {
+        return buildProtein(id,pAnnotation, pSequence, url);
 //        synchronized (gKnownProteins)   {
 //            Protein ret = gKnownProteins.get(uuid);
 //            if(ret == null)     {
@@ -108,11 +108,15 @@ public class Protein extends Polypeptide implements IProtein {
      * @param url
      * @return
      */
-    public static Protein buildProtein(String pAnnotation, String pSequence, String url) {
-        if (pAnnotation == null)
-            pAnnotation = Integer.toString(gLastResortProteinId++);
+    public static Protein buildProtein(String id,String pAnnotation, String pSequence, String url) {
+        if(id.contains(" "))   {
+            id = annotationToId(id) ;
+        }
+
+        if (id == null)
+            id = Integer.toString(gLastResortProteinId++);
         //     synchronized (gKnownProteins)   {
-        Protein ret = new Protein(pAnnotation);
+        Protein ret = new Protein(id,pAnnotation);
         ret.setSequence(pSequence);
         //       ret.setAnnotation(pAnnotation);
         ret.setURL(url);
@@ -122,8 +126,40 @@ public class Protein extends Polypeptide implements IProtein {
 
     }
 
+    public static String annotationToId(  String id) {
+        if(id.startsWith(">"))
+            id = id.substring(1);
+        int spIndex = id.indexOf(" ");   // better ne > 0
+        id = id.substring(0,spIndex);
+        StringBuilder sb = new StringBuilder();
+        char startPunct = 0;
+        for(int i = 0; i < id.length(); i++)   {
+            char c = id.charAt(i);
+            if(Character.isAlphabetic(c)) {
+                sb.append((char)Character.toUpperCase(c)) ;
+                break;
+            }
+            if(Character.isDigit(c)) {
+                sb.append(c) ;
+                break;
+            }
+            if(startPunct == 0 ) {
+                startPunct = c;
+                sb.setLength(0);
+                break;
+            }
+            if(startPunct == c  && sb.length() > 0) {
+                return sb.toString(); // case |ABCD|
+            }
+
+        }
+
+        return sb.toString();
+    }
+
     //   private final ITaxonomy m_Taxonomy;
-    private final String m_Annotation;
+    private final String m_Id;
+    private final String m_AnnotationX;
     private String m_URL;
     private double m_ExpectationFactor = 1;
 
@@ -133,9 +169,10 @@ public class Protein extends Polypeptide implements IProtein {
 //
 //    }
 
-    private Protein(String uuid) {
+    private Protein(String uuid,String annotation) {
         super();
-        m_Annotation = uuid;
+        m_Id = uuid;
+        m_AnnotationX = annotation;
     }
 
 //    private Protein( int uuid,String pAnnotation, String pSequence,String url)
@@ -162,12 +199,12 @@ public class Protein extends Polypeptide implements IProtein {
      */
     @Override
     public String getSequenceId(int start, int length) {
-        return getAnnotation() + KEY_SEPARATOR + start + ":" + length;
+        return getId() + KEY_SEPARATOR + start + ":" + length;
     }
 
     @Override
     public String getId() {
-        return getAnnotation();
+        return m_Id;
     }
 
 
@@ -216,7 +253,7 @@ public class Protein extends Polypeptide implements IProtein {
 
     @Override
     public String getAnnotation() {
-        return m_Annotation;
+        return m_AnnotationX;
     }
 
     @Override

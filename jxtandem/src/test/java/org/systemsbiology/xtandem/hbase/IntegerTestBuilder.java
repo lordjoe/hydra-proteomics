@@ -135,7 +135,7 @@ public class IntegerTestBuilder {
         public void handleProtein(final String annotation, final String sequence) {
             IPeptideDigester digester = m_Main.getDigester();
             Scorer runner = m_Main.getScoreRunner();
-            IProtein test = Protein.buildProtein(  annotation, sequence, null);
+            IProtein test = Protein.buildProtein("1234",  annotation, sequence, null);
             final IPolypeptide[] pps = digester.digest(test);
             runner.clearSpectra();
             runner.generateTheoreticalSpectra(pps);

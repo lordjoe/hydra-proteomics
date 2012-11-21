@@ -47,6 +47,7 @@ public class DigesterTest {
 
     };
 
+    public static final String ID = "S000002813 ";
     public static final String ANNOTATION = " >REV1_YDR405W MRP20 SGDID:S000002813, Chr IV from 1277637-1278428, Verified ORF, \\\"Mitochondrial ribosomal protein of the large subunit\\ ";
     public static final String PROTEIN_SEQUENCE_FOR_SEMITRYPTIC =
             "TINMAKNFRTTQLNMRFRIQPEKKTMEPWIFPEEMEITMRPEMNDPTTSD";
@@ -57,7 +58,7 @@ public class DigesterTest {
             ;
 
     public static final Protein PROTEIN1 =
-            Protein.buildProtein(  ANNOTATION, PROTEIN_SEQUENCE_FOR_SEMITRYPTIC, "foo");
+            Protein.buildProtein(ID,  ANNOTATION, PROTEIN_SEQUENCE_FOR_SEMITRYPTIC, "foo");
 
     public static final String SEQUENCE2 = "MQKPLAWGSKTALTELYGQPMAELWMGAHPKSSSRVQNAA" +
             "GDIVSLRDVIESDKSTLLGEAVAKRFGE" +
@@ -68,7 +69,7 @@ public class DigesterTest {
 
 
     public static final Protein PROTEIN2 =
-            Protein.buildProtein( ANNOTATION, PROTEIN_FOR_SEMI2, "foo");
+            Protein.buildProtein(ID, ANNOTATION, PROTEIN_FOR_SEMI2, "foo");
 
     public static final String[] FRAGMENTS2 = {
             "MQKPLAWGSK",
@@ -335,7 +336,7 @@ public class DigesterTest {
     @Test
     public void constructedDigesterTest() {
         IPeptideDigester digester = PeptideBondDigester.getDigester("[KR]|{P}");
-        IProtein test = Protein.getProtein(  null, SEQUENCE1, null);
+        IProtein test = Protein.getProtein(ID,  null, SEQUENCE1, null);
         IPolypeptide[] polypeptides = digester.digest(test);
         polypeptides = PeptideBondDigester.filterIgnoredPeptides(polypeptides);
 
@@ -360,7 +361,7 @@ public class DigesterTest {
     @Test
     public void constructedDigesterTestWithExclude() {
         IPeptideDigester digester = PeptideBondDigester.getDigester("[KR]|{P}");
-        IProtein test = Protein.getProtein( null, SEQUENCE2, null);
+        IProtein test = Protein.getProtein(ID, null, SEQUENCE2, null);
         IPolypeptide[] polypeptides = digester.digest(test);
 
 //        for (int i = 0; i < polypeptides.length; i++) {
@@ -382,7 +383,7 @@ public class DigesterTest {
     @Test
     public void simpleDigesterTest() {
         IPeptideDigester digester = PeptideBondDigester.getDigester("Trypsin");
-        IProtein test = Protein.getProtein(  null, SEQUENCE1, null);
+        IProtein test = Protein.getProtein( ID, null, SEQUENCE1, null);
         int missed = digester.getNumberMissedCleavages();
 
         IPolypeptide[] polypeptides = digester.digest(test);
@@ -414,7 +415,7 @@ public class DigesterTest {
     @Test
     public void digesterTestWithExclude() {
         IPeptideDigester digester = PeptideBondDigester.getDigester("Trypsin");
-        IProtein test = Protein.getProtein(  null, SEQUENCE2, null);
+        IProtein test = Protein.getProtein( ID, null, SEQUENCE2, null);
         IPolypeptide[] polypeptides = digester.digest(test);
         String[] sequences = new String[polypeptides.length];
         for (int i = 0; i < polypeptides.length; i++) {
@@ -442,7 +443,7 @@ public class DigesterTest {
     public void constructedDigesterTestWithMixedCleavages() {
         PeptideBondDigester digester = (PeptideBondDigester) PeptideBondDigester.getDigester("[KR]|{P}");
         digester.setNumberMissedCleavages(2);
-        IProtein test = Protein.getProtein(  null, PROTEIN_FOR_TWO_MISSED, null);
+        IProtein test = Protein.getProtein( ID, null, PROTEIN_FOR_TWO_MISSED, null);
         IPolypeptide[] polypeptides = digester.digest(test);
 
 
@@ -520,7 +521,7 @@ public class DigesterTest {
 
 
     public static final Protein PROTEIN3 =
-            Protein.buildProtein(  ANNOTATION, SEQUENCE3, "foo");
+            Protein.buildProtein( ID, ANNOTATION, SEQUENCE3, "foo");
 
     public static final String[] MISSED_CLEAVAGE_3 = {
             // tryptic

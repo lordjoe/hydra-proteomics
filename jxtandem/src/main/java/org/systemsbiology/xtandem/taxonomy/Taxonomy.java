@@ -397,7 +397,7 @@ public class Taxonomy implements ITaxonomy {
     protected void buildAndAddProtein(String annotation, StringBuilder sb, String url) {
         if (sb.length() == 0)
             return;
-        addProtein(Protein.getProtein(  annotation, sb.toString(), url));
+        addProtein(Protein.getProtein(annotation,  annotation, sb.toString(), url));
         sb.setLength(0);  // clear sequence
     }
 

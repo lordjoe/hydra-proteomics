@@ -88,7 +88,7 @@ public class FragmentHoldingFastaHandler implements IFastaHandler {
 
 
     public void addProtein(IProtein added) {
-        m_Protein.put(added.getAnnotation(), added);
+        m_Protein.put(added.getId(), added);
     }
 
 
@@ -135,7 +135,7 @@ public class FragmentHoldingFastaHandler implements IFastaHandler {
         if (m_Protein.containsKey(annotation))
             return;
    //     IProtein prot = Protein.getProtein(Protein.getNextId(), annotation, sequence, null);
-        IProtein prot = Protein.getProtein(  annotation, sequence, null);
+        IProtein prot = Protein.getProtein( annotation,annotation, sequence, null);
          m_Protein.put(annotation, prot);
 
 
