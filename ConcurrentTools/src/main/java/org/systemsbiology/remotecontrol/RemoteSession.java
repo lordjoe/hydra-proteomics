@@ -302,9 +302,9 @@ public class RemoteSession implements UserInfo {
         );
 
         // make a small jar file
-        File jarFile = HadoopDeployer.makeClassOnlyHadoopJar(jarLocation + "/HadoopTest.jar", "org.systemsbiology.hadoopgenerated" );
-        String jarString = jarFile.toString().replace("\\", "/");
-        job.setJarFile(jarString);
+  //      File jarFile = HadoopDeployer.makeClassOnlyHadoopJar(jarLocation + "/HadoopTest.jar", "org.systemsbiology.hadoopgenerated" );
+   //     String jarString = jarFile.toString().replace("\\", "/");
+  //      job.setJarFile(jarString);
 
 
         pHc.runJob(job);

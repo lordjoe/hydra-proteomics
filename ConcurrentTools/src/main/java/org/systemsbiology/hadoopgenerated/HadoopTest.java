@@ -453,7 +453,7 @@ public class HadoopTest extends Configured implements Tool {
      */
     @Override
     public int run(final String[] args) throws Exception {
-        Configuration conf = new Configuration();
+        Configuration conf =  getConf();
         //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 
@@ -500,13 +500,47 @@ public class HadoopTest extends Configured implements Tool {
         Path outputDir = new Path(athString);
 
 
-        FileOutputFormat.setOutputPath(job, outputDir);
+
+        FileSystem fileSystem = outputDir.getFileSystem(conf);
+         expunge(outputDir,fileSystem);    // make sure thia does not exist
+         FileOutputFormat.setOutputPath(job, outputDir);
 
 
         boolean ans = job.waitForCompletion(true);
         int ret = ans ? 0 : 1;
         return ret;
     }
+
+    /**
+      * kill a directory and all contents
+      * @param src
+      * @param fs
+      * @return
+      */
+         public static  boolean expunge(Path src,FileSystem fs) {
+
+
+           try {
+               if (!fs.exists(src))
+                   return true;
+               // break these out
+               if (fs.getFileStatus(src).isDir()) {
+                   boolean doneOK = fs.delete(src, true);
+                   doneOK = !fs.exists(src);
+                   return doneOK;
+               }
+               if (fs.isFile(src)) {
+                   boolean doneOK = fs.delete(src, false);
+                   return doneOK;
+               }
+               throw new IllegalStateException("should be file of directory if it exists");
+           }
+           catch (IOException e) {
+               throw new RuntimeException(e);
+           }
+
+       }
+
 
     /**
      * @param args These should be

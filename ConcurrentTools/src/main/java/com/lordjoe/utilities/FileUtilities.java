@@ -916,6 +916,60 @@ public abstract class FileUtilities {
         return (getAllFilesWithFilter(DirectoryName, TheFilter));
     }
 
+    /**
+     * read up to MaxLines fron the file
+     * @param f  existing readable text file
+     * @param maxLines   maximim lines to read
+     * @return !null array of line contents
+     * @throws RuntimeException on error
+     */
+    public static String[] readNLines(File f,int maxLines)  throws  RuntimeException {
+        try {
+            return readNLines(new FileInputStream(f),maxLines);
+        }
+        catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
+
+    /**
+     * read up to MaxLines fron the file
+     * @param f  open Stream
+     * @param maxLines   maximim lines to read
+     * @return !null array of line contents
+     * @throws RuntimeException on error
+     */
+    public static String[] readNLines(InputStream f,int maxLines)     {
+        try {
+            LineNumberReader rdr = new LineNumberReader(new InputStreamReader(f));
+            List<String> holder = new ArrayList<String>();
+            String line = rdr.readLine();
+            int nLines = 0;
+            while(line != null) {
+                holder.add(line);
+                if(++nLines > maxLines)
+                    break;
+                line = rdr.readLine();
+            }
+            String[] ret = new String[holder.size()];
+            holder.toArray(ret);
+            return ret;
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+        finally {
+            try {
+                f.close();
+            }
+            catch (IOException e) {
+               // ignore issues
+
+            }
+        }
+    }
 
     /**
      * return the last modified matching file in the user directory

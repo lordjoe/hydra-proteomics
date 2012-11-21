@@ -1,12 +1,13 @@
 package org.systemsbiology.xtandem.fragmentation.server;
 
 import com.lordjoe.utilities.*;
-import org.apache.jasper.servlet.*;
 import org.mortbay.jetty.*;
 import org.mortbay.jetty.handler.*;
 import org.mortbay.jetty.nio.*;
 import org.mortbay.jetty.servlet.*;
-import org.mortbay.resource.*;
+import org.systemsbiology.xtandem.fragmentation.*;
+import org.systemsbiology.xtandem.fragmentation.ui.*;
+import org.systemsbiology.xtandem.peptide.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -17,8 +18,8 @@ import java.util.*;
 /**
  * com.lordjoe.server.RestianServer
  * code illustrating the use of a sample Jetty stand alone server
- *      call  http://localhost:8080/rest?i1=3&i2=5
- *      returns "8"
+ * call  http://localhost:8080/rest?i1=3&i2=5
+ * returns "8"
  *
  * @author Steve Lewis
  * @date Nov 28, 2007
@@ -54,6 +55,8 @@ public class PageServer extends HttpServlet {
     private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
     public static final File PAGE_DIRECTORY = new File("pages");
 
+     private boolean m_PagesLoaded;
+
 
     protected void doGet(HttpServletRequest pHttpServletRequest, HttpServletResponse rsp)
             throws ServletException, IOException {
@@ -65,17 +68,17 @@ public class PageServer extends HttpServlet {
             throws ServletException, IOException {
 
         String requestURI = req.getRequestURI();
-        if(shouldForward(req,requestURI)) {
-            if(requestURI.contains(SERVLET_URI))   {
-                String newPage = requestURI.replace(SERVLET_URI,"") ;
-                redirect(newPage,    rsp);
+        if (shouldForward(req, requestURI)) {
+            if (requestURI.contains(SERVLET_URI)) {
+                String newPage = requestURI.replace(SERVLET_URI, "");
+                redirect(newPage, rsp);
 
             }
             else {
                 serveFile(req, rsp);
 
             }
-              return;
+            return;
         }
 
         String ret = null;
@@ -91,31 +94,133 @@ public class PageServer extends HttpServlet {
 //        }
 
 
-        String s2 = req.getParameter("fragments");
-        File page = new File(PAGE_DIRECTORY,uniprot + ".html");
+        String fragments = req.getParameter("fragments");
+        File page = new File(PAGE_DIRECTORY, uniprot + ".html");
         String path = page.getAbsolutePath();
-        if(page.exists()) {
-            String newPage =   PAGE_DIRECTORY + "/" + page.getName() ;
-            redirect(newPage,    rsp);
+        if (page.exists()) {
+            String newPage = PAGE_DIRECTORY + "/" + page.getName();
+            redirect(newPage, rsp);
 
         }
-          else
-            serveEmptyPage(rsp);
+        else {
+            buildPage(uniprot, fragments, rsp);
+        }
 
+    }
+
+    private void buildPage(String uiprotId, String fragments, HttpServletResponse rsp) {
+        try {
+            String sequence = Uniprot.retrieveSequence(uiprotId);
+        }
+        catch (Exception e) {
+            buildBadUniprotPage(uiprotId, fragments, rsp);
+
+        }
+    }
+
+    public static final FilenameFilter HTML_FILTER = new FileUtilities.EndsWithFilter(".html");
+
+    protected String buildIndexPage(File pageDir) {
+        File[] files = pageDir.listFiles(HTML_FILTER);
+      //  throw new UnsupportedOperationException("Fix This"); // ToDo
+//        ProteinCollection proteins = getProteins();
+//        HTMLPageBuillder pb = new HTMLPageBuillder("Protein Coverage ");
+//        HTMLBodyBuillder body = pb.getBody();
+//
+//        List<ProteinFragmentationDescription> idWith3dModel = new ArrayList<ProteinFragmentationDescription>();
+//        List<ProteinFragmentationDescription> idWithout3dModel = new ArrayList<ProteinFragmentationDescription>();
+//        List<String> pageWith3dModel = new ArrayList<String>();
+//        List<String> pageWithout3dModel = new ArrayList<String>();
+//        List<ProteinFragmentationDescription> pfdWith3dModel = new ArrayList<ProteinFragmentationDescription>();
+//
+//        for (int i = 0; i < ids.length; i++) {
+//            String id = ids[i];
+//            String page = pages[i];
+//            ProteinFragmentationDescription pd = proteins.getProteinFragmentationDescription(id);
+//            if (pd == null)
+//                throw new UnsupportedOperationException("Fix This"); // ToDo Is this expected
+//            if (pd.getModel() != null) {
+//                idWith3dModel.add(pd);
+//                pageWith3dModel.add(page);
+//            }
+//            else {
+//                idWithout3dModel.add(pd);
+//                pageWithout3dModel.add(page);
+//
+//            }
+//        }
+//        String[] empty = {};
+//        ProteinFragmentationDescription[] emptyPd = {};
+//        if (!idWith3dModel.isEmpty()) {
+//            body.addString("<h1>Proteins With 3D Models</h1>\n");
+//            body.addString("<h3>UniprotID Coverage% Peptides Modeled/Total Peptides  [Number Chains]</h3>\n");
+//            new ReferenceTableBuillder(body, idWith3dModel.toArray(emptyPd), pageWith3dModel.toArray(empty), INDEX_ROW_LENGTH);
+//        }
+//        if (!idWithout3dModel.isEmpty()) {
+//            body.addString("<h1>Proteins Without 3D Models</h1>");
+//            new ReferenceTableBuillder(body, idWithout3dModel.toArray(emptyPd), pageWithout3dModel.toArray(empty), INDEX_ROW_LENGTH);
+//        }
+//        String page = pb.buildPage();
+//        String fileName = HOME_PAGE;
+//        FileUtilities.writeFile(fileName, page);
+//        Collections.sort(pfdWith3dModel, ProteinFragmentationDescription.INTERESTING_COMPARATOR);
+//        for (Iterator<ProteinFragmentationDescription> iterator = pfdWith3dModel.iterator(); iterator.hasNext(); ) {
+//            ProteinFragmentationDescription next = iterator.next();
+//            System.out.println(next.getUniprotId() + " " + String.format("%5.3f", next.getFractionalCoverage()) + " " +
+//                    next.getStatistics().getPartitionStatistics(2));
+//        }
+//        double[] averagecoverage = getAverageCoverage();
+//        for (int i = 0; i < averagecoverage.length; i++) {
+//            double v = averagecoverage[i];
+//            System.out.print(Integer.toString(i) + " " + String.format("%5.3f", v) + ",");
+//        }
+//        System.out.println();
+//        return fileName;
+        throw new UnsupportedOperationException("Fix This"); // ToDo
+    }
+
+
+    private void buildBadUniprotPage(String uiprotId, String fragments, HttpServletResponse rsp) {
+        throw new UnsupportedOperationException("Fix This"); // ToDo
+    }
+
+
+    public void postWaitPage(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        PrintWriter out = res.getWriter();
+
+        //     res.setHeader("Expires","Wed, 07 Aug 2012 1:00:00 GMT");
+        res.setContentType("text/html");
+
+        out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n");
+        out.println("<html>");
+
+        out.println("<head>");
+        out.println("  <title>Wait Page</title>");
+        out.println("</head>");
+
+        out.println("<body>");
+        out.println("  <h1>running, please wait...</h1>");
+        out.println("  <script language=\"JavaScript\">");
+        out.println("  <!--");
+        out.println("  location.replace(\"" + SERVLET_URI + "\" + location.search);");
+        out.println("  //-->");
+        out.println("  </script>");
+        out.println("</body>");
+
+        out.println("</html>");
     }
 
     private boolean shouldForward(HttpServletRequest req, String requestURI) {
-        if(requestURI.contains((".html")))
+        if (requestURI.contains((".html")))
             return true;
-          String uniprot = req.getParameter("uniprot");
-        if(uniprot == null || "".equals(uniprot))  {
-             return true;
+        String uniprot = req.getParameter("uniprot");
+        if (uniprot == null || "".equals(uniprot)) {
+            return true;
         }
-         return false;
+        return false;
     }
 
     /**
-     *
      * @param newPage
      * @param aRequest
      * @param aResponse
@@ -123,19 +228,18 @@ public class PageServer extends HttpServlet {
      * @throws IOException
      */
     private void forward(
-      String newPage, HttpServletRequest aRequest, HttpServletResponse aResponse
+            String newPage, HttpServletRequest aRequest, HttpServletResponse aResponse
     ) throws ServletException, IOException {
-      RequestDispatcher dispatcher = aRequest.getRequestDispatcher(newPage);
-      dispatcher.forward(aRequest, aResponse);
+        RequestDispatcher dispatcher = aRequest.getRequestDispatcher(newPage);
+        dispatcher.forward(aRequest, aResponse);
     }
 
 
-    private void redirect(  String newPage,  HttpServletResponse aResponse
+    private void redirect(String newPage, HttpServletResponse aResponse
     ) throws IOException {
-      String urlWithSessionID = aResponse.encodeRedirectURL(newPage);
-      aResponse.sendRedirect( urlWithSessionID );
+        String urlWithSessionID = aResponse.encodeRedirectURL(newPage);
+        aResponse.sendRedirect(urlWithSessionID);
     }
-
 
 
 //    private boolean uriHandled(final String requestURI, final HttpServletRequest req, final HttpServletResponse rsp) {
@@ -222,7 +326,7 @@ public class PageServer extends HttpServlet {
         }
         finally {
             // Gently close streams.
-              close(output);
+            close(output);
             close(input);
         }
     }
@@ -233,7 +337,7 @@ public class PageServer extends HttpServlet {
                 resource.close();
             }
             catch (IOException e) {
-             }
+            }
         }
     }
 
@@ -241,49 +345,47 @@ public class PageServer extends HttpServlet {
     public static final int BUFSIZE = 4096;
 
     /**
-       *  Sends a file to the ServletResponse output stream.  Typically
-       *  you want the browser to receive a different name than the
-       *  name the file has been saved in your local database, since
-       *  your local names need to be unique.
-       *
-       *  @param req The request
-       *  @param resp The response
-       *  @param filename The name of the file you want to download.
-       *  @param original_filename The name the browser should receive.
-       */
-      private void doDownload( HttpServletRequest req, HttpServletResponse resp,
-                               String filename, String original_filename )
-          throws IOException
-      {
-          File                f        = new File(filename);
-          int                 length   = 0;
-          ServletOutputStream op       = resp.getOutputStream();
-          ServletContext      context  = getServletConfig().getServletContext();
-          String              mimetype = context.getMimeType( filename );
+     * Sends a file to the ServletResponse output stream.  Typically
+     * you want the browser to receive a different name than the
+     * name the file has been saved in your local database, since
+     * your local names need to be unique.
+     *
+     * @param req               The request
+     * @param resp              The response
+     * @param filename          The name of the file you want to download.
+     * @param original_filename The name the browser should receive.
+     */
+    private void doDownload(HttpServletRequest req, HttpServletResponse resp,
+                            String filename, String original_filename)
+            throws IOException {
+        File f = new File(filename);
+        int length = 0;
+        ServletOutputStream op = resp.getOutputStream();
+        ServletContext context = getServletConfig().getServletContext();
+        String mimetype = context.getMimeType(filename);
 
-          //
-          //  Set the response and go!
-          //
-          //
-          resp.setContentType( (mimetype != null) ? mimetype : "application/octet-stream" );
-          resp.setContentLength( (int)f.length() );
-          resp.setHeader( "Content-Disposition", "attachment; filename=\"" + original_filename + "\"" );
+        //
+        //  Set the response and go!
+        //
+        //
+        resp.setContentType((mimetype != null) ? mimetype : "application/octet-stream");
+        resp.setContentLength((int) f.length());
+        resp.setHeader("Content-Disposition", "attachment; filename=\"" + original_filename + "\"");
 
-          //
-          //  Stream to the requester.
-          //
-          byte[] bbuf = new byte[BUFSIZE];
-          DataInputStream in = new DataInputStream(new FileInputStream(f));
+        //
+        //  Stream to the requester.
+        //
+        byte[] bbuf = new byte[BUFSIZE];
+        DataInputStream in = new DataInputStream(new FileInputStream(f));
 
-          while ((in != null) && ((length = in.read(bbuf)) != -1))
-          {
-              op.write(bbuf,0,length);
-          }
+        while ((in != null) && ((length = in.read(bbuf)) != -1)) {
+            op.write(bbuf, 0, length);
+        }
 
-          in.close();
-          op.flush();
-          op.close();
-      }
+        in.close();
+        op.flush();
+        op.close();
+    }
 
     @Override
     public void service(final ServletRequest req, final ServletResponse res) throws ServletException, IOException {
@@ -295,25 +397,24 @@ public class PageServer extends HttpServlet {
     protected void service(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 
         String requestedFile = req.getRequestURI();
-    //    System.err.println(requestedFile);
+        //    System.err.println(requestedFile);
         super.service(req, resp);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
     public void servePage(HttpServletResponse rsp, File page) throws IOException {
         ServletOutputStream os = rsp.getOutputStream();
         FileInputStream is = new FileInputStream(page);
-        FileUtilities.copyStream(is,os);
+        FileUtilities.copyStream(is, os);
 
     }
 
-    public void serveEmptyPage(HttpServletResponse rsp ) throws IOException {
+    public void serveEmptyPage(HttpServletResponse rsp) throws IOException {
         File page = new File("Index.html");
-         ServletOutputStream os = rsp.getOutputStream();
-         FileInputStream is = new FileInputStream(page);
-         FileUtilities.copyStream(is,os);
+        ServletOutputStream os = rsp.getOutputStream();
+        FileInputStream is = new FileInputStream(page);
+        FileUtilities.copyStream(is, os);
 
-     }
-
+    }
 
 
     public static final int PORT = 8080;
@@ -327,41 +428,42 @@ public class PageServer extends HttpServlet {
         server.addConnector(connector);
 
         ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setWelcomeFiles(new String[]{ "index.html" });
+        resource_handler.setWelcomeFiles(new String[]{"index.html"});
 
         resource_handler.setResourceBase(".");
 
         HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
+        handlers.setHandlers(new Handler[]{resource_handler, new DefaultHandler()});
         server.setHandler(handlers);
 
-        ServletHolder holder = new ServletHolder(new PageServer( ));
-     //   ServletHolder holder2 = new ServletHolder(new FileServlet());
+        ServletHolder holder = new ServletHolder(new PageServer());
+        //   ServletHolder holder2 = new ServletHolder(new FileServlet());
         Context root = new Context(server, SERVLET_URI, Context.SESSIONS);
         root.addServlet(holder, "/*");
-        handlers.setHandlers(new Handler[] { root,resource_handler,new DefaultHandler() });
+        handlers.setHandlers(new Handler[]{root, resource_handler, new DefaultHandler()});
 
 
- //        HandlerList handlers = new HandlerList();
+        //        HandlerList handlers = new HandlerList();
 //             handlers.setHandlers(new Handler[]{ root, new DefaultHandler()});
 //
 //        server.setHandler(handlers);
 
 //        root.addHandler(resource_handler);
-   //     root.addServlet(holder, "/");
-         server.start();
+        //     root.addServlet(holder, "/");
+        server.start();
         return server;
     }
 
     /**
      * start in the directory above the pages directory
      * The JmolAppletSigned jars should be in a directory called CodeBase inside that directory
+     *
      * @param args
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
         Server server = launchServer();
         server.join();
-        while(server.isRunning());
+        while (server.isRunning()) ;
     }
 }

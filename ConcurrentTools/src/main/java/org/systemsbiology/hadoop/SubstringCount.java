@@ -295,7 +295,10 @@ public class SubstringCount extends Configured implements Tool , IJobRunner {
      */
     @Override
     public int run(final String[] args) throws Exception {
-        Configuration conf = new Configuration();
+        Configuration conf = getConf();
+         if(conf == null)
+             conf = new Configuration();
+
         return runJob(conf, args);
     }
 
