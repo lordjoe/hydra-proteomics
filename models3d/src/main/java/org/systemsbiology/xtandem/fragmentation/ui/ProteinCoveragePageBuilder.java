@@ -135,12 +135,16 @@ public class ProteinCoveragePageBuilder {
             return null; // ToDo Is this expected
 
         int[] coverageLevels = pfd.getStatistics().getCoverageStatistics();
-        for (int i = 0; i < Math.min(MAX_COVERAGE, coverageLevels.length); i++) {
-            int coverageLevel = coverageLevels[i];
-            m_TotalCoverage[i] += coverageLevel;
-        }
-        PDBObject model = null;
-        File model3d = proteins.getPDBModelFile(id);
+         for (int i = 0; i < Math.min(MAX_COVERAGE, coverageLevels.length); i++) {
+             int coverageLevel = coverageLevels[i];
+             m_TotalCoverage[i] += coverageLevel;
+         }
+        return buildFragmentDescriptionPage(id, prev, next, pfd);
+    }
+
+    public static String buildFragmentDescriptionPage(final String id, final String prev, final String next,   final ProteinFragmentationDescription pfd) {
+         PDBObject model = null;
+        File model3d = null; // proteins.getPDBModelFile(id);
         if (model3d != null) {
             try {
                 model = new PDBObject(model3d, pfd.getProtein());
@@ -178,7 +182,7 @@ public class ProteinCoveragePageBuilder {
             body.addString("<a href=\"" + next + ".html\" >Next</a>\n");
 
         body.addString("<h1>" + pb.getTitle() + "</h1>\n");
-        body.addString("<h3>" + protein.getAnnotationX() + "</h3>\n");
+        body.addString("<h3>" + protein.getAnnotation() + "</h3>\n");
         String chainstr = "";
         if (model == null) {
             new HTMLHeaderHolder(body, "No 3D Model Found", 1);
@@ -211,7 +215,7 @@ public class ProteinCoveragePageBuilder {
         }
 
         new CoverageColorsLabel(body);
-    //    new HelixandTurnLabel(body);
+        //    new HelixandTurnLabel(body);
         if (model != null) {
             new SingleTagBuillder(body, "p");
             new SecondaryStructureLabel(body);

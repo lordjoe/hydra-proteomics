@@ -5,6 +5,8 @@ import org.mortbay.jetty.*;
 import org.mortbay.jetty.handler.*;
 import org.mortbay.jetty.nio.*;
 import org.mortbay.jetty.servlet.*;
+import org.proteios.core.*;
+import org.systemsbiology.uniprot.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 import org.systemsbiology.xtandem.fragmentation.ui.*;
 import org.systemsbiology.xtandem.peptide.*;
@@ -55,8 +57,15 @@ public class PageServer extends HttpServlet {
     private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
     public static final File PAGE_DIRECTORY = new File("pages");
 
-     private boolean m_PagesLoaded;
+    private boolean m_PagesLoaded;
+    private ProteinCoveragePageTracker m_Tracker;
 
+    public PageServer() {
+        ProteinCoveragePageTracker m_Tracker = new ProteinCoveragePageTracker( PAGE_DIRECTORY);
+
+        m_Tracker.buildIndexPage("IndexGood.html","/svlt",null,null,null);
+
+      }
 
     protected void doGet(HttpServletRequest pHttpServletRequest, HttpServletResponse rsp)
             throws ServletException, IOException {
@@ -68,9 +77,11 @@ public class PageServer extends HttpServlet {
             throws ServletException, IOException {
 
         String requestURI = req.getRequestURI();
-        if (shouldForward(req, requestURI)) {
+        String uniprot = req.getParameter("uniprot");
+        if (uniprot == null && shouldForward(req, requestURI)) {
             if (requestURI.contains(SERVLET_URI)) {
                 String newPage = requestURI.replace(SERVLET_URI, "");
+
                 redirect(newPage, rsp);
 
             }
@@ -82,8 +93,11 @@ public class PageServer extends HttpServlet {
         }
 
         String ret = null;
-        String uniprot = req.getParameter("uniprot");
-//        if(uniprot == null || "".equals(uniprot))  {
+
+        HttpSession session = req.getSession();
+        String id = session.getId();
+
+        if(uniprot == null || "".equals(uniprot))  {
 //            // let someone else handle it
 //            Request base_request = (req instanceof Request) ? (Request)req:HttpConnection.getCurrentConnection().getRequest();
 //            base_request.setHandled(false);
@@ -91,7 +105,7 @@ public class PageServer extends HttpServlet {
 //            forward(newPage, req, rsp);
 //           //   serveEmptyPage(rsp);
 //            return;
-//        }
+         }
 
 
         String fragments = req.getParameter("fragments");
@@ -100,22 +114,54 @@ public class PageServer extends HttpServlet {
         if (page.exists()) {
             String newPage = PAGE_DIRECTORY + "/" + page.getName();
             redirect(newPage, rsp);
-
-        }
+         }
         else {
-            buildPage(uniprot, fragments, rsp);
+            String newPage = buildPage(uniprot, fragments, rsp);
+            redirect(newPage, rsp);
         }
 
     }
 
-    private void buildPage(String uiprotId, String fragments, HttpServletResponse rsp) {
+    public static FoundPeptide[] fragmentsToFoundPeptides(Protein protein, String fragmants)
+    {
+        if(fragmants == null)
+            return FoundPeptide.EMPTY_ARRAY;
+        List<FoundPeptide> holder = new ArrayList<FoundPeptide>();
+        String[] frags = fragmants.split("\n");
+        for (int i = 0; i < frags.length; i++) {
+            String frag = frags[i].trim();
+            IPolypeptide pp = Polypeptide.fromString(frag);
+            FoundPeptide fp = new FoundPeptide(pp, protein.getId(), 0);
+            holder.add(fp);
+        }
+        FoundPeptide[] ret = new FoundPeptide[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
+
+    private String buildPage(String uiprotId, String fragments, HttpServletResponse rsp) {
         try {
-            String sequence = Uniprot.retrieveSequence(uiprotId);
+            ProteinDatabase.getInstance();
+            Protein protein = ProteinDatabase.getInstance().getProtein(uiprotId);
+            if(protein == null)   {
+                throw new UnsupportedOperationException("Fix This"); // ToDo
+            }
+            String sequence = protein.getSequence();
+            FoundPeptide[] peptides = fragmentsToFoundPeptides( protein, fragments);
+            ProteinFragmentationDescription pfd = new ProteinFragmentationDescription( uiprotId, null,  protein,peptides) ;
+            Uniprot up = Uniprot.getUniprot(uiprotId);
+            String file = ProteinCoveragePageBuilder.buildFragmentDescriptionPage(uiprotId, null, null, pfd);
+            return file;
         }
         catch (Exception e) {
+            e.printStackTrace();
             buildBadUniprotPage(uiprotId, fragments, rsp);
-
+           return null;
         }
+    }
+
+    public ProteinCoveragePageTracker getTracker() {
+        return m_Tracker;
     }
 
     public static final FilenameFilter HTML_FILTER = new FileUtilities.EndsWithFilter(".html");
@@ -409,7 +455,7 @@ public class PageServer extends HttpServlet {
     }
 
     public void serveEmptyPage(HttpServletResponse rsp) throws IOException {
-        File page = new File("Index.html");
+        File page = new File("IndexGood.html");
         ServletOutputStream os = rsp.getOutputStream();
         FileInputStream is = new FileInputStream(page);
         FileUtilities.copyStream(is, os);

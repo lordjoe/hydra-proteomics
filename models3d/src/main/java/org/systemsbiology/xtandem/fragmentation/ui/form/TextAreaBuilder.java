@@ -33,12 +33,27 @@ public class TextAreaBuilder extends AbstractInputHtml {
         return TAG;
     }
 
+    protected void addNameText(final Appendable out, final Object... data) {
+         try {
+             if(getName() != null) {
+                 out.append(getName());
+                 if(getError() != null)
+                     out.append(getError());
+                 out.append("<br>");
+              }
+         }
+         catch (IOException e) {
+             throw new RuntimeException(e);
+
+         }
+    }
 
     /**
      * overtide to set other attributes
      * @param out
      * @param data
      */
+    @Override
     public void addOtherAttributes(Appendable out, Object[] data) {
         try {
             out.append(" rows=\"" + getRows() + "\" ");

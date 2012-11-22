@@ -41,6 +41,7 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
 
     public static IPolypeptide fromString(String s)
     {
+        s = s.trim();
         if(s.contains("["))
             return ModifiedPolypeptide.fromModifiedString(s);
         Polypeptide ret = new Polypeptide(s);

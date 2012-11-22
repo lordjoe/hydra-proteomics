@@ -109,9 +109,13 @@ public class Protein extends Polypeptide implements IProtein {
      * @return
      */
     public static Protein buildProtein(String id,String pAnnotation, String pSequence, String url) {
+        if(pAnnotation.startsWith(">"))
+            pAnnotation = pAnnotation.substring(1); // from a fasta file
+
         if(id.contains(" "))   {
             id = annotationToId(id) ;
         }
+
 
         if (id == null)
             id = Integer.toString(gLastResortProteinId++);
