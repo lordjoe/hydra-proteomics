@@ -18,10 +18,10 @@ public class HTMLFormBuillder extends AbstractHtmlFragmentHolder {
     public HTMLFormBuillder(final HTMLBodyBuillder  page, String actionUrl) {
         super(page);
         m_ActionUrl = actionUrl;
-        addSubmitButton();
+        // addSubmitButton();
     }
 
-    protected void addSubmitButton() {
+    public void addSubmitButton() {
        new SubmitButtonBuilder(this);
     }
 

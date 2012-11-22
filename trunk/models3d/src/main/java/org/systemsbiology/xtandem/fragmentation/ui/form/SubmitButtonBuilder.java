@@ -13,6 +13,11 @@ public class SubmitButtonBuilder extends AbstractInputHtml {
        super(page,"Submit",HtmlInputTypes.submit);
      }
 
+    @Override
+    protected void addNameText(final Appendable out, final Object... data) {
+       // do nothing buttons have names
+    }
+
     public SubmitButtonBuilder(final HTMLFormBuillder page,String name) {
        super(page,name,HtmlInputTypes.submit);
      }

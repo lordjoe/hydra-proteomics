@@ -2,6 +2,7 @@ package org.systemsbiology.xtandem.fragmentation;
 
 import com.lordjoe.utilities.*;
 import org.systemsbiology.jmol.*;
+import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.peptide.*;
 
 import java.io.*;
@@ -65,6 +66,24 @@ public class ProteinFragmentationDescription {
             FoundPeptide peptide = peptides[i];
             index =  buildFragment(peptide,index);
         }
+        if(parent == null)  {
+            m_SequenceFromSwissProt = buildChainAMapping(protein);
+        }
+    }
+
+    private SequenceChainMap[] buildChainAMapping(final Protein protein) {
+        List<SequenceChainMap> holder = new ArrayList<SequenceChainMap>();
+        String sequence = protein.getSequence();
+        char[] chars = sequence.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            FastaAminoAcid aa = FastaAminoAcid.fromChar(c);
+            SequenceChainMap sm = new SequenceChainMap(protein,i + 1,aa);
+            holder.add(sm);
+        }
+         SequenceChainMap[] ret = new SequenceChainMap[holder.size()];
+        holder.toArray(ret);
+        return ret;
     }
 
     public int getInterestScore() {
@@ -155,7 +174,8 @@ public class ProteinFragmentationDescription {
 
     public void addFragment(Protein protein, IPolypeptide fragment, int index) {
         ProteinFragment pf = new ProteinFragment(protein, fragment, index);
-        m_Fragments.add(pf);
+        if(!m_Fragments.contains(pf))
+            m_Fragments.add(pf);
 
     }
 

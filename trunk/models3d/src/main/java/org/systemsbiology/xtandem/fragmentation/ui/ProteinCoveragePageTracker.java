@@ -3,6 +3,7 @@ package org.systemsbiology.xtandem.fragmentation.ui;
 import com.lordjoe.utilities.*;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
+import org.systemsbiology.xtandem.fragmentation.ui.form.*;
 
 import java.io.*;
 import java.util.*;
@@ -17,6 +18,8 @@ public class ProteinCoveragePageTracker {
 
     public static final int MAX_COVERAGE = 8;
     public static final int INDEX_ROW_LENGTH = 10;
+    public static final int FRAGMENTS_ROWS = 15;
+    public static final int FRAGMENTS_COLS = 70;
 
 
     public static final String HOME_PAGE = "IndexGood.html";
@@ -168,62 +171,61 @@ public class ProteinCoveragePageTracker {
         return sb;
     }
 
-    protected void addIndexes(HTMLBodyBuillder body)
-    {
+    protected void addIndexes(HTMLBodyBuillder body) {
         guaranteePages();
 
-           List<String> pageWith3dModel = new ArrayList<String>();
-           List<String> pageWithout3dModel = new ArrayList<String>();
-           List<ProteinFragmentationDescription> pfdWith3dModel = new ArrayList<ProteinFragmentationDescription>();
+        List<String> pageWith3dModel = new ArrayList<String>();
+        List<String> pageWithout3dModel = new ArrayList<String>();
+        List<ProteinFragmentationDescription> pfdWith3dModel = new ArrayList<ProteinFragmentationDescription>();
 
-           String[] empty = {};
-           ProteinFragmentationDescription[] emptyPd = {};
-           if (!m_PageFilesWithModel.isEmpty()) {
-               body.addString("<h1>Proteins With 3D Models</h1>\n");
-               List<String> holder = new ArrayList<String>();
-               List<String> holder2 = new ArrayList<String>();
-               File[] files = m_PageFilesWithModel.toArray(new File[0]);
-               Arrays.sort(files);
-               for (int i = 0; i < files.length; i++) {
-                   File file = files[i];
-                   String name = file.getName().replace(".html", "");
-                   holder.add(name);
-                   holder2.add("pages/" + file.getName());
+        String[] empty = {};
+        ProteinFragmentationDescription[] emptyPd = {};
+        if (!m_PageFilesWithModel.isEmpty()) {
+            body.addString("<h1>Proteins With 3D Models</h1>\n");
+            List<String> holder = new ArrayList<String>();
+            List<String> holder2 = new ArrayList<String>();
+            File[] files = m_PageFilesWithModel.toArray(new File[0]);
+            Arrays.sort(files);
+            for (int i = 0; i < files.length; i++) {
+                File file = files[i];
+                String name = file.getName().replace(".html", "");
+                holder.add(name);
+                holder2.add("pages/" + file.getName());
 
-               }
+            }
 
-               String[] NameWith3dModel = new String[holder.size()];
-               holder.toArray(NameWith3dModel);
-               String[] UrlWith3dModel = new String[holder2.size()];
-               holder2.toArray(UrlWith3dModel);
-               new StringTableBuillder(body, NameWith3dModel, UrlWith3dModel, INDEX_ROW_LENGTH);
-           }
-           if (!m_PageFilesWithoutModel.isEmpty()) {
-               body.addString("<h1>Proteins Without 3D Models</h1>");
-               List<String> holder = new ArrayList<String>();
-               List<String> holder2 = new ArrayList<String>();
-               File[] files = m_PageFilesWithoutModel.toArray(new File[0]);
-               Arrays.sort(files);
-               for (int i = 0; i < files.length; i++) {
-                   File file = files[i];
-                   String name = file.getName().replace(".html", "");
-                   holder.add(name);
-                   holder2.add("pages/" + file.getName());
+            String[] NameWith3dModel = new String[holder.size()];
+            holder.toArray(NameWith3dModel);
+            String[] UrlWith3dModel = new String[holder2.size()];
+            holder2.toArray(UrlWith3dModel);
+            new StringTableBuillder(body, NameWith3dModel, UrlWith3dModel, INDEX_ROW_LENGTH);
+        }
+        if (!m_PageFilesWithoutModel.isEmpty()) {
+            body.addString("<h1>Proteins Without 3D Models</h1>");
+            List<String> holder = new ArrayList<String>();
+            List<String> holder2 = new ArrayList<String>();
+            File[] files = m_PageFilesWithoutModel.toArray(new File[0]);
+            Arrays.sort(files);
+            for (int i = 0; i < files.length; i++) {
+                File file = files[i];
+                String name = file.getName().replace(".html", "");
+                holder.add(name);
+                holder2.add("pages/" + file.getName());
 
-               }
+            }
 
-               String[] NameWith3dModel = new String[holder.size()];
-               holder.toArray(NameWith3dModel);
-               String[] UrlWith3dModel = new String[holder2.size()];
-               holder2.toArray(UrlWith3dModel);
-               new StringTableBuillder(body, NameWith3dModel, UrlWith3dModel, INDEX_ROW_LENGTH);
-           }
+            String[] NameWith3dModel = new String[holder.size()];
+            holder.toArray(NameWith3dModel);
+            String[] UrlWith3dModel = new String[holder2.size()];
+            holder2.toArray(UrlWith3dModel);
+            new StringTableBuillder(body, NameWith3dModel, UrlWith3dModel, INDEX_ROW_LENGTH);
+        }
 
     }
 
-    protected void buildIndexPage(String fileName,HTMLPageBuillder pb) {
+    protected void buildIndexPage(String fileName, HTMLPageBuillder pb) {
 
-           String page = pb.buildPage();
+        String page = pb.buildPage();
         FileUtilities.writeFile(fileName, page);
 //        Collections.sort(pfdWith3dModel, ProteinFragmentationDescription.INTERESTING_COMPARATOR);
 //        for (Iterator<ProteinFragmentationDescription> iterator = pfdWith3dModel.iterator(); iterator.hasNext(); ) {
@@ -232,7 +234,7 @@ public class ProteinCoveragePageTracker {
 //                    next.getStatistics().getPartitionStatistics(2));
 //        }
 //        System.out.println();
-     }
+    }
 
     public Set<File> getPageFiles() {
         return m_PageFiles;
@@ -256,12 +258,33 @@ public class ProteinCoveragePageTracker {
     }
 
 
+    public void buildIndexPage(final String pageName, String actionUrl, final String urlStr, final String urlError,
+                               final String fragments) {
+
+        HTMLPageBuillder pb = new HTMLPageBuillder("Protein Coverage ");
+        HTMLBodyBuillder body = pb.getBody();
+        HTMLFormBuillder fb = new HTMLFormBuillder(body, actionUrl);
+        TextInputBuilder url = new TextInputBuilder(fb, "uniprot");
+        url.setVisibleName("Uniprot Id");
+        url.setValue(urlStr);
+        url.setError(urlError);
+        TextAreaBuilder area = new TextAreaBuilder(fb, "fragments", FRAGMENTS_ROWS, FRAGMENTS_COLS);
+        url.setVisibleName("Fragments");
+        area.setValue(fragments);
+        fb.addSubmitButton();
+        addIndexes(body);
+        buildIndexPage(pageName, pb);
+
+
+    }
+
+
     public static void main(String[] args) {
         ProteinCoveragePageTracker pt = new ProteinCoveragePageTracker(new File("pages"));
         HTMLPageBuillder pb = new HTMLPageBuillder("Protein Coverage ");
         HTMLBodyBuillder body = pb.getBody();
         pt.addIndexes(body);
-        pt.buildIndexPage("IndexGood.html",pb);
+        pt.buildIndexPage("IndexGood.html", pb);
     }
 
 

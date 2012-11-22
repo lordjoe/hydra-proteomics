@@ -108,4 +108,29 @@ public class ProteinFragment implements Comparable<ProteinFragment> {
         }
         return false;
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final ProteinFragment that = (ProteinFragment) o;
+
+        if (m_Index != that.m_Index) return false;
+        if (m_ParentProtein != null ? !m_ParentProtein.equals(that.m_ParentProtein) : that.m_ParentProtein != null)
+            return false;
+        if (m_Peptide != null ? !m_Peptide.equals(that.m_Peptide) : that.m_Peptide != null) return false;
+     //   if (!Arrays.equals(m_StartLocations, that.m_StartLocations)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = m_ParentProtein != null ? m_ParentProtein.hashCode() : 0;
+        result = 31 * result + (m_Peptide != null ? m_Peptide.hashCode() : 0);
+        result = 31 * result + (m_StartLocations != null ? Arrays.hashCode(m_StartLocations) : 0);
+        result = 31 * result + m_Index;
+        return result;
+    }
 }

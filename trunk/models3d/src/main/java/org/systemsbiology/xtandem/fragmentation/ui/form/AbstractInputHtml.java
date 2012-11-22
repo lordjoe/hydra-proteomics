@@ -15,11 +15,15 @@ public class AbstractInputHtml extends AbstractHtmlFragmentHolder {
     public static final String TAG = "input";
 
     private final String m_Name;
+    private  String m_VisibleName;
+    private String m_Value = "";
+    private String m_Error = "";
     private final HtmlInputTypes m_Type;
     public AbstractInputHtml(final HTMLFormBuillder page,String name, HtmlInputTypes actionUrl) {
         super(page);
         m_Type = actionUrl;
         m_Name = name;
+        m_VisibleName= name;
      }
 
     public String getTag() {
@@ -30,25 +34,73 @@ public class AbstractInputHtml extends AbstractHtmlFragmentHolder {
         return m_Name;
     }
 
+    public String getVisibleName() {
+        return m_VisibleName;
+    }
+
+    public void setVisibleName(final String visibleName) {
+        m_VisibleName = visibleName;
+    }
+
     public HtmlInputTypes getType() {
         return m_Type;
     }
 
+
+    public String getValue() {
+        return m_Value;
+    }
+
+    public void setValue(final String value) {
+        m_Value = value;
+    }
+
+    public String getError() {
+        return m_Error;
+    }
+
+    public void setError( String error) {
+        if(error == null)
+            error = "";
+        m_Error = error;
+    }
+
     @Override
     public void addStartText(final Appendable out, final Object... data) {
+        addNameText(  out,  data);
+        addFieldText(out, data);
+     }
+
+
+    protected void addNameText(final Appendable out, final Object... data) {
         try {
-            out.append("<" + getTag());
-            out.append(" type=\"" + getType());
-            addOtherAttributes( out,  data);
-            out.append("\">");
-            out.append("\n");
+            if(getVisibleName() != null)
+                 out.append(getVisibleName());
         }
         catch (IOException e) {
             throw new RuntimeException(e);
 
         }
-
     }
+    protected void addFieldText(final Appendable out, final Object... data) {
+          try {
+               out.append("<" + getTag());
+              out.append(" type=\"" + getType());
+              out.append("\" ");
+              out.append(" name=\"" + getName());
+                out.append("\" ");
+              addOtherAttributes(out, data);
+              out.append(" >");
+               if(getValue() != null)
+                  out.append(getValue());
+               out.append("\n");
+          }
+          catch (IOException e) {
+              throw new RuntimeException(e);
+
+          }
+
+      }
 
     /**
      * overtide to set other attributes
@@ -62,7 +114,11 @@ public class AbstractInputHtml extends AbstractHtmlFragmentHolder {
     public void addEndText(final Appendable out, final Object... data) {
         try {
             out.append("</" + getTag() + ">");
-            out.append("\n");
+            out.append("<br>");
+             out.append("\n");
+            if(getError().length() > 0)  {
+                out.append(getError());
+            }
         }
         catch (IOException e) {
             throw new RuntimeException(e);
