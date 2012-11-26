@@ -519,7 +519,16 @@ public class Uniprot {
         return m_ModelDirectory;
     }
 
-    public static final boolean DOWNLOAD_MODELS = false;
+    private static boolean gDownloadModels;
+
+    public static boolean isDownloadModels() {
+        return gDownloadModels;
+    }
+
+    public static void setDownloadModels(boolean downloadModels) {
+        gDownloadModels = downloadModels;
+    }
+
 
     /**
      * @param id
@@ -536,7 +545,7 @@ public class Uniprot {
                 mdl.readFile(f);
             }
             else {
-                if(!DOWNLOAD_MODELS)
+                if(!isDownloadModels())
                     return null;
 
                 f = ThreeDModel.downLoad3DModel(mdr, id);
