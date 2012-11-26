@@ -141,8 +141,8 @@ public class PageServer extends HttpServlet {
 
     private String buildPage(String uiprotId, String fragments, HttpServletResponse rsp) {
         try {
-            ProteinDatabase.getInstance();
-            Protein protein = ProteinDatabase.getInstance().getProtein(uiprotId);
+            ProteinDatabase pdb = ProteinDatabase.getInstance();
+            Protein protein = pdb.getProtein(uiprotId);
             if(protein == null)   {
                 throw new UnsupportedOperationException("Fix This"); // ToDo
             }
