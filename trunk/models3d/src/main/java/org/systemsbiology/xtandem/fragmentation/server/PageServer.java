@@ -5,7 +5,7 @@ import org.mortbay.jetty.*;
 import org.mortbay.jetty.handler.*;
 import org.mortbay.jetty.nio.*;
 import org.mortbay.jetty.servlet.*;
-import org.proteios.core.*;
+import org.systemsbiology.jmol.*;
 import org.systemsbiology.uniprot.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 import org.systemsbiology.xtandem.fragmentation.ui.*;
@@ -54,6 +54,10 @@ public class PageServer extends HttpServlet {
 
     public static final String SERVLET_URI = "/svlt";
 
+    public static final String BUILD_PAGE_NAME = "Build Page";
+    public static final String RESET_PAGE_NAME = "Reset Page";
+    public static final String INDEX_PAGE = "IndexGood.html";
+
     private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
     public static final File PAGE_DIRECTORY = new File("pages");
 
@@ -61,11 +65,22 @@ public class PageServer extends HttpServlet {
     private ProteinCoveragePageTracker m_Tracker;
 
     public PageServer() {
-        ProteinCoveragePageTracker m_Tracker = new ProteinCoveragePageTracker( PAGE_DIRECTORY);
+        m_Tracker = new ProteinCoveragePageTracker(PAGE_DIRECTORY);
+        String actionUrl = "/svlt";
 
-        m_Tracker.buildIndexPage("IndexGood.html","/svlt",null,null,null);
+        // add some test data with a model
+        SampleDataHolder sd = SampleDataHolder.getInstance();
+        SampleDataHolder.SampleData sample = sd.getSample();
+        String urlStr = sample.getId();
+        String urlError = null;
+        String fragments = sample.getFragmentStr();
 
-      }
+        File page = new File(PAGE_DIRECTORY, urlStr + ".html");
+        page.delete(); // force rebuild
+
+        m_Tracker.buildIndexPage(INDEX_PAGE, actionUrl, urlStr, urlError, fragments);
+
+    }
 
     protected void doGet(HttpServletRequest pHttpServletRequest, HttpServletResponse rsp)
             throws ServletException, IOException {
@@ -97,7 +112,7 @@ public class PageServer extends HttpServlet {
         HttpSession session = req.getSession();
         String id = session.getId();
 
-        if(uniprot == null || "".equals(uniprot))  {
+        if (uniprot == null || "".equals(uniprot)) {
 //            // let someone else handle it
 //            Request base_request = (req instanceof Request) ? (Request)req:HttpConnection.getCurrentConnection().getRequest();
 //            base_request.setHandled(false);
@@ -105,26 +120,45 @@ public class PageServer extends HttpServlet {
 //            forward(newPage, req, rsp);
 //           //   serveEmptyPage(rsp);
 //            return;
-         }
+        }
 
+        String submitName = req.getParameter("Submit");
+        if(BUILD_PAGE_NAME.equals(submitName))   {
+            String fragments = req.getParameter("fragments");
+           File page = new File(PAGE_DIRECTORY, uniprot + ".html");
+           String path = page.getAbsolutePath();
+           if (page.exists()) {
+               String newPage = PAGE_DIRECTORY + "/" + page.getName();
+               redirect(newPage, rsp);
+           }
+           else {
+               String newPage = buildPage(uniprot, fragments, rsp);
+               redirect(newPage, rsp);
+           }
 
-        String fragments = req.getParameter("fragments");
-        File page = new File(PAGE_DIRECTORY, uniprot + ".html");
-        String path = page.getAbsolutePath();
-        if (page.exists()) {
-            String newPage = PAGE_DIRECTORY + "/" + page.getName();
-            redirect(newPage, rsp);
-         }
-        else {
-            String newPage = buildPage(uniprot, fragments, rsp);
-            redirect(newPage, rsp);
+        }
+        if(RESET_PAGE_NAME.equals(submitName))   {
+            String actionUrl = "/svlt";
+
+             // add some test data with a model
+             SampleDataHolder sd = SampleDataHolder.getInstance();
+            SampleDataHolder.SampleData sample = sd.getSample();
+             String urlStr = sample.getId();
+             String urlError = null;
+             String fragments = sample.getFragmentStr();
+
+             File page = new File(PAGE_DIRECTORY, urlStr + ".html");
+             page.delete(); // force rebuild
+
+             m_Tracker.buildIndexPage(INDEX_PAGE, actionUrl, urlStr, urlError, fragments);
+            redirect(INDEX_PAGE, rsp);
+
         }
 
     }
 
-    public static FoundPeptide[] fragmentsToFoundPeptides(Protein protein, String fragmants)
-    {
-        if(fragmants == null)
+    public static FoundPeptide[] fragmentsToFoundPeptides(Protein protein, String fragmants) {
+        if (fragmants == null)
             return FoundPeptide.EMPTY_ARRAY;
         List<FoundPeptide> holder = new ArrayList<FoundPeptide>();
         String[] frags = fragmants.split("\n");
@@ -141,22 +175,31 @@ public class PageServer extends HttpServlet {
 
     private String buildPage(String uiprotId, String fragments, HttpServletResponse rsp) {
         try {
-            ProteinDatabase pdb = ProteinDatabase.getInstance();
-            Protein protein = pdb.getProtein(uiprotId);
-            if(protein == null)   {
+            ProteinDatabase pd = ProteinDatabase.getInstance();
+            Protein protein = pd.getProtein(uiprotId);
+            if (protein == null) {
                 throw new UnsupportedOperationException("Fix This"); // ToDo
             }
             String sequence = protein.getSequence();
-            FoundPeptide[] peptides = fragmentsToFoundPeptides( protein, fragments);
-            ProteinFragmentationDescription pfd = new ProteinFragmentationDescription( uiprotId, null,  protein,peptides) ;
+            FoundPeptide[] peptides = fragmentsToFoundPeptides(protein, fragments);
+            ProteinFragmentationDescription pfd = new ProteinFragmentationDescription(uiprotId, null, protein, peptides);
             Uniprot up = Uniprot.getUniprot(uiprotId);
+            BioJavaModel bestModel = up.getBestModel();
+
+            if (bestModel != null) {
+
+                File file = bestModel.getFile();
+                pfd.setModelFile(file);
+            }
+
+
             String file = ProteinCoveragePageBuilder.buildFragmentDescriptionPage(uiprotId, null, null, pfd);
             return file;
         }
         catch (Exception e) {
             e.printStackTrace();
             buildBadUniprotPage(uiprotId, fragments, rsp);
-           return null;
+            return null;
         }
     }
 
@@ -168,7 +211,7 @@ public class PageServer extends HttpServlet {
 
     protected String buildIndexPage(File pageDir) {
         File[] files = pageDir.listFiles(HTML_FILTER);
-      //  throw new UnsupportedOperationException("Fix This"); // ToDo
+        //  throw new UnsupportedOperationException("Fix This"); // ToDo
 //        ProteinCollection proteins = getProteins();
 //        HTMLPageBuillder pb = new HTMLPageBuillder("Protein Coverage ");
 //        HTMLBodyBuillder body = pb.getBody();
@@ -474,7 +517,7 @@ public class PageServer extends HttpServlet {
         server.addConnector(connector);
 
         ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setWelcomeFiles(new String[]{"index.html"});
+        resource_handler.setWelcomeFiles(new String[]{"IndexGood.html"});  // was index.html
 
         resource_handler.setResourceBase(".");
 
@@ -485,6 +528,7 @@ public class PageServer extends HttpServlet {
         ServletHolder holder = new ServletHolder(new PageServer());
         //   ServletHolder holder2 = new ServletHolder(new FileServlet());
         Context root = new Context(server, SERVLET_URI, Context.SESSIONS);
+        root.setWelcomeFiles(new String[]{"IndexGood.html"});  // was index.html
         root.addServlet(holder, "/*");
         handlers.setHandlers(new Handler[]{root, resource_handler, new DefaultHandler()});
 
@@ -508,8 +552,10 @@ public class PageServer extends HttpServlet {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
+        Uniprot.setDownloadModels(true);
+        ProteinDatabase pd = ProteinDatabase.getInstance();   // preload
         Server server = launchServer();
-        server.join();
+         server.join();
         while (server.isRunning()) ;
     }
 }

@@ -280,6 +280,7 @@ public class Uniprot {
     private boolean m_BadPeptide;
     private Sequence m_Sequence;
     private Feature[] m_InterestingFeatures;
+    private boolean  m_Analyzed;
 
     public Uniprot(String line) {
         this(line.split("\t"));
@@ -347,6 +348,10 @@ public class Uniprot {
 
     public Sequence getSequence() {
         return m_Sequence;
+    }
+
+    public boolean isAnalyzed() {
+        return m_Analyzed;
     }
 
     public void setSequence(Sequence sequence) {
@@ -519,16 +524,23 @@ public class Uniprot {
         return m_ModelDirectory;
     }
 
-    private static boolean gDownloadModels;
+    public static boolean gDownloadModels = false;
 
+    /**
+     * if true unknown models will be downloaded
+     * @return
+     */
     public static boolean isDownloadModels() {
         return gDownloadModels;
     }
 
-    public static void setDownloadModels(boolean downloadModels) {
+    /**
+     * if true unknown models will be downloaded
+     * @return
+     */
+    public static void setDownloadModels(final boolean downloadModels) {
         gDownloadModels = downloadModels;
     }
-
 
     /**
      * @param id
@@ -584,7 +596,7 @@ public class Uniprot {
 
     public boolean isGoodFit() {
         int sequencelen = getProtein().getSequenceLength();
-        BioJavaModel bestModel = getBestModel();
+        BioJavaModel bestModel = internalGettBestModel();
         if (bestModel != null)
             return true;
 
@@ -625,7 +637,12 @@ public class Uniprot {
     }
 
     public BioJavaModel getBestModel() {
-        return m_BestModel;
+        if(!isAnalyzed())
+            analyze();
+        return internalGettBestModel();
+    }
+    protected BioJavaModel internalGettBestModel() {
+         return m_BestModel;
     }
 
 
@@ -667,6 +684,11 @@ public class Uniprot {
         }
     }
 
+    public int[] analyze() {
+        final int[] statistics = new int[3];
+        analyze(statistics);
+        return statistics;
+    }
 
     public void analyze(final int[] statistics) {
         Protein protein = getProtein();
@@ -696,6 +718,7 @@ public class Uniprot {
             }
             bestFit = Math.max(bestFit, fraction);
         }
+        m_BestModel = best;
         if (bestFit > GOOD_FIT || isGoodFit()) {
             statistics[GOOD]++;
             m_BestModel = best;
@@ -708,10 +731,12 @@ public class Uniprot {
         }
         else {
             statistics[BAD]++;
+            m_BestModel = null;
 
         }
 
         clearModels();
+        m_Analyzed = true;
     }
 
 
