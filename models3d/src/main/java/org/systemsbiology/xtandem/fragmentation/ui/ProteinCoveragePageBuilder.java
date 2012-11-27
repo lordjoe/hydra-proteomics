@@ -144,7 +144,7 @@ public class ProteinCoveragePageBuilder {
 
     public static String buildFragmentDescriptionPage(final String id, final String prev, final String next,   final ProteinFragmentationDescription pfd) {
          PDBObject model = null;
-        File model3d = null; // proteins.getPDBModelFile(id);
+        File model3d = pfd.getModelFile();
         if (model3d != null) {
             try {
                 model = new PDBObject(model3d, pfd.getProtein());

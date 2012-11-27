@@ -3,6 +3,7 @@ package org.systemsbiology.xtandem.fragmentation.ui;
 import com.lordjoe.utilities.*;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
+import org.systemsbiology.xtandem.fragmentation.server.*;
 import org.systemsbiology.xtandem.fragmentation.ui.form.*;
 
 import java.io.*;
@@ -15,6 +16,7 @@ import java.util.*;
  */
 public class ProteinCoveragePageTracker {
     public static final ProteinCoveragePageTracker[] EMPTY_ARRAY = {};
+    public static final String[] EMPTY_STRINGS = new String[0];
 
     public static final int MAX_COVERAGE = 8;
     public static final int INDEX_ROW_LENGTH = 10;
@@ -32,6 +34,9 @@ public class ProteinCoveragePageTracker {
     private final Set<File> m_PageFilesWithModel = new HashSet<File>();
     private final Set<File> m_PageFilesWithoutModel = new HashSet<File>();
     private boolean m_PagesRead;
+    private String m_RequestedId;
+    private String[] m_RequestedFragments = EMPTY_STRINGS;
+
 
     public ProteinCoveragePageTracker(final File baseDir) {
         m_PageDir = baseDir;
@@ -41,6 +46,34 @@ public class ProteinCoveragePageTracker {
             processPage(file);
         }
         setPagesRead(true);
+    }
+
+    /**
+     * !null id may be empty
+     * @return
+     */
+    public String getRequestedId() {
+        if(m_RequestedId == null)
+            return "";
+        return m_RequestedId;
+    }
+
+    public void setRequestedId(final String requestedId) {
+        m_RequestedId = requestedId;
+    }
+
+    /**
+     * !null fragment set may be empty
+     * @return
+     */
+    public String[] getRequestedFragments() {
+        if(m_RequestedFragments == null)
+            return EMPTY_STRINGS;
+        return m_RequestedFragments;
+    }
+
+    public void setRequestedFragments(final String[] requestedFragments) {
+        m_RequestedFragments = requestedFragments;
     }
 
     protected void processPage(File file) {
@@ -265,13 +298,14 @@ public class ProteinCoveragePageTracker {
         HTMLBodyBuillder body = pb.getBody();
         HTMLFormBuillder fb = new HTMLFormBuillder(body, actionUrl);
         TextInputBuilder url = new TextInputBuilder(fb, "uniprot");
-        url.setVisibleName("Uniprot Id");
+         url.setVisibleName("Uniprot Id");
         url.setValue(urlStr);
         url.setError(urlError);
         TextAreaBuilder area = new TextAreaBuilder(fb, "fragments", FRAGMENTS_ROWS, FRAGMENTS_COLS);
-        url.setVisibleName("Fragments");
+        area.setVisibleName("Fragments");
         area.setValue(fragments);
-        fb.addSubmitButton();
+        fb.addSubmitButton(PageServer.BUILD_PAGE_NAME);
+        fb.addSubmitButton(PageServer.RESET_PAGE_NAME);
         addIndexes(body);
         buildIndexPage(pageName, pb);
 

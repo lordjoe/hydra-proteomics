@@ -48,6 +48,20 @@ public class TextAreaBuilder extends AbstractInputHtml {
          }
     }
 
+    @Override
+    public void addStartText(final Appendable out, final Object... data) {
+        super.addStartText(out, data);
+        try {
+            if(getValue() != null)
+               out.append(getValue());
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+
+    }
+
     /**
      * overtide to set other attributes
      * @param out
