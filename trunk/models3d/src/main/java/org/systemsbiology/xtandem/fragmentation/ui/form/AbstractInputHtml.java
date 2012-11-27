@@ -19,6 +19,8 @@ public class AbstractInputHtml extends AbstractHtmlFragmentHolder {
     private String m_Value = "";
     private String m_Error = "";
     private final HtmlInputTypes m_Type;
+    private boolean m_BreakAppendedAtEnd = true;
+
     public AbstractInputHtml(final HTMLFormBuillder page,String name, HtmlInputTypes actionUrl) {
         super(page);
         m_Type = actionUrl;
@@ -71,7 +73,11 @@ public class AbstractInputHtml extends AbstractHtmlFragmentHolder {
         addFieldText(out, data);
      }
 
-
+    /**
+     * add a name label before the field
+     * @param out
+     * @param data
+     */
     protected void addNameText(final Appendable out, final Object... data) {
         try {
             if(getVisibleName() != null)
@@ -88,11 +94,10 @@ public class AbstractInputHtml extends AbstractHtmlFragmentHolder {
               out.append(" type=\"" + getType());
               out.append("\" ");
               out.append(" name=\"" + getName());
-                out.append("\" ");
+              out.append("\" ");
+
               addOtherAttributes(out, data);
               out.append(" >");
-               if(getValue() != null)
-                  out.append(getValue());
                out.append("\n");
           }
           catch (IOException e) {
@@ -114,7 +119,8 @@ public class AbstractInputHtml extends AbstractHtmlFragmentHolder {
     public void addEndText(final Appendable out, final Object... data) {
         try {
             out.append("</" + getTag() + ">");
-            out.append("<br>");
+            if(isBreakAppendedAtEnd())
+                out.append("<br>");
              out.append("\n");
             if(getError().length() > 0)  {
                 out.append(getError());
@@ -127,8 +133,11 @@ public class AbstractInputHtml extends AbstractHtmlFragmentHolder {
 
     }
 
+    public boolean isBreakAppendedAtEnd() {
+        return m_BreakAppendedAtEnd;
+    }
 
-
-
-
+    public void setBreakAppendedAtEnd(final boolean breakAppendedAtEnd) {
+        m_BreakAppendedAtEnd = breakAppendedAtEnd;
+    }
 }

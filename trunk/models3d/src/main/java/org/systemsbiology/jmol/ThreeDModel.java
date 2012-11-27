@@ -32,71 +32,6 @@ public class ThreeDModel {
 
     }
 
-    private static final Map<String, ThreeDModel> gProteinToModel = new HashMap<String, ThreeDModel>();
-
-    public static String[] getProteinIds( )  {
-        String[] strings = gProteinToModel.keySet().toArray(new String[0]);
-        Arrays.sort(strings);
-        return strings;
-    }
-
-
-    public static ThreeDModel getModel(String proteinId)  {
-         return gProteinToModel.get(proteinId);
-    }
-
-    public static void addModel(ThreeDModel model)  {
-          gProteinToModel.put(model.getProteinId(), model);
-    }
-
-
-
-    private String m_ProteinId;
-    private final Map<String, ThreeDModelStructure> m_ModelIds = new HashMap<String, ThreeDModelStructure>();
-
-    public ThreeDModel(final String accessionId) {
-        m_ProteinId = accessionId;
-    }
-
-    public ThreeDModel() {
-    }
-
-
-    public void addStructure(ThreeDModelStructure id) {
-        m_ModelIds.put(id.getAccessionId(), id);
-
-    }
-
-    public String[] getModelIds() {
-        String[] ret = m_ModelIds.keySet().toArray(new String[0]);
-        Arrays.sort(ret);
-        return ret;
-
-    }
-
-    public String getProteinId() {
-        return m_ProteinId;
-    }
-
-    public void setProteinId(final String proteinId) {
-        m_ProteinId = proteinId;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getProteinId());
-        sb.append("\t");
-        String[] ids = getModelIds();
-        for (int i = 0; i < ids.length; i++) {
-            String id = ids[i];
-            if (i > 0)
-                sb.append(",");
-            sb.append(id);
-        }
-        return sb.toString();
-    }
-
     public static String[] readModelXml(File models) {
         String[] ids = FileUtilities.readInLines(models);
         List<String> holder = new ArrayList<String>();
@@ -159,20 +94,6 @@ public class ThreeDModel {
         return ret;
     }
 
-    public String getDescriptionString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getProteinId());
-        sb.append("\t");
-        String[] ids = getModelIds();
-        for (int i = 0; i < ids.length; i++) {
-            String id = ids[i];
-            if (i > 0)
-                sb.append(",");
-            sb.append(id);
-        }
-        return sb.toString();
-
-    }
 
     private static String readPDBXML(final LineNumberReader rdr) {
         try {
@@ -255,6 +176,87 @@ public class ThreeDModel {
             throw new RuntimeException(e);
 
         }
+    }
+
+
+    private static final Map<String, ThreeDModel> gProteinToModel = new HashMap<String, ThreeDModel>();
+
+    public static String[] getProteinIds( )  {
+        String[] strings = gProteinToModel.keySet().toArray(new String[0]);
+        Arrays.sort(strings);
+        return strings;
+    }
+
+
+    public static ThreeDModel getModel(String proteinId)  {
+         return gProteinToModel.get(proteinId);
+    }
+
+    public static void addModel(ThreeDModel model)  {
+          gProteinToModel.put(model.getProteinId(), model);
+    }
+
+
+
+    private String m_ProteinId;
+    private final Map<String, ThreeDModelStructure> m_ModelIds = new HashMap<String, ThreeDModelStructure>();
+
+    public ThreeDModel(final String accessionId) {
+        m_ProteinId = accessionId;
+    }
+
+    public ThreeDModel() {
+    }
+
+
+    public void addStructure(ThreeDModelStructure id) {
+        m_ModelIds.put(id.getAccessionId(), id);
+
+    }
+
+    public String[] getModelIds() {
+        String[] ret = m_ModelIds.keySet().toArray(new String[0]);
+        Arrays.sort(ret);
+        return ret;
+
+    }
+
+    public String getProteinId() {
+        return m_ProteinId;
+    }
+
+    public void setProteinId(final String proteinId) {
+        m_ProteinId = proteinId;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getProteinId());
+        sb.append("\t");
+        String[] ids = getModelIds();
+        for (int i = 0; i < ids.length; i++) {
+            String id = ids[i];
+            if (i > 0)
+                sb.append(",");
+            sb.append(id);
+        }
+        return sb.toString();
+    }
+
+    public String getDescriptionString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getProteinId());
+        sb.append("\t");
+        String[] ids = getModelIds();
+        for (int i = 0; i < ids.length; i++) {
+            String id = ids[i];
+            if (i > 0)
+                sb.append(",");
+            sb.append(id);
+        }
+        return sb.toString();
+
     }
 
      public static final String DOWNLOAD_MODEL_STRING = "http://www.pdb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=";
