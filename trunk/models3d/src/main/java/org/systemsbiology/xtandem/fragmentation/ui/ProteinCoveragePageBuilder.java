@@ -20,7 +20,7 @@ public class ProteinCoveragePageBuilder {
     public static final int MAX_COVERAGE = 8;
     public static final int INDEX_ROW_LENGTH = 6;
 
-
+    public static final String PAGES_DIR = "pages";
     public static final String HOME_PAGE = "IndexGood.html";
     public static final String JMOL_APPLET_ID = "JMol";
 
@@ -229,8 +229,8 @@ public class ProteinCoveragePageBuilder {
 
 
         String page = pb.buildPage();
-        String fileName = "pages/" + id + ".html";
-        new File("pages").mkdirs();
+        String fileName = PAGES_DIR + "/" + id + ".html";
+        new File(PAGES_DIR).mkdirs();
         FileUtilities.writeFile(fileName, page);
         return fileName;
     }

@@ -16,6 +16,7 @@ import javax.servlet.http.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * com.lordjoe.server.RestianServer
@@ -56,6 +57,7 @@ public class PageServer extends HttpServlet {
 
     public static final String BUILD_PAGE_NAME = "Build Page";
     public static final String RESET_PAGE_NAME = "Reset Page";
+    public static final String CHECK_PAGE_NAME = "CheckPage";
     public static final String INDEX_PAGE = "IndexGood.html";
 
     private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
@@ -63,6 +65,7 @@ public class PageServer extends HttpServlet {
 
     private boolean m_PagesLoaded;
     private ProteinCoveragePageTracker m_Tracker;
+    private Map<String, String> m_PagesUnderConstruction = new ConcurrentHashMap<String, String>();
 
     public PageServer() {
         m_Tracker = new ProteinCoveragePageTracker(PAGE_DIRECTORY);
@@ -123,37 +126,85 @@ public class PageServer extends HttpServlet {
         }
 
         String submitName = req.getParameter("Submit");
-        if(BUILD_PAGE_NAME.equals(submitName))   {
-            String fragments = req.getParameter("fragments");
-           File page = new File(PAGE_DIRECTORY, uniprot + ".html");
-           String path = page.getAbsolutePath();
-           if (page.exists()) {
-               String newPage = PAGE_DIRECTORY + "/" + page.getName();
-               redirect(newPage, rsp);
-           }
-           else {
-               String newPage = buildPage(uniprot, fragments, rsp);
-               redirect(newPage, rsp);
-           }
+        if ("BUILDING".equals(submitName)) {
+            String fileName = PAGE_DIRECTORY + "/" + uniprot + ".html?uniprot=BUILDING&Submit=BUILDING";
+            String waitpage = m_PagesUnderConstruction.get(uniprot);
+            if (waitpage != null) {
+                returnWaitPage(waitpage, rsp);
+                return;
+            }
+            else {
+                String newPage =  "/" + PAGE_DIRECTORY + "/" + uniprot + ".html";
+                redirect(newPage, rsp);
+
+            }
 
         }
-        if(RESET_PAGE_NAME.equals(submitName))   {
+        if (BUILD_PAGE_NAME.equals(submitName)) {
+            String fragments = req.getParameter("fragments");
+            File page = new File(PAGE_DIRECTORY, uniprot + ".html");
+            String path = page.getAbsolutePath();
+            if (page.exists()) {
+                String newPage = PAGE_DIRECTORY + "/" + page.getName();
+                redirect(newPage, rsp);
+            }
+            else {
+                String fileName = PAGE_DIRECTORY + "/" + uniprot + ".html?uniprot=" + uniprot + "&Submit=BUILDING";
+                String waitpage = m_PagesUnderConstruction.get(uniprot);
+                if (waitpage == null) {
+                    waitpage = buildWaitPage(uniprot, SERVLET_URI + "/" + fileName, rsp);
+                    returnWaitPage(waitpage, rsp);
+                    m_PagesUnderConstruction.put(uniprot, waitpage);
+                    buildPage(uniprot, fragments, rsp);
+                    m_PagesUnderConstruction.remove(uniprot);
+                }
+                else {
+                    returnWaitPage(waitpage, rsp);
+                }
+
+                //  String newPage = buildPage(uniprot, fragments, rsp);
+                //  redirect(newPage, rsp);
+            }
+
+        }
+        if (RESET_PAGE_NAME.equals(submitName)) {
             String actionUrl = "/svlt";
 
-             // add some test data with a model
-             SampleDataHolder sd = SampleDataHolder.getInstance();
+            // add some test data with a model
+            SampleDataHolder sd = SampleDataHolder.getInstance();
             SampleDataHolder.SampleData sample = sd.getSample();
-             String urlStr = sample.getId();
-             String urlError = null;
-             String fragments = sample.getFragmentStr();
+            String urlStr = sample.getId();
+            String urlError = null;
+            String fragments = sample.getFragmentStr();
 
-             File page = new File(PAGE_DIRECTORY, urlStr + ".html");
-             page.delete(); // force rebuild
+            File page = new File(PAGE_DIRECTORY, urlStr + ".html");
+            page.delete(); // force rebuild
 
-             m_Tracker.buildIndexPage(INDEX_PAGE, actionUrl, urlStr, urlError, fragments);
+            m_Tracker.buildIndexPage(INDEX_PAGE, actionUrl, urlStr, urlError, fragments);
             redirect(INDEX_PAGE, rsp);
 
         }
+
+    }
+
+    private String buildWaitPage(final String id, final String url, final HttpServletResponse rsp) {
+
+        String page = WaitPageBuilder.buildWaitPage(id, url, 3);
+        return page;
+    }
+
+    private void returnWaitPage(final String page, final HttpServletResponse rsp) {
+
+        try {
+            PrintWriter writer = rsp.getWriter();
+            writer.println(page);
+            writer.close();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+
 
     }
 
@@ -555,7 +606,7 @@ public class PageServer extends HttpServlet {
         Uniprot.setDownloadModels(true);
         ProteinDatabase pd = ProteinDatabase.getInstance();   // preload
         Server server = launchServer();
-         server.join();
+        server.join();
         while (server.isRunning()) ;
     }
 }
