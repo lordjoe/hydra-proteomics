@@ -30,6 +30,8 @@ public class Uniprot {
     public static final double MINIMUM_FRAGMENT_LENGTH = 6;
     public static final double MAXIMUM_FRAGMENT_LENGTH = 50;
 
+    public static final ParameterNameValue[] EMPTY_PARAMETER_VALUES = new ParameterNameValue[0];
+
     public static final Comparator<Feature> BY_POSITION = new FeaturePositionComparator();
     public static final Comparator<Location> LOC_BY_POSITION = new LocationPositionComparator();
 
@@ -81,6 +83,23 @@ public class Uniprot {
             throws Exception {
         String location = buildLocation(tool, params);
         return retrieveData(location);
+    }
+
+    public static String getSwissProtAnnotation(String uniprotid)
+    {
+        try {
+            String location = buildLocation(UNIPROT_SERVER + "uniprot/" +uniprotid + ".txt", EMPTY_PARAMETER_VALUES);
+            return retrieveData(location);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+        catch (InterruptedException e) {
+            throw new RuntimeException(e);
+
+        }
+
     }
 
     protected static String retrieveDataX(String location) throws IOException, InterruptedException {

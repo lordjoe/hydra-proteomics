@@ -17,6 +17,39 @@ import java.util.*;
 public class SwissProt {
     public static final SwissProt[] EMPTY_ARRAY = {};
 
+    /**
+     * parse a Sequence object from a String
+     * @param s
+     * @return
+     */
+    public Sequence parseSequence(String s) {
+        BufferedReader inp = new BufferedReader(new StringReader(s));
+        //read the SwissProt File
+        SequenceIterator sequences = SeqIOTools.readSwissprot(inp);
+        int count = 0;
+        Map<String, Sequence> holder = new HashMap<String, Sequence>();
+        Sequence seq = null;
+        //iterate through the sequences
+        while (sequences.hasNext()) {
+            try {
+                if(seq != null)
+                    throw new IllegalStateException("should only read one sequence");
+                seq = sequences.nextSequence();
+          }
+            catch (BioException ex) {
+                //not in SwissProt format
+                ex.printStackTrace();
+            }
+            catch (NoSuchElementException ex) {
+                //request for more sequence when there isn't any
+                ex.printStackTrace();
+            }
+        }
+        return seq;
+
+
+    }
+
     public static Map<String, Sequence> copyInterestingStructures(Reader inpr) {
         BufferedReader inp = new BufferedReader(inpr);
         //read the SwissProt File
@@ -44,7 +77,7 @@ public class SwissProt {
                 ex.printStackTrace();
             }
         }
-          return holder;
+        return holder;
 
     }
 
@@ -218,37 +251,37 @@ public class SwissProt {
     }
 
     public static final UniprotFeatureType[] ANALYZED_FEATURES =
-              {
-                         UniprotFeatureType.TRANSMEM,
-                      UniprotFeatureType.STRAND,
-                       UniprotFeatureType.HELIX,
-                      UniprotFeatureType.TURN,
-                      UniprotFeatureType.COILED,
-                                            UniprotFeatureType.DISULFID,
-                                            UniprotFeatureType.INTRAMEM,
-                                            UniprotFeatureType.PROPEP,
-                                            UniprotFeatureType.ZN_FING,
-     //                                       UniprotFeatureType.BINDING,
+            {
+                    UniprotFeatureType.TRANSMEM,
+                    UniprotFeatureType.STRAND,
+                    UniprotFeatureType.HELIX,
+                    UniprotFeatureType.TURN,
+                    UniprotFeatureType.COILED,
+                    UniprotFeatureType.DISULFID,
+                    UniprotFeatureType.INTRAMEM,
+                    UniprotFeatureType.PROPEP,
+                    UniprotFeatureType.ZN_FING,
+                    //                                       UniprotFeatureType.BINDING,
 
-              };
+            };
 
-      public static final Set<UniprotFeatureType> ANALYZED_FEATURE_SET =
-              new HashSet<UniprotFeatureType>(Arrays.asList(ANALYZED_FEATURES));
+    public static final Set<UniprotFeatureType> ANALYZED_FEATURE_SET =
+            new HashSet<UniprotFeatureType>(Arrays.asList(ANALYZED_FEATURES));
 
-      public static Feature[] getAnalyzedFeatures(Sequence seq) {
-          List<Feature> holder = new ArrayList<Feature>();
-          Feature[] features = getFeatures(seq);
-          for (int i = 0; i < features.length; i++) {
-              Feature feature = features[i];
-              UniprotFeatureType ft = getFeatureType(feature);
-              if (ANALYZED_FEATURE_SET.contains(ft))
-                  holder.add(feature);
-          }
+    public static Feature[] getAnalyzedFeatures(Sequence seq) {
+        List<Feature> holder = new ArrayList<Feature>();
+        Feature[] features = getFeatures(seq);
+        for (int i = 0; i < features.length; i++) {
+            Feature feature = features[i];
+            UniprotFeatureType ft = getFeatureType(feature);
+            if (ANALYZED_FEATURE_SET.contains(ft))
+                holder.add(feature);
+        }
 
-          Feature[] ret = new Feature[holder.size()];
-          holder.toArray(ret);
-          return ret;
-      }
+        Feature[] ret = new Feature[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
 
     public static UniprotFeatureType getFeatureType(Feature feature) {
         String type = feature.getType();
@@ -256,7 +289,7 @@ public class SwissProt {
     }
 
 
-    public static Sequence[] readInterestingSequences(File f)  {
+    public static Sequence[] readInterestingSequences(File f) {
         try {
             Reader br = null;
             br = new FileReader(f);
@@ -288,8 +321,8 @@ public class SwissProt {
         File inp = new File(args[1]);
         FileUtilities.guaranteeExistingFile(inp);
         Map<String, Uniprot> idToUniprot = Uniprot.readUniprots(inp);
-         Uniprot[] ups = idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
-         Set<String> ids = new HashSet<String>();
+        Uniprot[] ups = idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
+        Set<String> ids = new HashSet<String>();
         for (int i = 0; i < ups.length; i++) {
             Uniprot up = ups[i];
             ids.add(up.getProtein().getId());
@@ -309,7 +342,10 @@ public class SwissProt {
         out.close();
     }
 
-
+    /**
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         File f = new File(args[0]);
         FileUtilities.guaranteeExistingFile(f);
@@ -317,7 +353,7 @@ public class SwissProt {
         for (int i = 0; i < ret.length; i++) {
             Sequence sequence = ret[i];
             Feature[] fts = getInterestingFeatures(sequence);
-            }
+        }
 
     }
 

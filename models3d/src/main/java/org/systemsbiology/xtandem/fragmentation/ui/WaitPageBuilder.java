@@ -26,7 +26,7 @@ public class WaitPageBuilder {
         HTMLPageBuillder pb = new HTMLPageBuillder("Coverage for Page Build " + id);
 
         HTMLHeaderBuillder header = pb.getHeader();
-        new RefreshTagBuillder(header,url,waitSec);
+       new RefreshTagBuillder(header,url,waitSec);
 
         HTMLBodyBuillder body = pb.getBody();
 
