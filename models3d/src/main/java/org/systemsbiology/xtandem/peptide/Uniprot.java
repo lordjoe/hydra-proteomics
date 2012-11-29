@@ -35,6 +35,48 @@ public class Uniprot {
     public static final Comparator<Feature> BY_POSITION = new FeaturePositionComparator();
     public static final Comparator<Location> LOC_BY_POSITION = new LocationPositionComparator();
 
+
+    public static Sequence getBioJavaSequence(String uiprotId) {
+        String s = getSwissProtAnnotation(uiprotId);
+        if (s == null || s.length() == 0)
+            return null;
+        Sequence ret = SwissProt.parseSequence(s);
+        return ret;
+
+    }
+
+    public static String retrieveSequence(String uiprotId) {
+        String location = UNIPROT_SERVER + "uniprot/" + uiprotId + ".fasta";
+        try {
+            String ret = retrieveData(location);
+            if (ret.length() == 0)
+                return null; // not found
+
+            if (ret.startsWith(">")) {
+                String[] items = ret.split("\n");
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < items.length; i++) {
+                    String item = items[i];
+                    if (item.startsWith(">"))
+                        continue;
+                    sb.append(item);
+                }
+                return sb.toString();
+            }
+            if (ret.contains("<h2 class=\"error\">404 Not Found</h2>"))
+                return null; // not fount
+            throw new IllegalStateException("bad uniprot response");
+        }
+        catch (IOException e) {
+            return null;
+
+        }
+        catch (InterruptedException e) {
+            return null;
+
+        }
+    }
+
     /**
      * choose lowest location
      */
@@ -85,10 +127,9 @@ public class Uniprot {
         return retrieveData(location);
     }
 
-    public static String getSwissProtAnnotation(String uniprotid)
-    {
+    public static String getSwissProtAnnotation(String uniprotid) {
         try {
-            String location = buildLocation(UNIPROT_SERVER + "uniprot/" +uniprotid + ".txt", EMPTY_PARAMETER_VALUES);
+            String location = buildLocation("uniprot/" + uniprotid + ".txt", EMPTY_PARAMETER_VALUES);
             return retrieveData(location);
         }
         catch (IOException e) {
@@ -145,39 +186,6 @@ public class Uniprot {
     }
 
 
-    public static String retrieveSequence(String uiprotId)
-    {
-        String location = UNIPROT_SERVER + "uniprot/" + uiprotId + ".fasta";
-        try {
-            String ret = retrieveData(  location);
-            if(ret.length() == 0)
-                return null; // not found
-
-            if(ret.startsWith(">"))  {
-                String[] items = ret.split("\n");
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < items.length; i++) {
-                    String item = items[i];
-                    if(item.startsWith(">"))
-                        continue;
-                    sb.append(item);
-                }
-                return sb.toString();
-            }
-            if(ret.contains("<h2 class=\"error\">404 Not Found</h2>"))
-                return null; // not fount
-            throw new IllegalStateException("bad uniprot response");
-        }
-        catch (IOException e) {
-            return null;
-
-        }
-        catch (InterruptedException e) {
-            return null;
-
-        }
-    }
-
     protected static String retrieveData(String location) throws IOException, InterruptedException {
         StringBuilder builder = new StringBuilder();
         URL url = new URL(location);
@@ -223,7 +231,10 @@ public class Uniprot {
     }
 
     private static String buildLocation(String tool, ParameterNameValue[] params) {
-        StringBuilder locationBuilder = new StringBuilder(UNIPROT_SERVER + tool + "/?");
+        StringBuilder locationBuilder = new StringBuilder(UNIPROT_SERVER + tool);
+        if (params == null || params.length == 0)
+            return locationBuilder.toString();
+        locationBuilder.append("/?");
         boolean first = true;
         for (ParameterNameValue pv : params) {
             if (!first)
@@ -276,7 +287,11 @@ public class Uniprot {
             final String[] split1 = query.split("\t");
             if (split1.length != 3)
                 return null;
-            return new Uniprot(split1);
+            Uniprot ret = new Uniprot(split1);
+            Sequence sq = getBioJavaSequence(accession);
+            if (sq != null)
+                ret.setSequence(sq);
+            return ret;
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -299,7 +314,7 @@ public class Uniprot {
     private boolean m_BadPeptide;
     private Sequence m_Sequence;
     private Feature[] m_InterestingFeatures;
-    private boolean  m_Analyzed;
+    private boolean m_Analyzed;
 
     public Uniprot(String line) {
         this(line.split("\t"));
@@ -317,7 +332,7 @@ public class Uniprot {
         if (!m_ModelDirectory.isDirectory())
             throw new IllegalStateException("Model directory " + m_ModelDirectory + " does not exist");
 
-        m_Protein = Protein.buildProtein(annotation,annotation, sequence, "");
+        m_Protein = Protein.buildProtein(annotation, annotation, sequence, "");
         buildTheoreticalPeptides(PeptideBondDigester.getDigester("Trypsin"));
         int seqLength = sequence.length();
         FastaAminoAcid[] fastaAminoAcids = FastaAminoAcid.asAminoAcids(sequence);
@@ -415,24 +430,24 @@ public class Uniprot {
     private void setFeatureAtLocation(Feature ft, UniprotFeatureType type) {
         Location location = ft.getLocation();
         int min = location.getMin() - 1;
-        int max = location.getMax() ;
+        int max = location.getMax();
         ProteinAminoAcid[] aminoAcids = getAminoAcids();
-        switch(type)  {
+        switch (type) {
             case DISULFID:
                 ProteinAminoAcid mnaa = aminoAcids[min];
-                if(mnaa.getAminoAcid() != FastaAminoAcid.C)
+                if (mnaa.getAminoAcid() != FastaAminoAcid.C)
                     throw new IllegalStateException("should be cys");
                 mnaa.addFeature(type);
                 ProteinAminoAcid mxaa = aminoAcids[max - 1];
-                if(mxaa.getAminoAcid() != FastaAminoAcid.C)
-                      throw new IllegalStateException("should be cys");
+                if (mxaa.getAminoAcid() != FastaAminoAcid.C)
+                    throw new IllegalStateException("should be cys");
                 mxaa.addFeature(type);
-                 break;
-               case ZN_FING:
-                 aminoAcids[min].addFeature(type);
-                 aminoAcids[max - 1].addFeature(type);
-                  break;
-             default:
+                break;
+            case ZN_FING:
+                aminoAcids[min].addFeature(type);
+                aminoAcids[max - 1].addFeature(type);
+                break;
+            default:
                 for (int i = min; i < max; i++) {
                     if (!location.contains(i))
                         continue;
@@ -440,7 +455,7 @@ public class Uniprot {
                     aminoAcid.addFeature(type);
                 }
         }
-      }
+    }
 
     protected boolean isPeptideAcceptable(IPolypeptide pp) {
         int length = pp.getSequenceLength();
@@ -527,7 +542,7 @@ public class Uniprot {
 
     public FoundPeptide[] getFound() {
         FoundPeptide[] iPolypeptides = m_Found.toArray(FoundPeptide.EMPTY_ARRAY);
-          return iPolypeptides;
+        return iPolypeptides;
 
     }
 
@@ -547,6 +562,7 @@ public class Uniprot {
 
     /**
      * if true unknown models will be downloaded
+     *
      * @return
      */
     public static boolean isDownloadModels() {
@@ -555,6 +571,7 @@ public class Uniprot {
 
     /**
      * if true unknown models will be downloaded
+     *
      * @return
      */
     public static void setDownloadModels(final boolean downloadModels) {
@@ -576,7 +593,7 @@ public class Uniprot {
                 mdl.readFile(f);
             }
             else {
-                if(!isDownloadModels())
+                if (!isDownloadModels())
                     return null;
 
                 f = ThreeDModel.downLoad3DModel(mdr, id);
@@ -640,7 +657,7 @@ public class Uniprot {
             String model = models[j];
             try {
                 BioJavaModel mdl = getModel(model);
-                if(mdl != null)
+                if (mdl != null)
                     holder.add(mdl);
             }
             catch (IllegalArgumentException e) {
@@ -656,12 +673,13 @@ public class Uniprot {
     }
 
     public BioJavaModel getBestModel() {
-        if(!isAnalyzed())
+        if (!isAnalyzed())
             analyze();
         return internalGettBestModel();
     }
+
     protected BioJavaModel internalGettBestModel() {
-         return m_BestModel;
+        return m_BestModel;
     }
 
 
@@ -670,7 +688,7 @@ public class Uniprot {
         String pst = peptide.getSequence();
         Protein protein = getProtein();
         String id = protein.getId();
-        m_Found.add(new FoundPeptide(peptide,id,0));
+        m_Found.add(new FoundPeptide(peptide, id, 0));
         String prost = protein.getSequence();
         int index = prost.indexOf(pst);
         if (index == -1) {
@@ -692,7 +710,7 @@ public class Uniprot {
                     if (i < endIndex - 1) {
                         if (i < endIndex - 2) {
                             aa.setMissedCleavage(true);
-        //                    System.out.println(peptide.getSequence());
+                            //                    System.out.println(peptide.getSequence());
                         }
                     }
                     else
@@ -719,7 +737,7 @@ public class Uniprot {
         }
         double bestFit = 0;
         BioJavaModel[] mdls = getAllModels();
-        if(mdls.length == 0)     {
+        if (mdls.length == 0) {
             clearModels();
             return;
         }
@@ -727,7 +745,7 @@ public class Uniprot {
         int sequencelen = getProtein().getSequenceLength();
         for (int i = 0; i < mdls.length; i++) {
             BioJavaModel mdl = mdls[i];
-            if(mdl == null)
+            if (mdl == null)
                 continue;
             int fitLength = mdl.getFitLength();
             double fraction = mdl.resolveChains();
@@ -938,7 +956,7 @@ public class Uniprot {
     public static final int NONE = 2;
 
 
-    public static  Map<String, Uniprot>  findUnterestingUniprots(File sp, Map<String, Uniprot> idToUniprot) {
+    public static Map<String, Uniprot> findUnterestingUniprots(File sp, Map<String, Uniprot> idToUniprot) {
         Sequence[] ret = SwissProt.readInterestingSequences(sp);
         Map<String, Uniprot> testUniProts = new HashMap<String, Uniprot>();
         for (int i = 0; i < ret.length; i++) {
@@ -946,7 +964,7 @@ public class Uniprot {
             String name = sequence.getName();
             Uniprot pt = idToUniprot.get(name);
             if (pt == null || pt.isBadPeptide()) {
-     //           System.out.println("Bad id " + name);
+                //           System.out.println("Bad id " + name);
                 continue;
             }
             pt.setSequence(sequence);
@@ -954,11 +972,11 @@ public class Uniprot {
 
         }
         return testUniProts;
-    //    return idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
+        //    return idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
     }
 
     public boolean hasFeature(UniprotFeatureType ft) {
-          for (int i = 0; i < m_AminoAcids.length; i++) {
+        for (int i = 0; i < m_AminoAcids.length; i++) {
             ProteinAminoAcid aminoAcid = m_AminoAcids[i];
             if (aminoAcid.hasFeature(ft))
                 return true;
@@ -1209,7 +1227,7 @@ public class Uniprot {
 
         for (int i = 0; i < pts.length; i++) {
             Uniprot pt = pts[i];
-  //          if(!pt.hasFeature(ft)) continue;
+            //          if(!pt.hasFeature(ft)) continue;
 
 
             int seen = pt.countFeature(ft);
@@ -1251,10 +1269,10 @@ public class Uniprot {
 
         for (int i = 0; i < pts.length; i++) {
             Uniprot pt = pts[i];
-    //        if(!pt.hasFeature(ft)) continue;
+            //        if(!pt.hasFeature(ft)) continue;
 
             pt.addObservedCleavagesToTable(ft, ret);
-         }
+        }
         return ret;
     }
 
@@ -1264,41 +1282,41 @@ public class Uniprot {
 
         for (int i = 0; i < pts.length; i++) {
             Uniprot pt = pts[i];
-  //          if(!pt.hasFeature(ft)) continue;
+            //          if(!pt.hasFeature(ft)) continue;
 
-            pt.addMissedCleavagesToTable(ft, ret) ;
-         }
+            pt.addMissedCleavagesToTable(ft, ret);
+        }
         return ret;
     }
 
     private static void showFeatures(Map<UniprotFeatureType, FisherTable> mpx) {
-         UniprotFeatureType[] fts = SwissProt.ANALYZED_FEATURES;
-         for (int i = 0; i < fts.length; i++) {
-             UniprotFeatureType ft = fts[i];
-             FisherTable fisherTable = mpx.get(ft);
-             double prob = fisherTable.getProbability();
-             double total = fisherTable.sum();
-             if(total == 0)
-                 return;
-             int[] values = fisherTable.getValues();
-             double detected = (values[FisherTable.NOT_PRESENT_DECTECTED] + values[FisherTable.PRESENT_DECTECTED]) / total;
-             double pFeature = (double) (values[FisherTable.PRESENT_NOT_DECTECTED] + values[FisherTable.PRESENT_DECTECTED]);
-             if(pFeature == 0)
-                 return;
-             double fdetected = (values[FisherTable.PRESENT_DECTECTED]) / pFeature;
+        UniprotFeatureType[] fts = SwissProt.ANALYZED_FEATURES;
+        for (int i = 0; i < fts.length; i++) {
+            UniprotFeatureType ft = fts[i];
+            FisherTable fisherTable = mpx.get(ft);
+            double prob = fisherTable.getProbability();
+            double total = fisherTable.sum();
+            if (total == 0)
+                return;
+            int[] values = fisherTable.getValues();
+            double detected = (values[FisherTable.NOT_PRESENT_DECTECTED] + values[FisherTable.PRESENT_DECTECTED]) / total;
+            double pFeature = (double) (values[FisherTable.PRESENT_NOT_DECTECTED] + values[FisherTable.PRESENT_DECTECTED]);
+            if (pFeature == 0)
+                return;
+            double fdetected = (values[FisherTable.PRESENT_DECTECTED]) / pFeature;
 
-             System.out.println(ft.toString() +
-                     " prob " + String.format("%6.1e", prob) +
-                     " fdetect " + String.format("%6.3f", fdetected) +
-                     " detect " + String.format("%6.3f", detected) +
-                     " number "  + (int)total   +
-                     " detected "  + values[FisherTable.PRESENT_DECTECTED]
+            System.out.println(ft.toString() +
+                    " prob " + String.format("%6.1e", prob) +
+                    " fdetect " + String.format("%6.3f", fdetected) +
+                    " detect " + String.format("%6.3f", detected) +
+                    " number " + (int) total +
+                    " detected " + values[FisherTable.PRESENT_DECTECTED]
 
 
-             );
+            );
 
-         }
-     }
+        }
+    }
 
     public static final String SAMPLE = "java Uniprot" + "  Origene.tsv GoodPeptides.txt  OrigeneData.dat";
 
@@ -1306,24 +1324,24 @@ public class Uniprot {
         // downloadUniprots(args[0]);
 
 
-        if(args.length < 3) {
-                 UsageGenerator.showUsage(SAMPLE,
-                         "proteins <tab delimited uniptotid\tsequence>",
-                         "peptides <tab delimited uniptotid\tsequence>",
-                         "sp <todo fix>"
+        if (args.length < 3) {
+            UsageGenerator.showUsage(SAMPLE,
+                    "proteins <tab delimited uniptotid\tsequence>",
+                    "peptides <tab delimited uniptotid\tsequence>",
+                    "sp <todo fix>"
 
-                 );
-                return;
+            );
+            return;
         }
 
         File inp = new File(args[0]);
-         FileUtilities.guaranteeExistingFile(inp);
+        FileUtilities.guaranteeExistingFile(inp);
 
-         File peptides = new File(args[1]);
-         FileUtilities.guaranteeExistingFile(peptides);
+        File peptides = new File(args[1]);
+        FileUtilities.guaranteeExistingFile(peptides);
 
-         File sp = new File(args[2]);
-         FileUtilities.guaranteeExistingFile(sp);
+        File sp = new File(args[2]);
+        FileUtilities.guaranteeExistingFile(sp);
 
 
         int nBad = 0;
@@ -1350,12 +1368,13 @@ public class Uniprot {
                 continue;
             }
             double coverage = (double) nd / (double) len;
-        //    System.out.println(pt.getId() + " " + String.format("%6.3f", coverage));
+            //    System.out.println(pt.getId() + " " + String.format("%6.3f", coverage));
 
         }
 
         Map<String, Uniprot> unterestingUniprots = findUnterestingUniprots(sp, idToUniprot);
-        Uniprot[] interesting = unterestingUniprots.values().toArray(Uniprot.EMPTY_ARRAY);;
+        Uniprot[] interesting = unterestingUniprots.values().toArray(Uniprot.EMPTY_ARRAY);
+        ;
 
         System.out.println("Features");
         Map<UniprotFeatureType, FisherTable> mpx = handleFeatures(interesting);
@@ -1370,7 +1389,6 @@ public class Uniprot {
         showFeatures(missCleave);
 
 
-
         for (int i = 0; i < interesting.length; i++) {
             Uniprot uniprot = interesting[i];
 
@@ -1380,7 +1398,6 @@ public class Uniprot {
         // getUniptotsFromCommaSeparated(args);
 
     }
-
 
 
 }

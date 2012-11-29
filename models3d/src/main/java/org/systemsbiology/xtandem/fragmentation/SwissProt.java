@@ -22,7 +22,7 @@ public class SwissProt {
      * @param s
      * @return
      */
-    public Sequence parseSequence(String s) {
+    public static Sequence parseSequence(String s) {
         BufferedReader inp = new BufferedReader(new StringReader(s));
         //read the SwissProt File
         SequenceIterator sequences = SeqIOTools.readSwissprot(inp);
