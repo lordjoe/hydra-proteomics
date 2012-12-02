@@ -139,7 +139,7 @@ public class Protein extends Polypeptide implements IProtein {
         char startPunct = 0;
         for(int i = 0; i < id.length(); i++)   {
             char c = id.charAt(i);
-            if(Character.isAlphabetic(c)) {
+            if(Character.isLetterOrDigit(c)) {
                 sb.append((char)Character.toUpperCase(c)) ;
                 break;
             }
