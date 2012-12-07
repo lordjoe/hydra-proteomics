@@ -37,7 +37,9 @@ public enum ScoringComparisionResult {
         if (del < ScoringComparisionResult.MINIMUM_DIFFERENCE) {
             return Close;
         }
-        if (xdel > 0) {
+        System.out.println("old result " + jxMatch);
+        System.out.println("new result " + xMatch);
+         if (xdel > 0) {
             if (del > ScoringComparisionResult.BIG_DIFFERENCE)
                 return XtandemMuchBetter;
             return XtandemBetter;

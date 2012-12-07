@@ -206,12 +206,15 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
     public int runJob(Configuration conf, String[] args) throws Exception {
         AbstractNShotInputFormat.setNumberKeys(NUMBER_KEYS);
         AbstractNShotInputFormat.setNumberSplits(NUMBER_SPLITS);
+        System.err.println(conf.get("user2 " + "user.name"));
 
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 //        if (otherArgs.length != 2) {
 //            System.err.println("Usage: wordcount <in> <out>");
 //            System.exit(2);
 //        }
+
+        System.err.println(conf.get("user3 " + "user.name"));
         Job job = new Job(conf, "Generated data");
         job.setJarByClass(NShotTest.class);
 
@@ -254,6 +257,7 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
         FileOutputFormat.setOutputPath(job, outputDir);
 
 
+
         boolean ans = job.waitForCompletion(true);
         int ret = ans ? 0 : 1;
         return ret;
@@ -271,6 +275,9 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
         Configuration conf = getConf();
          if(conf == null)
              conf = new Configuration();
+
+        System.err.println(conf.get("user1 " + "user.name"));
+
          //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
         return runJob(conf, args);
     }

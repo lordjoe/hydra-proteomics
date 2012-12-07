@@ -402,6 +402,15 @@ public class JXTandem_XTandemCrossValidator {
         out.print(",");
 
     }
+    private static void compareXTandemAndHydra(String xTandemFile, String jxTandemFile) {
+         JXTandem_XTandemCrossValidator validator = new JXTandem_XTandemCrossValidator(xTandemFile, jxTandemFile);
+         Map<String, ScoredScan> xtandemScans = validator.readXTandemFile();
+         Map<String, ScoredScan> jxTandemScans = validator.readJXTandemFile();
+         ScoringComparisonReport sr = new ScoringComparisonReport(xtandemScans, jxTandemScans);
+         sr.reportScanDifferences(true);
+         System.out.println(sr);
+         writeInterestingCases(sr);
+     }
 
 
     public static void main(String[] args) throws Exception {
@@ -418,13 +427,7 @@ public class JXTandem_XTandemCrossValidator {
         else
             JxTandemFile = FileUtilities.getLatestFileWithExtension("_debug.xml").getName();
 
-        JXTandem_XTandemCrossValidator validator = new JXTandem_XTandemCrossValidator(xTandemFile, JxTandemFile);
-        Map<String, ScoredScan> xtandemScans = validator.readXTandemFile();
-        Map<String, ScoredScan> jxTandemScans = validator.readJXTandemFile();
-        ScoringComparisonReport sr = new ScoringComparisonReport(xtandemScans, jxTandemScans);
-        sr.reportScanDifferences(true);
-        System.out.println(sr);
-        writeInterestingCases(sr);
+        compareXTandemAndHydra(xTandemFile, JxTandemFile);
         //       sr.reportScanDifferences();
 //        reportScanDifferences(xtandemScans,jxTandemScans);
 //        String valid = validator.validateScoredScans();
@@ -433,6 +436,7 @@ public class JXTandem_XTandemCrossValidator {
 //        //     throw new IllegalStateException(valid);
 
     }
+
 
 }
 

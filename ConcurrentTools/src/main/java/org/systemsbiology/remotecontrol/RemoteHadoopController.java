@@ -71,6 +71,11 @@ public class RemoteHadoopController implements IHadoopController {
     public boolean runJob(IHadoopJob job) {
         String jarFile = job.getJarFile();
         InputStream is = null;
+
+        // who do we want to run as
+        RemoteSession session = getSession();
+        String user = session.getUser();
+
         File jar = null;
         if (jarFile != null && jarFile.startsWith("res://")) {
             String substring = jarFile.substring("res://".length());
@@ -87,6 +92,8 @@ public class RemoteHadoopController implements IHadoopController {
         //      guaranteeFiles(inputs, job.getFilesDirectory());
         Configuration conf = buildConfiguration(jarFile);
         //    conf.set("mapred.job.reuse.jvm.num.tasks", "1");
+
+        conf.set("user.name",user);
 
         IFileSystem hdfsAccessor = getHDFSAccessor();
         String s = job.getOutputDirectory();
@@ -206,7 +213,8 @@ public class RemoteHadoopController implements IHadoopController {
         //     }
 
 
-        conf.set("fs.default.name", "hdfs://" + RemoteUtilities.getHost() + ":" + RemoteUtilities.getPort());
+        String hdfshost = "hdfs://" + RemoteUtilities.getHost() + ":" + RemoteUtilities.getPort();
+        conf.set("fs.default.name", hdfshost);
         String jobTracker = RemoteUtilities.getJobTracker();
         conf.set("mapred.job.tracker", jobTracker);
 

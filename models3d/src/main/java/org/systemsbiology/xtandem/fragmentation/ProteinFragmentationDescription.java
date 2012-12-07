@@ -40,7 +40,7 @@ public class ProteinFragmentationDescription {
     private final ProteinCollection m_Parent;
     private final String m_UniprotId;
     private Protein m_Protein;
-    private final List<ProteinFragment> m_Fragments = new ArrayList<ProteinFragment>();
+    private final Set<ProteinFragment> m_Fragments = new HashSet<ProteinFragment>();
     private short[] m_Coverage;
     private double m_FractionalCoverage; // fraction of amino acids in any fragment
     private File m_ModelFile;
@@ -168,20 +168,25 @@ public class ProteinFragmentationDescription {
         String sequence = items[1].trim();
 
         Polypeptide fragment = new Polypeptide(sequence);
-        addFragment(protein, fragment, index++);
-        return index;
+        ProteinFragment pf = new ProteinFragment(protein, fragment, index);
+           return addFragment( protein,  fragment, index);
     }
 
-    public void addFragment(Protein protein, IPolypeptide fragment, int index) {
+    public int  addFragment(Protein protein, IPolypeptide fragment, int index) {
         ProteinFragment pf = new ProteinFragment(protein, fragment, index);
-        if(!m_Fragments.contains(pf))
+        if(!m_Fragments.contains(pf))   {
             m_Fragments.add(pf);
-
+            return ++index;
+        }
+        else   {
+            return index;
+        }
     }
 
     public ProteinFragment[] getFragments() {
         guaranteeFragments();
         ProteinFragment[] proteinFragments = m_Fragments.toArray(ProteinFragment.EMPTY_ARRAY);
+        Arrays.sort(proteinFragments);
         return proteinFragments;
     }
 
@@ -267,7 +272,7 @@ public class ProteinFragmentationDescription {
 
     private int buildFragment(final FoundPeptide peptide, int index) {
         Protein protein = getProtein();
-        addFragment(protein, peptide.getPeptide(), index++);
+        index = addFragment(protein, peptide.getPeptide(), index);
         return index;
     }
 

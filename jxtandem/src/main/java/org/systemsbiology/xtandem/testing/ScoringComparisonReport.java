@@ -143,9 +143,11 @@ public class ScoringComparisonReport {
         if (xMatch == null || jxMatch == null) {
             if (xMatch == null) {
                 m_NumberJXTandemOnly++;
+                System.out.println("not scored by new - old result " + jxMatch);
                 return true;
             }
             if (jxMatch == null) {
+                System.out.println("not scored ny old - new result " + jxMatch);
                 m_NumberXTandemOnly++;
                 return true;
             }
