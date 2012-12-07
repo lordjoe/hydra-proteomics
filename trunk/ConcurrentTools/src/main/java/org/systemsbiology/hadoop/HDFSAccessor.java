@@ -4,6 +4,7 @@ import com.lordjoe.utilities.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.*;
+import org.apache.hadoop.fs.permission.*;
 import org.systemsbiology.common.*;
 import org.systemsbiology.remotecontrol.*;
 
@@ -21,7 +22,8 @@ public class HDFSAccessor implements IFileSystem {
     public static HDFSAccessor[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = HDFSAccessor.class;
 
-
+    public static final FsPermission FULL_ACCESS = new FsPermission(Short.parseShort("777",8));
+    public static final FsPermission FULL_FILE_ACCESS = new FsPermission(Short.parseShort("666",8));
     private final FileSystem m_DFS;
 
 
@@ -305,10 +307,15 @@ public class HDFSAccessor implements IFileSystem {
      */
     @Override
     public void guaranteeDirectory(String hdfsPath) {
-        final FileSystem fs = getDFS();
         Path src = new Path(hdfsPath);
 
 
+        guaranteeDirectory(src);
+
+    }
+
+    private void guaranteeDirectory(Path src) {
+        final FileSystem fs = getDFS();
         try {
             if (fs.exists(src)) {
                 if (!fs.isFile(src)) {
@@ -317,13 +324,13 @@ public class HDFSAccessor implements IFileSystem {
                 else {
                     fs.delete(src, false);   // drop a file we want a directory
                 }
+                fs.setPermission(src,FULL_ACCESS);
             }
-            fs.mkdirs(src);
+            fs.mkdirs(src,FULL_ACCESS);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     /**
@@ -377,15 +384,21 @@ public class HDFSAccessor implements IFileSystem {
             }
         }
 
-        final FileSystem fs = getDFS();
         Path src = new Path(hdfsPath);
-        try {
-            return fs.create(src);
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
+        return openFileForWrite(src);
+    }
 
-        }
+    private OutputStream openFileForWrite(Path src) {
+        final FileSystem fs = getDFS();
+        try {
+           Path parent = src.getParent();
+           guaranteeDirectory(  parent);
+           return  FileSystem.create(fs, src, FULL_FILE_ACCESS);
+       }
+       catch (IOException e) {
+           throw new RuntimeException(e);
+
+       }
     }
 
     /**

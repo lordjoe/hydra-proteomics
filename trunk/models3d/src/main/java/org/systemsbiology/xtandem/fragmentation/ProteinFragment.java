@@ -116,7 +116,7 @@ public class ProteinFragment implements Comparable<ProteinFragment> {
 
         final ProteinFragment that = (ProteinFragment) o;
 
-        if (m_Index != that.m_Index) return false;
+        //if (m_Index != that.m_Index) return false;
         if (m_ParentProtein != null ? !m_ParentProtein.equals(that.m_ParentProtein) : that.m_ParentProtein != null)
             return false;
         if (m_Peptide != null ? !m_Peptide.equals(that.m_Peptide) : that.m_Peptide != null) return false;
@@ -130,7 +130,7 @@ public class ProteinFragment implements Comparable<ProteinFragment> {
         int result = m_ParentProtein != null ? m_ParentProtein.hashCode() : 0;
         result = 31 * result + (m_Peptide != null ? m_Peptide.hashCode() : 0);
         result = 31 * result + (m_StartLocations != null ? Arrays.hashCode(m_StartLocations) : 0);
-        result = 31 * result + m_Index;
+        //result = 31 * result + m_Index;
         return result;
     }
 }

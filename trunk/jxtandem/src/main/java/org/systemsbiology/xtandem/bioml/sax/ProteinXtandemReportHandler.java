@@ -80,7 +80,16 @@ public class ProteinXtandemReportHandler extends AbstractElementSaxHandler<XTand
 
     private void handleAmimoAcidModification(final String uri, final String localName, final String QName, final Attributes attr) {
         String type = attr.getValue("type");
-        FastaAminoAcid aa = FastaAminoAcid.valueOf(type);
+        if("[".equals(type))
+            return;
+        FastaAminoAcid aa = null;
+        try {
+            aa = FastaAminoAcid.valueOf(type);
+        }
+        catch (IllegalArgumentException e) {
+            throw e;  // should not happen
+
+        }
         int location = XTandemSaxUtilities.getRequiredIntegerAttribute("at", attr);
         if(location > 0) // we write at 1 based so need to decrement
             location--;

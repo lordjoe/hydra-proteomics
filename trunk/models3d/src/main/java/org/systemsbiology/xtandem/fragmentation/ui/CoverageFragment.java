@@ -3,6 +3,8 @@ package org.systemsbiology.xtandem.fragmentation.ui;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 
+import java.util.*;
+
 /**
  * org.systemsbiology.xtandem.fragmentation.ui.CoverageFragment
  * User: Steve
@@ -74,13 +76,19 @@ public class CoverageFragment extends SVGRootBuilder {
 
         m_Lines = ProteinFragmentLine.generateLines(fragments);
         ProteinFragment[] fragments1 = fragments.getFragments();
+        Set<String> usedSequences = new HashSet<String>();
         for (int i = 0; i < m_Lines.length; i++) {
             ProteinFragmentLine coverageFragment = m_Lines[i];
-            AminoAcidTextLine aminoAcidTextLine = new AminoAcidTextLine(this, coverageFragment, i);
+            usedSequences.clear();
+             AminoAcidTextLine aminoAcidTextLine = new AminoAcidTextLine(this, coverageFragment, i);
             int displapedFragments = 0;
             for (int j = 0; j < fragments1.length; j++) {
                 ProteinFragment test = fragments1[j];
+                String testSequence = test.getSequence();
+                if(usedSequences.contains(testSequence))
+                    continue;
                 if (coverageFragment.containsFragent(test)) {
+                    usedSequences.add(testSequence);
                     new DetectedFragmentBuillder(aminoAcidTextLine, test, coverageFragment, displapedFragments++);
                 }
             }

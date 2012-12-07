@@ -896,10 +896,11 @@ public class Uniprot {
                 peptides = fps.getPeptides(id);
 
             ProteinFragmentationDescription pfd = new ProteinFragmentationDescription(id, pc, protein, peptides);
+            int index = 0;
             for (int j = 0; j < peptides.length; j++) {
                 FoundPeptide peptide = peptides[j];
                 IPolypeptide peptide1 = peptide.getPeptide();
-                pfd.addFragment(protein, peptide1, j);
+                index = pfd.addFragment(protein, peptide1, index);
             }
             pc.addProteinFragmentationDescription(pfd);
             ids[i] = id;
