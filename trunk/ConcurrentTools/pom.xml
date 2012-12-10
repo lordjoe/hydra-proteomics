@@ -139,12 +139,12 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
-        -->
         <dependency>
         	<groupId>org.mortbay.jetty</groupId>
         	<artifactId>jetty</artifactId>
         	<version>7.0.0.pre5</version>
         </dependency>
+         -->
     </dependencies>
 
 </project>
