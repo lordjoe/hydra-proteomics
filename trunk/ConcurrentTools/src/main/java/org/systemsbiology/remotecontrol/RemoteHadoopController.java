@@ -380,9 +380,9 @@ public class RemoteHadoopController implements IHadoopController {
 
     @Override
     public String getTemporaryDirectory() {
-        String temp = "/home/USER/temp";
-        temp = temp.replace("USER", getSession().getUser());
-        IFileSystem fs = getHDFSAccessor();
+        String defaultPath = RemoteUtilities.getDefaultPath();
+        String temp = defaultPath + "/temp";
+         IFileSystem fs = getHDFSAccessor();
         fs.guaranteeDirectory(temp);
         return temp;
     }

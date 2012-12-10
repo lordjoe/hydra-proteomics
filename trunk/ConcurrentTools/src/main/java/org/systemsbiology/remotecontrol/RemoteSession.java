@@ -291,7 +291,7 @@ public class RemoteSession implements UserInfo {
 
 
         String temporaryDirectory = pHc.getTemporaryDirectory();
-         String jarLocation = "jobs";
+        String jarLocation = "jobs";
         IHadoopJob job = HadoopJob.buildJob(
                 mainClass,
                 "FeeFie.txt",     // data on hdfs
@@ -318,7 +318,9 @@ public class RemoteSession implements UserInfo {
         RemoteSession rs = new RemoteSession(host, user, password);
         rs.setConnected(true);
 
-        final IHadoopController hc = new RemoteHadoopController(rs);
+        final RemoteHadoopController hc = new RemoteHadoopController(rs);
+
+
         //   String path = RemoteUtilities.guaranteeClassPath(hc,"/user/howdah/lib");
         // File test = new File("AverageWordLength.txt");
         //  hc.copyDirectoryToHDFS(test,"/user/training/avg.txt");
