@@ -22,7 +22,7 @@
         <module>awshadoop</module>
         <module>JXTandem</module>
         <module>proteos</module>
-       <module>models3d</module>
+      <!-- <module>models3d</module>  -->
      </modules>
 
    
@@ -85,6 +85,11 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.9</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.mortbay.jetty</groupId>
+        	<artifactId>jetty</artifactId>
+        	<version>6.1.14</version>
         </dependency>
 
     </dependencies>
