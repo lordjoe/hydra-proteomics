@@ -93,7 +93,7 @@ public class RemoteHadoopController implements IHadoopController {
         Configuration conf = buildConfiguration(jarFile);
         //    conf.set("mapred.job.reuse.jvm.num.tasks", "1");
 
-        conf.set("user.name",user);
+       //conf.set("user.name",user);
 
         IFileSystem hdfsAccessor = getHDFSAccessor();
         String s = job.getOutputDirectory();
