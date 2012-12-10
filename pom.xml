@@ -107,14 +107,12 @@
             <name>BioJava repository</name>
             <url>http://www.biojava.org/download/maven/</url>
         </repository>
-          <!--
-         <repository>
+          <repository>
             <id>informatics-svcs.systemsbiology.net</id>
             <name>informatics-svcs maven repository</name>
             <url>http://informatics-svcs.systemsbiology.net/maven_repository</url>
         </repository>
-        -->
-    </repositories>
+      </repositories>
 
     <distributionManagement>
          <!--
