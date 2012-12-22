@@ -14,6 +14,28 @@ import java.util.*;
 public class PeptideModification implements Comparable<PeptideModification> {
     public static final PeptideModification[] EMPTY_ARRAY = {};
 
+    private static boolean gHardCodeModifications = false;
+
+    /**
+     * true if hadr coded modifications are used
+     * @return
+     */
+    public static boolean isHardCodeModifications() {
+        return gHardCodeModifications;
+    }
+
+    /**
+     * normally a few peptide modifications are hard coded
+     * @param hardCodeModifications
+     */
+    public static void setHardCodeModifications(boolean hardCodeModifications) {
+        if(gHardCodeModifications == hardCodeModifications)
+            return;
+        gHardCodeModifications = hardCodeModifications;
+        resetHardCodedModifications();
+    }
+
+
     private static final Map<String, PeptideModification> gAsString = new HashMap<String, PeptideModification>();
 
     public static PeptideModification[] fromListString(String mods, PeptideModificationRestriction restrict, boolean fixed) {
@@ -114,11 +136,13 @@ public class PeptideModification implements Comparable<PeptideModification> {
         // new PeptideModification(FastaAminoAcid.C, CYSTEIN_MODIFICATION_MASS,
         //        PeptideModificationRestriction.Global, true);
         if (gNTermalModifications.isEmpty()) {
-            new PeptideModification(FastaAminoAcid.Q, -MassCalculator.getDefaultCalculator().calcMass("NH3"),
+            double nh3 = MassCalculator.getDefaultCalculator().calcMass("NH3");
+            double h2O = MassCalculator.getDefaultCalculator().calcMass("H2O");
+            new PeptideModification(FastaAminoAcid.Q, -nh3,
                     PeptideModificationRestriction.NTerminal, false);
-            new PeptideModification(FastaAminoAcid.C, -MassCalculator.getDefaultCalculator().calcMass("NH3"),
+            new PeptideModification(FastaAminoAcid.C, -nh3,
                     PeptideModificationRestriction.NTerminal, false);
-            new PeptideModification(FastaAminoAcid.E, -MassCalculator.getDefaultCalculator().calcMass("H2O"),
+            new PeptideModification(FastaAminoAcid.E, -h2O,
                     PeptideModificationRestriction.NTerminal, false);
         }
     }
@@ -129,7 +153,8 @@ public class PeptideModification implements Comparable<PeptideModification> {
         gCTermalModifications.clear();
          // new PeptideModification(FastaAminoAcid.C, CYSTEIN_MODIFICATION_MASS,
         //        PeptideModificationRestriction.Global, true);
-        guaranteeHardCodedModifications();
+        if(isHardCodeModifications())
+            guaranteeHardCodedModifications();
     }
 
 
