@@ -61,6 +61,8 @@ public class ProteinAminoAcid implements Comparable<ProteinAminoAcid>,IAminoAcid
     }
 
     public void setMissedCleavage(boolean missedCleavage) {
+        if(missedCleavage)
+            setPotentialCleavage(true);   // WHY do I need this todo
         m_MissedCleavage = missedCleavage;
     }
 

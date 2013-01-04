@@ -4,8 +4,6 @@ import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 import org.systemsbiology.xtandem.peptide.*;
-import org.w3c.css.sac.*;
-import sun.awt.*;
 
 import java.io.*;
 
@@ -20,9 +18,9 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
             {
                     "Black",
                     "Blue",
-  //                  "Purple",
- //                   "Green",
-  //                  "Red",
+                    //                  "Purple",
+                    //                   "Green",
+                    //                  "Red",
             };
 
     public static final int SECONDARY_STRUCTURE_NOT_MODELED = 0;
@@ -54,31 +52,36 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
                     "DiSulphide",   //SECONDARY_STRUCTURE_DISULPHIDE
                     "Missed Cleavage",   //SECONDARY_STRUCTURE_MISSED_CLEAVAGE
                     "Turn",   //SECONDARY_STRUCTURE_MISSED_CLEAVAGE
-             };
+            };
 
 
     public static final String TAG = "text";
 
     private final String m_AminoAcid;
-//    private final int m_Coverage;
     private final SequenceChainMap m_Mapping;
-    private final IAminoAcidAtLocation  m_AAMapping;
-//    private final boolean  m_MisssedCleavage;
+    private final IAminoAcidAtLocation m_AAMapping;
 
     public OneAminoAcidFragmentBuillder(ProteinLineBuillder parent, int xpos, String aminoAcid, int coverage,
-                                        SequenceChainMap mapping,boolean  misssedCleavage) {
+                                        SequenceChainMap mapping, boolean misssedCleavage) {
 
         super(parent, TAG);
         m_AminoAcid = new String(aminoAcid);
 //        m_Coverage = coverage;
         m_Mapping = mapping;
-//        m_MisssedCleavage = misssedCleavage;
-        if (mapping != null) {
+         if (mapping != null) {
             IAminoAcidAtLocation[] chainMappings = mapping.getChainMappings();
-            if (chainMappings.length >  0) {
+            if (chainMappings.length > 0) {
                 m_AAMapping = chainMappings[0];
-                 if(m_AAMapping instanceof ProteinAminoAcid)
-                     ((ProteinAminoAcid)m_AAMapping).setDetected(coverage > 0);
+                if (m_AAMapping instanceof ProteinAminoAcid)     {
+                    ((ProteinAminoAcid) m_AAMapping).setDetected(coverage > 0);
+                    ((ProteinAminoAcid) m_AAMapping).setMissedCleavage(misssedCleavage);
+                  }
+                if (chainMappings.length > 1) {
+                    for (int i = 0; i < chainMappings.length; i++) {
+                        IAminoAcidAtLocation chainMapping = chainMappings[i];
+
+                    }
+                }
             }
             else {
                 m_AAMapping = null;
@@ -96,7 +99,7 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
 
     public String getAminoAcid() {
         IAminoAcidAtLocation aaMapping = getAAMapping();
-        if(aaMapping == null)
+        if (aaMapping == null)
             return m_AminoAcid;
         FastaAminoAcid aminoAcid = aaMapping.getAminoAcid();
         return aminoAcid.toString();
@@ -104,12 +107,12 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
 
     public int getCoverage() {
         IAminoAcidAtLocation aaMapping = getAAMapping();
-        if(aaMapping == null)
+        if (aaMapping == null)
             return 0;
-        if(aaMapping.isDetected())
-           return 1;
-       else
-           return 0;
+        if (aaMapping.isDetected())
+            return 1;
+        else
+            return 0;
     }
 
     public SequenceChainMap getMapping() {
@@ -120,15 +123,18 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
         return m_AAMapping;
     }
 
+
     protected String getFillColor() {
         IAminoAcidAtLocation aaMapping = getAAMapping();
         if (aaMapping == null)
             return SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_NOT_MODELED];
-        if (aaMapping.isPotentialCleavage() && aaMapping.isSometimesMissedCleavage())
-               return SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_MISSED_CLEAVAGE];
-        if (aaMapping.isDiSulphideBond())
-              return SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_DISULPHIDE];
-            UniprotFeatureType structure = aaMapping.getStructure();
+        if (aaMapping.isPotentialCleavage()) {
+            if ( aaMapping.isSometimesMissedCleavage())
+                return SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_MISSED_CLEAVAGE];
+        }
+         if (aaMapping.isDiSulphideBond())
+            return SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_DISULPHIDE];
+        UniprotFeatureType structure = aaMapping.getStructure();
         if (structure != null) {
             switch (structure) {
                 case HELIX:
@@ -136,7 +142,7 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
                 case STRAND:
                     return SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_SHEET];
                 case TURN:
-                     return SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_TURN];
+                    return SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_TURN];
 
             }
         }
@@ -150,8 +156,11 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
         try {
             indent(out);
             IAminoAcidAtLocation aaMapping = getAAMapping();
-             out.append("<rect ");
-            out.append(" style=\"fill:" + getFillColor() + ";\" ");
+            out.append("<rect ");
+            String fillColor = getFillColor();
+            if ("Lime".equalsIgnoreCase(fillColor))
+                XTandemUtilities.breakHere();
+            out.append(" style=\"fill:" + fillColor + ";\" ");
             out.append("width=\"" + CoverageFragment.AMINO_ACID_WIDTH + "\" height=\"" + CoverageFragment.AMINO_ACID_HEIGHT + "\" ");
             Offset offset = getOffset();
             offset = offset.add(RECT_OFFSET);
@@ -184,11 +193,11 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
 
 
         String fillColor = getFillColor();
-        if(fillColor.contains(SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_DISULPHIDE]))
+        if (fillColor.contains(SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_DISULPHIDE]))
             fillColor = getFillColor(); // break here
         String coverageColor = getCoverageColor(textCoverage);
         sb.append(" style=\"fill:" + coverageColor +
-            //    ";background-color:" + fillColor +
+                //    ";background-color:" + fillColor +
                 ";\" ");
         sb.append(" text-anchor=\"middle\" ");
         sb.append(getTransformText());
@@ -201,7 +210,7 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     protected void appendAllBuilders(final Appendable out, final Object[] data) {
         try {
             String aminoAcid = getAminoAcid();
-            if(aminoAcid != null)
+            if (aminoAcid != null)
                 out.append(aminoAcid);
         }
         catch (IOException e) {
@@ -218,4 +227,14 @@ public class OneAminoAcidFragmentBuillder extends SVGFragmentBuilder {
     protected boolean isTagOnSeparateLine() {
         return false;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getAminoAcid());
+        String fillColor = getFillColor();
+        if(fillColor.equalsIgnoreCase(SECONDARY_STRUCTURE_COLORS[SECONDARY_STRUCTURE_MISSED_CLEAVAGE]))
+            sb.append("*");
+        return sb.toString();
+      }
 }
