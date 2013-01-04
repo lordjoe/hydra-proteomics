@@ -40,4 +40,8 @@ public class AminoAcidTextLine extends SVGFragmentBuilder {
         return sb.toString();
     }
 
+    @Override
+    protected void appendAllBuilders(Appendable out, Object[] data) {
+        super.appendAllBuilders(out, data);    //To change body of overridden methods use File | Settings | File Templates.
+    }
 }

@@ -78,7 +78,10 @@ public class SequenceChainMap  implements Comparable<SequenceChainMap> {
 
     @Override
     public String toString() {
-        return  getAA().toString()  + getPos()  ;
+        FastaAminoAcid aa = getAA();
+        if(aa == null)
+            return  "null"   + getPos()  ;
+        return  aa.toString()  + getPos()  ;
     }
 
 }

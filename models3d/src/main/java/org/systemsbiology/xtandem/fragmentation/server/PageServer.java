@@ -226,25 +226,7 @@ public class PageServer extends HttpServlet {
 
     private String buildPage(String uiprotId, String fragments, HttpServletResponse rsp) {
         try {
-            ProteinDatabase pd = ProteinDatabase.getInstance();
-            Protein protein = pd.getProtein(uiprotId);
-            if (protein == null) {
-                throw new UnsupportedOperationException("Fix This"); // ToDo
-            }
-            String sequence = protein.getSequence();
-            FoundPeptide[] peptides = fragmentsToFoundPeptides(protein, fragments);
-            ProteinFragmentationDescription pfd = new ProteinFragmentationDescription(uiprotId, null, protein, peptides);
-            Uniprot up = Uniprot.getUniprot(uiprotId);
-            BioJavaModel bestModel = up.getBestModel();
-
-            if (bestModel != null) {
-
-                File file = bestModel.getFile();
-                pfd.setModelFile(file);
-            }
-
-
-            String file = ProteinCoveragePageBuilder.buildFragmentDescriptionPage(uiprotId, null, null, pfd);
+            String file = getPageString(uiprotId, fragments);
             return file;
         }
         catch (Exception e) {
@@ -252,6 +234,28 @@ public class PageServer extends HttpServlet {
             buildBadUniprotPage(uiprotId, fragments, rsp);
             return null;
         }
+    }
+
+    public static String getPageString(String uiprotId, String fragments) {
+        ProteinDatabase pd = ProteinDatabase.getInstance();
+        Protein protein = pd.getProtein(uiprotId);
+        if (protein == null) {
+            throw new UnsupportedOperationException("Cannot Find Protein " + uiprotId);
+        }
+        String sequence = protein.getSequence();
+        FoundPeptide[] peptides = fragmentsToFoundPeptides(protein, fragments);
+        ProteinFragmentationDescription pfd = new ProteinFragmentationDescription(uiprotId, null, protein, peptides);
+        Uniprot up = Uniprot.getUniprot(uiprotId);
+        BioJavaModel bestModel = up.getBestModel();
+
+        if (bestModel != null) {
+
+            File file = bestModel.getFile();
+            pfd.setModelFile(file);
+        }
+
+
+        return ProteinCoveragePageBuilder.buildFragmentDescriptionPage(uiprotId, null, null, pfd);
     }
 
     public ProteinCoveragePageTracker getTracker() {

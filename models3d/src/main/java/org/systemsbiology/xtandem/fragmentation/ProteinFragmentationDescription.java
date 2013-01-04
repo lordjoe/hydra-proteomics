@@ -77,9 +77,16 @@ public class ProteinFragmentationDescription {
         char[] chars = sequence.toCharArray();
         for (int i = 0; i < chars.length; i++) {
             char c = chars[i];
-            FastaAminoAcid aa = FastaAminoAcid.fromChar(c);
-            SequenceChainMap sm = new SequenceChainMap(protein,i + 1,aa);
-            holder.add(sm);
+            try {
+                FastaAminoAcid aa = FastaAminoAcid.fromChar(c);
+                SequenceChainMap sm = new SequenceChainMap(protein,i + 1,aa);
+                holder.add(sm);
+            }
+            catch (BadAminoAcidException e) {
+                SequenceChainMap sm = new SequenceChainMap(protein,i + 1,FastaAminoAcid.UNKNOWN);
+                 holder.add(sm);
+
+            }
         }
          SequenceChainMap[] ret = new SequenceChainMap[holder.size()];
         holder.toArray(ret);

@@ -3,8 +3,6 @@ package org.systemsbiology.xtandem.fragmentation.ui;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 
-import java.io.*;
-
 /**
  * org.systemsbiology.xtandem.fragmentation.ui.HTMLPageBuillder
  * User: Steve
@@ -18,10 +16,10 @@ public class ProteinLineBuillder extends SVGFragmentBuilder {
     private final ProteinFragmentLine m_Line;
     private Integer m_LineHeight;
 
-    public ProteinLineBuillder(  SVGFragmentBuilder parent, final ProteinFragmentLine line) {
-        super(  parent, TAG);
+    public ProteinLineBuillder(SVGFragmentBuilder parent, final ProteinFragmentLine line) {
+        super(parent, TAG);
         m_Line = line;
-         buildAminoAcidBuilders();
+        buildAminoAcidBuilders();
     }
 
     protected void buildAminoAcidBuilders() {
@@ -31,38 +29,40 @@ public class ProteinLineBuillder extends SVGFragmentBuilder {
         short[] allCoverage = fragments.getAllCoverage();
         SequenceChainMap[] mappings = fragments.getChainMappings();
         ProteinFragment[] fragments1 = fragments.getFragments();
-        if(mappings != null) {
-            if(mappings.length != allCoverage.length)
+        if (mappings != null) {
+            if (mappings.length != allCoverage.length)
                 throw new IllegalStateException("problem"); // ToDo change
         }
-    //    int height = getLineHeight();
+        //    int height = getLineHeight();
         String sequence = line.getSequence();
         for (int i = 0; i < sequence.length(); i++) {
             String c = sequence.substring(i, i + 1);
-            boolean  misssedCleavage = false;
+            boolean misssedCleavage = false;
             int index = start + i;
-              if(c.equals("R")|| c.equals("K"))  {   //
+            if (c.equals("R") || c.equals("K")) {   //
                 for (int j = 0; j < fragments1.length; j++) {
                     ProteinFragment pf = fragments1[j];
                     String sequence1 = pf.getSequence();
-                    if(pf.containsPosition(index))  {
-                        if( pf.hasMissedCleavages()) {
-                              if( pf.containsPosition(index + 1))    {
-                                  misssedCleavage = true;
-                                  break;
-                              }
-                          }
-                          
+                    if (pf.containsPosition(index)) {
+                        if (pf.hasMissedCleavages()) {
+                            if (pf.containsPosition(index + 1)) {
+                                misssedCleavage = true;
+                                break;
+                            }
+                        }
+
                     }
                 }
+                if(start == 0 )
+                    sequence = line.getSequence();// why no misse cleavages on first line
             }
             int xPosition = CoverageFragment.AMINO_ACID_WIDTH * (i + 1);
-              short textCoverage = allCoverage[index];
+            short textCoverage = allCoverage[index];
             SequenceChainMap mapping = null;
-            if(mappings != null)
+            if (mappings != null)
                 mapping = mappings[index];
-            OneAminoAcidFragmentBuillder aa = new OneAminoAcidFragmentBuillder(  this, xPosition, c, textCoverage, mapping,misssedCleavage);
-          }
+            OneAminoAcidFragmentBuillder aa = new OneAminoAcidFragmentBuillder(this, xPosition, c, textCoverage, mapping, misssedCleavage);
+        }
 
     }
 
