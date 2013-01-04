@@ -18,6 +18,15 @@ public class OriginatingScoredScan implements IScoredScan, IAddable<IScoredScan>
     public static final int MAX_SERIALIZED_MATCHED = 8;
     public static final String TAG = "score";
 
+    public static final Comparator<IScoredScan> ID_COMPARISON = new  Comparator<IScoredScan>() {
+        @Override
+        public int compare(IScoredScan o1, IScoredScan o2) {
+            if(o1.equals(o2))
+                return 0;
+            return o1.getId().compareTo(o2.getId());
+        }
+    };
+
     public static final String DEFAULT_VERSION = "1.0";
     public static final String DEFAULT_ALGORITHM = TandemKScoringAlgorithm.ALGORITHM_NAME;
     /**

@@ -4,6 +4,7 @@ import org.systemsbiology.xtandem.hadoop.*;
 import org.systemsbiology.xtandem.mzml.*;
 import org.systemsbiology.xtandem.sax.*;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -347,7 +348,7 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         adder.appendAttribute("num", getId());
         if (url != null) {
             adder.appendAttribute("url", url);
-         }
+        }
         adder.appendAttribute("mslevel", getMsLevel());
         adder.appendAttribute("peaksCount", getPeaksCount());
         adder.appendAttribute("polarity", getPolarity());
@@ -474,9 +475,9 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
      * @param mass positive testMass
      * @return as above
      */
-    public boolean isMassWithinRange(double mass,int charge, IScoringAlgorithm scorer) {
+    public boolean isMassWithinRange(double mass, int charge, IScoringAlgorithm scorer) {
         final IScanPrecursorMZ mz = getPrecursorMz();
-        return mz.isMassWithinRange(mass,charge, scorer);
+        return mz.isMassWithinRange(mass, charge, scorer);
     }
 
 
@@ -846,5 +847,34 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         return "RawScan id=" + getId() +
 
                 " mass " + getPrecursorMz().getPrecursorMass();
+    }
+
+    /**
+     * append as an MGF File
+     *
+     * @param addTo
+     */
+    public void serializeMGF(Appendable addTo) {
+        try {
+            addTo.append("BEGIN IONS\n");
+            addTo.append("TITLE=" + getId() + "\n");
+            addTo.append("PEPMASS=" + String.format("%10.4f",getPrecursorMass()).trim()  + "\n");
+            addTo.append("CHARGE=" + getPrecursorCharge() + "+\n");
+             ISpectrumPeak[] peaks = getPeaks();
+            for (int i = 0; i < peaks.length; i++) {
+                ISpectrumPeak peak = peaks[i];
+                String mz = String.format("%10.5f",peak.getMassChargeRatio()).trim();
+                String pk = String.format("%8.2f",peak.getPeak()).trim();
+                addTo.append(mz + "\t" + pk + "\n");
+
+            }
+            addTo.append("END IONS\n");
+            addTo.append("\n");
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+
     }
 }

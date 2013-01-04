@@ -154,20 +154,52 @@ public class XTandemScoringHandler extends AbstractElementSaxHandler<List<Scored
         return m_Scans;
     }
 
+
+    /**
+     * When passed an XTandem Score writes out a mgf file with ".mgf" appended to the original name
+     * @param args  1 XTandem scoring file
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         String xTandemFile = null;
 
-        if (args.length > 0)
+ //       if (args.length > 0)
             xTandemFile = args[0];
-        else
-            xTandemFile = FileUtilities.getLatestFileWithExtension(".t.txt").getName();
+   //     else
+ //           xTandemFile = FileUtilities.getLatestFileWithExtension(".t.txt").getName();
         XTandemScoringHandler handler = new XTandemScoringHandler();
         InputStream is = new FileInputStream(xTandemFile);
         XTandemUtilities.parseFile(is, handler, xTandemFile);
-        List<ScoredScan> elementObject = handler.getElementObject();
-        ScanScoringReport report = handler.getReport();
+
+        // read the scans
+        List<ScoredScan> elementObjectx = handler.getElementObject();
+        // filter bad
+        List<ScoredScan> scans = new ArrayList<ScoredScan>();
+        for(ScoredScan s : elementObjectx)  {
+            if(s.getRaw() != null && s.getId() != null)
+                scans.add(s);
+        }
+        ScoredScan[] ret = new ScoredScan[scans.size()];
+        scans.toArray(ret);
+        // sort by id
+        Collections.sort(scans,OriginatingScoredScan.ID_COMPARISON);
+
+        File outFile = new File(xTandemFile + ".mgf");
+        PrintWriter out = new PrintWriter(new FileWriter(outFile)) ;
+
+        for(ScoredScan scn : scans)   {
+            RawPeptideScan raw = scn.getRaw();
+            if(raw != null)
+                raw.serializeMGF(out);
+        }
+
+        out.close();
         if(true)
-            throw new UnsupportedOperationException("Need to patch report"); // ToDo
+            return;
+
+        ScanScoringReport report = handler.getReport();
+    //    if(true)
+  //          throw new UnsupportedOperationException("Need to patch report"); // ToDo
 
         if (!report.equivalent(report))
             throw new IllegalStateException("problem"); // ToDo change
