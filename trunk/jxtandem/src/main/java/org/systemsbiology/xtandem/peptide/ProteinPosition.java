@@ -137,6 +137,7 @@ public class ProteinPosition implements IProteinPosition {
      */
     public ProteinPosition(IProtein prot) {
         String id = prot.getId();
+   //     String id = prot.getAnnotation();
         m_Protein = XTandemUtilities.conditionProteinLabel(id);
         m_Peptide = prot;
         m_Before = null;

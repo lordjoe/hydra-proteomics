@@ -97,7 +97,12 @@ public class Protein extends Polypeptide implements IProtein {
 
     }
 
-    private static int gLastResortProteinId = 1;
+    private static int gLastResortProteinIdx = 1;
+
+    private static synchronized String getNextId()
+    {
+        return "Prot" + gLastResortProteinIdx++;
+    }
 
     /**
      * used when we do not want to caahe proteins
@@ -115,10 +120,13 @@ public class Protein extends Polypeptide implements IProtein {
         if(id.contains(" "))   {
             id = annotationToId(id) ;
         }
+        else {
+            id = pAnnotation ;
+        }
 
 
-        if (id == null)
-            id = Integer.toString(gLastResortProteinId++);
+        if (id == null || id.length() == 0)
+            id = getNextId();
         //     synchronized (gKnownProteins)   {
         Protein ret = new Protein(id,pAnnotation);
         ret.setSequence(pSequence);
@@ -131,33 +139,38 @@ public class Protein extends Polypeptide implements IProtein {
     }
 
     public static String annotationToId(  String id) {
+        id = id.trim();
+        if(id.length() == 0)
+            return getNextId();
         if(id.startsWith(">"))
             id = id.substring(1);
         int spIndex = id.indexOf(" ");   // better ne > 0
-        id = id.substring(0,spIndex);
-        StringBuilder sb = new StringBuilder();
+        if(spIndex > -1) {
+            id = id.substring(0,spIndex);
+        }
+
+           StringBuilder sb = new StringBuilder();
         char startPunct = 0;
         for(int i = 0; i < id.length(); i++)   {
             char c = id.charAt(i);
             if(Character.isLetterOrDigit(c)) {
                 sb.append((char)Character.toUpperCase(c)) ;
-                break;
+                continue;
             }
             if(Character.isDigit(c)) {
                 sb.append(c) ;
-                break;
+                continue;
             }
-            if(startPunct == 0 ) {
-                startPunct = c;
-                sb.setLength(0);
-                break;
+            if(sb.length() == 0 ) {
+                 continue;
             }
-            if(startPunct == c  && sb.length() > 0) {
-                return sb.toString(); // case |ABCD|
-            }
+            sb.append("_") ;  // anything else becomes _
 
         }
 
+        if(sb.length() == 0)   {
+              return getNextId();
+        }
         return sb.toString();
     }
 
