@@ -38,27 +38,65 @@ public class ProteinRepositoryTest {
 
             };
 
+    public static final String TEST_ANNOTTION1 = "tr|F8VPV9|F8VPV9_HUMAN ATP synthase subunit beta OS=Homo sapiens GN=ATP5B PE=3 SV=1";
+    public static final String TEST_ANNOTTION2 = ">tr|F8VPV9|F8VPV9_HUMAN ATP synthase subunit beta OS=Homo sapiens GN=ATP5B PE=3 SV=1";
+    public static final String TEST_ANNOTTION3 = "  >tr|F8VPV9|F8VPV9_HUMAN ATP synthase subunit beta OS=Homo sapiens GN=ATP5B PE=3 SV=1";
+    public static final String TEST_ANNOTTION4 = "";
+    public static final String TEST_ANNOTTION5 = "%";
+    public static final String TEST_ANNOTTION6 = "&^*(^$&%$#";
+    public static final String TEST_ID1 = "TR_F8VPV9_F8VPV9_HUMAN";
+
+    @Test
+    public void testProteinId() {
+        String id = Protein.annotationToId(TEST_ANNOTTION1);
+        Assert.assertEquals(TEST_ID1, id);
+
+        id = Protein.annotationToId(TEST_ANNOTTION2);
+        Assert.assertEquals(TEST_ID1, id);
+
+        id = Protein.annotationToId(TEST_ANNOTTION3);
+        Assert.assertEquals(TEST_ID1, id);
+
+        // blank should be id + int
+        id = Protein.annotationToId(TEST_ANNOTTION4);
+        testEmptyId(id);
+
+        id = Protein.annotationToId(TEST_ANNOTTION5);
+          testEmptyId(id);
+
+        id = Protein.annotationToId(TEST_ANNOTTION6);
+          testEmptyId(id);
+
+    }
+
+    private void testEmptyId(String id) {
+        Assert.assertTrue(id.startsWith("Prot"));
+
+        Integer.parseInt(id.replace("Prot",""));
+    }
+
     /**
      * test load from one file
+     *
      * @throws Exception
      */
     @Test
-     public void test18Proteins() throws Exception {
-          ProteinRepository r1 = new ProteinRepository(null);
-         InputStream is = XTandemUtilities.getDescribedStream("res://18ProteinMix.fasta");
-          r1.populate(is);
+    public void test18Proteins() throws Exception {
+        ProteinRepository r1 = new ProteinRepository(null);
+        InputStream is = XTandemUtilities.getDescribedStream("res://18ProteinMix.fasta");
+        r1.populate(is);
 
-         int numberProteins = r1.getNumberProteins();
-         Assert.assertEquals(EXPECTED_ANNOTATIONS.length, numberProteins);
-         for (int i = 0; i < numberProteins; i++) {
-             int realId = i + 1; // 0 not allowed
-             String annotation = r1.getAnnotation(realId);
-             Assert.assertEquals(EXPECTED_ANNOTATIONS[i],annotation);
-             Integer id = r1.getId(EXPECTED_ANNOTATIONS[i]);
-             Assert.assertEquals(realId,(int)id);
+        int numberProteins = r1.getNumberProteins();
+        Assert.assertEquals(EXPECTED_ANNOTATIONS.length, numberProteins);
+        for (int i = 0; i < numberProteins; i++) {
+            int realId = i + 1; // 0 not allowed
+            String annotation = r1.getAnnotation(realId);
+            Assert.assertEquals(EXPECTED_ANNOTATIONS[i], annotation);
+            Integer id = r1.getId(EXPECTED_ANNOTATIONS[i]);
+            Assert.assertEquals(realId, (int) id);
 
-         }
-     }
+        }
+    }
 
     public static final String[] ADDED_ANNOTATIONS = {
             "REV1_YDR405W MRP20 SGDID:S000002813, Chr IV from 1277637-1278428, Verified ORF, \"Mitochondrial ribosomal protein of the large subunit\"",
@@ -76,34 +114,35 @@ public class ProteinRepositoryTest {
 
     /**
      * testload from two fasta files - if we ever have to do that
+     *
      * @throws Exception
      */
     @Test
-     public void testMultiLoad() throws Exception {
-          ProteinRepository r1 = new ProteinRepository(null);
-         InputStream is = XTandemUtilities.getDescribedStream("res://18ProteinMix.fasta");
-          r1.populate(is);
-          is = XTandemUtilities.getDescribedStream("res://yeast_orfs_pruned.fasta");
-          r1.populate(is);
+    public void testMultiLoad() throws Exception {
+        ProteinRepository r1 = new ProteinRepository(null);
+        InputStream is = XTandemUtilities.getDescribedStream("res://18ProteinMix.fasta");
+        r1.populate(is);
+        is = XTandemUtilities.getDescribedStream("res://yeast_orfs_pruned.fasta");
+        r1.populate(is);
 
-         int numberProteins = r1.getNumberProteins();
-         Assert.assertEquals(EXPECTED_ANNOTATIONS.length + ADDED_ANNOTATIONS.length , numberProteins);
+        int numberProteins = r1.getNumberProteins();
+        Assert.assertEquals(EXPECTED_ANNOTATIONS.length + ADDED_ANNOTATIONS.length, numberProteins);
         for (int i = 0; i < EXPECTED_ANNOTATIONS.length; i++) {
-             int realId = i + 1; // 0 not allowed
-             String annotation = r1.getAnnotation(realId);
-             Assert.assertEquals(EXPECTED_ANNOTATIONS[i],annotation);
-             Integer id = r1.getId(EXPECTED_ANNOTATIONS[i]);
-             Assert.assertEquals(realId,(int)id);
+            int realId = i + 1; // 0 not allowed
+            String annotation = r1.getAnnotation(realId);
+            Assert.assertEquals(EXPECTED_ANNOTATIONS[i], annotation);
+            Integer id = r1.getId(EXPECTED_ANNOTATIONS[i]);
+            Assert.assertEquals(realId, (int) id);
 
-         }
+        }
         for (int i = EXPECTED_ANNOTATIONS.length; i < r1.getNumberProteins(); i++) {
-             int realId = i + 1; // 0 not allowed
-             String annotation = r1.getAnnotation(realId);
-        //    System.out.println("\"" + annotation + "\"," );
-            Assert.assertEquals(ADDED_ANNOTATIONS[i - EXPECTED_ANNOTATIONS.length],annotation);
-              Integer id = r1.getId(ADDED_ANNOTATIONS[i - EXPECTED_ANNOTATIONS.length]);
-            Assert.assertEquals(realId,(int)id);
+            int realId = i + 1; // 0 not allowed
+            String annotation = r1.getAnnotation(realId);
+            //    System.out.println("\"" + annotation + "\"," );
+            Assert.assertEquals(ADDED_ANNOTATIONS[i - EXPECTED_ANNOTATIONS.length], annotation);
+            Integer id = r1.getId(ADDED_ANNOTATIONS[i - EXPECTED_ANNOTATIONS.length]);
+            Assert.assertEquals(realId, (int) id);
 
-         }
-      }
- }
+        }
+    }
+}
