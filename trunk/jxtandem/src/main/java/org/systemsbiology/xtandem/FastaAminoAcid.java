@@ -73,7 +73,15 @@ public enum FastaAminoAcid {
     public static FastaAminoAcid[] asAminoAcids(String s) {
         List<FastaAminoAcid> holder = new ArrayList<FastaAminoAcid>();
         for(int i = 0; i < s.length(); i++) {
-             holder.add(FastaAminoAcid.fromChar(s.charAt(i)));
+            FastaAminoAcid e = null;
+            try {
+                e = FastaAminoAcid.fromChar(s.charAt(i));
+                holder.add(e);
+            }
+            catch (BadAminoAcidException e1) {
+                holder.add(FastaAminoAcid.UNKNOWN);
+
+            }
         }
         FastaAminoAcid[] ret = new FastaAminoAcid[holder.size()];
         holder.toArray(ret);
@@ -288,6 +296,8 @@ public enum FastaAminoAcid {
                 return B;
             case 'X':  // "aspartate or asparagine"
                 return X;
+            case 'U':  // "aspartate or asparagine"
+                 return UNKNOWN;
         }
         if (!Character.isLetter(in))
             throw new BadAminoAcidException( in);
