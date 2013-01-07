@@ -396,11 +396,14 @@ public enum FastaAminoAcid {
                  return 20;
              case B:  // "aspartate or asparagine"
                  return 22;
-             case X:  // "aspartate or asparagine"
+             case UNKNOWN:
+             case X:
                  return -1;   // todo id this right
+             default:  // "aspartate or asparagine"
+                 throw new IllegalStateException("Never get here");
+
          }
-         throw new IllegalStateException("Never get here");
-     }
+      }
     /**
       * convert to an index
       *
