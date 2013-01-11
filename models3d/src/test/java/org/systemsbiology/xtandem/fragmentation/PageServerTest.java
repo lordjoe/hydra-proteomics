@@ -1,5 +1,6 @@
 package org.systemsbiology.xtandem.fragmentation;
 
+import com.lordjoe.utilities.*;
 import org.junit.*;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.uniprot.*;
@@ -103,11 +104,11 @@ public class PageServerTest {
 
     public static final String[] ID_WITH_MODEL =
             {
-                    "O95786",
+         //           "O95786",
                     "P55210",
-                    "Q16881",
-                    "Q8TCS8",
-                    "P20591",
+       //             "Q16881",
+       //             "Q8TCS8",
+       //             "P20591",
             };
 
     @Before
@@ -128,6 +129,7 @@ public class PageServerTest {
     public void testPageWithModelBuild() throws Exception {
         Uniprot.setDownloadModels(true);
 
+        File pages = new File("pages");
         for (int i = 0; i < ID_WITH_MODEL.length; i++) {
             String id  = ID_WITH_MODEL[i];
             String page = getPageString(id);
@@ -141,7 +143,7 @@ public class PageServerTest {
      * build pages for all proteint of interest to kathy walters
      * @throws Exception
      */
- //   @Test
+   @Test
     public void testPageBuild() throws Exception {
         Uniprot.setDownloadModels(true);
         ProteinDatabase pd = ProteinDatabase.getInstance();   // preload
@@ -153,9 +155,6 @@ public class PageServerTest {
 
             String id = items[1];
             String page = getPageString(id);
-//            String pageName = id + ".html";
-//            File pageFile = new File(pages,pageName);
-//            FileUtilities.writeFile(pageFile,page);
 
         }
 

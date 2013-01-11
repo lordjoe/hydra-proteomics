@@ -57,6 +57,7 @@ public class AminoAcidAtLocation extends AsaSubunit implements IAminoAcidAtLocat
 //    private boolean m_SometimesMissedCleavage;
 
     private final ProteinAminoAcid m_ProteinAminoAcid;
+
     public AminoAcidAtLocation(ChainEnum chain,ProteinAminoAcid pa) {
         super(chain,pa.getAminoAcid().toString(),0);
         m_ProteinAminoAcid  = pa;
