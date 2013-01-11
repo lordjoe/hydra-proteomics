@@ -29,8 +29,14 @@ public class ScriptWriter {
     public static final int MAX_COVERAGE = 6;
 
     public static String getCoverageColor(int coverage) {
+        // changes to be 1 or more
+
         coverage = Math.min(coverage, MAX_COVERAGE);
-        int cvalue = Math.min(255, 120 + ((136 * coverage) / MAX_COVERAGE));
+        int cvalue = 165;
+        if(coverage > 1)   {
+            cvalue = 220;
+        }
+ //       int cvalue = Math.min(255, 120 + ((136 * coverage) / MAX_COVERAGE));
         return "[" + cvalue + "," + cvalue + ",80]";
     }
 

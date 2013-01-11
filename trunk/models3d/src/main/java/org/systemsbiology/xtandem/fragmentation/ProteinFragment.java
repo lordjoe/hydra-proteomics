@@ -12,6 +12,23 @@ import java.util.*;
 public class ProteinFragment implements Comparable<ProteinFragment> {
     public static final ProteinFragment[] EMPTY_ARRAY = {};
 
+    /**
+     * order by start then sequence
+     */
+    public static final Comparator<ProteinFragment> START_LOCATION_COMPARATOR = new  Comparator<ProteinFragment>() {
+        @Override
+        public int compare(ProteinFragment o1, ProteinFragment o2) {
+           if(o1 == o2)
+               return 0;
+            Integer s1 = o1.getStartLocation();
+            Integer s2 = o1.getStartLocation();
+            int ret = s1.compareTo(s2) ;
+            if(ret != 0)
+                return ret;
+            return o1.getSequence().compareTo(o2.getSequence());
+        }
+    };
+
     private final Protein m_ParentProtein;
     private final IPolypeptide m_Peptide;
     private int[] m_StartLocations;

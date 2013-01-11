@@ -56,7 +56,7 @@ public class ProteinFragmentationDescription {
         m_Statistics = new CoverageStatistics(this);
     }
 
-    public ProteinFragmentationDescription(final String uniprotId, ProteinCollection parent,Protein protein, FoundPeptide[] peptides) {
+    public ProteinFragmentationDescription(final String uniprotId, ProteinCollection parent, Protein protein, FoundPeptide[] peptides) {
         m_UniprotId = uniprotId;
         m_Parent = parent;
         m_Protein = protein;
@@ -64,9 +64,9 @@ public class ProteinFragmentationDescription {
         int index = 0;
         for (int i = 0; i < peptides.length; i++) {
             FoundPeptide peptide = peptides[i];
-            index =  buildFragment(peptide,index);
+            index = buildFragment(peptide, index);
         }
-        if(parent == null)  {
+        if (parent == null) {
             m_SequenceFromSwissProt = buildChainAMapping(protein);
         }
     }
@@ -79,16 +79,16 @@ public class ProteinFragmentationDescription {
             char c = chars[i];
             try {
                 FastaAminoAcid aa = FastaAminoAcid.fromChar(c);
-                SequenceChainMap sm = new SequenceChainMap(protein,i + 1,aa);
+                SequenceChainMap sm = new SequenceChainMap(protein, i + 1, aa);
                 holder.add(sm);
             }
             catch (BadAminoAcidException e) {
-                SequenceChainMap sm = new SequenceChainMap(protein,i + 1,FastaAminoAcid.UNKNOWN);
-                 holder.add(sm);
+                SequenceChainMap sm = new SequenceChainMap(protein, i + 1, FastaAminoAcid.UNKNOWN);
+                holder.add(sm);
 
             }
         }
-         SequenceChainMap[] ret = new SequenceChainMap[holder.size()];
+        SequenceChainMap[] ret = new SequenceChainMap[holder.size()];
         holder.toArray(ret);
         return ret;
     }
@@ -176,16 +176,16 @@ public class ProteinFragmentationDescription {
 
         Polypeptide fragment = new Polypeptide(sequence);
         ProteinFragment pf = new ProteinFragment(protein, fragment, index);
-           return addFragment( protein,  fragment, index);
+        return addFragment(protein, fragment, index);
     }
 
-    public int  addFragment(Protein protein, IPolypeptide fragment, int index) {
+    public int addFragment(Protein protein, IPolypeptide fragment, int index) {
         ProteinFragment pf = new ProteinFragment(protein, fragment, index);
-        if(!m_Fragments.contains(pf))   {
+        if (!m_Fragments.contains(pf)) {
             m_Fragments.add(pf);
             return ++index;
         }
-        else   {
+        else {
             return index;
         }
     }
@@ -211,8 +211,8 @@ public class ProteinFragmentationDescription {
             return;
         }
         String[] lines = downloadProteinFragments();
-        if(lines == null) {
-             lines = downloadProteinFragments();
+        if (lines == null) {
+            lines = downloadProteinFragments();
             throw new UnsupportedOperationException("Fix This"); // ToDo
         }
         if (lines.length < 2) {
@@ -227,10 +227,16 @@ public class ProteinFragmentationDescription {
 
     public Map<ProteinFragment, IAminoAcidAtLocation[]> getAminoAcidLocations() {
         PDBObject model = getModel();
-        Map<ProteinFragment, IAminoAcidAtLocation[]> ret = new HashMap<ProteinFragment, IAminoAcidAtLocation[]>();
-        if (model == null)
-            return ret;
         ProteinFragment[] frage = getFragments();
+        Map<ProteinFragment, IAminoAcidAtLocation[]> ret = new HashMap<ProteinFragment, IAminoAcidAtLocation[]>();
+        if (model != null)
+            buildAminoAcidLocationsFromModel(model, frage, ret);
+        else
+            buildAminoAcidLocationsWithoutModel(frage, ret);
+        return ret;
+    }
+
+    protected void buildAminoAcidLocationsFromModel(PDBObject model, ProteinFragment[] frage, Map<ProteinFragment, IAminoAcidAtLocation[]> ret) {
         for (int i = 0; i < frage.length; i++) {
             ProteinFragment pf = frage[i];
             IAminoAcidAtLocation[] aas = new IAminoAcidAtLocation[0];
@@ -250,7 +256,24 @@ public class ProteinFragmentationDescription {
             }
             ret.put(pf, aas);
         }
-        return ret;
+
+    }
+
+
+    protected void buildAminoAcidLocationsWithoutModel(ProteinFragment[] frage, Map<ProteinFragment, IAminoAcidAtLocation[]> ret) {
+        for (int i = 0; i < frage.length; i++) {
+            ProteinFragment pf = frage[i];
+            String sequence1 = pf.getSequence();
+            int startLocation = pf.getStartLocation();
+            IAminoAcidAtLocation[] aas = new IAminoAcidAtLocation[sequence1.length()];
+            for (int j = 0; j < aas.length; j++) {
+                // note locations are 1 based
+                ProteinAminoAcid pa = new ProteinAminoAcid(ChainEnum.A, FastaAminoAcid.fromChar(sequence1.charAt(j)), startLocation + j + 1 );
+                aas[j] = new AminoAcidAtLocation(ChainEnum.A, pa);
+            }
+            ret.put(pf, aas);
+        }
+
     }
 
     public void guaranteeCoverage() {
@@ -290,23 +313,41 @@ public class ProteinFragmentationDescription {
         for (int i = 0; i < peptides.length; i++) {
             FoundPeptide peptide = peptides[i];
             index = buildFragment(peptide, index);
-         }
+        }
         buildCoverage();
     }
 
     public void buildCoverage() {
-        ProteinFragment[] fragments = getFragments();
+        Map<ProteinFragment, IAminoAcidAtLocation[]> aminoAcidLocations = getAminoAcidLocations();
+        ProteinFragment[] proteinFragments = aminoAcidLocations.keySet().toArray(ProteinFragment.EMPTY_ARRAY);
+        Arrays.sort(proteinFragments,ProteinFragment.START_LOCATION_COMPARATOR); // sort by stare location
+
         Protein protein = getProtein();
         int length = protein.getSequence().length();
         m_Coverage = new short[length];
         int nCovered = 0;
-        for (int i = 0; i < m_Coverage.length; i++) {
-            short i1 = computeCoverage(i, fragments);
-            if (i1 > 0)
-                nCovered++;
-            m_Coverage[i] = i1;
 
+        for (int i = 0; i < proteinFragments.length; i++) {
+            ProteinFragment pf = proteinFragments[i];
+            IAminoAcidAtLocation[] highlited = aminoAcidLocations.get(pf);
+            for (int j = 0; j < highlited.length; j++) {
+                IAminoAcidAtLocation aa = highlited[j];
+                int location = aa.getLocation() - 1;  // NOTE - location is 1 based
+                if (m_Coverage[location] == 0)
+                    nCovered++;
+                m_Coverage[location]++;
+
+            }
         }
+//       Old code
+//        ProteinFragment[] fragments = getFragments();
+//        for (int i = 0; i < m_Coverage.length; i++) {
+//            short i1 = computeCoverage(i, fragments);
+//            if (i1 > 0)
+//                nCovered++;
+//            m_Coverage[i] = i1;
+//
+//        }
         m_FractionalCoverage = (double) nCovered / (double) length;
 
     }
@@ -331,8 +372,8 @@ public class ProteinFragmentationDescription {
 
     public SequenceChainMap[] getChainMappings() {
         PDBObject model = getModel();
-        if (model == null)   {
-              return m_SequenceFromSwissProt;
+        if (model == null) {
+            return m_SequenceFromSwissProt;
         }
         SequenceChainMap[] mappings = model.getMappings();
         return mappings;
