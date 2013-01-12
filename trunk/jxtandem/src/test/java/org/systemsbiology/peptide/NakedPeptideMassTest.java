@@ -14,6 +14,8 @@ import java.util.*;
 public class NakedPeptideMassTest {
     public static final NakedPeptideMassTest[] EMPTY_ARRAY = {};
 
+    //
+    //
     public static final String PROTEIN_SEQUENCE =
             "MLGFVGRVAAAPASGALRRLTPSASLPPAQLLLRAAPTAVHPVRDYAAQTSPSPKAGAAT" +
                     "GRIVAVIGAVVDVQFDEGLPPILNALEVQGRETRLVLEVAQHLGESTVRTIAMDGTEGLV" +

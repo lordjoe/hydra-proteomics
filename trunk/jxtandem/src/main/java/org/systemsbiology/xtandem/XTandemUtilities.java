@@ -662,11 +662,9 @@ public class XTandemUtilities {
         added = XTandemUtilities.getCleaveNMass();
         //     mayBeShowAddedMassX(  mass,  added,"getCleaveNMass");
         mass += added;
-        ;
         added = XTandemUtilities.getProtonMass();
         //    mayBeShowAddedMassX(  mass,  added,"getProtonMass");
         mass += added;
-        ;
         return mass;
     }
 

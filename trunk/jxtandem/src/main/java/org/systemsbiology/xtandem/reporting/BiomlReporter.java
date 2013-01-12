@@ -515,7 +515,8 @@ public class BiomlReporter {
             if (rawIndex >= rawPeaks.length)
                 break;
 
-            int mass = (int) ((rawPeaks[rawIndex].getPeak() * factor) + 0.5);
+            double factorPeak = rawPeaks[rawIndex].getPeak() * factor;
+            int mass = (int) (factorPeak + 0.5);
             out.print(Integer.toString(mass));
             if ((i + 1) % 30 == 0) {
                 indent(out, indent);
