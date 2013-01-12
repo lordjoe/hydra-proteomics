@@ -736,8 +736,31 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
 
     }
 
+    /**
+     * sort peaks by mass
+     */
+    public static final Comparator<ISpectrumPeak> BY_MZ = new Comparator<ISpectrumPeak>() {
+
+        @Override
+        public int compare(final ISpectrumPeak o1, final ISpectrumPeak o2) {
+            double m1 = o1.getMassChargeRatio();
+            double m2 = o2.getMassChargeRatio();
+            if(m1 == m2) {
+                double p1 = o1.getPeak();
+                double p2 = o2.getPeak();
+                if(p1 == p2)
+                    return 0;
+                return  p1 < p2 ? -1 : 1;
+
+            }
+            return  m1 < m2 ? -1 : 1;
+        }
+    };
+
 
     public void setPeaks(final ISpectrumPeak[] pPeaks) {
+        if(pPeaks != null)
+            Arrays.sort(pPeaks,BY_MZ);
         m_Peaks = pPeaks;
     }
 
@@ -858,13 +881,13 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         try {
             addTo.append("BEGIN IONS\n");
             addTo.append("TITLE=" + getId() + "\n");
-            addTo.append("PEPMASS=" + String.format("%10.4f",getPrecursorMass()).trim()  + "\n");
+            addTo.append("PEPMASS=" + String.format("%10.4f", getPrecursorMass()).trim() + "\n");
             addTo.append("CHARGE=" + getPrecursorCharge() + "+\n");
-             ISpectrumPeak[] peaks = getPeaks();
+            ISpectrumPeak[] peaks = getPeaks();
             for (int i = 0; i < peaks.length; i++) {
                 ISpectrumPeak peak = peaks[i];
-                String mz = String.format("%10.5f",peak.getMassChargeRatio()).trim();
-                String pk = String.format("%8.2f",peak.getPeak()).trim();
+                String mz = String.format("%10.5f", peak.getMassChargeRatio()).trim();
+                String pk = String.format("%8.2f", peak.getPeak()).trim();
                 addTo.append(mz + "\t" + pk + "\n");
 
             }

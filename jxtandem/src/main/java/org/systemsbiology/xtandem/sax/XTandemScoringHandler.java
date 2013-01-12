@@ -1,6 +1,5 @@
 package org.systemsbiology.xtandem.sax;
 
-import com.lordjoe.utilities.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.bioml.sax.*;
 import org.systemsbiology.xtandem.scoring.*;
@@ -22,15 +21,15 @@ public class XTandemScoringHandler extends AbstractElementSaxHandler<List<Scored
     public static final String TAG = "bioml";
 
     private ScanScoringReport m_Report;
-    private final Map<String,ScoredScan> m_Scans = new  HashMap<String,ScoredScan>();
+    private final Map<String, ScoredScan> m_Scans = new HashMap<String, ScoredScan>();
 
-    public XTandemScoringHandler( ScoringProcesstype type ) {
+    public XTandemScoringHandler(ScoringProcesstype type) {
         super(TAG, (DelegatingSaxHandler) null);
         m_Report = new ScanScoringReport(ScoringProcesstype.XTandem);
         setElementObject(new ArrayList<ScoredScan>());
     }
 
-    public XTandemScoringHandler(  ) {
+    public XTandemScoringHandler() {
         this(ScoringProcesstype.XTandem);
     }
 
@@ -45,7 +44,7 @@ public class XTandemScoringHandler extends AbstractElementSaxHandler<List<Scored
     @Override
     public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
         if ("group".equals(qName)) {
-             BiomlScanReportHandler handler = new BiomlScanReportHandler(this);
+            BiomlScanReportHandler handler = new BiomlScanReportHandler(this);
             getHandler().pushCurrentHandler(handler);
             handler.handleAttributes(uri, localName, qName, attributes);
             return;
@@ -64,7 +63,7 @@ public class XTandemScoringHandler extends AbstractElementSaxHandler<List<Scored
             return;
         }
 
-         super.startElement(uri, localName, qName, attributes);    //To change body of overridden methods use File | Settings | File Templates.
+        super.startElement(uri, localName, qName, attributes);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
 
@@ -79,21 +78,21 @@ public class XTandemScoringHandler extends AbstractElementSaxHandler<List<Scored
         }
         if ("group".equals(el)) {
             ISaxHandler iSaxHandler = getHandler().popCurrentHandler();
-             BiomlScanReportHandler handler =  (BiomlScanReportHandler) iSaxHandler;
+            BiomlScanReportHandler handler = (BiomlScanReportHandler) iSaxHandler;
             ScoredScan scan = handler.getElementObject();
 
-             List<ScoredScan> report = getElementObject();
-              report.add(scan);
+            List<ScoredScan> report = getElementObject();
+            report.add(scan);
             return;
         }
-        
+
         if ("total".equals(el)) {
             return;
         }
         if ("file".equals(el)) {
             return;
         }
-         super.endElement(elx, localName, el);    //To change body of overridden methods use File | Settings | File Templates.
+        super.endElement(elx, localName, el);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
     /**
@@ -103,42 +102,43 @@ public class XTandemScoringHandler extends AbstractElementSaxHandler<List<Scored
     @Override
     public void finishProcessing() {
         ScanScoringReport report = getReport();
-        List<ScoredScan> scans  = getElementObject();
-        for (ScoredScan scan : scans)   {
+        List<ScoredScan> scans = getElementObject();
+        for (ScoredScan scan : scans) {
             String id = scan.getId();
-            if(id != null)   {
-                if(m_Scans.containsKey(id))   {
-                     possiblyReplaceBestScanatId(id,scan);
+            if (id != null) {
+                if (m_Scans.containsKey(id)) {
+                    possiblyReplaceBestScanatId(id, scan);
                 }
                 else {
-                    m_Scans.put(id  ,scan);
+                    m_Scans.put(id, scan);
                 }
             }
-            else  {
+            else {
                 showBadScan(scan);
             }
         }
     }
 
     protected void possiblyReplaceBestScanatId(final String id, final ScoredScan scan) {
-         ScoredScan current = m_Scans.get(id);
+        ScoredScan current = m_Scans.get(id);
         ISpectralMatch currentBest = current.getBestMatch();
-        if(currentBest == null)  {
-             m_Scans.put(id,scan);
-             return;
-         }
-        ISpectralMatch scanBest = scan.getBestMatch();
-        if(scanBest == null)  {
-               return;
+        if (currentBest == null) {
+            m_Scans.put(id, scan);
+            return;
         }
-         double score = currentBest.getHyperScore();
-         double scanScore =  scanBest.getHyperScore();
-         if(scanScore > score)
-              m_Scans.put(id,scan);
+        ISpectralMatch scanBest = scan.getBestMatch();
+        if (scanBest == null) {
+            return;
+        }
+        double score = currentBest.getHyperScore();
+        double scanScore = scanBest.getHyperScore();
+        if (scanScore > score)
+            m_Scans.put(id, scan);
     }
 
     /**
      * who knows how we got here
+     *
      * @param scan
      */
     private void showBadScan(final ScoredScan scan) {
@@ -156,17 +156,60 @@ public class XTandemScoringHandler extends AbstractElementSaxHandler<List<Scored
 
 
     /**
+     * @param in
+     * @param ids
+     * @return
+     */
+    public static RawPeptideScan[] readMGFScans(File in, Set<String> ids) {
+        List<RawPeptideScan> holder = new ArrayList<RawPeptideScan>();
+        String url = "";
+
+        try {
+            InputStream is = new FileInputStream(in);
+            LineNumberReader inp = new LineNumberReader(new InputStreamReader(is));
+            String line = inp.readLine();
+            while (line != null) {
+                if (line.startsWith("BEGIN IONS")) {
+                    RawPeptideScan scan = XTandemUtilities.readMGFScan(inp, url);
+                    if (ids.contains(scan.getId()))
+                        holder.add(scan);
+                }
+                line = inp.readLine();
+            }
+            RawPeptideScan[] ret = new RawPeptideScan[holder.size()];
+            holder.toArray(ret);
+            return ret;
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+
+    }
+
+
+    /**
      * When passed an XTandem Score writes out a mgf file with ".mgf" appended to the original name
-     * @param args  1 XTandem scoring file
+     *
+     * @param args 1 XTandem scoring file
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
         String xTandemFile = null;
+        String mgfFile = null;
 
- //       if (args.length > 0)
-            xTandemFile = args[0];
-   //     else
- //           xTandemFile = FileUtilities.getLatestFileWithExtension(".t.txt").getName();
+        Set<String> ids = new HashSet<String>();
+
+        if (args.length < 2) {
+            System.out.println("Usage <tandem file> <input mgf file>");
+            return;
+        }
+
+        //       if (args.length > 0)
+        xTandemFile = args[0];
+         mgfFile = args[1];
+        //     else
+        //           xTandemFile = FileUtilities.getLatestFileWithExtension(".t.txt").getName();
         XTandemScoringHandler handler = new XTandemScoringHandler();
         InputStream is = new FileInputStream(xTandemFile);
         XTandemUtilities.parseFile(is, handler, xTandemFile);
@@ -175,31 +218,46 @@ public class XTandemScoringHandler extends AbstractElementSaxHandler<List<Scored
         List<ScoredScan> elementObjectx = handler.getElementObject();
         // filter bad
         List<ScoredScan> scans = new ArrayList<ScoredScan>();
-        for(ScoredScan s : elementObjectx)  {
-            if(s.getRaw() != null && s.getId() != null)
+        for (ScoredScan s : elementObjectx) {
+            if (s.getRaw() != null && s.getId() != null) {
                 scans.add(s);
+                ids.add(s.getId());
+            }
         }
-        ScoredScan[] ret = new ScoredScan[scans.size()];
-        scans.toArray(ret);
-        // sort by id
-        Collections.sort(scans,OriginatingScoredScan.ID_COMPARISON);
 
+        RawPeptideScan[] realScans = readMGFScans(new File(mgfFile), ids);
         File outFile = new File(xTandemFile + ".mgf");
-        PrintWriter out = new PrintWriter(new FileWriter(outFile)) ;
+        PrintWriter out = new PrintWriter(new FileWriter(outFile));
 
-        for(ScoredScan scn : scans)   {
-            RawPeptideScan raw = scn.getRaw();
-            if(raw != null)
-                raw.serializeMGF(out);
+        for (RawPeptideScan raw : realScans) {
+            raw.serializeMGF(out);
         }
 
         out.close();
-        if(true)
+        if (true)
             return;
 
+
+//        ScoredScan[] ret = new ScoredScan[scans.size()];
+//        scans.toArray(ret);
+//        // sort by id
+//        Collections.sort(scans, OriginatingScoredScan.ID_COMPARISON);
+//
+//
+//
+//        for (ScoredScan scn : scans) {
+//            RawPeptideScan raw = scn.getRaw();
+//            if (raw != null)
+//                raw.serializeMGF(out);
+//        }
+//
+//        out.close();
+//        if (true)
+//            return;
+
         ScanScoringReport report = handler.getReport();
-    //    if(true)
-  //          throw new UnsupportedOperationException("Need to patch report"); // ToDo
+        //    if(true)
+        //          throw new UnsupportedOperationException("Need to patch report"); // ToDo
 
         if (!report.equivalent(report))
             throw new IllegalStateException("problem"); // ToDo change
@@ -212,13 +270,13 @@ public class XTandemScoringHandler extends AbstractElementSaxHandler<List<Scored
             XTandemUtilities.outputLine("Scored " + scoring.getId());
             ITheoreticalScoring[] tss = scoring.getScorings();
             TheoreticalScoring.sortByKScore(tss);
-            if (tss.length  > 0) {
-                 XTandemUtilities.outputLine("Scored   " + tss[0] + " best Score " + tss[0].getTotalKScore());
-               }
-            if (tss.length  > 1) {
-                 XTandemUtilities.outputLine("Scored Next   " + tss[1] + " next best Score " + tss[1].getTotalKScore());
-               }
+            if (tss.length > 0) {
+                XTandemUtilities.outputLine("Scored   " + tss[0] + " best Score " + tss[0].getTotalKScore());
             }
+            if (tss.length > 1) {
+                XTandemUtilities.outputLine("Scored Next   " + tss[1] + " next best Score " + tss[1].getTotalKScore());
+            }
+        }
 
 
     }
