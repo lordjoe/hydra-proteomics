@@ -370,7 +370,8 @@ public class PepXMLWriter {
     }
 
     protected void showModificationInfo(final IModifiedPeptide peptide, final PrintWriter out) {
-        out.println("             <modification_info modified_peptide=\"" + peptide.getTotalModifiedSequence() + "\" >");
+        String totalModifiedSequence = peptide.getModifiedSequence();
+        out.println("             <modification_info modified_peptide=\"" + totalModifiedSequence + "\" >");
         PeptideModification[] modifications = peptide.getModifications();
         for (int i = 0; i < modifications.length; i++) {
             PeptideModification modification = modifications[i];

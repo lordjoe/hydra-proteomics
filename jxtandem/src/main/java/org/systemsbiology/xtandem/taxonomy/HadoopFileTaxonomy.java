@@ -187,7 +187,7 @@ public class HadoopFileTaxonomy implements ITaxonomy {
         int missedCleavages = getDigester().probableNumberMissedCleavages(pp);
         pp.setMissedCleavages(missedCleavages);
         double mass = Double.parseDouble(values[1]);
-        pp.setMass(mass);
+        pp.setMatchingMass(mass);
         String[] proteinIds = values[3].split(";");
         IProteinPosition[] positions = new IProteinPosition[proteinIds.length];
         for (int i = 0; i < positions.length; i++) {

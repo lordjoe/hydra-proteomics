@@ -45,14 +45,14 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
 
 
     private static String gRequiredPathPrefix;
-     public static String getRequiredPathPrefix() {
+
+    public static String getRequiredPathPrefix() {
         return gRequiredPathPrefix;
     }
 
     public static void setRequiredPathPrefix(final String pRequiredPathPrefix) {
         gRequiredPathPrefix = pRequiredPathPrefix;
     }
-
 
 
     private MassType m_MassType = MassType.monoisotopic;
@@ -66,7 +66,7 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
     private String m_TaxonomyName;
 
 
- //    private IScoringAlgorithm m_Scorer;
+    //    private IScoringAlgorithm m_Scorer;
     private SpectrumCondition m_SpectrumParameters;
     private MassSpecRun[] m_Runs;
     private ITaxonomy m_Taxonomy;
@@ -87,18 +87,18 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
     // used by Map Reduce
 
     protected XTandemMain() {
-   //     Protein.resetNextId();
+        //     Protein.resetNextId();
         initOpeners();
     }
 
 
     public XTandemMain(final File pTaskFile) {
         m_TaskFile = pTaskFile.getAbsolutePath();
-  //      Protein.resetNextId();
+        //      Protein.resetNextId();
         initOpeners();
         Properties predefined = XTandemHadoopUtilities.getHadoopProperties();
-        for(String key : predefined.stringPropertyNames())  {
-             setPredefinedParameter(key, predefined.getProperty(key));
+        for (String key : predefined.stringPropertyNames()) {
+            setPredefinedParameter(key, predefined.getProperty(key));
         }
         try {
             InputStream is = new FileInputStream(m_TaskFile);
@@ -112,20 +112,20 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         //           throw new IllegalStateException("Only one XTandemMain allowed");
     }
 
-    private void setPredefinedParameter(  String key,String value) {
-        setParameter(key,value);
-        if(key.equals("org.systemsbiology.algorithms"))  {
-                   addAlternateParameters(value );
+    private void setPredefinedParameter(String key, String value) {
+        setParameter(key, value);
+        if (key.equals("org.systemsbiology.algorithms")) {
+            addAlternateParameters(value);
 
         }
     }
 
     public XTandemMain(final InputStream is, String url) {
         m_TaskFile = null;
-   //     Protein.resetNextId();
+        //     Protein.resetNextId();
         initOpeners();
         Properties predefined = XTandemHadoopUtilities.getHadoopProperties();
-        for(String key : predefined.stringPropertyNames())  {
+        for (String key : predefined.stringPropertyNames()) {
             setPredefinedParameter(key, predefined.getProperty(key));
         }
         handleInputs(is, url);
@@ -162,7 +162,6 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         for (IStreamOpener opener : getPreloadOpeners())
             addOpener(opener);
     }
-
 
 
     /**
@@ -228,7 +227,7 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
     public void clearRetainedData() {
         m_Scorings.clear();
         m_RawScans.clear();
-     }
+    }
 
     @Override
     public IScoredScan getScoring(String key) {
@@ -304,20 +303,20 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         m_SpectrumPath = notes.get("spectrum, path"); //, "test_spectra.mgf");
         m_OutputPath = notes.get("output, path"); //, "output.xml");
         // little hack to separate real tandem and hydra results
-        if(m_OutputPath != null)
-             m_OutputPath = m_OutputPath.replace(".tandem.xml",".hydra.xml");
+        if (m_OutputPath != null)
+            m_OutputPath = m_OutputPath.replace(".tandem.xml", ".hydra.xml");
 
         m_OutputResults = notes.get("output, results");
 
         String requiredPrefix = getRequiredPathPrefix();
-        if(requiredPrefix != null)   {
-            if(m_DefaultParameters != null && !m_DefaultParameters.startsWith(requiredPrefix))
+        if (requiredPrefix != null) {
+            if (m_DefaultParameters != null && !m_DefaultParameters.startsWith(requiredPrefix))
                 m_DefaultParameters = requiredPrefix + m_DefaultParameters;
-            if(m_TaxonomyInfo != null && !m_TaxonomyInfo.startsWith(requiredPrefix))
+            if (m_TaxonomyInfo != null && !m_TaxonomyInfo.startsWith(requiredPrefix))
                 m_TaxonomyInfo = requiredPrefix + m_TaxonomyInfo;
-            if(m_OutputPath != null && !m_OutputPath.startsWith(requiredPrefix))
+            if (m_OutputPath != null && !m_OutputPath.startsWith(requiredPrefix))
                 m_OutputPath = requiredPrefix + m_OutputPath;
-            if(m_SpectrumPath != null && !m_SpectrumPath.startsWith(requiredPrefix))
+            if (m_SpectrumPath != null && !m_SpectrumPath.startsWith(requiredPrefix))
                 m_SpectrumPath = requiredPrefix + m_SpectrumPath;
         }
 
@@ -352,25 +351,25 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         setDigester(digester);
 
         String parameter = getParameter(JXTandemLauncher.ALGORITHMS_PROPERTY);
-        if(parameter != null)
-            addAlternateParameters(parameter );
+        if (parameter != null)
+            addAlternateParameters(parameter);
 
     }
 
 
-    protected void addAlternateParameters(final String pParameter ) {
+    protected void addAlternateParameters(final String pParameter) {
         String[] items = pParameter.split(";");
         for (int i = 0; i < items.length; i++) {
             String item = items[i];
-             addAlternateParameter(item );
+            addAlternateParameter(item);
         }
     }
 
-    protected void addAlternateParameter(final String pItem ) {
+    protected void addAlternateParameter(final String pItem) {
 
         try {
             Class<?> cls = Class.forName(pItem);
-            ITandemScoringAlgorithm algorithm = (ITandemScoringAlgorithm)cls.newInstance();
+            ITandemScoringAlgorithm algorithm = (ITandemScoringAlgorithm) cls.newInstance();
             algorithm.configure(this);
             addAlgorithm(algorithm);
         }
@@ -378,45 +377,43 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
             throw e;
 
         }
-        catch ( Exception e) {
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
-     }
+    }
 
-    public void addAlgorithm(ITandemScoringAlgorithm added)
-    {
-        if(m_Algorithms.size() > 0)  {
-              ITandemScoringAlgorithm[] existing = getAlgorithms();
+    public void addAlgorithm(ITandemScoringAlgorithm added) {
+        if (m_Algorithms.size() > 0) {
+            ITandemScoringAlgorithm[] existing = getAlgorithms();
             for (int i = 0; i < existing.length; i++) {
                 ITandemScoringAlgorithm present = existing[i];
-                if(added.getClass() == present.getClass())
+                if (added.getClass() == present.getClass())
                     return; // one aogorithm per class
             }
         }
-         m_Algorithms.add(added);
+        m_Algorithms.add(added);
     }
 
     /**
      * get the first an I presume the default scorer
+     *
      * @return
      */
     @Override
     public ITandemScoringAlgorithm getScorer() {
-        if(m_Algorithms.size() == 0)
+        if (m_Algorithms.size() == 0)
             return null;
         return m_Algorithms.get(0);
     }
 
 
     @Override
-    public ITandemScoringAlgorithm[] getAlgorithms()
-    {
-        if(m_Algorithms.size() == 0)    {
-             return TandemKScoringAlgorithm.DEFAULT_ALGORITHMS;
+    public ITandemScoringAlgorithm[] getAlgorithms() {
+        if (m_Algorithms.size() == 0) {
+            return TandemKScoringAlgorithm.DEFAULT_ALGORITHMS;
         }
         return m_Algorithms.toArray(ITandemScoringAlgorithm.EMPTY_ARRAY);
     }
-
 
 
     /**
@@ -584,11 +581,11 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
     }
 
     public void loadScoring() {
-      //  loadTaxonomy(); // read the taxonomy files
+        //  loadTaxonomy(); // read the taxonomy files
 
         buildScoringAlgorithm();
-         getSpectrumParameters();
-         m_ProteinHandler = new TaxonomyProcessor();
+        getSpectrumParameters();
+        m_ProteinHandler = new TaxonomyProcessor();
         m_ProteinHandler.configure(this);
 
         getScoreRunner();
@@ -816,9 +813,9 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
             value = getParameter(strKeyBase + (a++));
         }
 
-        strKey = "residue, potential modification mass";
+//        strKey = "residue, potential modification mass";
 //        value = getParameter(strKey);
-//         if (m_xmlValues.get(strKey, strValue)) {
+//        if (m_xmlValues.get(strKey, strValue)) {
 //            m_pScore - > m_seqUtil.modify_maybe(strValue);
 //            m_pScore - > m_seqUtilAvg.modify_maybe(strValue);
 //        }
@@ -879,7 +876,7 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         if ("k-score".equals(configuredAlgorithm)) {
             ITandemScoringAlgorithm scorer = XTandemUtilities.buildObject(ITandemScoringAlgorithm.class, "org.systemsbiology.xtandem.TandemKScoringAlgorithm");
             scorer.configure(this); // let the scorer ste its parameters
-             addAlgorithm(scorer);
+            addAlgorithm(scorer);
             return;
         }
         throw new UnsupportedOperationException("Fix This"); // ToDo
@@ -910,10 +907,10 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
 //            m_Taxonomy = new JDBCTaxonomy(this);
 //        }
 //        else {
-            // using files
-            m_Taxonomy = new Taxonomy(this, taxonomyName, descriptiveFile);
+        // using files
+        m_Taxonomy = new Taxonomy(this, taxonomyName, descriptiveFile);
 
- //      }
+        //      }
 
 
         strKey = "org.systemsbiology.xtandem.TaxonomyTranch";
@@ -979,41 +976,41 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         if (m_DefaultParameters != null) {
             String paramName;
             InputStream is;
-              if(m_DefaultParameters.startsWith("res://"))  {
-                is =  XTandemUtilities.getDescribedStream(m_DefaultParameters);
-                  paramName = m_DefaultParameters;
+            if (m_DefaultParameters.startsWith("res://")) {
+                is = XTandemUtilities.getDescribedStream(m_DefaultParameters);
+                paramName = m_DefaultParameters;
             }
             else {
-            File f = new File(m_DefaultParameters);
-             if (f.exists() && f.isFile() && f.canRead()) {
-                try {
-                    is = new FileInputStream(f);
-                }
-                catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
+                File f = new File(m_DefaultParameters);
+                if (f.exists() && f.isFile() && f.canRead()) {
+                    try {
+                        is = new FileInputStream(f);
+                    }
+                    catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
 
+                    }
+                    paramName = f.getName();
                 }
-                paramName = f.getName();
+                else {
+                    paramName = XTandemUtilities.asLocalFile(m_DefaultParameters);
+                    is = open(paramName);
+                }
             }
-            else {
-                paramName = XTandemUtilities.asLocalFile(m_DefaultParameters);
-                is = open(paramName);
-            }
-            }
-            if(is == null) {
+            if (is == null) {
                 throw new IllegalArgumentException("the default input file designated by \"list path, default parameters\" " + m_DefaultParameters + "  does not exist"); // ToDo change
             }
             Map<String, String> map = XTandemUtilities.readNotes(is, paramName);
-            for(String key : map.keySet())  {
-                if(key.startsWith("spectrum, parent monoisotopic mass error"))
+            for (String key : map.keySet()) {
+                if (key.startsWith("spectrum, parent monoisotopic mass error"))
                     XTandemUtilities.breakHere();
 
-                if(!parametersMap.containsKey(key)) {
+                if (!parametersMap.containsKey(key)) {
                     String value = map.get(key);
                     parametersMap.put(key, value);
                 }
             }
-           }
+        }
         // parameters in the input file override parameters in the default file
         parametersMap.putAll(inputParameters);
     }
