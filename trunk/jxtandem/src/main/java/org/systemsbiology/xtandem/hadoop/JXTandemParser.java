@@ -215,7 +215,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 //                    )
 //                XTandemUtilities.breakHere();
 //
-            if (sequence.startsWith("AVLEFTPETPSPLIGILENK"))
+            if (sequence.contains("["))
                 XTandemUtilities.breakHere();
 
             StringBuilder sb = new StringBuilder();

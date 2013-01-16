@@ -63,9 +63,26 @@ public class ScoredScan extends OriginatingScoredScan   {
         throw new UnsupportedOperationException("Fix This"); // ToDo
     }
 
+    /**
+     * a little debugging method to track peptides we want to watch
+     * usually return false
+     * @param peptide
+     * @return
+     */
+    protected boolean isPeptideInteresting(IPolypeptide peptide)  {
+        if(peptide.isModified() ) {
+             String s = peptide.toString();
+             if(s.contains("[7"))
+                 return true;
+         }
+         return false;
+    }
+
     @Override
     public void addSpectralMatch(ISpectralMatch added) {
         IPolypeptide pp = added.getPeptide();
+ //       if(isPeptideInteresting(pp))
+ //           pp = added.getPeptide(); // break here
         String val = pp.toString();
         ISpectralMatch oldMatch = m_PeptideToMatch.get(val);
         if (oldMatch != null) {

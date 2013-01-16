@@ -37,6 +37,12 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
     public static final Set<String> INTERESTING_SEQUENCE_SET = new HashSet<String>(Arrays.asList(INTERESTING_SEQUENCES));
 
     public static boolean isInterestingSequence(IPolypeptide peptide) {
+
+        if(peptide.isModified() ) {
+            String s = peptide.toString();
+            if(s.contains("[7"))
+                return true;
+        }
         // debugging code  to see why some sequewnces are not scored
         if (INTERESTING_SEQUENCES.length > 0) {
             String sequence = peptide.getSequence();
@@ -205,8 +211,8 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         // Debug stuff
         //    if (mass > 2187 && mass < 2192)
         //        XTandemUtilities.breakHere();
-        if (mass == 2319)
-            XTandemUtilities.breakHere();
+       // if (mass == 1392)
+      //      XTandemUtilities.breakHere();
         //       if (  mass > 3203  )
         //          XTandemUtilities.breakHere();
 
@@ -272,8 +278,8 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
                 }
 
                 // Find out who the user really is
-                String userName = System.getProperty("user.name");
-                context.getCounter("Performance","UserIs." + userName).increment(1);
+               // String userName = System.getProperty("user.name");
+              //  context.getCounter("Performance","UserIs." + userName).increment(1);
                 // counter will tell name of user
 
 
@@ -432,8 +438,10 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
             ITheoreticalSpectrumSet tsSet = pSpectrums[j];
             // debugging test
             IPolypeptide peptide = tsSet.getPeptide();
-            if (isInterestingSequence(peptide))
+            double matching = peptide.getMatchingMass();
+            if (isInterestingSequence(peptide))  {
                 XTandemUtilities.breakHere();
+            }
 
 
             if (scorer.isTheoreticalSpectrumScored(pConditionedScan, tsSet)) {
