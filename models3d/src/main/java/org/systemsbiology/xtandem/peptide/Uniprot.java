@@ -1375,7 +1375,7 @@ public class Uniprot {
 
         Map<String, Uniprot> unterestingUniprots = findUnterestingUniprots(sp, idToUniprot);
         Uniprot[] interesting = unterestingUniprots.values().toArray(Uniprot.EMPTY_ARRAY);
-        ;
+
 
         System.out.println("Features");
         Map<UniprotFeatureType, FisherTable> mpx = handleFeatures(interesting);
