@@ -353,7 +353,7 @@ public class BiomlReporter {
         indent(out, indent);
         out.print("<group ");
         out.print("id=\"" + raw.getId() + "\" ");
-        out.print("mh=\"" + XTandemUtilities.formatDouble(raw.getPrecursorMass(), 6) + "\" ");
+         out.print("mh=\"" + XTandemUtilities.formatDouble(raw.getPrecursorMass(), 6) + "\" ");
         out.print("z=\"" + scan.getCharge() + "\" ");
         out.print("rt=\"" + raw.getRetentionTime() + "\" ");
         double expected = scan.getExpectedValue();
@@ -377,7 +377,9 @@ public class BiomlReporter {
         indent(out, indent);
         out.print("<protein ");
         out.print("expect=\"" + XTandemUtilities.formatDouble(Math.log10(expected), 1) + "\" ");
-        out.print("id=\"" + raw.getId() + ".1" + "\" ");
+        String ident = raw.getId() + ".1";
+        out.print("id=\"" + ident + "\" ");
+        out.print("uid=\"" + ident + "\" ");  // added slewis to keep tandem parser happy
         if (parentProtein != null) {
             //      out.print("uid=\"" + parentProtein.getUUid() + "\" ");
             out.print("label=\"" + truncateString(parentProtein.getId()) + "\" ");
