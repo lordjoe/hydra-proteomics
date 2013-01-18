@@ -1614,7 +1614,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                         outFile = outFile.replace(".mzxml","");
                           outFile = outFile.replace(".mzml","");
                            if (isUseMultipleFiles()) {
-                            outFile = copyOutputFile(outFile, application, outFile);
+                            outFile = copyOutputFile(outFile, application, hdfsPath);
 
                         }
                         else {
@@ -1654,8 +1654,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         if (isReadScanFile()) {  // todo add a way to turn this on
             IFileSystem acc = getAccessor();
             if (acc.exists(hdfsPath)) {
-                outFile += ".scans";
-                f = readRemoteFile(hdfsPath, outFile);
+                String outFileS  = outFile + ".scans";
+                f = readRemoteFile(hdfsPath, outFileS);
                 if(f != null )
                     XTandemUtilities.outputLine("Created output file " + f.getAbsolutePath());
             }
@@ -1681,7 +1681,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 String fileName = hdfsPath +   "." + algorithm.getName() +   ".pep.xml";
                 if("KScore".equals(algorithm.getName()))   // drop kscore algo name
                       fileName = hdfsPath +   ".pep.xml";
-                String outFile2 = getOutputFileName() + /* "." + algorithm.getName() +  */ ".pep.xml";
+                String outFile2 = outFile + /* "." + algorithm.getName() +  */ ".pep.xml";
                 if (application.getBooleanParameter(MULTIPLE_OUTPUT_FILES_PROPERTY))
                     outFile2 = fileName;
                 readRemoteFile(fileName, outFile2);

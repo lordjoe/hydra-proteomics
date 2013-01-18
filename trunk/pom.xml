@@ -19,10 +19,10 @@
 
     <modules>
         <module>ConcurrentTools</module>
-        <module>awshadoop</module>
+        <!--  <module>awshadoop</module>   -->
         <module>JXTandem</module>
         <module>proteos</module>
-      <!-- <module>models3d</module>  -->
+        <module>models3d</module>
      </modules>
 
    
