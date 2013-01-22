@@ -51,4 +51,13 @@ public class FisherTable {
     public int[] getValues() {
         return m_Values;
     }
+
+    public String toString() {
+        return Integer.toString(sum()) + "["  +
+                + m_Values[NOT_PRESENT_NOT_DECTECTED] + "," +
+                + m_Values[NOT_PRESENT_DECTECTED] + "," +
+                + m_Values[PRESENT_NOT_DECTECTED] + "," +
+                + m_Values[PRESENT_DECTECTED] +
+                "]";
+    }
 }
