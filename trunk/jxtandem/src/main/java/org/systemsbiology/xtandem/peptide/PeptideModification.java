@@ -16,7 +16,35 @@ public class PeptideModification implements Comparable<PeptideModification> {
 
     private static boolean gHardCodeModifications = false;
 
-    /**
+
+    public static PeptideModification[] selectFixedModifications(PeptideModification[] mods)
+    {
+         List<PeptideModification> holder = new ArrayList<PeptideModification>();
+        for (int i = 0; i < mods.length; i++) {
+            PeptideModification mod = mods[i];
+            if(mod.isFixed())
+                holder.add(mod);
+        }
+         PeptideModification[] ret = new PeptideModification[holder.size()];
+         holder.toArray(ret);
+         return ret;
+    }
+
+
+    public static PeptideModification[] selectPotentialModifications(PeptideModification[] mods)
+    {
+         List<PeptideModification> holder = new ArrayList<PeptideModification>();
+        for (int i = 0; i < mods.length; i++) {
+            PeptideModification mod = mods[i];
+            if(!mod.isFixed())
+                holder.add(mod);
+        }
+         PeptideModification[] ret = new PeptideModification[holder.size()];
+         holder.toArray(ret);
+         return ret;
+    }
+
+     /**
      * true if hadr coded modifications are used
      * @return
      */
@@ -256,6 +284,11 @@ public class PeptideModification implements Comparable<PeptideModification> {
         m_PeptideMass = computePeptideMass();
     }
 
+
+    public boolean isApplicable(IPolypeptide pep)
+    {
+        return pep.hasUnmodifiedAminoAcid(getAminoAcid());
+    }
     /**
      * if true this is always applied
      *

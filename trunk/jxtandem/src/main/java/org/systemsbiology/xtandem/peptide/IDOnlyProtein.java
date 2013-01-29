@@ -180,6 +180,17 @@ public class IDOnlyProtein implements IProtein {
         return 0;
     }
 
+    @Override
+    public boolean hasAminoAcid(FastaAminoAcid aa) {
+        return false;
+    }
+
+    @Override
+    public boolean hasUnmodifiedAminoAcid(FastaAminoAcid aa) {
+        return false;
+    }
+
+
     /**
      * count the occurrance of an amino acid in the sequence
      *
@@ -336,4 +347,16 @@ public class IDOnlyProtein implements IProtein {
     public int getMissedCleavages() {
         return 0;
     }
+
+
+    /**
+     * get the number of modified peptides
+     *
+     * @return
+     */
+    public int getNumberModifications()
+    {
+        return 0;
+    }
+
 }

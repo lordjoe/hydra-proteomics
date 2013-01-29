@@ -6,12 +6,24 @@ import java.util.*;
 
 /**
  * Backs up a simpler peptide
- * org.systemsbiology.xtandem.peptide.ModifiedPolypeptideBackup
+ * org.systemsbiology.xtandem.peptide.ModifiedPolypeptide
  * User: steven
  * Date: 6/30/11
  */
 public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide {
     public static final ModifiedPolypeptide[] EMPTY_ARRAY = {};
+
+    public static final String MAX_MODIFICASTIONS_PARAMETER_NAME = "org.systemsbiology.jxtandem.ModifiedPolypeptide.MaxPeptideModifications";
+    public static final int DEFAULT_MAX_MODIFICATIONS = 2;
+    private static int gMaxPeptideModifications = DEFAULT_MAX_MODIFICATIONS;
+
+    public static int getMaxPeptideModifications() {
+        return gMaxPeptideModifications;
+    }
+
+    public static void setMaxPeptideModifications(int maxPeptideModifications) {
+        gMaxPeptideModifications = maxPeptideModifications;
+    }
 
     /**
      * take a string like AK[]GHTE
@@ -38,10 +50,10 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
             int index = s.indexOf("]", 0);
             String modText = s.substring(2, index);
             s = s.substring(index + 1);
-            String aa = s.substring(0,1);
-              PeptideModification mod = PeptideModification.fromString(modText + "@" + aa, PeptideModificationRestriction.NTerminal, false);
+            String aa = s.substring(0, 1);
+            PeptideModification mod = PeptideModification.fromString(modText + "@" + aa, PeptideModificationRestriction.NTerminal, false);
             mods[0] = mod;
-          }
+        }
         String lastChar = "";
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -130,23 +142,124 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
     }
 
     public static IModifiedPeptide[] buildModifications(IPolypeptide peptide,
-                                                        PeptideModification[] mod) {
+                                                        PeptideModification[] allmods) {
 
         PeptideModification[] tmods = ModifiedPolypeptide.buildTerminalModifications(peptide);
-        if (mod.length == 0 && tmods.length == 0)
+        if (allmods.length == 0 && tmods.length == 0)
             return IModifiedPeptide.EMPTY_ARRAY;
-        List<IModifiedPeptide> holder = new ArrayList<IModifiedPeptide>();
+
+        Set<IPolypeptide> holder = new HashSet<IPolypeptide>();
         String sequence = peptide.getSequence();
-        for (int i = 0; i < mod.length; i++) {
-            applyModification(peptide, mod[i], holder, sequence);
+
+        PeptideModification[] fixedmods = PeptideModification.selectFixedModifications(allmods);
+        for (int i = 0; i < fixedmods.length; i++) {
+            applyModification(peptide, fixedmods[i], holder, sequence);
         }
         for (int i = 0; i < tmods.length; i++) {
             applyTerminalModification(peptide, tmods[i], holder);
         }
+
+        PeptideModification[] potantialModArray = PeptideModification.selectPotentialModifications(allmods);
+        // sort out what we can use
+        potantialModArray = findApplicableMods(peptide, potantialModArray);
+        applyPotentialModifications(peptide, potantialModArray, holder, sequence);
+
+//        Collection<PeptideModification> potentialMods = new HashSet<PeptideModification>(Arrays.asList(potantialModArray));
+//        if (!potentialMods.isEmpty() )
+//            potentialMods = findApplicableMods(peptide,potentialMods);
+//            applyPotentialModifications(peptide, potentialMods, holder, sequence);
+//
+
         IModifiedPeptide[] ret = new IModifiedPeptide[holder.size()];
         holder.toArray(ret);
         return ret;
     }
+
+    private static void applyPotentialModifications(IPolypeptide peptide, PeptideModification[] potantialModArray, Set<IPolypeptide> withPotentialMods, String sequence) {
+        List<IPolypeptide> newMods = new ArrayList<IPolypeptide>();
+        List<IPolypeptide> currentMods = new ArrayList<IPolypeptide>();
+        currentMods.add(peptide);
+        for (int modNum = 0; modNum < getMaxPeptideModifications(); modNum++) {
+             for (int i = 0; i < potantialModArray.length; i++) {
+                PeptideModification potentialMod = potantialModArray[i];
+                for (IPolypeptide pm : currentMods) {
+                    applyModification(pm, potentialMod, newMods, sequence);
+                }
+
+            }
+            withPotentialMods.addAll(newMods);
+            currentMods.clear();
+            currentMods.addAll(newMods);
+            newMods.clear();
+        }
+
+    }
+
+    private static PeptideModification[] findApplicableMods(IPolypeptide peptide, PeptideModification[] potentialMods) {
+        Set<PeptideModification> holder = new HashSet<PeptideModification>();
+        for (PeptideModification pm : potentialMods) {
+            if (pm.isApplicable(peptide))
+                holder.add(pm);
+        }
+        return holder.toArray(PeptideModification.EMPTY_ARRAY);
+    }
+
+
+    private static Collection<PeptideModification> findApplicableMods(IPolypeptide peptide, Collection<PeptideModification> potentialMods) {
+        Set<PeptideModification> holder = new HashSet<PeptideModification>();
+        for (PeptideModification pm : potentialMods) {
+            if (pm.isApplicable(peptide))
+                holder.add(pm);
+        }
+        return holder;
+    }
+
+//    /**
+//     * this starts applying potential mods to a peptide
+//     * @param peptide
+//     * @param potentialMods
+//     * @param holder
+//     * @param sequence
+//     */
+//    protected static void applyPotentialModifications(IPolypeptide peptide,  Collection<PeptideModification> potentialMods, Set<IModifiedPeptide> holder, String sequence) {
+//        Set<IModifiedPeptide> withPotentialMods = new HashSet<IModifiedPeptide>();
+//        applyPotentialModifications(peptide, sequence, potentialMods, withPotentialMods);
+//        holder.addAll(withPotentialMods);
+//
+//    }
+//
+//    /**
+//     * @param index             index into potentialmods
+//     * @param peptide           start peptide
+//     * @param potentialMods     array of mods to apply
+//     * @param withPotentialMods list of modified peptides
+//     * @param sequence          original sequence
+//     */
+//    protected static void applyPotentialModifications(IPolypeptide peptide, String sequence, Collection<PeptideModification> potentialMods, Set<IModifiedPeptide> withPotentialMods) {
+//        if(peptide.getNumberModifications() >= getMaxPeptideModifications())
+//            return;
+//        List<IModifiedPeptide> newMods = new ArrayList<IModifiedPeptide>();
+//        int nMOds = potentialMods.size();
+//        boolean modApplied = false;
+//        int modsApplied = 0;
+//        for (PeptideModification potentialMod : potentialMods) {
+//            if(!potentialMod.isApplicable(peptide))
+//                continue;
+//             if(applyModification(peptide, potentialMod, newMods, sequence)) {
+//                 withPotentialMods.addAll(newMods);
+//                 Set<PeptideModification> others = new HashSet<PeptideModification>(potentialMods);
+//                 others.remove(potentialMod);
+//                 if(!others.isEmpty()) {
+//                     for(IModifiedPeptide mp : newMods )   {
+//                         if(mp.getNumberModifications() < getMaxPeptideModifications())
+//                           applyPotentialModifications(mp, sequence, others, withPotentialMods);
+//                     }
+//                  }
+//             }
+//            modsApplied++;
+//        }
+//     }
+//
 
     /**
      * this version will allow multiple modifications
@@ -161,7 +274,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         PeptideModification[] tmods = ModifiedPolypeptide.buildTerminalModifications(peptide);
         if (mod.length == 0 && tmods.length == 0)
             return IModifiedPeptide.EMPTY_ARRAY;
-        List<IModifiedPeptide> holder = new ArrayList<IModifiedPeptide>();
+        List<IPolypeptide> holder = new ArrayList<IPolypeptide>();
         String sequence = peptide.getSequence();
 
         for (int i = 0; i < mod.length; i++) {
@@ -174,18 +287,18 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         // add more modifications
         for (int i = 0; i < mod.length; i++) {
             // modify modifies spectra
-            IModifiedPeptide[] items = holder.toArray(IModifiedPeptide.EMPTY_ARRAY);
+            IPolypeptide[] items = holder.toArray(IModifiedPeptide.EMPTY_ARRAY);
             for (int j = 0; j < items.length; j++) {
-                IModifiedPeptide item = items[j];
+                IPolypeptide item = items[j];
                 final String sequence1 = item.getSequence();
                 applyModification(item, mod[i], holder, sequence1);
             }
         }
         for (int i = 0; i < tmods.length; i++) {
             // modify modifies spectra
-            IModifiedPeptide[] items = holder.toArray(IModifiedPeptide.EMPTY_ARRAY);
+            IPolypeptide[] items = holder.toArray(IModifiedPeptide.EMPTY_ARRAY);
             for (int j = 0; j < items.length; j++) {
-                IModifiedPeptide item = items[j];
+                IPolypeptide item = items[j];
                 applyModification(item, tmods[i], holder, item.getSequence());
             }
         }
@@ -197,7 +310,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
 
     protected static void applyTerminalModification(final IPolypeptide peptide,
                                                     final PeptideModification pPeptideModification,
-                                                    final List<IModifiedPeptide> pHolder) {
+                                                    final Collection<IPolypeptide> pHolder) {
         PeptideModification pm = pPeptideModification;
         String test = pm.applyTo();
         int start = 0;
@@ -216,14 +329,16 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         pHolder.add(e);
     }
 
-    protected static void applyModification(final IPolypeptide peptide,
-                                            final PeptideModification pPeptideModification,
-                                            final List<IModifiedPeptide> pHolder,
-                                            final String pSequence) {
+    protected static boolean applyModification(final IPolypeptide peptide,
+                                               final PeptideModification pPeptideModification,
+                                               final Collection<IPolypeptide> pHolder,
+                                               final String pSequence) {
         PeptideModification pm = pPeptideModification;
         String test = pm.applyTo();
         int start = 0;
         int index = pSequence.indexOf(test, start);
+        if (index == -1)
+            return false; // no mods applied
         while (index > -1) {
             IModifiedPeptide e = buildModification(peptide, pm, index);
             if (!pHolder.contains(e))
@@ -232,6 +347,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
                 break;
             index = pSequence.indexOf(test, index + 1);
         }
+        return true; // mods applied
     }
 
     public static IModifiedPeptide buildModification(final IPolypeptide peptide,
@@ -280,6 +396,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
 
 
     private final PeptideModification[] m_SequenceModifications;
+    private final int m_NumberModifications;
 
     public ModifiedPolypeptide(final String pSequence, final int missedCleavages,
                                PeptideModification[] mods) {
@@ -289,6 +406,25 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         PeptideModification[] modifications = new PeptideModification[mods.length];
         System.arraycopy(mods, 0, modifications, 0, mods.length);
         m_SequenceModifications = modifications;
+        // count non-null modifications
+        int nMods = 0;
+        for (int i = 0; i < modifications.length; i++) {
+            PeptideModification modification = modifications[i];
+            if (modification != null)
+                nMods++;
+        }
+        m_NumberModifications = nMods;
+        if (nMods > getMaxPeptideModifications())
+            throw new IllegalStateException("too many modifications in a peptide");
+    }
+
+    /**
+     * get the number of modified peptides
+     *
+     * @return
+     */
+    public int getNumberModifications() {
+        return m_NumberModifications;
     }
 
     /**
@@ -321,6 +457,32 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         ((Polypeptide) ret[0]).setContainedInProteins(ProteinPosition.buildPeptidePositions(ret[0], 0, proteinPositions));
         ((Polypeptide) ret[1]).setContainedInProteins(ProteinPosition.buildPeptidePositions(ret[1], bond + 1, proteinPositions));
         return ret;
+    }
+
+    /**
+     * return true if we have the amino acid and it is not modified
+     *
+     * @param aa !null amino acid
+     * @return as above
+     */
+    @Override
+    public boolean hasUnmodifiedAminoAcid(FastaAminoAcid aacid) {
+        if (!hasAminoAcid(aacid))
+            return false;
+        String aa = aacid.toString();
+        String s = getSequence();
+        int count = 0;
+        int start = 0;
+        int index = -1;
+        while ((index = s.indexOf(aa, start)) > -1) {
+            if (m_SequenceModifications[index] == null)
+                return true;
+            count++;
+            if (index >= s.length() - 1)
+                break;
+            start = index + 1;
+        }
+        return false;
     }
 
 
@@ -366,7 +528,6 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
     public String toString() {
         return getModifiedSequence();
     }
-
 
 
     @Override

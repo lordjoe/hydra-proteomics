@@ -354,6 +354,9 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         if (parameter != null)
             addAlternateParameters(parameter);
 
+        int maxMods = getIntParameter(ModifiedPolypeptide.MAX_MODIFICASTIONS_PARAMETER_NAME,ModifiedPolypeptide.DEFAULT_MAX_MODIFICATIONS);
+        ModifiedPolypeptide.setMaxPeptideModifications(maxMods);
+
     }
 
 

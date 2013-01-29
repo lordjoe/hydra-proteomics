@@ -159,6 +159,27 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
     }
 
     /**
+      * count the occurrance of an amino acid in the sequence
+      * @param aa  !null amino acid
+      * @return   count of presence
+      */
+    @Override
+    public boolean hasAminoAcid(FastaAminoAcid aa) {
+        return getSequence().contains(aa.toString());
+    }
+
+    /**
+        * count the occurrance of an unmodified amino acid in the sequence
+        * @param aa  !null amino acid
+        * @return   count of presence
+        */
+   @Override
+    public boolean hasUnmodifiedAminoAcid(FastaAminoAcid aa) {
+        return hasAminoAcid(  aa);
+    }
+
+
+    /**
      * count the occurrance of an amino acid in the sequence
      * @param aa  !null amino acid  letter
      * @return   count of presence
@@ -619,6 +640,18 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
                getParentProtein(), */
                 getMissedCleavages());
     }
+
+
+    /**
+     * get the number of modified peptides
+     *
+     * @return
+     */
+    public int getNumberModifications()
+    {
+        return 0;
+    }
+
 
     @Override
     public String toString() {

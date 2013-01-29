@@ -36,6 +36,7 @@ public class ScoringModifications {
 
         m_ResiduePotentialModifications = app.getParameter("residue, potential modification mass");
 
+
         buildModifications(app);
     }
 
