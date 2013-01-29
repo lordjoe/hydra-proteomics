@@ -56,7 +56,10 @@ public  class AbstractParameterHolder implements ISetableParameterHolder
       public String getParameter(String key)
       {
           m_UsedKeys.add(key);
-          return m_Parameters.get(key);
+          String s = m_Parameters.get(key);
+          if(s != null)
+              s = s.trim();
+          return s;
       }
 
 

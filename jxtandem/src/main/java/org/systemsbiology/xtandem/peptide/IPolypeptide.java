@@ -49,7 +49,21 @@ public interface  IPolypeptide {
      * @return   count of presence
      */
     public int getAminoAcidCount(FastaAminoAcid aa);
+
     /**
+      * is the Amino Acid Present
+      * @param aa  !null amino acid
+      * @return true if present
+      */
+     public boolean hasAminoAcid(FastaAminoAcid aa);
+
+    /**
+      * is the Amino Acid Present and not modified
+      * @param aa  !null amino acid
+      * @return true if present
+      */
+     public boolean hasUnmodifiedAminoAcid(FastaAminoAcid aa);
+     /**
      * count the occurrance of an amino acid in the sequence
      * @param aa  !null amino acid  letter
      * @return   count of presence
@@ -171,4 +185,10 @@ public interface  IPolypeptide {
      * @return as above
      */
     public int getMissedCleavages();
+
+    /**
+       * get the number of modified peptides
+       * @return
+       */
+      public int getNumberModifications();
 }

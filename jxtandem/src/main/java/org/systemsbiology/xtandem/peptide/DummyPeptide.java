@@ -11,11 +11,11 @@ public class DummyPeptide implements IPolypeptide {
     public static final DummyPeptide[] EMPTY_ARRAY = {};
 
 
-      private final String m_Id;
+    private final String m_Id;
 
     public DummyPeptide(final String pId) {
         m_Id = pId;
-     }
+    }
 
 
     @Override
@@ -23,7 +23,7 @@ public class DummyPeptide implements IPolypeptide {
         return false;
     }
 
-     /**
+    /**
      * return a list of contained proteins
      *
      * @return !null array
@@ -31,8 +31,7 @@ public class DummyPeptide implements IPolypeptide {
     @Override
     public IProteinPosition[] getProteinPositions() {
         return IProteinPosition.EMPTY_ARRAY;
-       }
-
+    }
 
 
     @Override
@@ -41,33 +40,33 @@ public class DummyPeptide implements IPolypeptide {
     }
 
     /**
-      * !null validity may be unknown
-      * @return
-      */
-     public PeptideValidity getValidity()
-     {
-              return PeptideValidity.Unknown;
-       }
+     * !null validity may be unknown
+     *
+     * @return
+     */
+    public PeptideValidity getValidity() {
+        return PeptideValidity.Unknown;
+    }
 
     /**
      * true if the peptide is SewmiTryptic but may
      * miss instance where K or R is followed by aP which
      * are semitryptic
+     *
      * @return
      */
-    public boolean isProbablySemiTryptic()
-    {
+    public boolean isProbablySemiTryptic() {
         String sequence = getSequence();
         char c = sequence.charAt(sequence.length() - 1);
-        switch(c) {
-            case 'r' :
-            case 'R' :
-            case 'k' :
-            case 'K' :
+        switch (c) {
+            case 'r':
+            case 'R':
+            case 'k':
+            case 'K':
                 return false; // tryptic unless followed by a P
             default:
                 return false;
-         }
+        }
     }
 
 
@@ -90,6 +89,16 @@ public class DummyPeptide implements IPolypeptide {
     @Override
     public int getAminoAcidCount(final FastaAminoAcid aa) {
         return 0;
+    }
+
+    @Override
+    public boolean hasAminoAcid(FastaAminoAcid aa) {
+        return false;
+    }
+
+    @Override
+    public boolean hasUnmodifiedAminoAcid(FastaAminoAcid aa) {
+        return false;
     }
 
     /**
@@ -147,8 +156,8 @@ public class DummyPeptide implements IPolypeptide {
      */
     @Override
     public double getMass() {
-    //    if(true)
-    //       throw new UnsupportedOperationException("Dummy peptides cannot get this");
+        //    if(true)
+        //       throw new UnsupportedOperationException("Dummy peptides cannot get this");
         return 0;
     }
 
@@ -159,13 +168,11 @@ public class DummyPeptide implements IPolypeptide {
      */
     @Override
     public double getMatchingMass() {
-      //  if(true)
-      //       throw new UnsupportedOperationException("Dummy peptides cannot get this");
+        //  if(true)
+        //       throw new UnsupportedOperationException("Dummy peptides cannot get this");
         return 0;
     }
 
-
- 
 
     /**
      * return the length of the sequence
@@ -175,7 +182,7 @@ public class DummyPeptide implements IPolypeptide {
     @Override
     public int getSequenceLength() {
         return XTandemUtilities.peptideKeyToLength(getId());
-      }
+    }
 
     /**
      * return the sequence as a set of characters
@@ -184,11 +191,10 @@ public class DummyPeptide implements IPolypeptide {
      */
     @Override
     public String getSequence() {
-    //    if(true)
-    //         throw new UnsupportedOperationException("Dummy peptides cannot get this");
+        //    if(true)
+        //         throw new UnsupportedOperationException("Dummy peptides cannot get this");
         return "";
     }
-
 
 
     /**
@@ -198,7 +204,7 @@ public class DummyPeptide implements IPolypeptide {
      */
     @Override
     public int getNumberPeptideBonds() {
-        return getSequenceLength() -1;
+        return getSequenceLength() - 1;
     }
 
     /**
@@ -209,8 +215,8 @@ public class DummyPeptide implements IPolypeptide {
      */
     @Override
     public char[] getBondPeptideChars(final int bond) {
-        if(true)
-             throw new UnsupportedOperationException("Dummy peptides cannot get this");
+        if (true)
+            throw new UnsupportedOperationException("Dummy peptides cannot get this");
         return new char[0];
     }
 
@@ -222,8 +228,8 @@ public class DummyPeptide implements IPolypeptide {
      */
     @Override
     public IPolypeptide concat(final IPolypeptide added) {
-        if(true)
-             throw new UnsupportedOperationException("Dummy peptides cannot get this");
+        if (true)
+            throw new UnsupportedOperationException("Dummy peptides cannot get this");
         return null;
     }
 
@@ -238,8 +244,8 @@ public class DummyPeptide implements IPolypeptide {
      */
     @Override
     public IPolypeptide[] cleave(final int bond) throws IndexOutOfBoundsException {
-        if(true)
-             throw new UnsupportedOperationException("Dummy peptides cannot get this");
+        if (true)
+            throw new UnsupportedOperationException("Dummy peptides cannot get this");
         return new IPolypeptide[0];
     }
 
@@ -254,8 +260,8 @@ public class DummyPeptide implements IPolypeptide {
      */
     @Override
     public IPolypeptide subsequence(final int start, final int end) throws IndexOutOfBoundsException {
-        if(true)
-             throw new UnsupportedOperationException("Dummy peptides cannot get this");
+        if (true)
+            throw new UnsupportedOperationException("Dummy peptides cannot get this");
         return null;
     }
 
@@ -266,12 +272,22 @@ public class DummyPeptide implements IPolypeptide {
      */
     @Override
     public int getMissedCleavages() {
-     //   if(true)
-     //        throw new UnsupportedOperationException("Dummy peptides cannot get this");
+        //   if(true)
+        //        throw new UnsupportedOperationException("Dummy peptides cannot get this");
         return 0;
     }
 
-   
+    /**
+     * get the number of modified peptides
+     *
+     * @return
+     */
+    public int getNumberModifications()
+    {
+        return 0;
+    }
+
+
     @Override
     public String toString() {
         return getId();    //To change body of overridden methods use File | Settings | File Templates.
