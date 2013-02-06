@@ -57,20 +57,21 @@ public class JXTantemPass1Runner extends ConfiguredJobRunner implements IJobRunn
             otherArgs = XTandemHadoopUtilities.handleGenericInputs(pConf, otherArgs);
             Job job = new Job(pConf, "JXTandemPass1");
             setJob(job);
-            pConf = job.getConfiguration(); // NOTE JOB Copies the configuraton
-            long original = 0;
+              long original = 0;
 
-            pConf = job.getConfiguration(); // maybe we make a copy
+            pConf = job.getConfiguration(); // NOTE JOB Copies the configuraton
+
+            String childOpts = pConf.get("mapred.child.java.opts");
 
             // see http://www.mentby.com/jacob-r-rideout/shuffle-in-memory-outofmemoryerror.html
             // pConf.setFloat("mapred.job.shuffle.input.buffer.percent", 0.2F);
 
             // make default settings
             XTandemHadoopUtilities.setDefaultConfigurationArguments(  pConf);
-
+            childOpts = pConf.get("mapred.child.java.opts");
             // force the splitter to use more mappers
             XTandemHadoopUtilities.addMoreMappers(pConf);
-
+            childOpts = childOpts = pConf.get("mapred.child.java.opts");
             XTandemHadoopUtilities.setInputArguments(otherArgs, job);
 
             String inputFile = otherArgs[0];

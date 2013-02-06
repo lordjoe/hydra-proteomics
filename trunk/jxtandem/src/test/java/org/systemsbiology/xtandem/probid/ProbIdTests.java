@@ -655,8 +655,9 @@ public class ProbIdTests {
 
     @Test
     public void testCondition() throws Exception {
-        ProbIdScoringAlgorithm ps = new ProbIdScoringAlgorithm();
-        int precursorCharge = 1;
+        ProbIdScoringAlgorithm psx = new ProbIdScoringAlgorithm();
+         ITandemScoringAlgorithm ps = psx;
+         int precursorCharge = 1;
         double precursorMass = 100;
         RawPeptideScan raw = new RawPeptideScan("1", "");
         raw.setPeaks(READ_PEAKS);
@@ -763,8 +764,9 @@ public class ProbIdTests {
     @Test
     public void testScoring() throws Exception {
         double[] scores = new double[4];
-        ProbIdScoringAlgorithm ps = new ProbIdScoringAlgorithm();
-        int precursorCharge = 1;
+        ProbIdScoringAlgorithm psx = new ProbIdScoringAlgorithm();
+        ITandemScoringAlgorithm ps = psx;
+       int precursorCharge = 1;
         double precursorMass = 100;
         RawPeptideScan raw = new RawPeptideScan("1", "");
         raw.setPeaks(READ_PEAKS);

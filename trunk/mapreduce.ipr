@@ -3,6 +3,27 @@
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
   </component>
+  <component name="ArtifactManager">
+    <artifact type="exploded-war" name="models3d:Web exploded">
+      <output-path>$PROJECT_DIR$/classes/artifacts/models3d_Web_exploded</output-path>
+      <root id="root">
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="models3d" />
+            <element id="module-output" name="concurrenttools" />
+            <element id="module-output" name="jxtandem" />
+            <element id="module-output" name="proteos" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="file-copy" path="$PROJECT_DIR$/lib/biojava-3.04.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/lib/sam-1.67.jar" />
+            <element id="library" level="project" name="Maven: com.google.gdata:gdata-core-1.0:1.41.5" />
+          </element>
+        </element>
+        <element id="dir-copy" path="$PROJECT_DIR$/models3d/web/data" />
+      </root>
+    </artifact>
+  </component>
   <component name="ClearCaseSharedConfig">
     <option name="myUseUcmModel" value="true" />
   </component>
@@ -28,6 +49,7 @@
       <entry name="?*.tld" />
       <entry name="?*.ftl" />
       <entry name="*.txt" />
+      <entry name="*.pdb" />
     </wildcardResourcePatterns>
     <annotationProcessing>
       <profile default="true" name="Default" enabled="false">

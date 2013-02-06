@@ -10,6 +10,8 @@ import org.systemsbiology.xtandem.taxonomy.*;
 import java.io.*;
 import java.util.*;
 
+import static org.systemsbiology.xtandem.peptide.ModifiedPolypeptide.setMaxPeptideModifications;
+
 //import org.systemsbiology.xtandem.fragmentation.ui.*;
 
 /**
@@ -76,7 +78,7 @@ public class ProteinCollection implements IFastaHandler {
     // tsv file mappinn protein atlas id to uniprot id for interesting proteins
     public static final String UNIPROT_MAPPING_FILE_PROPERTY = "org.systemsbiology.proteimics.uniprot_mapping"; //mappingToUniprot.txt
     // directory where pdb models are stored
-    public static final String PDB_DIRECTORY_PROPERTY = "org.systemsbiology.proteimics.pdb_model_directory"; //Models3d
+    public static final String PDB_DIRECTORY_PROPERTY = "org.systemsbiology.proteimics.pdb_model_directory"; //models3d
     // directory where fragmentation ppeptides are stored
     public static final String FRAGMENTATION_DIRECTORY_PROPERTY = "org.systemsbiology.proteimics.fragmentation_directory"; //Fragments
     // tsv file with uniprotid and comma delimited list of models
@@ -360,6 +362,7 @@ public class ProteinCollection implements IFastaHandler {
     public static void main(String[] args) {
         // downloadUniprots(args[0]);
         // downloadUniprots(args[0]);
+        setMaxPeptideModifications(10);
 
         if (args.length < 3) {
             UsageGenerator.showUsage(SAMPLE,

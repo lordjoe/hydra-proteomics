@@ -174,9 +174,10 @@ public class ScoringUtilities
     public static ITheoreticalSpectrum applyConditioner(ITheoreticalSpectrum spectrum,
                                                      ITheoreticalPeakConditioner filter, Object... addedData)
     {
+        Integer charge = spectrum.getCharge();
         String parentSequence = spectrum.getPeptide().getSequence();
         ITheoreticalSpectrumSet spectrumSet = spectrum.getSpectrumSet();
-         List<ITheoreticalPeak> holder = new ArrayList<ITheoreticalPeak>();
+        List<ITheoreticalPeak> holder = new ArrayList<ITheoreticalPeak>();
         for (ITheoreticalPeak test : spectrum.getTheoreticalPeaks()) {
             if(test.getPeptide().getSequence().length() >= parentSequence.length())
                 continue;
@@ -187,7 +188,7 @@ public class ScoringUtilities
         ITheoreticalPeak[] peaks = new ITheoreticalPeak[holder.size()];
         holder.toArray(peaks);
         Arrays.sort(peaks);
-        return new ScoringSpectrum(spectrum.getCharge(),spectrumSet, peaks);
+          return new ScoringSpectrum(charge,spectrumSet, peaks);
     }
 
     public static class AdjustTheoreticalWeights implements ITheoreticalPeakConditioner

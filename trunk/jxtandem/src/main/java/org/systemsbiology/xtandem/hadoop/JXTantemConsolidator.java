@@ -56,6 +56,7 @@ public class JXTantemConsolidator extends ConfiguredJobRunner implements IJobRun
             long original = 0;
 
             conf = job.getConfiguration(); // maybe we make a copy
+            String childOpts = conf.get("mapred.child.java.opts");
 
 
             if (JXTandemLauncher.isSequenceFilesUsed()) {

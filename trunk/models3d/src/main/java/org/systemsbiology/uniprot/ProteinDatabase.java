@@ -21,8 +21,69 @@ public class ProteinDatabase {
         return gInstance;
     }
 
-  //  public static final String DATABASE_FILE = "uniprot/uniprot_sprot.fasta";
-    public static final String DATABASE_FILE = "uniprot-homo-sapiens.fasta";  // todo revert
+    //  public static final String DATABASE_FILE = "uniprot/uniprot_sprot.fasta";
+    public static final String DATABASE_FILEX = "uniprot-homo-sapiens.fasta";  // todo revert
+
+
+    public static File getHomeDirectory(String base, String defaultDir) {
+        File f = new File(base);
+        if (!f.exists()) {
+            String udir = System.getProperty("user.dir");
+            File home = new File(udir);
+            home = new File(home, defaultDir);
+            f = new File(home, base);
+        }
+        if (!f.exists()) {
+            String uHome = System.getProperty("user.home");
+            File home = new File(uHome);
+            home = new File(home, defaultDir);
+            f = new File(home, base);
+        }
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+        return f;
+    }
+
+
+    public static File getHomeFile(String base, String defaultDir) {
+        File f = new File(base);
+        if (!f.exists()) {
+            String udir = System.getProperty("user.dir");
+            File home = new File(udir);
+            home = new File(home, defaultDir);
+            f = new File(home, base);
+        }
+        if (!f.exists()) {
+            String uHome = System.getProperty("user.home");
+            File home = new File(uHome);
+            home = new File(home, defaultDir);
+            f = new File(home, base);
+        }
+        if (!f.exists()) {
+            throw new IllegalStateException("cannot file file " + base);
+        }
+        return f;
+    }
+
+    /**
+     * read the interestig fasta file
+     *
+     * @return
+     */
+    public static Reader getDatabaseReader() {
+        File f = getHomeFile(DATABASE_FILEX, "Spaghetti");
+        if (!f.exists()) {
+            throw new IllegalStateException("database file does not exist");
+        }
+        try {
+            return new FileReader(f);
+        }
+        catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
 
     private final Map<String, Protein> m_IdToSequence = new HashMap<String, Protein>();
 
@@ -53,7 +114,7 @@ public class ProteinDatabase {
 
     protected void populateDatabase() {
         try {
-            LineNumberReader rdr = new LineNumberReader(new FileReader(DATABASE_FILE));
+            LineNumberReader rdr = new LineNumberReader(getDatabaseReader());
             String line = rdr.readLine();
             StringBuilder sb = new StringBuilder();
 
@@ -63,7 +124,7 @@ public class ProteinDatabase {
             while (line != null) {
                 if (line.startsWith(">")) {
                     if (sb.length() > 0) {
-                        Protein p = Protein.buildProtein(id, annotation, sb.toString(), DATABASE_FILE);
+                        Protein p = Protein.buildProtein(id, annotation, sb.toString(), DATABASE_FILEX);
                         m_IdToSequence.put(id, p);
                         id = null;
                         annotation = null;
@@ -79,7 +140,7 @@ public class ProteinDatabase {
                 line = rdr.readLine();
             }
             if (sb.length() > 0) {
-                Protein p = Protein.buildProtein(id, annotation, sb.toString(), DATABASE_FILE);
+                Protein p = Protein.buildProtein(id, annotation, sb.toString(), DATABASE_FILEX);
                 m_IdToSequence.put(id, p);
                 id = null;
                 annotation = null;
@@ -136,11 +197,11 @@ public class ProteinDatabase {
     public static final int MAXIMUM_LENGTH = 20;
 
     public static final Random RND = new Random();
-    protected static String[] makeFragments(String s)
-    {
+
+    protected static String[] makeFragments(String s) {
         int nsamples = MINIMUM_SAMPLES + RND.nextInt(MAXIMUM_SAMPLES);
         List<String> holder = new ArrayList<String>();
-        while(holder.size() < nsamples)   {
+        while (holder.size() < nsamples) {
             holder.add(makeFragment(s));
         }
 
@@ -149,11 +210,10 @@ public class ProteinDatabase {
         return ret;
     }
 
-    protected static String  makeFragment(String s)
-    {
+    protected static String makeFragment(String s) {
         int len = MINIMUM_LENGTH + RND.nextInt(MAXIMUM_LENGTH - MINIMUM_LENGTH);
-        int start =   RND.nextInt(s.length() - len);
-        return s.substring(start,len + start);
+        int start = RND.nextInt(s.length() - len);
+        return s.substring(start, len + start);
 
     }
 
@@ -168,7 +228,7 @@ public class ProteinDatabase {
         for (int i = 0; i < ids.length; i++) {
             String id = ids[i];
             Uniprot up = Uniprot.buildUniprot(id);
-            if(up == null)
+            if (up == null)
                 continue;
             if (up.getModels().length > 0) {
                 pd.writeSample(out, up);
@@ -177,7 +237,7 @@ public class ProteinDatabase {
                     out.close();
                     return;
                 }
-             }
+            }
         }
         Protein p = pd.getProtein("O00154");
         if (p == null)
