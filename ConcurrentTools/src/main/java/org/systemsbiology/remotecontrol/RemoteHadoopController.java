@@ -194,8 +194,13 @@ public class RemoteHadoopController implements IHadoopController {
         String value = Long.toString((Integer.parseInt(maxMamory) * 2048) + 200 * 1024);
         holder.add("-Dmapred.child.ulimit=" + value);  // in kb
         // DO NOT - DO NOT SET   -xx:-UseGCOverheadLimit   leads to error - Error reading task outputhttp://glad
-        holder.add("-Dmapred.child.java.opts=" + "Xmx" + maxMamory + "m");
+        String childOptsString = "Xmx" + maxMamory + "m";
+       // DO NOT - DO NOT SET   childOptsString = " -xx:-UseGCOverheadLimit";   leads to error - Error reading task outputhttp://glad
+        childOptsString += " -XX:+UseConcMarkSweepGC";   // use a different garbage collector - might help with  : FAILED Error: GC overhead limit exceeded
+        holder.add("-Dmapred.child.java.opts=" + childOptsString);
         holder.add("-Djava.net.preferIPv4Stack=true");
+        System.err.println("Max memory " + maxMamory);
+        System.err.println("mapred.child.ulimit " + value);
 
         for (int i =  0; i < allArgs.length ; i++) {
             String allArg = allArgs[i];
@@ -225,9 +230,11 @@ public class RemoteHadoopController implements IHadoopController {
         // set twice max memory
         Long.toString((Integer.parseInt(maxMamory) * 2048) + 200 * 1024);
         conf.set("mapred.child.ulimit", Long.toString((Integer.parseInt(maxMamory) * 2048) + 200 * 1024));  // in kb
-        // DO NOT - DO NOT SET   -xx:-UseGCOverheadLimit   leads to error - Error reading task outputhttp://glad
-        conf.set("mapred.child.java.opts", "-Xmx" + maxMamory + "m" + " "
-                + "-Djava.net.preferIPv4Stack=true"
+        String childOptsString = "-Xmx" + maxMamory + "m";
+        // DO NOT - DO NOT SET   childOptsString = " -xx:-UseGCOverheadLimit";   leads to error - Error reading task outputhttp://glad
+        childOptsString += " -XX:+UseConcMarkSweepGC";   // use a different garbage collector - might help with  : FAILED Error: GC overhead limit exceeded
+        childOptsString += " -Djava.net.preferIPv4Stack=true";   //
+         conf.set("mapred.child.java.opts", childOptsString
         ); // NEVER DO THIS!!!! +   " -xx:-UseGCOverheadLimit");
         return conf;
     }

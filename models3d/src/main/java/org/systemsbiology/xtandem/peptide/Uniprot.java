@@ -305,7 +305,7 @@ public class Uniprot {
     private final String[] m_Models;
 
     private final Map<String, BioJavaModel> m_IdToMpdel = new HashMap<String, BioJavaModel>();
-    private final File m_ModelDirectory = new File("Models3D");
+    private final File m_ModelDirectory = new File("models3d");
     private BioJavaModel m_BestModel;
     private final Set<IPolypeptide> m_Detected = new HashSet<IPolypeptide>();
     private final Set<FoundPeptide> m_Found = new HashSet<FoundPeptide>();

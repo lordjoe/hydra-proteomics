@@ -414,8 +414,11 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
                 nMods++;
         }
         m_NumberModifications = nMods;
-        if (nMods > getMaxPeptideModifications())
-            throw new IllegalStateException("too many modifications in a peptide");
+ /*
+    If you are being careful stop peptides with too many mods
+  */
+ //       if (nMods > getMaxPeptideModifications())
+  //          throw new IllegalStateException("too many modifications in a peptide");
     }
 
     /**

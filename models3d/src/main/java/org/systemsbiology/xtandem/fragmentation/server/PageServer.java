@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 /**
- * com.lordjoe.server.RestianServer
+ * org.systemsbiology.xtandem.fragmentation.server.PageServer
  * code illustrating the use of a sample Jetty stand alone server
  * call  http://localhost:8080/rest?i1=3&i2=5
  * returns "8"
@@ -61,15 +61,23 @@ public class PageServer extends HttpServlet {
     public static final String INDEX_PAGE = "IndexGood.html";
 
     private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
-    public static final File PAGE_DIRECTORY = new File("pages");
+    public static final String PAGE_DIRECTORYX =  "pages" ;
+    public static final File PAGE_DIRECTORY_URL = new File("pages");
+    public static final String BASE_DIRECTORY = "Spaghetti";
+
+    public static File getPageDirectory()
+    {
+        File f = ProteinDatabase.getHomeDirectory(PAGE_DIRECTORYX,BASE_DIRECTORY ) ;
+        return f;
+    }
 
     private boolean m_PagesLoaded;
     private ProteinCoveragePageTracker m_Tracker;
     private Map<String, String> m_PagesUnderConstruction = new ConcurrentHashMap<String, String>();
 
     public PageServer() {
-        m_Tracker = new ProteinCoveragePageTracker(PAGE_DIRECTORY);
-        String actionUrl = "/svlt";
+        m_Tracker = new ProteinCoveragePageTracker(getPageDirectory());
+        String actionUrl = "/spaghetti/svlt";
 
         // add some test data with a model
         SampleDataHolder sd = SampleDataHolder.getInstance();
@@ -78,7 +86,7 @@ public class PageServer extends HttpServlet {
         String urlError = null;
         String fragments = sample.getFragmentStr();
 
-        File page = new File(PAGE_DIRECTORY, urlStr + ".html");
+        File page = new File(getPageDirectory(), urlStr + ".html");
         page.delete(); // force rebuild
 
         m_Tracker.buildIndexPage(INDEX_PAGE, actionUrl, urlStr, urlError, fragments);
@@ -127,14 +135,14 @@ public class PageServer extends HttpServlet {
 
         String submitName = req.getParameter("Submit");
         if ("BUILDING".equals(submitName)) {
-            String fileName = PAGE_DIRECTORY + "/" + uniprot + ".html?uniprot=BUILDING&Submit=BUILDING";
+            String fileName = getPageDirectory() + "/" + uniprot + ".html?uniprot=BUILDING&Submit=BUILDING";
             String waitpage = m_PagesUnderConstruction.get(uniprot);
             if (waitpage != null) {
                 returnWaitPage(waitpage, rsp);
                 return;
             }
             else {
-                String newPage =  "/" + PAGE_DIRECTORY + "/" + uniprot + ".html";
+                String newPage =  "/" + getPageDirectory() + "/" + uniprot + ".html";
                 redirect(newPage, rsp);
 
             }
@@ -142,14 +150,14 @@ public class PageServer extends HttpServlet {
         }
         if (BUILD_PAGE_NAME.equals(submitName)) {
             String fragments = req.getParameter("fragments");
-            File page = new File(PAGE_DIRECTORY, uniprot + ".html");
+            File page = new File(getPageDirectory(), uniprot + ".html");
             String path = page.getAbsolutePath();
             if (page.exists()) {
-                String newPage = PAGE_DIRECTORY + "/" + page.getName();
+                String newPage = PAGE_DIRECTORY_URL + "/" + page.getName();
                 redirect(newPage, rsp);
             }
             else {
-                String fileName = PAGE_DIRECTORY + "/" + uniprot + ".html?uniprot=" + uniprot + "&Submit=BUILDING";
+                String fileName = PAGE_DIRECTORY_URL + "/" + uniprot + ".html?uniprot=" + uniprot + "&Submit=BUILDING";
                 String waitpage = m_PagesUnderConstruction.get(uniprot);
                 if (waitpage == null) {
                     waitpage = buildWaitPage(uniprot, SERVLET_URI + "/" + fileName, rsp);
@@ -177,7 +185,7 @@ public class PageServer extends HttpServlet {
             String urlError = null;
             String fragments = sample.getFragmentStr();
 
-            File page = new File(PAGE_DIRECTORY, urlStr + ".html");
+            File page = new File(getPageDirectory(), urlStr + ".html");
             page.delete(); // force rebuild
 
             m_Tracker.buildIndexPage(INDEX_PAGE, actionUrl, urlStr, urlError, fragments);
@@ -207,6 +215,8 @@ public class PageServer extends HttpServlet {
 
 
     }
+
+
 
     public static FoundPeptide[] fragmentsToFoundPeptides(Protein protein, String fragmants) {
         if (fragmants == null)

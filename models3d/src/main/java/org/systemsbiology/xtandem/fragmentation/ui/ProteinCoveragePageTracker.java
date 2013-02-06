@@ -41,19 +41,22 @@ public class ProteinCoveragePageTracker {
     public ProteinCoveragePageTracker(final File baseDir) {
         m_PageDir = baseDir;
         File[] files = m_PageDir.listFiles(HTML_FILTER);
-        for (int i = 0; i < files.length; i++) {
-            File file = files[i];
-            processPage(file);
+        if (files != null) {
+            for (int i = 0; i < files.length; i++) {
+                File file = files[i];
+                processPage(file);
+            }
         }
         setPagesRead(true);
     }
 
     /**
      * !null id may be empty
+     *
      * @return
      */
     public String getRequestedId() {
-        if(m_RequestedId == null)
+        if (m_RequestedId == null)
             return "";
         return m_RequestedId;
     }
@@ -64,10 +67,11 @@ public class ProteinCoveragePageTracker {
 
     /**
      * !null fragment set may be empty
+     *
      * @return
      */
     public String[] getRequestedFragments() {
-        if(m_RequestedFragments == null)
+        if (m_RequestedFragments == null)
             return EMPTY_STRINGS;
         return m_RequestedFragments;
     }
@@ -298,7 +302,7 @@ public class ProteinCoveragePageTracker {
         HTMLBodyBuillder body = pb.getBody();
         HTMLFormBuillder fb = new HTMLFormBuillder(body, actionUrl);
         TextInputBuilder url = new TextInputBuilder(fb, "uniprot");
-         url.setVisibleName("Uniprot Id");
+        url.setVisibleName("Uniprot Id");
         url.setValue(urlStr);
         url.setError(urlError);
         TextAreaBuilder area = new TextAreaBuilder(fb, "fragments", FRAGMENTS_ROWS, FRAGMENTS_COLS);

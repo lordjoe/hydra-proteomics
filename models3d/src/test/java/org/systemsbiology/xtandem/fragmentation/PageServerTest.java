@@ -116,7 +116,7 @@ public class PageServerTest {
     {
         File pages = new File("pages");
         pages.mkdirs();
-        File models = new File("Models3D");
+        File models = new File("models3d");
         models.mkdirs();
 
     }

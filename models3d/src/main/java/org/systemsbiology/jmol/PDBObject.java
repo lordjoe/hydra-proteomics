@@ -43,7 +43,11 @@ public class PDBObject extends AsaMolecule {
 //            LineNumberReader rdr = new LineNumberReader(new FileReader(m_File));
         readFromReader(lines);
         // save the models that are used
-          FileUtilities.copyFile(file, new File("E:/tmp/Models3d/" + file.getName()));
+        String property = System.getProperty("user.tmp");
+        if(property == null)
+            property = System.getProperty("user.dir");
+        File tmpDir = new File(property);
+        FileUtilities.copyFile(file, new File(tmpDir,  file.getName()));
 
     }
 

@@ -59,7 +59,7 @@ public class JXTantemPass2Runner extends ConfiguredJobRunner implements IJobRunn
             long original = 0;
 
             conf = job.getConfiguration(); // maybe we make a copy
-
+            String childOpts = conf.get("mapred.child.java.opts");
             // use if we use sequence files
 
 

@@ -12,6 +12,10 @@ import org.systemsbiology.xtandem.peptide.*;
 public class XTandemTheoreticalScoreConditioner implements ITheoreticalPeakConditioner {
     public static final XTandemTheoreticalScoreConditioner[] EMPTY_ARRAY = {};
 
+
+    public XTandemTheoreticalScoreConditioner() {
+    }
+
     /**
      * return a modified peak
      *
