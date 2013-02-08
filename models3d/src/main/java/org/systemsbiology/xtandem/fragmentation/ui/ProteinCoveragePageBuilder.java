@@ -175,8 +175,7 @@ public class ProteinCoveragePageBuilder {
         HTMLHeaderBuillder header = pb.getHeader();
         Protein protein = pfd.getProtein();
         body.addString("<a href=\"../" + HOME_PAGE + "\" >Home</a>\n");
-        header.addString("<script src=\"../Jmol.js\" type=\"text/javascript\"></script> <!-- REQUIRED -->\n");
-        if (prev != null)
+         if (prev != null)
             body.addString("<a href=\"" + prev + ".html\" >Prev</a>\n");
         if (next != null)
             body.addString("<a href=\"" + next + ".html\" >Next</a>\n");
@@ -206,14 +205,18 @@ public class ProteinCoveragePageBuilder {
                 "</h2>\n");
 
         if (model != null) {
-            Asa.calculate_asa(model);
+             new CommentBuilder(body, "Start Model Section");
+             Asa.calculate_asa(model);
             ThreeDModelBuillder tm = new ThreeDModelBuillder(body, pfd);
+            new CommentBuilder(body, "End Model Section");
 //
 //         }
 //         else {
 //             new HTMLHeaderHolder(body, "No 3D Model Found", 1);
         }
 
+
+        new CommentBuilder(body, "Start Structure Section");
         new CoverageColorsLabel(body);
         //    new HelixandTurnLabel(body);
        // if (model != null) {    // this is OK without a model
@@ -226,6 +229,7 @@ public class ProteinCoveragePageBuilder {
         CoverageFragment cf = new CoverageFragment(body, pfd);
 
         SingleTagBuillder st = new SingleTagBuillder(body, "p");
+        new CommentBuilder(body, "End Structure Section");
 
 
         String page = pb.buildPage();

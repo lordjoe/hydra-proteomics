@@ -3,6 +3,7 @@ package org.systemsbiology.xtandem.fragmentation.ui;
 import org.systemsbiology.jmol.*;
 import org.systemsbiology.xtandem.fragmentation.*;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -68,6 +69,14 @@ public class ThreeDModelBuillder extends AbstractHtmlFragmentHolder {
 
     @Override
     public void addStartText(final Appendable out, final Object... data) {
+        try {
+            out.append("<script src=\"../Jmol.js\" type=\"text/javascript\"></script>\n");
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+
 //        try {
 //            out.append("<body>");
 //            out.append("\n");
