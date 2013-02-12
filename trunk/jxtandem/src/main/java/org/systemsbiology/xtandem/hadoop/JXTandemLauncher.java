@@ -35,7 +35,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     public static final String ALGORITHMS_PROPERTY = "org.systemsbiology.algorithm";
     public static final String TURN_ON_SCAN_OUTPUT_PROPERTY = "org.systemsbiology.xtandem.SaveScansData";
     public static final String MULTIPLE_OUTPUT_FILES_PROPERTY = "org.systemsbiology.xtandem.MultipleOutputFiles";
-    public static final String HARDCODED_MODIFICATIONS_PROPERTY = "org.systemsbiology.xtandem.HardCodeModifications";
+    public static final String DO_NOT_COPY_FILES_PROPERTY = "org.systemsbiology.xtandem.DoNotCopyFilesToLocalMachine";
+     public static final String HARDCODED_MODIFICATIONS_PROPERTY = "org.systemsbiology.xtandem.HardCodeModifications";
     public static final String INPUT_FILES_PROPERTY = "org.systemsbiology.xtandem.InputFiles";
     public static final int MAX_DISPLAY_LENGTH = 4 * 1000 * 1000;
     public static final int NUMBER_STAGES = 3;
@@ -1578,6 +1579,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
     public void copyCreaterdFiles(String passedBaseDirctory, String outFile) {
         HadoopTandemMain application = getApplication();
+        if(application.getBooleanParameter(JXTandemLauncher.DO_NOT_COPY_FILES_PROPERTY,false) )
+              return;
         String[] outputFiles = null;
         String muliple = application.getParameter(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY);
         boolean multipleFiles = "yes".equals(muliple);
