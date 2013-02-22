@@ -8,7 +8,7 @@ import org.systemsbiology.xtandem.testing.*;
 import java.util.*;
 
 /**
- * org.systemsbiology.xtandem.probidx.ProbIdScoringAlgorithm
+ * org.systemsbiology.xtandem.morpheus.MorpheusScoringAlgorithm
  * User: Steve
  * Date: 1/12/12
  */
@@ -16,6 +16,9 @@ public class MorpheusScoringAlgorithm extends AbstractScoringAlgorithm {
 
     public static final MorpheusScoringAlgorithm[] EMPTY_ARRAY = {};
     public static final int NUMBER_ION_TYPES = 2; // B and I
+
+    public static final double PROTON_MASS = MassCalculator.getDefaultCalculator().calcMass("H");
+
 
     public static final double LOG_PI = Math.log(Math.sqrt(2 * Math.PI));
     public static final double NORMALIZATION_MAX = 200.0;
@@ -258,9 +261,11 @@ public class MorpheusScoringAlgorithm extends AbstractScoringAlgorithm {
         int MatchingProducts = 0;
         int TotalProducts = 0;
         double MatchingIntensity = 0.0;
+        int charge = theory.getCharge();
         while (t < tps.length && e < peaks.length) {
             TotalProducts++;
-            double mass_difference = peaks[e].getMassChargeRatio() - tps[t].getMassChargeRatio();
+            double massChargeRatio = tps[t].getMassChargeRatio() - PROTON_MASS * charge;
+            double mass_difference = peaks[e].getMassChargeRatio() - massChargeRatio;
             if (Math.abs(mass_difference) <= m_MassTolerance) {
                 MatchingProducts++;
                 MatchingIntensity += peaks[e].getPeak();
@@ -351,28 +356,28 @@ public class MorpheusScoringAlgorithm extends AbstractScoringAlgorithm {
     @Override
     public IMeasuredSpectrum conditionSpectrum(final IScoredScan pScan, final SpectrumCondition sc) {
         OriginatingScoredScan scan = (OriginatingScoredScan) pScan;
-        MutableMeasuredSpectrum in = new MutableMeasuredSpectrum(pScan.getRaw());
-        IMeasuredSpectrum iMeasuredSpectrum = truncatePeakList(in);
-        iMeasuredSpectrum = normalize(iMeasuredSpectrum.asMmutable());
-        return iMeasuredSpectrum;
+        IMeasuredSpectrum in = new MutableMeasuredSpectrum(pScan.getRaw());
+ //     IMeasuredSpectrum iMeasuredSpectrum = truncatePeakList(in);
+        in = normalize(in.asMmutable());
+        return in;
     }
 
-    protected IMeasuredSpectrum truncatePeakList(final MutableMeasuredSpectrum in) {
-        ISpectrumPeak[] peaks = in.getPeaks();
-        if (peaks.length < PEAK_BIN_NUMBER * PEAK_BIN_SIZE)
-            return in; // nothing to do
-
-        double minMass = (peaks[0].getMassChargeRatio());
-        double maxMass = ((peaks[peaks.length - 1].getMassChargeRatio()));
-        int step = (int) ((maxMass - minMass) / PEAK_BIN_NUMBER);
-
-        MutableMeasuredSpectrum out = new MutableMeasuredSpectrum(in);
-        in.setPeaks(ISpectrumPeak.EMPTY_ARRAY);
-        addHighestPeaks(out, peaks, minMass, minMass + step);
-        addHighestPeaks(out, peaks, minMass + step, minMass + 2 * step);
-        addHighestPeaks(out, peaks, minMass + 2 * step, maxMass);
-        return out;
-    }
+//    protected IMeasuredSpectrum truncatePeakList(final MutableMeasuredSpectrum in) {
+//        ISpectrumPeak[] peaks = in.getPeaks();
+//        if (peaks.length < PEAK_BIN_NUMBER * PEAK_BIN_SIZE)
+//            return in; // nothing to do
+//
+//        double minMass = (peaks[0].getMassChargeRatio());
+//        double maxMass = ((peaks[peaks.length - 1].getMassChargeRatio()));
+//        int step = (int) ((maxMass - minMass) / PEAK_BIN_NUMBER);
+//
+//        MutableMeasuredSpectrum out = new MutableMeasuredSpectrum(in);
+//        in.setPeaks(ISpectrumPeak.EMPTY_ARRAY);
+//        addHighestPeaks(out, peaks, minMass, minMass + step);
+//        addHighestPeaks(out, peaks, minMass + step, minMass + 2 * step);
+//        addHighestPeaks(out, peaks, minMass + 2 * step, maxMass);
+//        return out;
+//    }
 
     public static double getMassDifference(ISpectrum spec) {
         ISpectrumPeak[] peaks = spec.getPeaks();
@@ -397,9 +402,25 @@ public class MorpheusScoringAlgorithm extends AbstractScoringAlgorithm {
         return numMissIons * (-Math.log(diffMZ));
     }
 
-
+    /**
+     * is this correct or should all spectra do this????? todo
+     * @param in
+     * @return
+     */
     protected IMeasuredSpectrum normalize(final MutableMeasuredSpectrum in) {
-        return in; // I do not see normalization
+        double proton = MassCalculator.getDefaultCalculator().calcMass("H");
+        ISpectrumPeak[] peaks = in.getPeaks();
+        int charge = in.getPrecursorCharge();
+        ISpectrumPeak[] newpeaks = new ISpectrumPeak[peaks.length];
+        for (int i = 0; i < peaks.length; i++) {
+            ISpectrumPeak peak = peaks[i];
+            double massChargeRatio = peak.getMassChargeRatio() + charge * proton;
+            newpeaks[i] = new SpectrumPeak(massChargeRatio, peak.getPeak());
+
+        }
+        MutableMeasuredSpectrum out =  new MutableMeasuredSpectrum(in);
+        out.setPeaks(newpeaks);
+        return out; // I do not see normalization
     }
 
 

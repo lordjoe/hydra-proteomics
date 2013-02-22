@@ -11,6 +11,7 @@ import org.systemsbiology.xtandem.peptide.*;
 public class PeptideIon implements IPeptideIon, ITheoreticalPeak {
     public static final PeptideIon[] EMPTY_ARRAY = {};
 
+
     private final org.systemsbiology.xtandem.ionization.IonType m_Type;
     private final IPolypeptide m_Peptide;
     private final int m_Charge;

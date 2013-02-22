@@ -298,11 +298,11 @@ public class MorpheusScoringTest {
         RawPeptideScan raw = new RawPeptideScan("1", "");
         raw.setPeaks(EXPERIMENTAL_PEAKS);
         IScoredScan scored = new ScoredScan(raw);
-          IMeasuredSpectrum ms2 = ps.conditionSpectrum(scored, null);
+        IMeasuredSpectrum ms2 = ps.conditionSpectrum(scored, null);
 
         IMeasuredSpectrum ms1 = new MutableMeasuredSpectrum(precursorCharge, precursorMass, raw, THEORETICAL_PEAKS);
 
-          ITheoreticalSpectrumSet set = new TheoreticalSpectrumSet(precursorCharge, precursorMass, pp);
+        ITheoreticalSpectrumSet set = new TheoreticalSpectrumSet(precursorCharge, precursorMass, pp);
         for (int charge = 1; charge <= precursorCharge; charge++) {
             ITheoreticalSpectrum spectrum = scoreRunner.generateTheoreticalSpectra(set, charge);
         }
@@ -310,13 +310,14 @@ public class MorpheusScoringTest {
         double proton = MassCalculator.getDefaultCalculator().calcMass("H");
         ITheoreticalPeak[] tps = set.getSpectrum(precursorCharge).getTheoreticalPeaks();
 
-        IMeasuredSpectrum fromMorpheus = new MutableMeasuredSpectrum(precursorCharge, precursorMass, raw, THEORETICAL_PEAKS);
+         IMeasuredSpectrum fromMorpheus = new MutableMeasuredSpectrum(precursorCharge, precursorMass, raw, THEORETICAL_PEAKS);
         ISpectrumPeak[] peaks = fromMorpheus.getPeaks();
         for (int i = 0; i < tps.length; i++) {
             ITheoreticalPeak tp = tps[i];
             ISpectrumPeak pk = peaks[i];
 
-            Assert.assertEquals(tp.getMassChargeRatio()  , pk.getMassChargeRatio() ,MorpheusScoringAlgorithm.DEFAULT_MASS_TOLERANCE);
+            double expectedMass = tp.getMassChargeRatio() - precursorCharge * MorpheusScoringAlgorithm.PROTON_MASS;
+            Assert.assertEquals(expectedMass, pk.getMassChargeRatio() ,MorpheusScoringAlgorithm.DEFAULT_MASS_TOLERANCE);
 
         }
         ITheoreticalSpectrum theory = new ScoringSpectrum(precursorCharge, set, tps);

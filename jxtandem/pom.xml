@@ -22,6 +22,11 @@
             <artifactId>commons-dbcp</artifactId>
             <version>1.2.2</version>
         </dependency>
+        <dependency>
+        	<groupId>xerces</groupId>
+        	<artifactId>xmlParserAPIs</artifactId>
+        	<version>2.6.2</version>
+        </dependency>
 
         <dependency>
             <groupId>org.systemsbiology.mapreduce</groupId>
