@@ -21,6 +21,7 @@ public class XMLGeneratorHelper
     public static final Set gUniversalExcludedProperties = new HashSet();
     public static final String[] UNIVERSAL_EXCLUDES = { "Class" , "XMLString" };
 
+    // Should always work SLewis
     static {
         gUniversalExcludedProperties.addAll(Arrays.asList(UNIVERSAL_EXCLUDES));
     }

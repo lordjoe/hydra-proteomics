@@ -15,6 +15,7 @@ public class Base64 {
     //
     static private byte[] codes = new byte[256];
 
+     // Should always work SLewis
     static {
         for (int i=0; i<256; i++) codes[i] = -1;
         for (int i = 'A'; i <= 'Z'; i++) codes[i] = (byte)(     i - 'A');
