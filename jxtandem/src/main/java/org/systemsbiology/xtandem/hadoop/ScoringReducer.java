@@ -59,7 +59,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
     // Special output for Josh Patterson LogJam
     public static final boolean USING_LOGJAM = false;
     // Special output for timing  on windows (in single mode)
-    public static final boolean STORING_SCANS = HadoopUtilities.isWindows() && false;
+ //   public static final boolean STORING_SCANS = HadoopUtilities.isWindows() && false;
     // special debug code
     public static final boolean LOG_DOT_PRODUCT = false;
 
@@ -182,10 +182,10 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         int mass = interval.getMass();
 
         // Special code to store scans at mass for timing studeies
-        if (STORING_SCANS) {
-            if (!TestScoringTiming.SAVED_MASS_SET.contains(mass))
-                return;
-        }
+//        if (STORING_SCANS) {
+//            if (!TestScoringTiming.SAVED_MASS_SET.contains(mass))
+//                return;
+//        }
 
         int numberScans = 0;
         int numberScored = 0;
@@ -205,10 +205,10 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
 
         // Special code to store scans at mass for timing stueies
         SequenceFile.Writer writer = null;
-        if (STORING_SCANS) {
-            writer = XTandemHadoopUtilities.buildScanStoreWriter(configuration, mass);
-        }
-        // Debug stuff
+//        if (STORING_SCANS) {
+//            writer = XTandemHadoopUtilities.buildScanStoreWriter(configuration, mass);
+//        }
+//        // Debug stuff
         //    if (mass > 2187 && mass < 2192)
         //        XTandemUtilities.breakHere();
        // if (mass == 1392)
@@ -271,11 +271,11 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
 
 
                 // special code to store scans fo rtiming later
-                if (STORING_SCANS) {
-                    Text onlyKey = getOnlyKey();
-                    onlyKey.set(id);
-                    writer.append(onlyKey, text);
-                }
+//                if (STORING_SCANS) {
+//                    Text onlyKey = getOnlyKey();
+//                    onlyKey.set(id);
+//                    writer.append(onlyKey, text);
+//                }
 
                 // Find out who the user really is
                // String userName = System.getProperty("user.name");
@@ -339,9 +339,9 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
             application.clearRetainedData();
 
             // special code to store scans fo rtiming later
-            if (STORING_SCANS) {
-                writer.close();
-            }
+//            if (STORING_SCANS) {
+//                writer.close();
+//            }
 
         }
         catch (RuntimeException e) {

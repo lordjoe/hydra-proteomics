@@ -20,6 +20,7 @@ public enum FragmentationMethod {
     public static final Map<String, FragmentationMethod> STRING_MAPPING = new HashMap<String, FragmentationMethod>();
     public static final Map<String, FragmentationMethod> MZML_MAPPING = new HashMap<String, FragmentationMethod>();
 
+       // Should always work SLewis
     static {
         STRING_MAPPING.put(ETD.toString(), ETD);
         STRING_MAPPING.put(ECD.toString(), ECD);
