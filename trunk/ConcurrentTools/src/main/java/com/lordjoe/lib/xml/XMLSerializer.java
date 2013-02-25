@@ -65,6 +65,7 @@ public class XMLSerializer extends HandlerBase
 
     }
 
+   // Should always work SLewis
     static {
         registerDefaultTags();
     }

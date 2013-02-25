@@ -14,6 +14,7 @@
 package com.lordjoe.utilities;
 
 
+import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
 
@@ -1285,6 +1286,27 @@ abstract public class ClassUtilities
     {
         return Modifier.isFinal(fld.getModifiers());
     }
+
+
+    public static void validateClassPath()
+    {
+        String sep = System.getProperty("path.separator");
+        String[] classpath =  System.getProperty("java.class.path").split(sep);
+        for (int i = 0; i < classpath.length; i++) {
+            String s = classpath[i];
+            validateClassPathElement(  s);
+        }
+    }
+
+    public static void validateClassPathElement(String s)
+    {
+         File f = new File(s);
+        System.out.println("Looking for " + f.getAbsolutePath() );
+         if(!f.exists())  {
+             System.out.println("==>ClassPath element " + f.getAbsolutePath() + " does not exist");
+         }
+    }
+
 
 
 //- *******************

@@ -227,8 +227,9 @@ public class HadoopUtilities {
     }
 
     public static boolean isWindows() {
-        return !isLinux();
-    }
+        String os = System.getProperty("os.name").toLowerCase();
+        return os.contains("windows");
+     }
 
     public static void writeResourceAsFile(Class cls, String resourceName, LocalFileSystem localFs, String dstFile) {
         InputStream inp = cls.getResourceAsStream(resourceName);

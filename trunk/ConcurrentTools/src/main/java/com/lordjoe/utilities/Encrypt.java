@@ -12,6 +12,7 @@ public class Encrypt {
     public static  final String DEFAULT_KEY; //  = "What hath God wrought.In union thers is strength. In money glory and in neigher peace.";
     public static final Encrypt INTERNAL_ENCRYPTOR = new Encrypt(BASE_KEY);
 
+    // Should always work SLewis
     static {
         INTERNAL_ENCRYPTOR.setCypherLength(2 * DEFAULT_KEY_ENCRYPTED.length());
         //  DEFAULT_KEY_ENCRYPTED = INTERNAL_ENCRYPTOR.encrypt(DEFAULT_KEY);
