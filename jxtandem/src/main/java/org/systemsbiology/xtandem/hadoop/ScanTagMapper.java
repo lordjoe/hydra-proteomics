@@ -274,10 +274,10 @@ public class ScanTagMapper extends AbstractTandemMapper<Writable> {
             throws IOException, InterruptedException {
 
        // Special code to store scans at mass for timing studies
-        if(ScoringReducer.STORING_SCANS ) {
-            if(!TestScoringTiming.SAVED_MASS_SET.contains(mass))
-                return;
-        }
+//        if(ScoringReducer.STORING_SCANS ) {
+//            if(!TestScoringTiming.SAVED_MASS_SET.contains(mass))
+//                return;
+//        }
 
         HadoopTandemMain application = getApplication();
         SpectrumCondition sp = application.getSpectrumParameters();
