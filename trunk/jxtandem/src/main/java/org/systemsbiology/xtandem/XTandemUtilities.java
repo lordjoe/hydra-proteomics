@@ -418,6 +418,7 @@ public class XTandemUtilities {
     private static final Map<FastaAminoAcid, Double> gMonoIsotopic = new HashMap<FastaAminoAcid, Double>();
     private static final Map<FastaAminoAcid, Double> gAverage = new HashMap<FastaAminoAcid, Double>();
 
+    // Should always work if it works anywhere - right SLewis
     static {
         MassCalculator mc = MassCalculator.getCalculator(MassType.monoisotopic);
         gMonoIsotopic.put(FastaAminoAcid.valueOf("A"), mc.calcMass("C3H5ON"));

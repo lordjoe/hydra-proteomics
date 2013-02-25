@@ -12,6 +12,7 @@ public enum ScanPolarity {
     public static final ScanPolarity[] EMPTY_ARRAY = {};
 
     public static final Map<String,ScanPolarity> STRING_MAPPING = new HashMap<String,ScanPolarity>();
+    // Should always work SLewis
     static {
         STRING_MAPPING.put(plus.toString(),plus);
         STRING_MAPPING.put(minus.toString(),minus);
