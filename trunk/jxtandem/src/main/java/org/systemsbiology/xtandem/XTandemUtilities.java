@@ -1433,6 +1433,12 @@ public class XTandemUtilities {
             // add scan items
             while (line != null) {
                 line = line.trim();
+                // ignore empty lines
+                if(line.length() == 0) {
+                    line = inp.readLine();
+                    continue;
+                }
+
                 if (line.contains("=")) {
                     if (line.startsWith("TITLE=")) {
                         title = buildMGFTitle(line);
