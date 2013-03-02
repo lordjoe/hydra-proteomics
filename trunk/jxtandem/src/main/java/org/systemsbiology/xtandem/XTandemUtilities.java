@@ -1525,7 +1525,7 @@ public class XTandemUtilities {
      * Error handling code for MGF parse failuer
      * *******************************
      */
-    public static final int MAX_NUMBER_BAD_MGF_LINES = 16;
+    public static final int MAX_NUMBER_BAD_MGF_LINES = 2000;
     private static int gNumberBadMGFLines = 0;
 
     /**
