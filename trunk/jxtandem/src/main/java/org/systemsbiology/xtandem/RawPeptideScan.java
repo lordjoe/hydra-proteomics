@@ -164,6 +164,57 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
 
     }
 
+    /**
+     * write out the data as an MGF file
+     * @param out place to append
+     */
+     public void appendAsMGF( Appendable out) {
+         int indent = 0;
+
+         try {
+             out.append("BEGIN IONS");
+             out.append("\n");
+
+             out.append("TITLE=" +  getId());
+             out.append("\n");
+
+             out.append("PEPMASS=" +  getPrecursorMass());
+             out.append("\n");
+
+             out.append("CHARGE=" +  getPrecursorCharge());
+             out.append("\n");
+
+                appendPeaks(out);
+                out.append("END IONS");
+              out.append("\n");
+           }
+         catch (IOException e) {
+             throw new RuntimeException(e);
+
+         }
+
+     }
+
+
+    /**
+     * appent the peaks as an MGF file would do so
+     * @param out hte output appendable
+     * @throws IOException because it must
+     */
+    protected void appendPeaks(final Appendable out) throws IOException {
+        ISpectrumPeak[] spectrumPeaks = getPeaks();
+         for (int i = 0; i < spectrumPeaks.length; i++) {
+            ISpectrumPeak sp = spectrumPeaks[i];
+            String line = String.format("%10.5f\t%8.2f",sp.getPeak(),sp.getMassChargeRatio()) ;
+             out.append(line);
+             out.append("\n");
+         }
+
+    }
+
+
+
+
     protected void appendPrecursor(final IXMLAppender adder) {
         String tag = "precursorList";
         adder.openTag(tag);
@@ -235,6 +286,7 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         appendBinaryData(adder, mzs, "m/z array");
         appendBinaryData(adder, intensities, "intensity array");
     }
+
 
     protected static void appendBinaryData(final IXMLAppender adder, double[] data, String name) {
         //  String encoded = MzMlUtilities.encode(data);

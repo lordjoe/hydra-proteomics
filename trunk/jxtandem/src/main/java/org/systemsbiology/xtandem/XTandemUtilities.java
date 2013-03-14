@@ -32,7 +32,8 @@ public class XTandemUtilities {
     public static Class THIS_CLASS = XTandemUtilities.class;
 
     public static final String WRITING_PEPXML_PROPERTY = "org.systemsbiology.xtandem.hadoop.WritePepXML";
-    // do not plan to deal with larger charges
+    public static final String WRITING_MGF_PROPERTY = "org.systemsbiology.xtandem.hadoop.WriteMGFSpectraWithHyperscoreGreaterThan";
+     // do not plan to deal with larger charges
     public static final int MAX_CHARGE = 4;
 
     public static final int INTEGER_SIZE = 4; // bytes per integer
