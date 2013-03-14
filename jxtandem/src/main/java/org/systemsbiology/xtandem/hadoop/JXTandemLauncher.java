@@ -1691,6 +1691,22 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             }
 
         }
+
+        /**
+         * if we are writine out high scoring mgf files then cop them back
+         */
+       double limit = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY,0);
+        if(limit > 0 ) {
+            ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
+            for (int i = 0; i < algorithms.length; i++) {
+                ITandemScoringAlgorithm algorithm = algorithms[i];
+                String fileName = hdfsPath +   "." + algorithm.getName() +   ".mgf";
+                String outFile2 = outFile +   ".mgf";
+                readRemoteFile(fileName, outFile2);
+            }
+
+        }
+
         return outFile;
     }
 
