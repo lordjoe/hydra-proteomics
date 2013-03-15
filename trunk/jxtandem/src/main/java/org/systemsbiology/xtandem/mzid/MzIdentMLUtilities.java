@@ -96,18 +96,25 @@ public class MzIdentMLUtilities {
 
     }
 
+    public static void showMessage(final SAXParseException e) {
+         int line = e.getLineNumber();
+         System.out.println("error on line " + line + " " + e.getMessage());
+     }
+
+
     public static class SimpleErrorHandler implements ErrorHandler {
         public void warning(SAXParseException e) throws SAXException {
-            System.out.println(e.getMessage());
+            showMessage(e);
         }
+
 
         public void error(SAXParseException e) throws SAXException {
-            System.out.println(e.getMessage());
-        }
+            showMessage(e);
+         }
 
         public void fatalError(SAXParseException e) throws SAXException {
-            System.out.println(e.getMessage());
-        }
+            showMessage(e);
+         }
     }
 
 
