@@ -303,7 +303,9 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
                 // todo support multiple
                 for (int i = 0; i < scoredScans.length; i++) {
                     IScoredScan scan = scoredScans[i];
-                    getMFGWriter(i).writeMGFElement(scan, getMgfOutWriter(i));
+                    MGFWriter mfgWriter = getMFGWriter(i);
+                    PrintWriter mgfOutWriter = getMgfOutWriter(i);
+                    mfgWriter.writeMGFElement(scan, mgfOutWriter);
 
                 }
                 ScoredScan scan = (ScoredScan) scoredScans[0];

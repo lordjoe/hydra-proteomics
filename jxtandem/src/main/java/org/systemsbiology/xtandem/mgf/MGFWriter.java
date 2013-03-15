@@ -85,7 +85,8 @@ public class MGFWriter {
         ISpectralMatch bestMatch = scan.getBestMatch();
         if(bestMatch == null)
             return;
-        if(  bestMatch.getHyperScore()  > getMinimumHyperscore())
+        double testScore = bestMatch.getHyperScore();
+        if(  testScore < getMinimumHyperscore())
             return;
         RawPeptideScan raw = scan.getRaw();
         raw.appendAsMGF(out);
