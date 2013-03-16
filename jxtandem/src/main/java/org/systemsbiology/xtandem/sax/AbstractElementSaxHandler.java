@@ -231,4 +231,26 @@ public abstract class AbstractElementSaxHandler<T> extends AbstractSaxParser imp
         super.startElement(uri, localName, qName, attributes);
 
     }
+
+    /**
+      * Ignore this tag and all sub tags
+      * @param uri
+      * @param localName
+      * @param qName
+      * @param attributes
+      */
+     protected void setIgnoreTagContents(final String uri, final String localName, final String qName, final Attributes attributes)
+     {
+         AbstractElementSaxHandler handler = new DiscardingSaxParser(qName, this);
+         getHandler().pushCurrentHandler(handler);
+         try {
+             handler.handleAttributes(uri, localName, qName, attributes);
+         }
+         catch (SAXException e) {
+             throw new RuntimeException(e);
+
+         }
+
+     }
+
 }
