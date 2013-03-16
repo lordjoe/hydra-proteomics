@@ -1577,13 +1577,16 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         throw new UnsupportedOperationException("Property " + pProperty + " with value " + pValue + " Not handled");
     }
 
-    public void copyCreaterdFiles(String passedBaseDirctory, String outFile) {
+    public void copyCreaterdFiles(String passedBaseDirctory, String outFileName) {
         HadoopTandemMain application = getApplication();
         if(application.getBooleanParameter(JXTandemLauncher.DO_NOT_COPY_FILES_PROPERTY,false) )
               return;
         String[] outputFiles = null;
         String muliple = application.getParameter(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY);
         boolean multipleFiles = "yes".equals(muliple);
+        String outFile =   outFileName;
+
+
         if (multipleFiles) {
             String files = application.getParameter(JXTandemLauncher.INPUT_FILES_PROPERTY);
             if (files != null) {
@@ -1628,6 +1631,16 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                     }
                 }
                 //          f = main.readRemoteFile(hdfsPathEric, outFile);
+
+                /**
+                 * if we are writine out high scoring mgf files then cop them back
+                 */
+               double limit = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY,0);
+                if(limit > 0 ) {
+                            String fileName = hdfsPath +    ".mgf";
+                        String outFile2 = outFileName +   ".mgf";
+                        readRemoteFile(fileName, outFile2);
+                  }
 
             }
             catch (IllegalArgumentException e) {
@@ -1687,21 +1700,6 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 String outFile2 = outFile + /* "." + algorithm.getName() +  */ ".pep.xml";
                 if (application.getBooleanParameter(MULTIPLE_OUTPUT_FILES_PROPERTY))
                     outFile2 = fileName;
-                readRemoteFile(fileName, outFile2);
-            }
-
-        }
-
-        /**
-         * if we are writine out high scoring mgf files then cop them back
-         */
-       double limit = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY,0);
-        if(limit > 0 ) {
-            ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
-            for (int i = 0; i < algorithms.length; i++) {
-                ITandemScoringAlgorithm algorithm = algorithms[i];
-                String fileName = hdfsPath +   "." + algorithm.getName() +   ".mgf";
-                String outFile2 = outFile +   ".mgf";
                 readRemoteFile(fileName, outFile2);
             }
 
