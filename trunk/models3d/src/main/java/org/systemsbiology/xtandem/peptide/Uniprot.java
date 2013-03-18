@@ -300,6 +300,37 @@ public class Uniprot {
     }
 
 
+
+    public static Uniprot getByQuery(String accession) {
+        try {
+            String s = run("uniprot", new ParameterNameValue[]{
+                     new ParameterNameValue("query", accession),
+                    new ParameterNameValue("format", "tab"),
+                    new ParameterNameValue("columns", "id,database(PDB),sequence"),
+              }
+            );
+            final String[] split = s.split("\n");
+            if (split.length != 2)
+                return null;
+            if (!split[0].startsWith("Entry"))
+                return null;
+            final String query = split[1];
+            final String[] split1 = query.split("\t");
+            if (split1.length != 3)
+                return null;
+            Uniprot ret = new Uniprot(split1);
+            Sequence sq = getBioJavaSequence(accession);
+            if (sq != null)
+                ret.setSequence(sq);
+            return ret;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
     private final Protein m_Protein;
     private final ProteinAminoAcid[] m_AminoAcids;
     private final String[] m_Models;
