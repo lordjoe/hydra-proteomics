@@ -218,7 +218,8 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
         }
 
         double limit = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY, 0);
-        if (limit > 0) {
+        double limit_2 = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY_2,0);
+        if (limit > 0 || limit_2 > 0) {
             setWriteHighScoringMGF(true);
             setMinimumScoreForMGFWrite(limit);
             ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
@@ -231,10 +232,19 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
                 if (!"KScore".equals(algo))
                     extension = "." + algo + extension;
                 m_MGFOutWriter[i] = XTandemHadoopUtilities.buildPrintWriter(context, s, extension);
-                MGFWriter px = new MGFWriter(application, limit);
+                MGFWriter px;
+
+                if (limit_2 > 0)
+
+                    px = new MGFExpectedWriter(application, limit_2);
+
+                else
+
+                    px = new MGFWriter(application, limit);
 
                 px.setPath(s);
                 m_MFGWriters[i] = px;
+
 
                 String spectrumPath = application.getParameter("spectrum, path");
 
@@ -408,5 +418,6 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
             }
             m_MFGWriters = null;
         }
+
     }
 }
