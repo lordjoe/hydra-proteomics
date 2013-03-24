@@ -13,11 +13,11 @@ public class UniprotTest {
     public static final UniprotTest[] EMPTY_ARRAY = {};
 
 
-    public static final String[] TEST_IDS {
+    public static final String[] TEST_IDS = {
         "VNG0636G",
                 "VNG0771G",
-                "VNG0779C"
-        "VNG1001G"
+                "VNG0779C",
+        "VNG1001G",
         "VNG1173a"
     } ;
     @Test
@@ -25,7 +25,8 @@ public class UniprotTest {
         for (int i = 0; i < TEST_IDS.length; i++) {
             String test = TEST_IDS[i];
             validateQuery(test);
-            Uniprot Uniprot.getByQuery(String accession)
+            throw new UnsupportedOperationException("Fix This"); // ToDo
+          //  Uniprot up = Uniprot.getByQuery(String accession)
 
         }
 

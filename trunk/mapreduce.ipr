@@ -326,7 +326,7 @@
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6 64Bit" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6  64 Bit" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
   <component name="SvnBranchConfigurationManager">
@@ -854,6 +854,17 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jdt/core/3.1.1/core-3.1.1-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Maven: org.mortbay.jetty:jetty-security:7.0.0.pre4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-security/7.0.0.pre4/jetty-security-7.0.0.pre4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-security/7.0.0.pre4/jetty-security-7.0.0.pre4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-security/7.0.0.pre4/jetty-security-7.0.0.pre4-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: org.mortbay.jetty:jetty-util:6.1.14">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-util/6.1.14/jetty-util-6.1.14.jar!/" />
@@ -874,6 +885,28 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-util/7.0.0.pre5/jetty-util-7.0.0.pre5-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:jetty-webapp:7.0.0.pre4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-webapp/7.0.0.pre4/jetty-webapp-7.0.0.pre4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-webapp/7.0.0.pre4/jetty-webapp-7.0.0.pre4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-webapp/7.0.0.pre4/jetty-webapp-7.0.0.pre4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:jetty-xml:7.0.0.pre4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-xml/7.0.0.pre4/jetty-xml-7.0.0.pre4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-xml/7.0.0.pre4/jetty-xml-7.0.0.pre4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-xml/7.0.0.pre4/jetty-xml-7.0.0.pre4-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.mortbay.jetty:jetty:6.1.14">
