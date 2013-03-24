@@ -16,7 +16,7 @@ import java.util.*;
 public class AppServer
 {
     public static SiteRunner[] EMPTY_ARRAY = {};
-    public static Class THIS_CLASS = SiteRunner.class;
+    public static Class THIS_CLASS = AppServer.class;
 
     public static final int SERVER_PORT = 8091;
     public static final String SERVER_DIRECTORY = "/Pargrapher";
