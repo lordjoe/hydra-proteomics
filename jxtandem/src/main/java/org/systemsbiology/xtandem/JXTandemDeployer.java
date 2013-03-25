@@ -2,6 +2,7 @@ package org.systemsbiology.xtandem;
 
 import com.lordjoe.utilities.*;
 import org.systemsbiology.hadoop.*;
+import org.systemsbiology.remotecontrol.*;
 import org.systemsbiology.xtandem.hadoop.*;
 
 import java.io.*;
@@ -85,10 +86,9 @@ public class JXTandemDeployer extends Deployer {
         else
             pSb.append("%1 %2 %3 %4 \n");
 
-
     }
 
-
+    @Override
     protected String buildShellCommandLine(final Class mainClass, final String[] args) {
         StringBuilder pSb = new StringBuilder();
 
@@ -109,6 +109,25 @@ public class JXTandemDeployer extends Deployer {
     }
 
 
+    public void makeTestRunners(File[] pathLibs, File deployDir,  final String commandName, String[] commandText) {
+          File binDir = new File(deployDir, "bin");
+           File rb = new File(binDir, commandName + ".bat");
+        String bf = commandText[0];
+         writeFile(rb, bf);
+          File rs = new File(binDir,  commandName + ".sh");
+        String sf = commandText[0];
+         writeFile(rs, sf);
+
+      }
+
+
+    @Override
+    public  String[] makeRunners(File[] pathLibs, File deployDir, Class mainClass, String commandName, String[] args) {
+        String[] text = super.makeRunners(pathLibs, deployDir, mainClass, commandName, args);
+        makeTestRunners(pathLibs, deployDir, "Nshot", text);
+        return text;
+    }
+
     @Override
     public void deploy(final File pDeployDir, final Class mainClass, final String[] pRightArgs) {
         super.deploy(pDeployDir, mainClass, pRightArgs);
@@ -125,7 +144,17 @@ public class JXTandemDeployer extends Deployer {
         HadoopDeployer.makeHadoopJar(datadir.getAbsolutePath() + "/Hydra.jar");
     }
 
+    private static void usage()
+    {
+        System.out.println("Usage: <DeployDirectory> ");
+    }
+
     public static void main(String[] args) {
+
+        if(args.length == 0)  {
+            usage();
+            return;
+        }
         JXTandemDeployer depl = new JXTandemDeployer();
         depl.clearTaskExcludeJars();
         for (int i = 0; i < EXCLUDED_LIBRARIES.length; i++) {

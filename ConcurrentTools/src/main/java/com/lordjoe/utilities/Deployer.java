@@ -386,8 +386,8 @@ public class Deployer {
         //  config=%HYDRA_HOME%/Launcher.properties config=%HYDRA_HOME%/data/JXTandem.jar
     }
 
-    public void makeRunners(File[] pathLibs, File deployDir, final Class mainClass,final String commandName, String[] args) {
-        File binDir = new File(deployDir, "bin");
+    public String[] makeRunners(File[] pathLibs, File deployDir, final Class mainClass,final String commandName, String[] args) {
+          File binDir = new File(deployDir, "bin");
         binDir.mkdirs();
         String bf = buildBatchFile(pathLibs, deployDir, mainClass, args);
         File rb = new File(binDir, commandName + ".bat");
@@ -395,7 +395,10 @@ public class Deployer {
         String sf = buildShellFile(pathLibs, deployDir, mainClass, args);
         File rs = new File(binDir,  commandName + ".sh");
         writeFile(rs, sf);
-    }
+        String[] ret = { bf,sf};
+        return ret;
+
+     }
 
 
     public void deploy(final File pDeployDir, final Class mainClass, final String[] pRightArgs) {
@@ -405,7 +408,7 @@ public class Deployer {
         makeRunners(pathLibs, pDeployDir, mainClass,"hydra", pRightArgs);
         // add configure code
         makeRunners(pathLibs, pDeployDir, RemoteUtilities.class,"configure", pRightArgs);
-     }
+      }
 
     public static void main(String[] args) throws Exception {
         //   testRegex();

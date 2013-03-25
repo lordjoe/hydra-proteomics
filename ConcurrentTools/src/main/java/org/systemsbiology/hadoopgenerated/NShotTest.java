@@ -244,7 +244,9 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
             FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
         }
 
-        String athString = otherArgs[otherArgs.length - 1];
+        String athString = "NShotOutput";
+        if(otherArgs.length > 0)
+            athString = otherArgs[otherArgs.length - 1];
         File out = new File(athString);
         if (out.exists()) {
             expungeDirectory(out);

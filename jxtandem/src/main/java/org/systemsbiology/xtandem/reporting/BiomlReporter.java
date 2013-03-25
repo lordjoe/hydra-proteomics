@@ -120,7 +120,7 @@ public class BiomlReporter {
         }
     }
 
-    private final ISetableParameterHolder m_Parameters;
+    private final IMainData m_Parameters;
     private final OutputStream m_Out;
     private int m_HistogramColumnWidth;
     private boolean m_SpectraShown;
@@ -139,16 +139,16 @@ public class BiomlReporter {
     private String m_OutputResultsType; // todo should this be an enum
     private final IScoredScan[] m_Scans;
 
-    public BiomlReporter(ISetableParameterHolder pParameters, IScoredScan[] scans, File pOut) throws IOException {
+    public BiomlReporter(IMainData pParameters, IScoredScan[] scans, File pOut) throws IOException {
         this(pParameters, scans, new FileOutputStream(pOut));
     }
 
-    public BiomlReporter(ISetableParameterHolder pParameters, Scorer scores, OutputStream pOut) {
+    public BiomlReporter(IMainData pParameters, Scorer scores, OutputStream pOut) {
         this(pParameters, scores.getScans(), pOut);
 
     }
 
-    public BiomlReporter(ISetableParameterHolder pParameters, IScoredScan[] scans, OutputStream pOut) {
+    public BiomlReporter(IMainData pParameters, IScoredScan[] scans, OutputStream pOut) {
         m_Parameters = pParameters;
         setReportParameters();
         m_Out = pOut;
@@ -265,7 +265,7 @@ public class BiomlReporter {
     }
 
 
-    public ISetableParameterHolder getParameters() {
+    public IMainData getParameters() {
         return m_Parameters;
     }
 
@@ -906,7 +906,7 @@ public class BiomlReporter {
                 "timing, refinement/spectrum (sec)"    //0.646</note>
         };
 
-        ISetableParameterHolder parameters = getParameters();
+        IMainData parameters = getParameters();
         if (parameters instanceof HadoopTandemMain) {
             HadoopTandemMain realParameters = (HadoopTandemMain) parameters;
             int numberProteins = getNumberProteins();
@@ -941,7 +941,9 @@ public class BiomlReporter {
      * @param indent
      */
     private void writeUnusedParameters(PrintWriter pOut, int indent) {
-        String[] params = m_Parameters.getUnusedKeys();
+        if(!(m_Parameters instanceof ISetableParameterHolder))
+            return;
+        String[] params = ((ISetableParameterHolder)m_Parameters).getUnusedKeys();
 
         indent(pOut, indent);
         pOut.println("<group label=\"unused input parameters\" type=\"parameters\">");
@@ -968,7 +970,11 @@ public class BiomlReporter {
 
     private void writeParameters(PrintWriter pOut, int indent) {
         String[] params = getParameters().getParameterKeys();
-        Set<String> unused = new HashSet<String>(Arrays.asList(m_Parameters.getUnusedKeys()));
+        Set<String> unused = new HashSet<String>( );
+        if( m_Parameters instanceof ISetableParameterHolder) {
+            List<String> objects = Arrays.asList(((ISetableParameterHolder)m_Parameters).getUnusedKeys());
+            unused.addAll(objects);
+        }
 
         indent(pOut, indent);
         pOut.println("<group label=\"input parameters\" type=\"parameters\">");

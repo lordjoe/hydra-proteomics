@@ -25,6 +25,7 @@ public class Uniprot {
     private static final String UNIPROT_SERVER = "http://www.uniprot.org/";
     private static final Logger LOG = Logger.getAnonymousLogger();
 
+
     public static final double MINIMUM_FRAGMENT_MASS = 600;
     public static final double MAXIMUM_FRAGMENT_MASS = 5000;
     public static final double MINIMUM_FRAGMENT_LENGTH = 6;
@@ -300,34 +301,82 @@ public class Uniprot {
     }
 
 
-
-    public static Uniprot getByQuery(String accession) {
+    public static Uniprot getByQuery(String accession, int length) {
+        if( UniprotUtilities.isFailedSearch(accession))
+            return null; // we know this will not work
+        boolean containsExcluded = UniprotUtilities.containsExcludedFragment(accession);
+        if (containsExcluded)
+            return null; // exclude dcoys and other bad cases like GENEFINDER...
         try {
-            String s = run("uniprot", new ParameterNameValue[]{
-                     new ParameterNameValue("query", accession),
-                    new ParameterNameValue("format", "tab"),
-                    new ParameterNameValue("columns", "id,database(PDB),sequence"),
-              }
-            );
-            final String[] split = s.split("\n");
-            if (split.length != 2)
-                return null;
-            if (!split[0].startsWith("Entry"))
-                return null;
-            final String query = split[1];
-            final String[] split1 = query.split("\t");
-            if (split1.length != 3)
-                return null;
-            Uniprot ret = new Uniprot(split1);
-            Sequence sq = getBioJavaSequence(accession);
-            if (sq != null)
-                ret.setSequence(sq);
-            return ret;
+            String[] split;
+            String downLoaded = null;
+            String lookedup = UniprotUtilities.lookupUniProtId(accession);
+            if (lookedup == null) {
+                downLoaded = run("uniprot", new ParameterNameValue[]{
+                        new ParameterNameValue("query", accession),
+                        new ParameterNameValue("format", "tab"),
+                        new ParameterNameValue("columns", "id,database(PDB),sequence"),
+                }
+                );
+                split = downLoaded.split("\n");
+                if (split.length < 2 || !split[0].startsWith("Entry"))  {
+                    UniprotUtilities.addFailedSearch(accession);
+                    return null;
+                }
+               }
+            else {
+                split = lookedup.split(UniprotUtilities.ID_ITEM_LINE_SEPARATOR);
+            }
+            if(lookedup == null)   {
+                if(split.length >= 2) {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < split.length; i++) {    // drop header line
+                        sb.append(split[i]);
+                        sb.append(UniprotUtilities.ID_ITEM_LINE_SEPARATOR);
+
+                    }
+                     for (int i = 1; i < split.length; i++) {
+                        UniprotUtilities.addUniProtId(accession,sb.toString());
+                     }
+                }
+            }
+            List<Uniprot> holder = new ArrayList<Uniprot>();
+            for (int i = 1; i < split.length; i++) {
+                String query = split[i];
+                Uniprot up = buildFromQueryString(query);
+                if (up != null)
+                    holder.add(up);
+            }
+            Uniprot[] found = new Uniprot[holder.size()];
+            holder.toArray(found);
+
+            Uniprot best = null;
+
+            for (int i = 0; i < found.length; i++) {
+                Uniprot uniprot = found[i];
+                int len = uniprot.getSequenceLength();
+                if (len == length)
+                    return uniprot;
+                if ((best == null || Math.abs(len - length) < Math.abs(best.getSequenceLength() - length))) {
+                    best = uniprot;
+                }
+            }
+            if (best != null)
+                UniprotUtilities.addUniProtId(accession, best.getId());
+            return best;  // as good as it gets
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+    protected static Uniprot buildFromQueryString(String query) {
+        final String[] split1 = query.split("\t");
+        if (split1.length != 3)
+            return null;
+        Uniprot ret = new Uniprot(split1);
+        return ret;
     }
 
 
@@ -360,6 +409,8 @@ public class Uniprot {
         else {
             m_Models = pdbs.split(";");
         }
+        if (!m_ModelDirectory.exists())
+            m_ModelDirectory.mkdirs();
         if (!m_ModelDirectory.isDirectory())
             throw new IllegalStateException("Model directory " + m_ModelDirectory + " does not exist");
 
@@ -524,27 +575,25 @@ public class Uniprot {
         return m_AminoAcids;
     }
 
-    public int getPotentialCleavages()
-    {
+    public int getPotentialCleavages() {
         int ret = 0;
         for (int i = 0; i < m_AminoAcids.length; i++) {
-            if(m_AminoAcids[i].isPotentialCleavage())
+            if (m_AminoAcids[i].isPotentialCleavage())
                 ret++;
 
         }
         return ret;
     }
 
-    public int getMissedCleavages()
-     {
-         int ret = 0;
-         for (int i = 0; i < m_AminoAcids.length; i++) {
-             if(m_AminoAcids[i].isMissedCleavage())
-                 ret++;
+    public int getMissedCleavages() {
+        int ret = 0;
+        for (int i = 0; i < m_AminoAcids.length; i++) {
+            if (m_AminoAcids[i].isMissedCleavage())
+                ret++;
 
-         }
-         return ret;
-     }
+        }
+        return ret;
+    }
 
 
     public int getDetectedCount() {
@@ -1206,8 +1255,8 @@ public class Uniprot {
         tb.addTo(notFtNotDetected, notFtDetected, ftNotDetected, ftDetected);
 
         int all = notFtNotDetected + notFtDetected + ftNotDetected + ftDetected;
-         if(all !=  m_AminoAcids.length)
-             throw new IllegalStateException("wrong table size");
+        if (all != m_AminoAcids.length)
+            throw new IllegalStateException("wrong table size");
     }
 
     protected void addObservedCleavagesToTable(UniprotFeatureType ft, FisherTable tb) {
@@ -1245,8 +1294,8 @@ public class Uniprot {
         tb.addTo(notFtNotDetected, notFtDetected, ftNotDetected, ftDetected);
 
         int all = notFtNotDetected + notFtDetected + ftNotDetected + ftDetected;
-          if(all !=  totalPotentialCleavages)
-              throw new IllegalStateException("wrong table size");
+        if (all != totalPotentialCleavages)
+            throw new IllegalStateException("wrong table size");
 
     }
 
@@ -1285,7 +1334,7 @@ public class Uniprot {
         tb.addTo(notFtNotDetected, notFtDetected, ftNotDetected, ftDetected);
 
         int all = notFtNotDetected + notFtDetected + ftNotDetected + ftDetected;
-        if(all !=  totalPotentialCleavages)
+        if (all != totalPotentialCleavages)
             throw new IllegalStateException("wrong table size");
     }
 
@@ -1340,8 +1389,8 @@ public class Uniprot {
 
         for (int i = 0; i < pts.length; i++) {
             Uniprot pt = pts[i];
-             if(!pt.hasFeature(ft))
-                 continue;
+            if (!pt.hasFeature(ft))
+                continue;
 
             pt.addObservedCleavagesToTable(ft, ret);
         }
@@ -1354,8 +1403,8 @@ public class Uniprot {
 
         for (int i = 0; i < pts.length; i++) {
             Uniprot pt = pts[i];
-             if(!pt.hasFeature(ft))
-                 continue;
+            if (!pt.hasFeature(ft))
+                continue;
 
             pt.addMissedCleavagesToTable(ft, ret);
         }
@@ -1365,10 +1414,10 @@ public class Uniprot {
     private static void showFeatureHeaders() {
         System.out.println("Condition\t" +
                 "Feature\t" +
-                  "Probability\t" +
+                "Probability\t" +
                 "%Detected\t" +
                 "%Detected with\t" +
-                 "N Observed\t" +
+                "N Observed\t" +
                 "N Feature\t" +
                 "N Detected\t"
 
@@ -1377,8 +1426,7 @@ public class Uniprot {
     }
 
 
-
-    private static void showFeatures(String condition,   Map<UniprotFeatureType, FisherTable> mpx) {
+    private static void showFeatures(String condition, Map<UniprotFeatureType, FisherTable> mpx) {
         UniprotFeatureType[] fts = SwissProt.ANALYZED_FEATURES;
         for (int i = 0; i < fts.length; i++) {
             UniprotFeatureType ft = fts[i];
@@ -1392,14 +1440,14 @@ public class Uniprot {
             int pFeature = (values[FisherTable.PRESENT_NOT_DECTECTED] + values[FisherTable.PRESENT_DECTECTED]);
             if (pFeature == 0)
                 return;
-            double fdetected = (values[FisherTable.PRESENT_DECTECTED]) / (double)pFeature;
+            double fdetected = (values[FisherTable.PRESENT_DECTECTED]) / (double) pFeature;
 
             System.out.println(
                     condition + "\t" +
                             ft.toString() + "\t" +
                      /* " prob " + */  String.format("%6.1e", prob) + "\t" +
-                   /* " fdetect " + */ String.format("%6.2f",100 * fdetected) + "\t" +
-                   /* " detect " +  */ String.format("%6.2f",100 *  detected) + "\t" +
+                   /* " fdetect " + */ String.format("%6.2f", 100 * fdetected) + "\t" +
+                   /* " detect " +  */ String.format("%6.2f", 100 * detected) + "\t" +
                   /*  " number " +  */(int) total + "\t" +
                             pFeature + "\t" +
                    /* " detected " +  */values[FisherTable.PRESENT_DECTECTED]
@@ -1411,29 +1459,29 @@ public class Uniprot {
     }
 
 
-    public static int countPotentialCleavages( Uniprot[] pts) {
-          int count = 0;
-          for (int i = 0; i < pts.length; i++) {
-                 count += pts[i].countPotentialCleavages();
-          }
-          return count;
-      }
-
-    public static int countObservedCleavages( Uniprot[] pts) {
-          int count = 0;
-          for (int i = 0; i < pts.length; i++) {
-                 count += pts[i].countObservedCleavages();
-          }
-          return count;
-      }
-
-      public static int countMissedCleavages(Uniprot[] pts) {
-          int count = 0;
-          for (int i = 0; i < pts.length; i++) {
-                 count += pts[i].countMissedCleavages();
-          }
-          return count;
+    public static int countPotentialCleavages(Uniprot[] pts) {
+        int count = 0;
+        for (int i = 0; i < pts.length; i++) {
+            count += pts[i].countPotentialCleavages();
         }
+        return count;
+    }
+
+    public static int countObservedCleavages(Uniprot[] pts) {
+        int count = 0;
+        for (int i = 0; i < pts.length; i++) {
+            count += pts[i].countObservedCleavages();
+        }
+        return count;
+    }
+
+    public static int countMissedCleavages(Uniprot[] pts) {
+        int count = 0;
+        for (int i = 0; i < pts.length; i++) {
+            count += pts[i].countMissedCleavages();
+        }
+        return count;
+    }
 
     public static final String SAMPLE = "java Uniprot" + "  Origene.tsv GoodPeptides.txt  OrigeneData.dat";
 
@@ -1486,7 +1534,7 @@ public class Uniprot {
                 idToUniprot.remove(pt.getId());
                 continue;
             }
-            else  {
+            else {
                 totalAminoAcids += len;
             }
             double coverage = (double) nd / (double) len;
@@ -1505,12 +1553,12 @@ public class Uniprot {
         //    System.out.println("Observed Cleavages");
         Map<UniprotFeatureType, FisherTable> obsCleave = handleObservedCleavages(interesting);
         int totalPotentialCleavages = countPotentialCleavages(pts);
-        showFeatures("Observed Cleavages",   obsCleave);
+        showFeatures("Observed Cleavages", obsCleave);
 
         //     System.out.println("Missed Cleavages");
         Map<UniprotFeatureType, FisherTable> missCleave = handleMissedCleavages(interesting);
         int totalMissed = countMissedCleavages(pts);
-        showFeatures("Missed Cleavages",   missCleave);
+        showFeatures("Missed Cleavages", missCleave);
 
 
         for (int i = 0; i < interesting.length; i++) {
