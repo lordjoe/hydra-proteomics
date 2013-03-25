@@ -130,6 +130,8 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
         if ("yes".equals(application.getParameter(JXTandemLauncher.TURN_ON_SCAN_OUTPUT_PROPERTY)))
             setWriteScans(true);
 
+
+
         String muliple = conf.get(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY);
         m_UseMultipleOutputFiles = "yes".equals(muliple);
         if (m_UseMultipleOutputFiles) {

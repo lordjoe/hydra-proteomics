@@ -13,6 +13,7 @@ public class ProtXMLDetection {
     public static final ProtXMLDetection[] EMPTY_ARRAY = {};
 
     private String m_Name;
+    private Set<String> m_AlternateNames = new HashSet<String>();
      private String m_Annotation;
      private double m_Probability;
      private double m_FractionCoverage;
@@ -29,7 +30,39 @@ public class ProtXMLDetection {
 
     public void setName(final String pName) {
         m_Name = pName;
+        addAlternateName(pName);
     }
+
+
+    public void addAlternateName(final String pName) {
+         m_AlternateNames.add(pName);
+    }
+
+    public static class StringCompatatorLengthThenAlpha implements Comparator<String>   {
+        @Override
+        public int compare(String o1, String o2) {
+            if(o1 == o2)
+                return 0;
+           if(o1.length() == o2.length())
+               return o1.compareTo(o2) ;
+            return o1.length() < o2.length() ? -1 : 1;
+        }
+    }
+
+    public static final Comparator<String> COMPARE_LENGTH_THEN_ALPHA = new StringCompatatorLengthThenAlpha();
+
+    /**
+     * usually the shortest of alternate proteins looks like a uniprot not something moew complex
+     * @return
+     */
+    public String[] getAlternateNames()
+    {
+        String[] ret = new String[m_AlternateNames.size()];
+        m_AlternateNames.toArray(ret);
+        Arrays.sort(ret,COMPARE_LENGTH_THEN_ALPHA);
+        return ret;
+    }
+
 
     public String getAnnotation() {
         return m_Annotation;

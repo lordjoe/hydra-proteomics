@@ -166,53 +166,63 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
 
     /**
      * write out the data as an MGF file
+     *
      * @param out place to append
      */
-     public void appendAsMGF( Appendable out) {
-         int indent = 0;
+    public void appendAsMGF(Appendable out) {
+        int indent = 0;
 
-         try {
-             out.append("BEGIN IONS");
-             out.append("\n");
+        try {
+            out.append("BEGIN IONS");
+            out.append("\n");
 
-             out.append("TITLE=" +  getId());
-             out.append("\n");
+            out.append("TITLE=" + getId());
+            out.append("\n");
 
-             out.append("PEPMASS=" +  getPrecursorMass());
-             out.append("\n");
+            int precursorCharge = getPrecursorCharge();
+            IScanPrecursorMZ precursorMz = getPrecursorMz();
+            double massChargeRatio = precursorMz.getMassChargeRatio();
 
-             out.append("CHARGE=" +  getPrecursorCharge());
-             out.append("\n");
+            double precursorMass = getPrecursorMass();
+            out.append("PEPMASS=" + massChargeRatio);
+            out.append("\n");
 
-                appendPeaks(out);
-                out.append("END IONS");
-              out.append("\n");
-           }
-         catch (IOException e) {
-             throw new RuntimeException(e);
+            out.append("CHARGE=" + precursorCharge);
+            if (precursorCharge > 0)
+                out.append("+");
+            out.append("\n");
 
+            appendPeaks(out);
+            out.append("END IONS");
+            out.append("\n");
+            out.append("\n"); // add one more blank line
          }
+        catch (IOException e) {
+            throw new RuntimeException(e);
 
-     }
+        }
+
+    }
 
 
     /**
      * appent the peaks as an MGF file would do so
+     *
      * @param out hte output appendable
      * @throws IOException because it must
      */
     protected void appendPeaks(final Appendable out) throws IOException {
         ISpectrumPeak[] spectrumPeaks = getPeaks();
-         for (int i = 0; i < spectrumPeaks.length; i++) {
+        for (int i = 0; i < spectrumPeaks.length; i++) {
             ISpectrumPeak sp = spectrumPeaks[i];
-            String line = String.format("%10.5f\t%8.2f",sp.getPeak(),sp.getMassChargeRatio()) ;
-             out.append(line);
-             out.append("\n");
-         }
+
+            String item = String.format("%10.5f", sp.getMassChargeRatio()).trim();
+            String item2 = String.format("%8.2f", sp.getPeak()).trim();
+            out.append(item + "\t" + item2);
+            out.append("\n");
+        }
 
     }
-
-
 
 
     protected void appendPrecursor(final IXMLAppender adder) {
@@ -797,22 +807,22 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         public int compare(final ISpectrumPeak o1, final ISpectrumPeak o2) {
             double m1 = o1.getMassChargeRatio();
             double m2 = o2.getMassChargeRatio();
-            if(m1 == m2) {
+            if (m1 == m2) {
                 double p1 = o1.getPeak();
                 double p2 = o2.getPeak();
-                if(p1 == p2)
+                if (p1 == p2)
                     return 0;
-                return  p1 < p2 ? -1 : 1;
+                return p1 < p2 ? -1 : 1;
 
             }
-            return  m1 < m2 ? -1 : 1;
+            return m1 < m2 ? -1 : 1;
         }
     };
 
 
     public void setPeaks(final ISpectrumPeak[] pPeaks) {
-        if(pPeaks != null)
-            Arrays.sort(pPeaks,BY_MZ);
+        if (pPeaks != null)
+            Arrays.sort(pPeaks, BY_MZ);
         m_Peaks = pPeaks;
     }
 

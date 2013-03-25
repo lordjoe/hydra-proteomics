@@ -26,32 +26,33 @@ public class ProtXMLProteinHandler extends AbstractElementSaxHandler<ProtXMLDete
     public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
         if ("peptide".equals(qName)) {
             handleAttributes(uri, localName, qName, attributes);
-          setIgnoreTagContents(uri, localName, qName, attributes);
-         return; // we handle this
-     }
-      if ("indistinguishable_protein".equals(qName)) {
-                return; // we handle this
-            }
+            setIgnoreTagContents(uri, localName, qName, attributes);
+            return; // we handle this
+        }
+        if ("indistinguishable_protein".equals(qName)) {
+            handleAttributes(uri, localName, qName, attributes);
+            return; // we handle this
+        }
 
         if ("protein".equals(qName)) {
-             handleAttributes(uri, localName, qName, attributes);
+            handleAttributes(uri, localName, qName, attributes);
             return; // we handle this
         }
         if ("parameter".equals(qName)) {
-             handleAttributes(uri, localName, qName, attributes);
+            handleAttributes(uri, localName, qName, attributes);
             return; // we handle this
         }
         if ("modification_info".equals(qName)) {
             return; // we handle this
         }
-      if ("peptide_parent_protein".equals(qName)) {
-          return; // we handle this
-      }
-       if ("annotation".equals(qName)) {
-           ProtXMLDetection elementObject = getElementObject();
-           elementObject.setAnnotation(attributes.getValue("protein_description"));
-          return;
-      }
+        if ("peptide_parent_protein".equals(qName)) {
+            return; // we handle this
+        }
+        if ("annotation".equals(qName)) {
+            ProtXMLDetection elementObject = getElementObject();
+            elementObject.setAnnotation(attributes.getValue("protein_description"));
+            return;
+        }
         super.startElement(uri, localName, qName, attributes);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
@@ -87,22 +88,28 @@ public class ProtXMLProteinHandler extends AbstractElementSaxHandler<ProtXMLDete
         if ("parameter".equals(qName)) {
             String name = attributes.getValue("name");
             if ("prot_length".equals(name)) {
-                elementObject.setProteinLength(XTandemSaxUtilities.getRequiredIntegerAttribute("value", attributes));;
-            }
+                elementObject.setProteinLength(XTandemSaxUtilities.getRequiredIntegerAttribute("value", attributes));
+               }
             return;
         }
-           if ("protein_group".equals(qName)) {
-               Double probability = XTandemSaxUtilities.getDoubleAttribute("probability", attributes, 0);
-               elementObject.setProbability(probability);
-             return;
+        if ("protein_group".equals(qName)) {
+            Double probability = XTandemSaxUtilities.getDoubleAttribute("probability", attributes, 0);
+            elementObject.setProbability(probability);
+            return;
         }
         if ("protein".equals(qName)) {
-            elementObject.setName(XTandemSaxUtilities.getRequiredAttribute("protein_name", attributes));
+            String protein_name = XTandemSaxUtilities.getRequiredAttribute("protein_name", attributes);
+            elementObject.setName(protein_name);
             Double percent_coverage = XTandemSaxUtilities.getDoubleAttribute("percent_coverage", attributes, 0.0);
             double fractionCoverage = percent_coverage / 100.0;
             elementObject.setFractionCoverage(fractionCoverage);
-             m_AllPeptides = attributes.getValue("unique_stripped_peptides");
+            m_AllPeptides = attributes.getValue("unique_stripped_peptides");
 
+        }
+        if ("indistinguishable_protein".equals(qName)) {     // todo maybe not
+            String protein_name = XTandemSaxUtilities.getRequiredAttribute("protein_name", attributes);
+            elementObject.addAlternateName(protein_name);
+            return; // we handle this
         }
     }
 
@@ -115,28 +122,28 @@ public class ProtXMLProteinHandler extends AbstractElementSaxHandler<ProtXMLDete
         }
 
         if ("indistinguishable_protein".equals(el)) {
-           return; // we handle this
-       }
+            return; // we handle this
+        }
         if ("parameter".equals(el)) {
-              return; // we handle this
-          }
-          if ("modification_info".equals(el)) {
-           return; // we handle this
-       }
+            return; // we handle this
+        }
+        if ("modification_info".equals(el)) {
+            return; // we handle this
+        }
         if ("peptide_parent_protein".equals(el)) {
-           return; // we handle this
-       }
+            return; // we handle this
+        }
         if ("annotation".equals(el)) {
-           return; // we handle this
-       }
+            return; // we handle this
+        }
         if ("indistinguishable_peptide".equals(el)) {
-           return; // we handle this
-       }
+            return; // we handle this
+        }
         if ("peptide".equals(el)) {
             ISaxHandler ch = getHandler().popCurrentHandler();   // stop ignoring
             return; // we handle this
         }
-         super.endElement(elx, localName, el);    //To change body of overridden methods use File | Settings | File Templates.
+        super.endElement(elx, localName, el);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
     /**
@@ -155,16 +162,16 @@ public class ProtXMLProteinHandler extends AbstractElementSaxHandler<ProtXMLDete
     public void buildProtein() {
         ProtXMLDetection elementObject = getElementObject();
         String allPeptides = getAllPeptides();
-        if(allPeptides == null || allPeptides.length() == 0)
+        if (allPeptides == null || allPeptides.length() == 0)
             return; // no peptides
 
-        String[] peptides = allPeptides.split("\\+") ;
-        IPolypeptide[] polypeptides = new IPolypeptide[peptides.length] ;
-         for (int i = 0; i < peptides.length; i++) {
+        String[] peptides = allPeptides.split("\\+");
+        IPolypeptide[] polypeptides = new IPolypeptide[peptides.length];
+        for (int i = 0; i < peptides.length; i++) {
             String peptide = peptides[i];
-             polypeptides[i] =  Polypeptide.fromString(peptide);
+            polypeptides[i] = Polypeptide.fromString(peptide);
         }
-          elementObject.setDetectedPeptides(polypeptides);
+        elementObject.setDetectedPeptides(polypeptides);
     }
 
 }
