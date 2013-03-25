@@ -145,4 +145,35 @@ public class ScanPrecursorMz implements IScanPrecursorMZ {
         adder.closeTag(tag);
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ScanPrecursorMz that = (ScanPrecursorMz) o;
+
+        if (Math.abs(that.m_MassChargeRatio - m_MassChargeRatio) > 0.001)
+            return false;
+        if (m_PrecursorCharge != that.m_PrecursorCharge) return false;
+        if (Math.abs(that.m_PrecursorIntensity - m_PrecursorIntensity) > 0.001)
+             return false;
+          if (m_Method != that.m_Method) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = (long)(m_PrecursorIntensity * 1000);
+        result = (int) (temp ^ (temp >>> 32));
+        result = 31 * result + m_PrecursorCharge;
+        temp = (long)(m_MassChargeRatio * 1000);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + m_Method.hashCode();
+        return result;
+    }
+
 }
