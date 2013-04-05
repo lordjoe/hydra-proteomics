@@ -8,7 +8,7 @@ import org.systemsbiology.xtandem.testing.*;
 import java.util.*;
 
 /**
- * org.systemsbiology.xtandem.morpheus.CometScoringAlgorithm
+ * org.systemsbiology.xtandem.comet.CometScoringAlgorithm
  * User: Steve
  * Date: 1/12/12
  */
@@ -16,14 +16,14 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
 
     public static final CometScoringAlgorithm[] EMPTY_ARRAY = {};
     public static final int NUMBER_ION_TYPES = 2; // B and I
+    public static final int MAX_MASS = 5000;
 
     public static final double PROTON_MASS = MassCalculator.getDefaultCalculator().calcMass("H");
-
 
     public static final double LOG_PI = Math.log(Math.sqrt(2 * Math.PI));
     public static final double NORMALIZATION_MAX = 200.0;
     public static final double DEFAULT_PEPTIDE_ERROR = 1.0;
-    public static final double DEFAULT_MASS_TOLERANCE = 0.025;
+    public static final double DEFAULT_MASS_TOLERANCE = 1; // tood fix 0.025;
     public static final int PEAK_BIN_SIZE = 100;
     public static final int PEAK_BIN_NUMBER = 3;
     public static final int PEAK_NORMALIZATION_BINS = 5;
@@ -31,18 +31,66 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
 
     public static final String ALGORITHM_NAME = "Comet";
 
+    public static final int MAX_WEIGHTS = (int)(4000 / DEFAULT_MASS_TOLERANCE); // todo use real paramter
+
 
     private double m_PeptideError = DEFAULT_PEPTIDE_ERROR;
     private double m_MassTolerance = DEFAULT_MASS_TOLERANCE;
 
+    private float[] m_Weightsx;
+    private IMeasuredSpectrum m_Spectrum;
+    private double m_TotalIntensity;
+
     public CometScoringAlgorithm() {
-         throw new UnsupportedOperationException("This Algorithm is NOT ready for prime time");
+       //  throw new UnsupportedOperationException("This Algorithm is NOT ready for prime time");
     }
 
     @Override
     public String toString() {
         return getName();
     }
+
+    protected void setMeasuredSpectrum(IMeasuredSpectrum ms)
+    {
+        if(ms == m_Spectrum)
+            return;
+        m_Spectrum = ms;
+        populateWeights(ms);
+    }
+
+    protected int asBin(double mz)
+    {
+        int ret = (int)(mz / m_MassTolerance);
+        return ret;
+    }
+
+    protected float[] getWeights()  {
+        if(m_Weightsx == null) {
+            m_Weightsx = new float[(int)(MAX_MASS / getMassTolerance())];
+        }
+        return m_Weightsx;
+    }
+
+    protected void clearWeights()  {
+        float[] wts = getWeights();
+        Arrays.fill(wts,0);
+    }
+
+    protected void populateWeights(IMeasuredSpectrum ms)  {
+        clearWeights();
+        float[] wts = getWeights();
+        ISpectrumPeak[] nonZeroPeaks = ms.getNonZeroPeaks();
+        for (int i = 0; i < nonZeroPeaks.length; i++) {
+            ISpectrumPeak pk = nonZeroPeaks[i];
+            int bin = asBin(pk.getMassChargeRatio());
+            float peak = pk.getPeak();
+            wts[bin] = peak;
+            m_TotalIntensity += peak;
+            wts[bin - 1] = peak / 2;
+            wts[bin + 1] = peak / 2;
+          }
+    }
+
 
     protected double computeProbability(double intensity, double massDifference) {
         double theta = getThetaFactor();
@@ -68,25 +116,6 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
         m_PeptideError = pPeptideError;
     }
 
-//    @Override
-//    public float getSpectrumMassError() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public float getSpectrumMonoIsotopicMassError() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public float getSpectrumMonoIsotopicMassErrorMinus() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public float getSpectrumHomologyError() {
-//        return 0;
-//    }
 
     /**
      * use the parameters to configure local properties
@@ -108,6 +137,14 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
     @Override
     public double getCountFactor(final IonUseScore counter) {
         return 1;
+    }
+
+    public IMeasuredSpectrum getSpectrum() {
+        return m_Spectrum;
+    }
+
+    public double getTotalIntensity() {
+        return m_TotalIntensity;
     }
 
     /**
@@ -138,7 +175,6 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
      */
     @Override
     public double scoreSpectrum(final IMeasuredSpectrum measured, final ITheoreticalSpectrum theory, Object... otherdata) {
-
         IonUseCounter counter = new IonUseCounter();
         List<DebugMatchPeak> holder = new ArrayList<DebugMatchPeak>();
         double dot = dot_product(measured, theory, counter, holder);
@@ -216,109 +252,29 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
      */
     @Override
     public double dot_product(final IMeasuredSpectrum measured, final ITheoreticalSpectrum theory, final IonUseCounter counter, final List<DebugMatchPeak> holder, final Object... otherData) {
+        setMeasuredSpectrum(measured);
 
         int[] items = new int[1];
         double peptideError = getPeptideError();
 
-        ISpectrumPeak[] peaks = measured.getPeaks();
+        double score = 0;
+        double TotalIntensity = getTotalIntensity();
 
-        double TotalIntensity = 0.0;
-        for (int i = 0; i < peaks.length; i++) {
-            ISpectrumPeak peak = peaks[i];
-            TotalIntensity += peak.getPeak();
-        }
-
-
+        float[] weights = getWeights();
         final ITheoreticalPeak[] tps = theory.getTheoreticalPeaks();
-        if (tps.length == 0)
-            return 0;
-        int t = 0;
-        int e = 0;
-        int MatchingProducts = 0;
-        int TotalProducts = 0;
-        double MatchingIntensity = 0.0;
-        int charge = theory.getCharge();
-        while (t < tps.length && e < peaks.length) {
-            TotalProducts++;
-            double massChargeRatio = tps[t].getMassChargeRatio() - PROTON_MASS * charge;
-            double mass_difference = peaks[e].getMassChargeRatio() - massChargeRatio;
-            if (Math.abs(mass_difference) <= m_MassTolerance) {
-                MatchingProducts++;
-                MatchingIntensity += peaks[e].getPeak();
-                t++;
-            }
-            else if (mass_difference < 0) {
-                e++;
-            }
-            else if (mass_difference > 0) {
-                t++;
-            }
-        }
-        double MatchingProductsFraction = (double) MatchingProducts / TotalProducts;
-//
-//           int e2 = 0;
-//        int t2 = 0;
-//        while (e2 < peaks.length && t2 < tps.length) {
-//            double mass_difference = peaks[e2].getMassChargeRatio() - tps[t2].getMassChargeRatio();
-//            if (Math.abs(mass_difference) <= m_MassTolerance) {
-//                MatchingIntensity += peaks[e2].getPeak();
-//                e2++;
-//            }
-//            else if (mass_difference < 0) {
-//                e2++;
-//            }
-//            else if (mass_difference > 0) {
-//                t2++;
-//            }
-//        }
-        double MatchingIntensityFraction = MatchingIntensity / TotalIntensity;
-
-        double MorpheusScore = MatchingProducts + MatchingIntensityFraction;
-
-        return (MorpheusScore);
-    }
-
-
-    public static int peakSearch(double lowMass, double highMass, int[] indexArray, ISpectrumPeak[] peaks) {
-        if (true)
-            throw new UnsupportedOperationException("Fix This"); // ToDo
-
-        int index = indexArray[0];
-        while (index < peaks.length) {
-            ISpectrumPeak test = peaks[index++];
-
-            double mass = test.getMassChargeRatio();
-            if (mass < lowMass)
+        for (int i = 0; i < tps.length; i++) {
+            ITheoreticalPeak tp = tps[i];
+            int bin = asBin(tp.getMassChargeRatio());
+            float weight = weights[bin];
+            if(weight == 0)
                 continue;
-            indexArray[0] = index - 1;
-            if (mass > highMass) {
-                return -1; // not found
-            }
-            else {
-                return index - 1;
-            }
+            score += weight * tp.getPeak();
         }
-        indexArray[0] = index;
-        return -1;
+
+        return (score);
     }
 
 
-    private double scoreAddPeakScore(final IonUseCounter counter, final List<DebugMatchPeak> holder, final int pImass, final IonType pType, final double pAdded, final int pDel) {
-        if (true)
-            throw new UnsupportedOperationException("Fix This"); // ToDo
-        if (pAdded == 0)
-            return 0;
-
-        DebugMatchPeak match = new DebugMatchPeak(pDel, pAdded, pImass - pDel, pType);
-
-
-        holder.add(match);
-
-        counter.addScore(pType, pAdded);
-        if (pDel == 0)  // only count direct hits
-            counter.addCount(pType);
-        return pAdded;
-    }
 
 
     /**
@@ -338,22 +294,6 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
         return in;
     }
 
-//    protected IMeasuredSpectrum truncatePeakList(final MutableMeasuredSpectrum in) {
-//        ISpectrumPeak[] peaks = in.getPeaks();
-//        if (peaks.length < PEAK_BIN_NUMBER * PEAK_BIN_SIZE)
-//            return in; // nothing to do
-//
-//        double minMass = (peaks[0].getMassChargeRatio());
-//        double maxMass = ((peaks[peaks.length - 1].getMassChargeRatio()));
-//        int step = (int) ((maxMass - minMass) / PEAK_BIN_NUMBER);
-//
-//        MutableMeasuredSpectrum out = new MutableMeasuredSpectrum(in);
-//        in.setPeaks(ISpectrumPeak.EMPTY_ARRAY);
-//        addHighestPeaks(out, peaks, minMass, minMass + step);
-//        addHighestPeaks(out, peaks, minMass + step, minMass + 2 * step);
-//        addHighestPeaks(out, peaks, minMass + 2 * step, maxMass);
-//        return out;
-//    }
 
     public static double getMassDifference(ISpectrum spec) {
         ISpectrumPeak[] peaks = spec.getPeaks();
