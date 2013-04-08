@@ -5,7 +5,6 @@ import org.systemsbiology.xtandem.ionization.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.sax.*;
 
-import java.io.*;
 import java.util.*;
 
 /**
@@ -13,32 +12,29 @@ import java.util.*;
  * User: steven
  * Date: 1/14/11
  */
-public class ScoringTestUtilities
-{
+public class ScoringTestUtilities {
     public static final ScoringTestUtilities[] EMPTY_ARRAY = {};
 
     public static final int NUMBER_PEAKS = 20;
     public static final int MASS_START = 50;
     public static final int MASS_DEL = 30;
 
-    public static IMeasuredSpectrum buildTestSpectrum(int nPeaks)
-    {
+    public static IMeasuredSpectrum buildTestSpectrum(int nPeaks) {
         return new TestMeasuredSpectrum(nPeaks);
     }
 
 
-    public static ITheoreticalSpectrum buildTheoreticalSpectrum(int nPeaks)
-    {
+    public static ITheoreticalSpectrum buildTheoreticalSpectrum(int nPeaks) {
         return new TestTheoreticalSpectrum(nPeaks);
     }
 
 
-    public static class TestTheoreticalSpectrum implements ITheoreticalSpectrum
-    {
+    public static class TestTheoreticalSpectrum implements ITheoreticalSpectrum {
         private final ITheoreticalPeak[] m_Peaks;
+        private double m_SumIntensity;
+        private double m_MaxIntensity;
 
-        public TestTheoreticalSpectrum(int npeaks)
-        {
+        public TestTheoreticalSpectrum(int npeaks) {
             IonType[] ionTypes = IonType.values();
             int numberIonTypes = ionTypes.length;
             m_Peaks = new ITheoreticalPeak[npeaks];
@@ -47,6 +43,30 @@ public class ScoringTestUtilities
                 m_Peaks[i] = new TheoreticalPeak(mass, 1, null, ionTypes[i % numberIonTypes]);
 
             }
+            for (int i = 0; i < m_Peaks.length; i++) {
+                ISpectrumPeak pk = m_Peaks[i];
+                float peak = pk.getPeak();
+                m_MaxIntensity = Math.max(peak, m_MaxIntensity);
+                m_SumIntensity += peak;
+
+            }
+
+        }
+
+        @Override
+        public double getMaxIntensity() {
+            return m_MaxIntensity;
+        }
+
+        /**
+         * as stated
+         *
+         * @return
+         */
+        @Override
+        public double getSumIntensity() {
+            return m_SumIntensity;
+
         }
 
 
@@ -57,28 +77,26 @@ public class ScoringTestUtilities
          * @return true if equivalent
          */
         @Override
-        public boolean equivalent(ITheoreticalSpectrum test)
-        {
-            if (!equivalent((ISpectrum)test))
+        public boolean equivalent(ITheoreticalSpectrum test) {
+            if (!equivalent((ISpectrum) test))
                 return false;
-            if (!getPeptide().equivalent( test.getPeptide()))
+            if (!getPeptide().equivalent(test.getPeptide()))
                 return false;
-            if (!getSpectrumSet().equivalent( test.getSpectrumSet()))
+            if (!getSpectrumSet().equivalent(test.getSpectrumSet()))
                 return false;
             final ISpectrumPeak[] s1 = getPeaks();
-             final ISpectrumPeak[] s2 = test.getPeaks();
-             if(s1.length != s2.length)
+            final ISpectrumPeak[] s2 = test.getPeaks();
+            if (s1.length != s2.length)
+                return false;
+            for (int i = 0; i < s2.length; i++) {
+                ISpectrumPeak st1 = s1[i];
+                ISpectrumPeak st2 = s2[i];
+                if (st1.equivalent(st2))
                     return false;
-             for (int i = 0; i < s2.length; i++) {
-                 ISpectrumPeak st1 = s1[i];
-                 ISpectrumPeak st2 = s2[i];
-                 if(st1.equivalent(st2) )
-                      return false;
 
-             }
-                return true;
-         }
-
+            }
+            return true;
+        }
 
 
         /**
@@ -89,7 +107,7 @@ public class ScoringTestUtilities
          */
         @Override
         public ITheoreticalSpectrum asImmutable() {
-            return new  ScoringSpectrum(this);
+            return new ScoringSpectrum(this);
         }
 
         /**
@@ -110,8 +128,7 @@ public class ScoringTestUtilities
          * @return !null set
          */
         @Override
-        public ITheoreticalSpectrumSet getSpectrumSet()
-        {
+        public ITheoreticalSpectrumSet getSpectrumSet() {
             if (true) throw new UnsupportedOperationException("Fix This");
             return null;
         }
@@ -122,8 +139,7 @@ public class ScoringTestUtilities
          * @return
          */
         @Override
-        public int getCharge()
-        {
+        public int getCharge() {
             if (true) throw new UnsupportedOperationException("Fix This");
             return 0;
         }
@@ -135,8 +151,7 @@ public class ScoringTestUtilities
          * @return
          */
         @Override
-        public IPolypeptide getPeptide()
-        {
+        public IPolypeptide getPeptide() {
             return null;
         }
 
@@ -146,8 +161,7 @@ public class ScoringTestUtilities
          * @return
          */
         @Override
-        public ITheoreticalPeak[] getTheoreticalPeaks()
-        {
+        public ITheoreticalPeak[] getTheoreticalPeaks() {
             return m_Peaks;
         }
 
@@ -163,7 +177,7 @@ public class ScoringTestUtilities
             ISpectrumPeak[] peaks = getPeaks();
             for (int i = 0; i < peaks.length; i++) {
                 ISpectrumPeak peak = peaks[i];
-                if(peak.getPeak() > 0)
+                if (peak.getPeak() > 0)
                     holder.add(peak);
             }
             ISpectrumPeak[] ret = new ISpectrumPeak[holder.size()];
@@ -173,15 +187,13 @@ public class ScoringTestUtilities
         }
 
 
-
         /**
          * get the number of peaks without returning the peaks
          *
          * @return as above
          */
         @Override
-        public int getPeaksCount()
-        {
+        public int getPeaksCount() {
             return m_Peaks.length;
         }
 
@@ -191,53 +203,76 @@ public class ScoringTestUtilities
          * @return
          */
         @Override
-        public ISpectrumPeak[] getPeaks()
-        {
+        public ISpectrumPeak[] getPeaks() {
             return m_Peaks;
         }
 
-          /**
-     * return true if this and o are 'close enough'
-     *
-     * @param !null o
-     * @return as above
-     */
-    @Override
-    public boolean equivalent(ISpectrum  o)
-    {
-        if (this == o)
-              return true;
-         ISpectrum realO = o;
-        final ISpectrumPeak[] peaks1 = getPeaks();
-        final ISpectrumPeak[] peaks2 = realO.getPeaks();
-        if(peaks1.length != peaks2.length)
-            return false;
-        for (int i = 0; i < peaks2.length; i++) {
-            ISpectrumPeak p1 = peaks1[i];
-            ISpectrumPeak p2 = peaks2[i];
-            if(!p1.equivalent(p2))
+        /**
+         * return true if this and o are 'close enough'
+         *
+         * @param !null o
+         * @return as above
+         */
+        @Override
+        public boolean equivalent(ISpectrum o) {
+            if (this == o)
+                return true;
+            ISpectrum realO = o;
+            final ISpectrumPeak[] peaks1 = getPeaks();
+            final ISpectrumPeak[] peaks2 = realO.getPeaks();
+            if (peaks1.length != peaks2.length)
                 return false;
+            for (int i = 0; i < peaks2.length; i++) {
+                ISpectrumPeak p1 = peaks1[i];
+                ISpectrumPeak p2 = peaks2[i];
+                if (!p1.equivalent(p2))
+                    return false;
 
 
+            }
+            return true;
         }
-        return true;
-    }
     }
 
 
-    public static class TestMeasuredSpectrum implements IMeasuredSpectrum
-    {
+    public static class TestMeasuredSpectrum implements IMeasuredSpectrum {
         private final ISpectrumPeak[] m_Peaks;
+        private double m_SumIntensity;
+        private double m_MaxIntensity;
 
-        public TestMeasuredSpectrum(int npeaks)
-        {
+        public TestMeasuredSpectrum(int npeaks) {
             m_Peaks = new ISpectrumPeak[npeaks];
             for (int i = 0; i < m_Peaks.length; i++) {
                 double mass = MASS_START + i * MASS_DEL;
                 m_Peaks[i] = new SpectrumPeak(mass, 1);
 
             }
+            for (int i = 0; i < m_Peaks.length; i++) {
+                ISpectrumPeak pk = m_Peaks[i];
+                float peak = pk.getPeak();
+                m_MaxIntensity = Math.max(peak, m_MaxIntensity);
+                m_SumIntensity += peak;
+
+            }
+
         }
+
+        @Override
+        public double getMaxIntensity() {
+            return m_MaxIntensity;
+        }
+
+        /**
+         * as stated
+         *
+         * @return
+         */
+        @Override
+        public double getSumIntensity() {
+            return m_SumIntensity;
+
+        }
+
 
         /**
          * make a form suitable to
@@ -260,7 +295,7 @@ public class ScoringTestUtilities
                 adder.closeTag("Peak");
             }
             adder.closeTag("MeasuredSpectrum");
-            }
+        }
 
 
         /**
@@ -270,28 +305,27 @@ public class ScoringTestUtilities
          * @return true if equivalent
          */
         @Override
-        public boolean equivalent(IMeasuredSpectrum test)
-        {
-            if (!equivalent((ISpectrum)test))
+        public boolean equivalent(IMeasuredSpectrum test) {
+            if (!equivalent((ISpectrum) test))
                 return false;
-            if (!XTandemUtilities.equivalentDouble(getPrecursorCharge(),test.getPrecursorCharge()))
+            if (!XTandemUtilities.equivalentDouble(getPrecursorCharge(), test.getPrecursorCharge()))
                 return false;
-            if (!XTandemUtilities.equivalentDouble(getPrecursorMass(),test.getPrecursorMass()))
+            if (!XTandemUtilities.equivalentDouble(getPrecursorMass(), test.getPrecursorMass()))
                 return false;
             final ISpectrumPeak[] s1 = getPeaks();
             final ISpectrumPeak[] s2 = test.getPeaks();
-            if(s1.length != s2.length)
-                   return false;
+            if (s1.length != s2.length)
+                return false;
             for (int i = 0; i < s2.length; i++) {
                 ISpectrumPeak st1 = s1[i];
                 ISpectrumPeak st2 = s2[i];
-                if(st1.equivalent(st2) )
-                     return false;
+                if (st1.equivalent(st2))
+                    return false;
 
             }
-               return true;
-          }
-        
+            return true;
+        }
+
 
         /**
          * if the spectrum is not  mutable build an  mutable version
@@ -300,19 +334,17 @@ public class ScoringTestUtilities
          * @return as above
          */
         @Override
-        public MutableMeasuredSpectrum asMmutable()
-        {
-              return new MutableMeasuredSpectrum(this);
+        public MutableMeasuredSpectrum asMmutable() {
+            return new MutableMeasuredSpectrum(this);
         }
-        
+
         /**
          * get run identifier
          *
          * @return
          */
         @Override
-        public String getId()
-        {
+        public String getId() {
             return "1234";
         }
 
@@ -322,8 +354,7 @@ public class ScoringTestUtilities
          * @return
          */
         @Override
-        public boolean isImmutable()
-        {
+        public boolean isImmutable() {
             if (true) throw new UnsupportedOperationException("Fix This");
             return false;
         }
@@ -345,8 +376,7 @@ public class ScoringTestUtilities
          * @return as above
          */
         @Override
-        public IMeasuredSpectrum asImmutable()
-        {
+        public IMeasuredSpectrum asImmutable() {
             if (true) throw new UnsupportedOperationException("Fix This");
             return null;
         }
@@ -357,8 +387,7 @@ public class ScoringTestUtilities
          * @return
          */
         @Override
-        public ISpectralScan getScanData()
-        {
+        public ISpectralScan getScanData() {
             return null;
         }
 
@@ -368,8 +397,7 @@ public class ScoringTestUtilities
          * @return as above
          */
         @Override
-        public int getPrecursorCharge()
-        {
+        public int getPrecursorCharge() {
             if (true) throw new UnsupportedOperationException("Fix This");
             return 0;
         }
@@ -380,8 +408,7 @@ public class ScoringTestUtilities
          * @return as above
          */
         @Override
-        public double getPrecursorMass()
-        {
+        public double getPrecursorMass() {
             if (true) throw new UnsupportedOperationException("Fix This");
             return 0;
         }
@@ -392,8 +419,7 @@ public class ScoringTestUtilities
          * @return as above
          */
         @Override
-        public int getPeaksCount()
-        {
+        public int getPeaksCount() {
             return m_Peaks.length;
         }
 
@@ -403,59 +429,56 @@ public class ScoringTestUtilities
          * @return
          */
         @Override
-        public ISpectrumPeak[] getPeaks()
-        {
+        public ISpectrumPeak[] getPeaks() {
             return m_Peaks;
         }
 
         /**
-          * get all peaks with non-zero intensity
-          *
-          * @return
-          */
-         @Override
-         public ISpectrumPeak[] getNonZeroPeaks() {
-             List<ISpectrumPeak> holder = new ArrayList<ISpectrumPeak>();
-             ISpectrumPeak[] peaks = getPeaks();
-             for (int i = 0; i < peaks.length; i++) {
-                 ISpectrumPeak peak = peaks[i];
-                 if(peak.getPeak() > 0)
-                     holder.add(peak);
-             }
-             ISpectrumPeak[] ret = new ISpectrumPeak[holder.size()];
-             holder.toArray(ret);
-             return ret;
-
-         }
-
-
-
-          /**
-     * return true if this and o are 'close enough'
-     *
-     * @param !null o
-     * @return as above
-     */
-    @Override
-    public boolean equivalent(ISpectrum  o)
-    {
-        if (this == o)
-              return true;
-         ISpectrum realO = o;
-        final ISpectrumPeak[] peaks1 = getPeaks();
-        final ISpectrumPeak[] peaks2 = realO.getPeaks();
-        if(peaks1.length != peaks2.length)
-            return false;
-        for (int i = 0; i < peaks2.length; i++) {
-            ISpectrumPeak p1 = peaks1[i];
-            ISpectrumPeak p2 = peaks2[i];
-            if(!p1.equivalent(p2))
-                return false;
-
+         * get all peaks with non-zero intensity
+         *
+         * @return
+         */
+        @Override
+        public ISpectrumPeak[] getNonZeroPeaks() {
+            List<ISpectrumPeak> holder = new ArrayList<ISpectrumPeak>();
+            ISpectrumPeak[] peaks = getPeaks();
+            for (int i = 0; i < peaks.length; i++) {
+                ISpectrumPeak peak = peaks[i];
+                if (peak.getPeak() > 0)
+                    holder.add(peak);
+            }
+            ISpectrumPeak[] ret = new ISpectrumPeak[holder.size()];
+            holder.toArray(ret);
+            return ret;
 
         }
-        return true;
-    }
+
+
+        /**
+         * return true if this and o are 'close enough'
+         *
+         * @param !null o
+         * @return as above
+         */
+        @Override
+        public boolean equivalent(ISpectrum o) {
+            if (this == o)
+                return true;
+            ISpectrum realO = o;
+            final ISpectrumPeak[] peaks1 = getPeaks();
+            final ISpectrumPeak[] peaks2 = realO.getPeaks();
+            if (peaks1.length != peaks2.length)
+                return false;
+            for (int i = 0; i < peaks2.length; i++) {
+                ISpectrumPeak p1 = peaks1[i];
+                ISpectrumPeak p2 = peaks2[i];
+                if (!p1.equivalent(p2))
+                    return false;
+
+
+            }
+            return true;
+        }
     }
 
 }

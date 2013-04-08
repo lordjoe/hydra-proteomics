@@ -20,6 +20,8 @@ public class ScoringSpectrum  implements ITheoreticalSpectrum
     private final int m_Charge;
     private final  ITheoreticalSpectrumSet m_SpectrumSet;
     private final  ITheoreticalPeak[] m_Peaks;
+    private   double m_SumIntensity;
+    private   double m_MaxIntensity;
 
     public ScoringSpectrum(int charge,ITheoreticalSpectrumSet pPeptide, ITheoreticalPeak[] pPeaks)
     {
@@ -28,6 +30,15 @@ public class ScoringSpectrum  implements ITheoreticalSpectrum
         m_Charge= charge;
         if(m_SpectrumSet != null)
             m_SpectrumSet.setSpectrum(this);
+
+        for (int i = 0; i < m_Peaks.length; i++) {
+             ISpectrumPeak pk = m_Peaks[i];
+             float peak = pk.getPeak();
+             m_MaxIntensity = Math.max(peak, m_MaxIntensity);
+             m_SumIntensity += peak;
+
+         }
+
     }
 
     public ScoringSpectrum(ITheoreticalSpectrum copy)
@@ -39,6 +50,13 @@ public class ScoringSpectrum  implements ITheoreticalSpectrum
         for (int i = 0; i < peaks.length; i++) {
             ITheoreticalPeak peak = peaks[i];
              m_Peaks[i] = (ITheoreticalPeak)peak.asImmutable();
+        }
+        for (int i = 0; i < m_Peaks.length; i++) {
+            ISpectrumPeak pk = m_Peaks[i];
+            float peak = pk.getPeak();
+            m_MaxIntensity = Math.max(peak, m_MaxIntensity);
+            m_SumIntensity += peak;
+
         }
     }
 
@@ -204,5 +222,23 @@ public class ScoringSpectrum  implements ITheoreticalSpectrum
         }
         return true;
     }
+
+    @Override
+    public double getMaxIntensity() {
+        return m_MaxIntensity;
+    }
+
+    /**
+     * as stated
+     *
+     * @return
+     */
+    @Override
+    public double getSumIntensity() {
+        return m_SumIntensity;
+
+    }
+
+
 
 }

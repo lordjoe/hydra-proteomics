@@ -314,6 +314,10 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
                 setURL(value);
                 return;
             }
+            if("original dta name".equals(name))    {
+                setURL(value);
+                return;
+            }
             throw new IllegalStateException("canot handle nameValue " + name + " " + value);
          }
         if ("precursorMz".equals(el)) {
