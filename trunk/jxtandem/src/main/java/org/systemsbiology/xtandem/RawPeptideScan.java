@@ -463,6 +463,7 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         m_Url = url;
     }
 
+    @Override
     public double getSumIntensity() {
         if (m_SumIntensity == 0)
             buildStatistics();
@@ -488,6 +489,8 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         }
     }
 
+
+    @Override
     public double getMaxIntensity() {
         if (m_MaxIntensity == 0)
             buildStatistics();

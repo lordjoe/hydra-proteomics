@@ -28,4 +28,17 @@ public interface ISpectrum extends IEquivalent<ISpectrum>
      * @return
      */
     public ISpectrumPeak[] getNonZeroPeaks();
+
+    /**
+     * as stated
+     * @return
+     */
+    public double getMaxIntensity();
+
+    /**
+     * as stated
+     * @return
+     */
+    public double getSumIntensity();
+
 }

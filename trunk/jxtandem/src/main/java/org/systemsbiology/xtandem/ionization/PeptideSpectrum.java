@@ -20,6 +20,8 @@ public class PeptideSpectrum implements ITheoreticalSpectrum {
     private final IonType[] m_IonTypes;
     private PeptideIon[] m_Spectrum;
     private final SequenceUtilities m_Utilities;
+    private double m_SumIntensity;
+    private double m_MaxIntensity;
 
     public PeptideSpectrum(final ITheoreticalSpectrumSet pPeptide,int charge, final IonType[] pIonTypes, SequenceUtilities su) {
         m_SpectrumSet = pPeptide;
@@ -27,6 +29,31 @@ public class PeptideSpectrum implements ITheoreticalSpectrum {
         m_Utilities = su;
         m_Charge = charge;
         m_SpectrumSet.setSpectrum(this);
+        PeptideIon[] spectrum = getSpectrum();
+
+        for (int i = 0; i < spectrum.length; i++) {
+            ISpectrumPeak pk = spectrum[i];
+            float peak = pk.getPeak();
+            m_MaxIntensity = Math.max(peak, m_MaxIntensity);
+            m_SumIntensity += peak;
+
+        }
+
+    }
+
+    public double getMaxIntensity() {
+        return m_MaxIntensity;
+    }
+
+    /**
+     * as stated
+     *
+     * @return
+     */
+    @Override
+    public double getSumIntensity() {
+        return m_SumIntensity;
+
     }
 
 
@@ -298,7 +325,6 @@ public class PeptideSpectrum implements ITheoreticalSpectrum {
         }
         return true;
     }
-
 
 
 }

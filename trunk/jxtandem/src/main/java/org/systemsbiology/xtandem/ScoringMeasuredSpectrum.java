@@ -20,6 +20,8 @@ public class ScoringMeasuredSpectrum implements IMeasuredSpectrum {
     private final double m_PrecursorMassChargeRatio;
     private final ISpectralScan m_Scan;
     private final ISpectrumPeak[] m_Peaks;
+    private double m_SumIntensity;
+    private double m_MaxIntensity;
 
     public ScoringMeasuredSpectrum(int precursorCharge, double precursorMz, ISpectralScan scan, ISpectrumPeak[] peaks) {
         m_Scan = scan;
@@ -27,12 +29,12 @@ public class ScoringMeasuredSpectrum implements IMeasuredSpectrum {
         m_PrecursorMassChargeRatio = precursorMz;
         double chargeRatio = precursorMz;
         double protonMass = XTandemUtilities.getProtonMass();
-        int charge =  precursorCharge;
-        if(charge == 0)
+        int charge = precursorCharge;
+        if (charge == 0)
             charge = 1;
         m_PrecursorMass = (chargeRatio - protonMass) * charge + protonMass;
-        if(m_PrecursorMass < 0)
-             XTandemUtilities.breakHere();
+        if (m_PrecursorMass < 0)
+            XTandemUtilities.breakHere();
 
         //   if(true)
         //       throw new UnsupportedOperationException("Fix This"); // ToDo
@@ -44,6 +46,30 @@ public class ScoringMeasuredSpectrum implements IMeasuredSpectrum {
         // sort by mass
         Arrays.sort(mypeaks, ScoringUtilities.PeakMassComparatorINSTANCE);
         m_Peaks = mypeaks;
+        for (int i = 0; i < m_Peaks.length; i++) {
+            ISpectrumPeak pk = m_Peaks[i];
+            float peak = pk.getPeak();
+            m_MaxIntensity = Math.max(peak, m_MaxIntensity);
+            m_SumIntensity += peak;
+
+        }
+
+    }
+
+    @Override
+    public double getMaxIntensity() {
+        return m_MaxIntensity;
+    }
+
+    /**
+     * as stated
+     *
+     * @return
+     */
+    @Override
+    public double getSumIntensity() {
+        return m_SumIntensity;
+
     }
 
     public double getPrecursorMassChargeRatio() {
@@ -61,13 +87,13 @@ public class ScoringMeasuredSpectrum implements IMeasuredSpectrum {
         adder.openTag("MeasuredSpectrum");
         adder.appendAttribute("PrecursorCharge", getPrecursorCharge());
         double pm = getPrecursorMass();
-        if(pm < 40)
-             XTandemUtilities.breakHere();
+        if (pm < 40)
+            XTandemUtilities.breakHere();
 
         adder.appendAttribute("PrecursorMass", XTandemUtilities.formatDouble(pm, 3));
         adder.endTag();
         adder.cr();
-         ISpectrumPeak[] peaks = getPeaks();
+        ISpectrumPeak[] peaks = getPeaks();
         adder.openEmptyTag("peaks");
         String txt = XTandemUtilities.encodePeaks(peaks, MassResolution.Bits32);
         adder.appendText(txt);
@@ -209,7 +235,7 @@ public class ScoringMeasuredSpectrum implements IMeasuredSpectrum {
         ISpectrumPeak[] peaks = getPeaks();
         for (int i = 0; i < peaks.length; i++) {
             ISpectrumPeak peak = peaks[i];
-            if(peak.getPeak() > 0)
+            if (peak.getPeak() > 0)
                 holder.add(peak);
         }
         ISpectrumPeak[] ret = new ISpectrumPeak[holder.size()];

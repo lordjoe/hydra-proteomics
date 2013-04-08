@@ -55,6 +55,7 @@ public class MessagingMzMLReader extends MzMLFileReader {
     }
 
 
+
     /**
      * add a change listener
      * final to make sure this is not duplicated at multiple levels
@@ -107,7 +108,7 @@ public class MessagingMzMLReader extends MzMLFileReader {
             String id = getCurrentSpectrumId();
             ExtendedSpectrumImpl spectrum = (ExtendedSpectrumImpl) getSpectrum();
             notifyTagEndListeners(localName, spectrum);
-        }
+         }
         super.processEndElement(parser);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
@@ -127,7 +128,7 @@ public class MessagingMzMLReader extends MzMLFileReader {
                 */
             String attrValue = XMLImportUtil.seekAttribute("id", parser);
             String scanNumber = XMLImportUtil.seekAttribute("scanNumber", parser);
-             if (attrValue != null) {
+            if (attrValue != null) {
                 String currentSpectrumIdStr = attrValue;
 //                /*
 //                     * Add spectrum id to list if not already in it.
@@ -142,7 +143,7 @@ public class MessagingMzMLReader extends MzMLFileReader {
 
                 ExtendedSpectrumImpl currentSpectrum = (ExtendedSpectrumImpl) SpectrumImpl.buildSpectrum();  // changed slewis to allow class to change
                 currentSpectrum.setId(currentSpectrumIdStr);
-                 if(scanNumber != null)
+                if (scanNumber != null)
                     currentSpectrum.setScanNumber(Integer.parseInt(scanNumber));
                 setSpectrum(currentSpectrum);
                 setCurrentSpectrumId(currentSpectrumIdStr);

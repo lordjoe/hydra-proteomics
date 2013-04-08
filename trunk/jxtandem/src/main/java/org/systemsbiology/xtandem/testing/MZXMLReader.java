@@ -5,6 +5,7 @@ import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.hadoop.*;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * org.systemsbiology.xtandem.testing.MZXMLReader
@@ -19,18 +20,25 @@ public class MZXMLReader {
     private static int gTotalScans;
     private static ElapsedTimer gTimer = new ElapsedTimer();
 
-    private static void processFile(final File pFile) throws IOException {
-        String name = pFile.getAbsolutePath();
-        XTandemUtilities.outputLine(name);
-        InputStream is = XTandemUtilities.getDescribedStream(name);
-        processStream(is);
+    public static RawPeptideScan[] processFile(final File pFile)   {
+        try {
+            String name = pFile.getAbsolutePath();
+            XTandemUtilities.outputLine(name);
+            InputStream is = XTandemUtilities.getDescribedStream(name);
+            return processStream(is);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
 
     }
 
-    private static void processStream(final InputStream pIs) throws IOException {
+    public static RawPeptideScan[] processStream(final InputStream pIs) throws IOException {
         StringBuilder sb = new StringBuilder();
-
-        LineNumberReader rdr = new LineNumberReader(new InputStreamReader(pIs));
+        List<RawPeptideScan> holder = new ArrayList<RawPeptideScan>();
+        
+         LineNumberReader rdr = new LineNumberReader(new InputStreamReader(pIs));
         String line = rdr.readLine();
         int scanLevel = 0;
         while (line != null) {
@@ -51,10 +59,15 @@ public class MZXMLReader {
             }
             if (line.contains("</scan")) {
                 scanLevel--;
-                handleScan(sb, scanLevel);
+                RawPeptideScan scn = handleScan(sb, scanLevel);
+                if(scn != null)
+                    holder.add(scn);
             }
         }
         while (!line.contains("</msRun>"));
+        RawPeptideScan[] ret = new RawPeptideScan[holder.size()];
+         holder.toArray(ret);
+         return ret;
     }
 
     private static void handleLocalFile(final String pArg) throws IOException {
@@ -90,16 +103,19 @@ public class MZXMLReader {
     }
 
 
-    private static void handleScan(final StringBuilder pSb, final int pScanLevel) {
+    private static RawPeptideScan handleScan(final StringBuilder pSb, final int pScanLevel) {
         String scn = pSb.toString().trim();
         if (scn.startsWith("<scan")) {
             RawPeptideScan scan = XTandemHadoopUtilities.readScan(scn,null);
+            pSb.setLength(0);
             gTotalScans++;
-        }
+            return scan;
+          }
         else {
             gNestedTotalScans++;
         }
         pSb.setLength(0);
+        return null;
     }
 
 

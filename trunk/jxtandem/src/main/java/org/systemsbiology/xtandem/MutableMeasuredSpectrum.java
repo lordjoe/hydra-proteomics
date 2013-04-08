@@ -226,6 +226,37 @@ public class MutableMeasuredSpectrum implements IMeasuredSpectrum {
         return m_Peaks;
     }
 
+    /**
+     * as stated
+     *
+     * @return
+     */
+    @Override
+    public double getMaxIntensity() {
+        ISpectrumPeak[] pks = getPeaks();
+        double ret = 0;
+        for (int i = 0; i < pks.length; i++) {
+            ISpectrumPeak pk = pks[i];
+            ret = Math.max(pk.getPeak(),ret);
+        }
+        return ret;
+    }
+
+    /**
+     * as stated
+     *
+     * @return
+     */
+    @Override
+    public double getSumIntensity() {
+        ISpectrumPeak[] pks = getPeaks();
+          double ret = 0;
+          for (int i = 0; i < pks.length; i++) {
+              ISpectrumPeak pk = pks[i];
+              ret += pk.getPeak();
+          }
+          return ret;
+    }
 
     /**
      * get all peaks with non-zero intensity
