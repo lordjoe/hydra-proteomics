@@ -170,9 +170,9 @@ public class SpringJDBCUtilities {
      * @return possibly null target
      */
     public static <T> T getItemWithId(ITemplateHolder holder, String sql, Object id, ParameterizedRowMapper<T> mapper) {
-        JdbcTemplate template = holder.getTemplate();
+        SimpleJdbcTemplate template = holder.getTemplate();
 
-        return template.queryForObject(sql, mapper, id);
+           return template.queryForObject(sql, mapper, id);
     }
 
     /**
@@ -201,7 +201,7 @@ public class SpringJDBCUtilities {
      * @return possibly null target
      */
     public static <T> List<T> getObjectsSatisfying(ITemplateHolder holder, String sql, ParameterizedRowMapper<T> mapper, Object... data) {
-        JdbcTemplate template = holder.getTemplate();
+        SimpleJdbcTemplate template = holder.getTemplate();
 
         return template.query(sql, mapper, data);
     }
@@ -435,7 +435,7 @@ public class SpringJDBCUtilities {
      * @return last id
      */
     public static int getLastId(ITemplateHolder holder, String table) {
-        JdbcTemplate template = holder.getTemplate();
+        SimpleJdbcTemplate template = holder.getTemplate();
         if (isUsingMySQL())
             return template.queryForInt("SELECT LAST_INSERT_ID()");
 

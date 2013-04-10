@@ -18,44 +18,37 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
     public static final int NUMBER_ION_TYPES = 2; // B and I
     public static final int MAX_MASS = 5000;
 
+    public static final double PPM_UNITS_FACTOR = 1000000;
+
+
     public static final double PROTON_MASS = MassCalculator.getDefaultCalculator().calcMass("H");
 
     public static final double LOG_PI = Math.log(Math.sqrt(2 * Math.PI));
-    public static final double NORMALIZATION_MAX = 200.0;
+    public static final double NORMALIZATION_MAX = 100.0;
     public static final double DEFAULT_PEPTIDE_ERROR = 1.0;
     public static final double DEFAULT_MASS_TOLERANCE = 1; // tood fix 0.025;
-    public static final int PEAK_BIN_SIZE = 100;
+    public static final int DEFAULT_MINIMUM_PEAK_NUMBER = 5; // do not score smaller spectra
+    public static final int PEAK_BIN_SIZE = 100;   // the maxium peak is this
     public static final int PEAK_BIN_NUMBER = 3;
     public static final int PEAK_NORMALIZATION_BINS = 5;
     public static final int MINIMUM_SCORED_IONS = 10;
 
     public static final String ALGORITHM_NAME = "Comet";
 
-    public static final int MAX_WEIGHTS = (int)(4000 / DEFAULT_MASS_TOLERANCE); // todo use real paramter
-
 
     private double m_PeptideError = DEFAULT_PEPTIDE_ERROR;
     private double m_MassTolerance = DEFAULT_MASS_TOLERANCE;
+    private int m_MinimumNumberPeaks = DEFAULT_MINIMUM_PEAK_NUMBER;
+    private double m_UnitsFactor = 1; // change if ppm
+
     private float[] m_Weightsx;
     private IMeasuredSpectrum m_Spectrum;
     private double m_TotalIntensity;
-
+    private double  m_BinTolerance;
 
     public CometScoringAlgorithm() {
        //  throw new UnsupportedOperationException("This Algorithm is NOT ready for prime time");
     }
-
-    /**
-      * use the parameters to configure local properties
-      *
-      * @param !null params
-      */
-     @Override
-     public void configure(final IParameterHolder params) {
-         super.configure(params);
-         m_MassTolerance = params.getDoubleParameter("comet fragment_bin_tol",DEFAULT_MASS_TOLERANCE) ;
-      }
-
 
     @Override
     public String toString() {
@@ -70,87 +63,9 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
         populateWeights(ms);
     }
 
-    /**
-     * test for acceptability and generate a new conditioned spectrum for
-     * scoring
-     *
-     * @param in !null spectrum
-     * @return null if the spectrum is to be ignored otherwise a conditioned spectrum
-     */
-    public IMeasuredSpectrum conditionSpectrum(IScoredScan scan, final SpectrumCondition sc) {
-        IMeasuredSpectrum in = sc.conditionSpectrum(scan, 150);
-
-        if (in == null) {
-            in = sc.conditionSpectrum(scan, 150); // debug the issue
-            return null;
-        }
-        final ISpectrumPeak[] spectrumPeaks = in.getPeaks();
-        int precursorCharge = in.getPrecursorCharge();
-        final double mass = in.getPrecursorMass();
-        if (spectrumPeaks.length < 1) {
-            return new ScoringMeasuredSpectrum(precursorCharge, in.getPrecursorMassChargeRatio(), scan.getRaw(), ISpectrumPeak.EMPTY_ARRAY);
-        }
-
-        //       double maxMass = spectrumPeaks[spectrumPeaks.length - 1].getMassChargeRatio();
-        //       double minMass = spectrumPeaks[0].getMassChargeRatio();
-
-        MutableSpectrumPeak[] mutablePeaks = new MutableSpectrumPeak[spectrumPeaks.length];
-
-
-        // pick up the first peak > 1000;
-        ISpectrumPeak lastPeak = null;
-
-        // intensity = sqrt intensity
-
-        double maxIntensity = in.getMaxIntensity();
-        double totalIntensity = 0;
-        for (int i = 0; i < spectrumPeaks.length; i++) {
-            ISpectrumPeak test = spectrumPeaks[i];
-            float sqrtIntensity = (float)((100 *test.getPeak()) / maxIntensity);
-            totalIntensity += sqrtIntensity;
-              mutablePeaks[i] = new MutableSpectrumPeak(test.getMassChargeRatio(), sqrtIntensity);
-        }
-        maxIntensity = 100;
-
-        float fMinCutoff = (float) (0.05 * maxIntensity);
-
-
-        String id = in.getId();
-        //   XTandemUtilities.outputLine("Normalizing " + id);
-     //   mutablePeaks = normalizeWindows(in, mutablePeaks, maxIntensity, fMinCutoff);
-
-        // should already be in mass order
-        //    Arrays.sort(spectrumPeaks,ScoringUtilities.PeakMassComparatorINSTANCE);
-        List<ISpectrumPeak> holder = new ArrayList<ISpectrumPeak>();
-        for (int i = 0; i < mutablePeaks.length; i++) {
-            MutableSpectrumPeak test = mutablePeaks[i];
-            if (test.getPeak() > 0) {
-                holder.add(test);
-            }
-            else {
-                XTandemUtilities.breakHere();
-            }
-        }
-
-        ISpectrumPeak[] newPeaks = new ISpectrumPeak[holder.size()];
-        holder.toArray(newPeaks);
-
-        final MutableMeasuredSpectrum spectrum = in.asMmutable();
-        spectrum.setPeaks(newPeaks);
-//             sc.doWindowedNormalization(spectrum);
-//         if (XTandemDebugging.isDebugging()) {
-//             XTandemDebugging.getLocalValues().addMeasuredSpectrums(ret.getId(), "after Perform mix-range modification", ret);
-//         }
-        final IMeasuredSpectrum ret = spectrum.asImmutable();
-        ((OriginatingScoredScan) scan).setNormalizedRawScan(ret);
-
-        return new ScoringMeasuredSpectrum(precursorCharge, spectrum.getPrecursorMassChargeRatio(), scan.getRaw(), ret.getPeaks());
-    }
-
-
     protected int asBin(double mz)
     {
-        int ret = (int)(mz / m_MassTolerance);
+        int ret = (int)(mz / m_BinTolerance);
         return ret;
     }
 
@@ -206,7 +121,25 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
         m_PeptideError = pPeptideError;
     }
 
+    /**
+     * use the parameters to configure local properties
+     *
+     * @param !null params
+     */
+    @Override
+    public void configure(final IParameterHolder params) {
+        super.configure(params);
+        final String units = params.getParameter("spectrum, parent monoisotopic mass error units",
+                "Daltons");
+        if("ppm".equalsIgnoreCase(units))  {
+            m_UnitsFactor = PPM_UNITS_FACTOR;
+            setMinusLimit(-1);      // the way the databasse works better send a wider limits
+            setPlusLimit(1);
+        }
+        m_BinTolerance =  params.getDoubleParameter("comet.fragment_bin_tol", 0.03);
 
+
+    }
 
     /**
      * return the product of the factorials of the counts
@@ -225,6 +158,34 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
 
     public double getTotalIntensity() {
         return m_TotalIntensity;
+    }
+
+    public int getMinimumNumberPeaks() {
+        return m_MinimumNumberPeaks;
+    }
+
+    public void setMinimumNumberPeaks(int minimumNumberPeaks) {
+        m_MinimumNumberPeaks = minimumNumberPeaks;
+    }
+
+    public double getUnitsFactor() {
+        return m_UnitsFactor;
+    }
+
+    public void setUnitsFactor(double unitsFactor) {
+        m_UnitsFactor = unitsFactor;
+    }
+
+    public void setTotalIntensity(double totalIntensity) {
+        m_TotalIntensity = totalIntensity;
+    }
+
+    public double getBinTolerance() {
+        return m_BinTolerance;
+    }
+
+    public void setBinTolerance(double binTolerance) {
+        m_BinTolerance = binTolerance;
     }
 
     /**
@@ -355,6 +316,39 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
     }
 
 
+    /**
+        * return false if the algorithm will not score the spectrum
+        * @param !null spectrum measured
+        * @return   as above
+        */
+       public boolean canScore(IMeasuredSpectrum measured)
+       {
+           if(super.canScore(measured))
+               return false;
+           if(measured.getPeaksCount()< getMinimumNumberPeaks())
+                 return false;
+
+           return true; // override if some spectra are not scored
+       }
+
+
+
+    /**
+     * test for acceptability and generate a new conditioned spectrum for
+     * scoring
+     * See Spectrum.truncatePeakList()
+     *
+     * @param in !null spectrum
+     * @return null if the spectrum is to be ignored otherwise a conditioned spectrum
+     */
+    @Override
+    public IMeasuredSpectrum conditionSpectrum(final IScoredScan pScan, final SpectrumCondition sc) {
+        OriginatingScoredScan scan = (OriginatingScoredScan) pScan;
+        IMeasuredSpectrum in = new MutableMeasuredSpectrum(pScan.getRaw());
+ //     IMeasuredSpectrum iMeasuredSpectrum = truncatePeakList(in);
+        in = normalize(in.asMmutable());
+        return in;
+    }
 
 
     public static double getMassDifference(ISpectrum spec) {
@@ -389,13 +383,12 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
         double proton = MassCalculator.getDefaultCalculator().calcMass("H");
         ISpectrumPeak[] peaks = in.getPeaks();
         int charge = in.getPrecursorCharge();
-        ISpectrumPeak[] newpeaks = new ISpectrumPeak[peaks.length];
+        MutableSpectrumPeak[] newpeaks = new MutableSpectrumPeak[peaks.length];
         for (int i = 0; i < peaks.length; i++) {
             ISpectrumPeak peak = peaks[i];
-            double massChargeRatio = peak.getMassChargeRatio() + charge * proton;
-            newpeaks[i] = new SpectrumPeak(massChargeRatio, peak.getPeak());
-
-        }
+             newpeaks[i] = new MutableSpectrumPeak(peak.getMassChargeRatio(), peak.getPeak());
+         }
+        normalizePeaks(newpeaks);
         MutableMeasuredSpectrum out =  new MutableMeasuredSpectrum(in);
         out.setPeaks(newpeaks);
         return out; // I do not see normalization

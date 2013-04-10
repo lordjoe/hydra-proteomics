@@ -102,6 +102,19 @@ public abstract  class AbstractScoringAlgorithm implements ITandemScoringAlgorit
         return m_MassType;
     }
 
+    /**
+      * return false if the algorithm will not score the spectrum
+      * @param !null spectrum measured
+      * @return   as above
+      */
+     public boolean canScore(IMeasuredSpectrum measured)
+     {
+         if(measured.getPeaksCount() == 0)
+             return false;
+         return true; // override if some spectra are not scored
+     }
+
+
 
     public boolean isSemiTryptic() {
         return m_SemiTryptic;
@@ -344,8 +357,8 @@ public abstract  class AbstractScoringAlgorithm implements ITandemScoringAlgorit
 
         final String units = params.getParameter("spectrum, parent monoisotopic mass error units",
                 "Daltons");
-        if (!"Daltons".equals(units))
-            throw new IllegalStateException("We can only deal with Daltons at this time");
+    //    if (!"Daltons".equals(units))
+    //        throw new IllegalStateException("We can only deal with Daltons at this time");
         // put then where anyone can get to them
         setAcceptableMassLimits(plusMassDifferenceAllowed,
                 minusMassDifferenceAllowed);
