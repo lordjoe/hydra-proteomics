@@ -22,6 +22,6 @@ public interface ITemplateHolder {
      * return the associated template
      * @return
      */
-    public JdbcTemplate getTemplate();
+    public SimpleJdbcTemplate getTemplate();
 
 }

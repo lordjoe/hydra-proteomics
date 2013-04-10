@@ -413,10 +413,11 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         IMeasuredSpectrum scan = pConditionedScan.conditionScan(sa, sc);
         if (scan == null)
             return 0; // not scoring this one
-        ISpectrumPeak[] peaks = scan.getPeaks();
-        if (peaks.length == 0)
+        if(!sa.canScore(scan))
             return 0; // not scoring this one
-        // NOTE this is totally NOT Thread Safe
+
+        ISpectrumPeak[] peaks = scan.getPeaks();
+          // NOTE this is totally NOT Thread Safe
         fillSpectrumPeaks(peaks);
 
 //        DebugDotProduct logDotProductB = null;

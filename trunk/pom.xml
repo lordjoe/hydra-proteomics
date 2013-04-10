@@ -117,6 +117,17 @@
             <name>informatics-svcs maven repository</name>
             <url>http://informatics-svcs.systemsbiology.net/maven_repository</url>
         </repository>
+        <repository>
+      			<id>ebi-repo</id>
+      			<name>The EBI internal repository</name>
+      			<url>http://www.ebi.ac.uk/~maven/m2repo</url>
+      			<releases>
+      				<enabled>true</enabled>
+      			</releases>
+      			<snapshots>
+      				<enabled>false</enabled>
+      			</snapshots>
+      		</repository>
       </repositories>
 
     <distributionManagement>

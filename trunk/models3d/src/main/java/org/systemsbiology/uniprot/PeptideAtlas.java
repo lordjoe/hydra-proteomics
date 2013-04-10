@@ -4,9 +4,11 @@ import com.lordjoe.utilities.*;
 import org.apache.commons.dbcp.*;
 import org.apache.commons.pool.*;
 import org.apache.commons.pool.impl.*;
+import org.systemsbiology.peptideatlas.*;
 import org.systemsbiology.xtandem.peptide.*;
 
 import javax.sql.*;
+import java.io.*;
 import java.sql.*;
 import java.util.*;
 
@@ -17,9 +19,6 @@ import java.util.*;
  */
 public class PeptideAtlas {
     public static final PeptideAtlas[] EMPTY_ARRAY = {};
-
-    public static final String USER_NAME = "spaghetti";
-    public static final String ENCRYPTED_PASSWORD = "Eu1+TeBdm9SivLcfi56hGKK8tx+LnqEYory3H4ueoRiivLcfi56hGA==";
     public static final int    CURRENT_ATLAS_BUILD = 368;
 
     private static DataSource gDataSource;
@@ -38,62 +37,19 @@ public class PeptideAtlas {
         sb.append("jdbc:jtds:sqlserver://mssql:1433/peptideAtlas;" ) ;
         sb.append("user=spaghetti;" ) ;
         sb.append("password=" ) ;
-        sb.append(Encrypt.decryptString(ENCRYPTED_PASSWORD)) ;
+        sb.append(Encrypt.decryptString(SpaghettiDatabase.ENCRYPTED_PASSWORD)) ;
 
         return sb.toString();
     }
 
-    public static DataSource setupDataSource(String connectURI) {
-        try {
-            //
-            // First, we'll create a ConnectionFactory that the
-            // pool will use to create Connections.
-            // We'll use the DriverManagerConnectionFactory,
-            // using the connect string passed in the command line
-            // arguments.
-            //
-            final ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, null);
 
-              //
-            // Now we'll need a ObjectPool that serves as the
-            // actual pool of connections.
-            //
-            // We'll use a GenericObjectPool instance, although
-            // any ObjectPool implementation will suffice.
-            //
-            final ObjectPool connectionPool = new GenericObjectPool(null);
-              //
-            // Next we'll create the PoolableConnectionFactory, which wraps
-            // the "real" Connections created by the ConnectionFactory with
-            // the classes that implement the pooling functionality.
-            //
-            PoolableConnectionFactory poolableConnectionFactory =
-                    new PoolableConnectionFactory(connectionFactory, connectionPool, null, null, false, true);
-
-
-
-
-            //
-            // Finally, we create the PoolingDriver itself,
-            // passing in the object pool we created.
-            //
-            PoolingDataSource dataSource = new PoolingDataSource(connectionPool);
-
-            return dataSource;
-
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-
-        }
-    }
 
     private static DataSource buildDataSource() {
         try {
             // Load the SQLServerDriver class, build the
             // connection string, and get a connection
             Class.forName("net.sourceforge.jtds.jdbc.Driver");
-            DataSource ret = setupDataSource(buildConnectionString());
+            DataSource ret = SpaghettiDatabase.setupDataSource(buildConnectionString());
             return ret;
         }
         catch ( Exception e) {
@@ -166,7 +122,7 @@ public class PeptideAtlas {
         }
     }
 
-    public static String[] getProteinIds() throws SQLException {
+    protected static String[] lookUpProteinIds() throws SQLException {
         Connection con = PeptideAtlas.getPeptideAtlasConnection();
 
 
@@ -194,4 +150,24 @@ public class PeptideAtlas {
         holder.toArray(ids);
         return ids;
     }
+
+    public static final String PEPTIDE_ID_FILE_NAME = "PeptideAtlasIds"  + CURRENT_ATLAS_BUILD + ".txt";
+
+    public static String[] getProteinIds()
+    {
+        File f = new File(PEPTIDE_ID_FILE_NAME);
+        if(f.exists())
+            return FileUtilities.readInLines(f);
+        try {
+            String[] ret =  lookUpProteinIds();
+            FileUtilities.writeFileLines(f,ret);
+            return ret;
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
+
+
 }
