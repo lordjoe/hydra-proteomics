@@ -1,5 +1,6 @@
 package org.systemsbiology.xtandem.peptide;
 
+import com.lordjoe.utilities.*;
 import org.systemsbiology.xtandem.*;
 
 import java.util.*;
@@ -16,6 +17,44 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
     public static final String MAX_MODIFICASTIONS_PARAMETER_NAME = "org.systemsbiology.jxtandem.ModifiedPolypeptide.MaxPeptideModifications";
     public static final int DEFAULT_MAX_MODIFICATIONS = 2;
     private static int gMaxPeptideModifications = DEFAULT_MAX_MODIFICATIONS;
+
+
+    /**
+     * used  to create decoys
+     */
+    private static class ModifiedDecoyPolyPeptide extends ModifiedPolypeptide implements IDecoyPeptide {
+        private ModifiedDecoyPolyPeptide(String pSequence, int missedCleavages, PeptideModification[] mods) {
+            super(pSequence, missedCleavages, mods);
+        }
+
+        private ModifiedDecoyPolyPeptide(ModifiedPolypeptide pp) {
+            this(getReversedSequence(pp), pp.getMissedCleavages(), Util.invert(pp.getModifications()));
+        }
+
+        @Override
+        public IPolypeptide asDecoy() {
+            return this;
+        }
+
+        @Override
+        public boolean isDecoy() {
+            return true;
+        }
+
+
+        @Override
+        public String toString() {
+            return "DECOY_" + super.toString();
+        }
+
+        @Override
+        public IPolypeptide asNonDecoy() {
+            return new ModifiedPolypeptide(getReversedSequence(this), this.getMissedCleavages(), Util.invert(this.getModifications()));
+        }
+
+
+    }
+
 
     public static int getMaxPeptideModifications() {
         return gMaxPeptideModifications;
@@ -180,7 +219,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         List<IPolypeptide> currentMods = new ArrayList<IPolypeptide>();
         currentMods.add(peptide);
         for (int modNum = 0; modNum < getMaxPeptideModifications(); modNum++) {
-             for (int i = 0; i < potantialModArray.length; i++) {
+            for (int i = 0; i < potantialModArray.length; i++) {
                 PeptideModification potentialMod = potantialModArray[i];
                 for (IPolypeptide pm : currentMods) {
                     applyModification(pm, potentialMod, newMods, sequence);
@@ -417,8 +456,8 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
  /*
     If you are being careful stop peptides with too many mods
   */
- //       if (nMods > getMaxPeptideModifications())
-  //          throw new IllegalStateException("too many modifications in a peptide");
+        //       if (nMods > getMaxPeptideModifications())
+        //          throw new IllegalStateException("too many modifications in a peptide");
     }
 
     /**
@@ -486,6 +525,12 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
             start = index + 1;
         }
         return false;
+    }
+
+
+    @Override
+    public IPolypeptide asDecoy() {
+        return new ModifiedDecoyPolyPeptide(this);
     }
 
 

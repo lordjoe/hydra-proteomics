@@ -30,6 +30,20 @@ public interface  IPolypeptide {
     public String getId();
 
     /**
+      * return the reversed peptide marked as a decoy unless this is already a decoy
+      * @return
+      */
+     public IPolypeptide asDecoy();
+
+
+    /**
+     * true is the polypaptide is known to be a decoy
+     * @return
+     */
+    public boolean isDecoy();
+
+
+    /**
      * true is the polypaptide is known to be a protein
      * @return
      */

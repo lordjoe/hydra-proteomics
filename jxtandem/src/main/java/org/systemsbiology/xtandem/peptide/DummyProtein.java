@@ -70,9 +70,19 @@ public class DummyProtein extends DummyPeptide implements IProtein {
 
 
     @Override
+    public boolean isDecoy() {
+        return false;
+    }
+
+    @Override
     public boolean isProtein() {
         return true;
     }
+
+    @Override
+      public IPolypeptide asDecoy() {
+          throw new UnsupportedOperationException("Fix This"); // ToDo
+      }
 
 
     /**
