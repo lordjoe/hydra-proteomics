@@ -22,41 +22,11 @@ import org.xml.sax.*;
 import java.awt.*;
 import java.beans.*;
 import java.io.*;
-import java.lang.Appendable;
-import java.lang.ArrayStoreException;
-import java.lang.Boolean;
-import java.lang.Character;
-import java.lang.Class;
-import java.lang.Comparable;
-import java.lang.Double;
-import java.lang.Enum;
-import java.lang.IllegalAccessException;
-import java.lang.IllegalArgumentException;
-import java.lang.IllegalStateException;
-import java.lang.Integer;
-import java.lang.InterruptedException;
-import java.lang.NoSuchMethodException;
-import java.lang.NumberFormatException;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.Process;
-import java.lang.RuntimeException;
-import java.lang.SecurityManager;
-import java.lang.String;
-import java.lang.StringBuffer;
-import java.lang.StringBuilder;
-import java.lang.SuppressWarnings;
-import java.lang.Thread;
-import java.lang.Throwable;
-import java.lang.UnsupportedOperationException;
 import java.lang.reflect.*;
 import java.net.*;
 import java.text.*;
 import java.util.*;
 import java.util.List;
-import java.lang.Short;
-import java.lang.Float;
-import java.lang.Long;
 
 /**
  * { class
@@ -3003,12 +2973,27 @@ public abstract class Util {
         return (Integer.parseInt(s));
     }
 
+
+    /**
+     *
+     */
+    public static <T> T[] invert(T[] data) {
+        Class cls = data.getClass().getComponentType();
+        @SuppressWarnings("unchecked")
+        T[] ret = (T[]) Array.newInstance(cls, data.length);
+        for (int i = 0; i < data.length; i++) {
+             ret[i] = data[data.length - i - 1];
+
+        }
+        return ret;
+    }
+
     /**
      * @param data non-null
      * @name reverse
      * @function reverse array in place
      */
-    public static void reverse(Object[] data) {
+    public static  void reverse(Object[] data) {
         int n = data.length / 2;
         int src = data.length - 1;
         for (int i = 0; i < n; i++) {
