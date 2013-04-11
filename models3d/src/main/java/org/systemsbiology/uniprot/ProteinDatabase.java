@@ -132,7 +132,7 @@ public class ProteinDatabase {
                     }
                     annotation = line;
                     int endId = line.indexOf("|", START_ID + 1);
-                    id = line.substring(START_ID, endId);
+                    id = line.substring(START_ID, endId).trim();
                 }
                 else {
                     sb.append(line);
