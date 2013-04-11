@@ -8,6 +8,7 @@ package org.systemsbiology.xtandem.peptide;
 public interface IModifiedPeptide extends IPolypeptide {
     public static final IModifiedPeptide[] EMPTY_ARRAY = {};
 
+
     /**
      * get the modification from the classic mass
       * @return

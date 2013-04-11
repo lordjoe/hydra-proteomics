@@ -174,6 +174,8 @@ public class SpectralMatch implements ISpectralMatch, Comparable<ISpectralMatch>
         adder.appendAttribute("score", getScore());
         adder.appendAttribute("hyperscore", getScore());
         adder.appendAttribute("raw_score", getRawScore());
+        if(pp.isDecoy())
+            adder.appendAttribute("decoy", "yes");
         adder.endTag();
         adder.cr();
         getUsage().serializeAsString(adder);

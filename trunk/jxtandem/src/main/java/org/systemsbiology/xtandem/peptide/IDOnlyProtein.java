@@ -157,6 +157,25 @@ public class IDOnlyProtein implements IProtein {
         return true;
     }
 
+
+    /**
+     * true is the polypaptide is known to be a decoy
+     *
+     * @return
+     */
+    @Override
+    public boolean isDecoy() {
+        return false;
+    }
+
+
+
+    @Override
+      public IPolypeptide asDecoy() {
+          throw new UnsupportedOperationException("Fix This"); // ToDo
+      }
+
+
     /**
      * true if the peptide is SewmiTryptic but may
      * miss instance where K or R is followed by aP which

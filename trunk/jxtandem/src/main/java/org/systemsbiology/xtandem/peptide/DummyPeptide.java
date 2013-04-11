@@ -24,6 +24,22 @@ public class DummyPeptide implements IPolypeptide {
     }
 
     /**
+     * true is the polypaptide is known to be a decoy
+     *
+     * @return
+     */
+    @Override
+    public boolean isDecoy() {
+        return false;
+    }
+
+
+    @Override
+      public IPolypeptide asDecoy() {
+          throw new UnsupportedOperationException("Fix This"); // ToDo
+      }
+
+    /**
      * return a list of contained proteins
      *
      * @return !null array

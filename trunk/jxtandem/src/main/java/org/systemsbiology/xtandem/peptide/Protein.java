@@ -120,9 +120,7 @@ public class Protein extends Polypeptide implements IProtein {
         if(id.contains(" "))   {
             id = annotationToId(id) ;
         }
-        else {
-            id = pAnnotation ;
-        }
+
 
 
         if (id == null || id.length() == 0)
@@ -206,6 +204,22 @@ public class Protein extends Polypeptide implements IProtein {
     public boolean isProtein() {
         return true;
     }
+
+    /**
+     * true is the polypaptide is known to be a decoy
+     *
+     * @return
+     */
+    @Override
+    public boolean isDecoy() {
+        return false;
+    }
+
+    @Override
+      public IPolypeptide asDecoy() {
+          throw new UnsupportedOperationException("Fix This"); // ToDo
+      }
+
 
     /**
      * convert position to id

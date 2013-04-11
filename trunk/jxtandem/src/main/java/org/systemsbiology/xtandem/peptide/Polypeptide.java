@@ -14,6 +14,51 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
 
     public static final Comparator<IPolypeptide> SEQUENCE_COMPARATOR = new SequenceComparator();
 
+    public static String getReversedSequence(IPolypeptide p) {
+        StringBuilder sb = new StringBuilder();
+        String sequence = p.getSequence();
+        for (int i = sequence.length(); i > 0; i--)
+            sb.append(sequence.substring(i - 1, i));
+        return sb.toString();
+    }
+
+    public static IPolypeptide asDecoy(IPolypeptide p) {
+        if (p.isDecoy())
+            return p;
+        return new DecoyPolyPeptide(p);
+
+    }
+
+    /**
+     * used
+     */
+    private static class DecoyPolyPeptide extends Polypeptide implements IDecoyPeptide {
+        private DecoyPolyPeptide(IPolypeptide pp) {
+            super(getReversedSequence(pp));
+        }
+
+        @Override
+        public IPolypeptide asDecoy() {
+            return this;
+        }
+
+        @Override
+        public boolean isDecoy() {
+            return true;
+        }
+
+
+        @Override
+        public String toString() {
+            return "DECOY_" + super.toString();
+        }
+
+        @Override
+        public IPolypeptide asNonDecoy() {
+            return new Polypeptide(getReversedSequence(this));
+        }
+    }
+
     public static class SequenceComparator implements Comparator<IPolypeptide> {
         private SequenceComparator() {
         }
@@ -39,10 +84,9 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         }
     }
 
-    public static IPolypeptide fromString(String s)
-    {
+    public static IPolypeptide fromString(String s) {
         s = s.trim();
-        if(s.contains("["))
+        if (s.contains("["))
             return ModifiedPolypeptide.fromModifiedString(s);
         Polypeptide ret = new Polypeptide(s);
         ret.setMissedCleavages(PeptideBondDigester.getDefaultDigester().probableNumberMissedCleavages(ret));
@@ -65,44 +109,44 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
     public Polypeptide(String pSequence,/* int startPos, IProtein m_ParentStream, */int missedCleavages) {
         m_Sequence = pSequence;
         m_SequenceLength = m_Sequence.length();
-         m_MissedCleavages = missedCleavages;
+        m_MissedCleavages = missedCleavages;
     }
 
-    public Polypeptide(String pSequence ) {
-       this(pSequence,findMissedCleavages(pSequence));
+    public Polypeptide(String pSequence) {
+        this(pSequence, findMissedCleavages(pSequence));
     }
 
     public static int findMissedCleavages(String pSequence) {
         int length = pSequence.length();
-        if(length < 2)
+        if (length < 2)
             return 0;
-        String test = pSequence.substring(0,length - 1); // drop last position
+        String test = pSequence.substring(0, length - 1); // drop last position
         int index = test.indexOf("K");
-        while(index > -1) {
-            if(pSequence.charAt(index + 1) != 'P')
+        while (index > -1) {
+            if (pSequence.charAt(index + 1) != 'P')
                 return 1; // missed
-            index = test.indexOf("K",index + 1);
+            index = test.indexOf("K", index + 1);
         }
-         index = test.indexOf("R");
-        while(index > -1) {
-            if(pSequence.charAt(index + 1) != 'P')
+        index = test.indexOf("R");
+        while (index > -1) {
+            if (pSequence.charAt(index + 1) != 'P')
                 return 1; // missed
-            index = test.indexOf("R",index + 1);
+            index = test.indexOf("R", index + 1);
         }
         return 0;
     }
 
 
     /**
-      * !null validity may be unknown
-      * @return
-      */
-     public PeptideValidity getValidity()
-     {
-        if(m_Validity == null)
+     * !null validity may be unknown
+     *
+     * @return
+     */
+    public PeptideValidity getValidity() {
+        if (m_Validity == null)
             return PeptideValidity.Unknown;
-         return m_Validity;
-      }
+        return m_Validity;
+    }
 
     public void setValidity(final PeptideValidity pValidity) {
         m_Validity = pValidity;
@@ -115,9 +159,9 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
      */
     @Override
     public IProteinPosition[] getProteinPositions() {
-        if(m_ContainedInProteins == null)
-            return  IProteinPosition.EMPTY_ARRAY;
-         return m_ContainedInProteins;
+        if (m_ContainedInProteins == null)
+            return IProteinPosition.EMPTY_ARRAY;
+        return m_ContainedInProteins;
     }
 
     public void setContainedInProteins(final IProteinPosition[] pContainedInProteins) {
@@ -125,7 +169,7 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         List<IProteinPosition> holder = new ArrayList<IProteinPosition>();
         for (int i = 0; i < pContainedInProteins.length; i++) {
             IProteinPosition tst = pContainedInProteins[i];
-            if(!stx.contains(tst.getProtein()))  {
+            if (!stx.contains(tst.getProtein())) {
                 stx.add(tst.getProtein());
                 holder.add(tst);
             }
@@ -135,7 +179,7 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         }
         IProteinPosition[] ret = new IProteinPosition[holder.size()];
         holder.toArray(ret);
-           m_ContainedInProteins = ret;
+        m_ContainedInProteins = ret;
     }
 
     /**
@@ -150,51 +194,53 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
 
     /**
      * count the occurrance of an amino acid in the sequence
-     * @param aa  !null amino acid
-     * @return   count of presence
+     *
+     * @param aa !null amino acid
+     * @return count of presence
      */
-    public int getAminoAcidCount(FastaAminoAcid aa)
-    {
-         return getAminoAcidCount( aa.toString());
+    public int getAminoAcidCount(FastaAminoAcid aa) {
+        return getAminoAcidCount(aa.toString());
     }
 
     /**
-      * count the occurrance of an amino acid in the sequence
-      * @param aa  !null amino acid
-      * @return   count of presence
-      */
+     * count the occurrance of an amino acid in the sequence
+     *
+     * @param aa !null amino acid
+     * @return count of presence
+     */
     @Override
     public boolean hasAminoAcid(FastaAminoAcid aa) {
         return getSequence().contains(aa.toString());
     }
 
     /**
-        * count the occurrance of an unmodified amino acid in the sequence
-        * @param aa  !null amino acid
-        * @return   count of presence
-        */
-   @Override
+     * count the occurrance of an unmodified amino acid in the sequence
+     *
+     * @param aa !null amino acid
+     * @return count of presence
+     */
+    @Override
     public boolean hasUnmodifiedAminoAcid(FastaAminoAcid aa) {
-        return hasAminoAcid(  aa);
+        return hasAminoAcid(aa);
     }
 
 
     /**
      * count the occurrance of an amino acid in the sequence
-     * @param aa  !null amino acid  letter
-     * @return   count of presence
+     *
+     * @param aa !null amino acid  letter
+     * @return count of presence
      */
-    public int getAminoAcidCount(String aa)
-    {
+    public int getAminoAcidCount(String aa) {
         String s = getSequence();
         int count = 0;
         int start = 0;
         int index = -1;
-        while((index = s.indexOf(aa,start)) > -1)   {
+        while ((index = s.indexOf(aa, start)) > -1) {
             count++;
-            if(index >= s.length() - 1)
+            if (index >= s.length() - 1)
                 break;
-             start = index + 1;
+            start = index + 1;
         }
         return count;
     }
@@ -205,28 +251,42 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         return false;
     }
 
+    /**
+     * true is the polypaptide is known to be a decoy
+     *
+     * @return
+     */
+    @Override
+    public boolean isDecoy() {
+        return false;
+    }
+
+    @Override
+    public IPolypeptide asDecoy() {
+        return new DecoyPolyPeptide(this);
+    }
+
 
     /**
      * true if the peptide is SewmiTryptic but may
      * miss instance where K or R is followed by aP which
      * are semitryptic
+     *
      * @return
      */
-    public boolean isProbablySemiTryptic()
-    {
+    public boolean isProbablySemiTryptic() {
         String sequence = getSequence();
         char c = sequence.charAt(sequence.length() - 1);
-        switch(c) {
-            case 'r' :
-            case 'R' :
-            case 'k' :
-            case 'K' :
+        switch (c) {
+            case 'r':
+            case 'R':
+            case 'k':
+            case 'K':
                 return false; // tryptic unless followed by a P
             default:
                 return true;
-         }
+        }
     }
-
 
 
     @Override
@@ -267,7 +327,7 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
             MassCalculator calculator = MassCalculator.getDefaultCalculator();
 
             String sequence = getSequence();
-             double mass = calculator.getSequenceMass(this);
+            double mass = calculator.getSequenceMass(this);
             setMass(mass);
         }
         return m_Mass;
@@ -282,15 +342,15 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         m_Sequence = pSequence;
         m_SequenceLength = m_Sequence.length();
         int missedCleavages = 0;
-        for(int i = 0; i < m_Sequence.length() - 1; i++)  {
-              char c = m_Sequence.charAt(i);
-              if(c == 'R' || c == 'K') {
-                   if( 'P' != m_Sequence.charAt(i))
-                     missedCleavages++;
-              }
+        for (int i = 0; i < m_Sequence.length() - 1; i++) {
+            char c = m_Sequence.charAt(i);
+            if (c == 'R' || c == 'K') {
+                if ('P' != m_Sequence.charAt(i))
+                    missedCleavages++;
+            }
         }
         setMissedCleavages(missedCleavages);
-     }
+    }
 
 //    public void setParentProtein(final IProtein pParentProtein) {
 //        if(m_ParentProtein != null )  {
@@ -346,7 +406,6 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         }
         return m_MatchingMass;
     }
-
 
 
     /**
@@ -580,12 +639,12 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
                 /* getStartPosition(), getParentProtein()  , */0);
         IProteinPosition[] proteinPositions = this.getProteinPositions();
 
-        if(proteinPositions == null)
+        if (proteinPositions == null)
             XTandemUtilities.breakHere();
 
         // add proteins and before and after AAN
-        ((Polypeptide)ret[0]).setContainedInProteins(ProteinPosition.buildPeptidePositions(ret[0],0,proteinPositions));
-        ((Polypeptide)ret[1]).setContainedInProteins(ProteinPosition.buildPeptidePositions(ret[1],bond + 1,proteinPositions));
+        ((Polypeptide) ret[0]).setContainedInProteins(ProteinPosition.buildPeptidePositions(ret[0], 0, proteinPositions));
+        ((Polypeptide) ret[1]).setContainedInProteins(ProteinPosition.buildPeptidePositions(ret[1], bond + 1, proteinPositions));
         return ret;
 
     }
@@ -620,7 +679,7 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         Polypeptide ret = new Polypeptide(merged,
                 /*  getStartPosition(), getParentProtein(),   */
                 getMissedCleavages() + 1);
-        ret.setContainedInProteins(ProteinPosition.mergePeptidePositions(ret,getProteinPositions(),added.getProteinPositions()));
+        ret.setContainedInProteins(ProteinPosition.mergePeptidePositions(ret, getProteinPositions(), added.getProteinPositions()));
         return ret;
     }
 
@@ -647,8 +706,7 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
      *
      * @return
      */
-    public int getNumberModifications()
-    {
+    public int getNumberModifications() {
         return 0;
     }
 

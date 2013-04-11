@@ -1,7 +1,6 @@
 package org.systemsbiology.xtandem.sax;
 
 
-
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.ionization.*;
 import org.systemsbiology.xtandem.peptide.*;
@@ -25,13 +24,13 @@ public class MatchScoreHandler extends AbstractElementSaxHandler<SpectralMatch> 
 
     //            "<match  peak=\"VNG0675C VNG0675C:25(19)\" score=\"173.526783956915\" hyperscore=\"173.526783956915\">\n" +
 
-    private String  m_Id;
+    private String m_Id;
     private String m_PeptideId;
     private double m_Score;
     private double m_HyperScore;
     private double m_RawScore;
-    private  SpectralPeakUsage m_Usage;
-    IPolypeptide m_Peptide;
+    private SpectralPeakUsage m_Usage;
+    private IPolypeptide m_Peptide;
     private List<IProteinPosition> m_Positions = new ArrayList<IProteinPosition>();
 
     private final IonUseScore m_IonScore = new IonUseScore();
@@ -53,31 +52,31 @@ public class MatchScoreHandler extends AbstractElementSaxHandler<SpectralMatch> 
     }
 
     public void setPeptideId(final String pPeptideId) {
-         if(m_Peptide != null || m_PeptideId != null)
+        if (m_Peptide != null || m_PeptideId != null)
             throw new IllegalStateException("Cannot reset peptide"); // ToDo change
         m_PeptideId = pPeptideId;
-          IMainData main = getMainData();
+        IMainData main = getMainData();
         if (main != null) {
-             //   RawPeptideScan rawScan = main.getRawScan(getId());
-             //    pMeasured = rawScan;
+            //   RawPeptideScan rawScan = main.getRawScan(getId());
+            //    pMeasured = rawScan;
 
-             ITaxonomy taxonomy = main.getTaxonomy();
-             if (taxonomy != null) {
-                 String peptideId = getPeptideId();
-                 m_Peptide = taxonomy.getPeptideById(peptideId);
-                 if (m_Peptide == null)
-                      m_Peptide = Polypeptide.fromString( peptideId); // key may be all we need
+            ITaxonomy taxonomy = main.getTaxonomy();
+            if (taxonomy != null) {
+                String peptideId = getPeptideId();
+                m_Peptide = taxonomy.getPeptideById(peptideId);
+                if (m_Peptide == null)
+                    m_Peptide = Polypeptide.fromString(peptideId); // key may be all we need
 
-             }
-         }
-         else {
-            m_Peptide = Polypeptide.fromString( getPeptideId());
-          }
-         if(m_Peptide != null) {
-             IPeptideDigester digester = PeptideBondDigester.getDefaultDigester();
-             int missedCleavages = digester.probableNumberMissedCleavages(m_Peptide);
-             ((Polypeptide) m_Peptide).setMissedCleavages(missedCleavages);
-         }
+            }
+        }
+        else {
+            m_Peptide = Polypeptide.fromString(getPeptideId());
+        }
+        if (m_Peptide != null) {
+            IPeptideDigester digester = PeptideBondDigester.getDefaultDigester();
+            int missedCleavages = digester.probableNumberMissedCleavages(m_Peptide);
+            ((Polypeptide) m_Peptide).setMissedCleavages(missedCleavages);
+        }
     }
 
     public double getScore() {
@@ -108,6 +107,22 @@ public class MatchScoreHandler extends AbstractElementSaxHandler<SpectralMatch> 
         return m_IonScore;
     }
 
+    public boolean isDecoy() {
+        if (m_Peptide != null)
+            return m_Peptide.isDecoy();
+        else return false;
+    }
+
+    public void setDecoy(boolean isso) {
+        if (m_Peptide == null)
+            return;
+        if (m_Peptide.isDecoy() == isso)
+            return;
+
+        if (isso)
+            m_Peptide = m_Peptide.asDecoy();
+    }
+
     @Override
     public void handleAttributes(String elx, String localName, String el, Attributes attr)
             throws SAXException {
@@ -115,7 +130,8 @@ public class MatchScoreHandler extends AbstractElementSaxHandler<SpectralMatch> 
         setScore(XTandemSaxUtilities.getRequiredDoubleAttribute("score", attr));
         setRawScore(XTandemSaxUtilities.getRequiredDoubleAttribute("raw_score", attr));
         setHyperScore(XTandemSaxUtilities.getRequiredDoubleAttribute("hyperscore", attr));
-
+        boolean decoy = XTandemSaxUtilities.getBooleanAttribute("decoy", attr, false);
+        setDecoy(decoy);
         return;
     }
 
@@ -152,15 +168,15 @@ public class MatchScoreHandler extends AbstractElementSaxHandler<SpectralMatch> 
             return;
         }
         if ("ProteinPosition".equals(el)) {
-            ProteinPositionHandler handler = new ProteinPositionHandler(this,m_Peptide);
+            ProteinPositionHandler handler = new ProteinPositionHandler(this, m_Peptide);
             getHandler().pushCurrentHandler(handler);
             handler.handleAttributes(uri, localName, el, attributes);
             return;
         }
         if ("usage".equals(el)) {
-               clearIncludedText();
-               return;
-           }
+            clearIncludedText();
+            return;
+        }
         super.startElement(uri, localName, el, attributes);
 
     }
@@ -179,9 +195,9 @@ public class MatchScoreHandler extends AbstractElementSaxHandler<SpectralMatch> 
         }
         if ("usage".equals(el)) {
             String txt = getIncludedText();
-            m_Usage =  SpectralPeakUsage.deserializeUsage(txt);
-              return;
-         }
+            m_Usage = SpectralPeakUsage.deserializeUsage(txt);
+            return;
+        }
 
         super.endElement(elx, localName, el);
     }
@@ -194,17 +210,17 @@ public class MatchScoreHandler extends AbstractElementSaxHandler<SpectralMatch> 
     @Override
     public void finishProcessing() {
         IMeasuredSpectrum pMeasured = null;
-  
+
         final double pScore = getScore();
         final double pHyperScore = getHyperScore();
         final double rawScore = getRawScore();
         IonTypeScorer scorer = getIonScore();
 
         IProteinPosition[] containedInProteins = m_Positions.toArray(IProteinPosition.EMPTY_ARRAY);
-        ((Polypeptide)m_Peptide).setContainedInProteins(containedInProteins);
+        ((Polypeptide) m_Peptide).setContainedInProteins(containedInProteins);
         SpectralMatch scan = new SpectralMatch(m_Peptide, pMeasured, pScore, pHyperScore, rawScore, scorer, null);
 
-        if(m_Usage != null)
+        if (m_Usage != null)
             scan.getUsage().addTo(m_Usage);
 
         setElementObject(scan);
