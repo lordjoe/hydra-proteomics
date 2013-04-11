@@ -4,13 +4,14 @@ import com.lordjoe.utilities.*;
 import org.apache.commons.dbcp.*;
 import org.apache.commons.pool.*;
 import org.apache.commons.pool.impl.*;
+import org.biojava.bio.seq.*;
 import org.springframework.dao.*;
-import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.core.simple.*;
 import org.systemsbiology.uniprot.*;
 import org.systemsbiology.xtandem.peptide.*;
 
 import javax.sql.*;
+import java.io.*;
 import java.sql.*;
 import java.util.*;
 
@@ -222,7 +223,7 @@ public class SpaghettiDatabase {
     private static SpaghettiDatabase gDatabase;
 
     public static synchronized SpaghettiDatabase getDatabase() {
-        if(gDatabase == null)
+        if (gDatabase == null)
             gDatabase = new SpaghettiDatabase();
         return gDatabase;
     }
@@ -274,33 +275,36 @@ public class SpaghettiDatabase {
 
     public static final String COUNT_PROTEIN_BY_ID = "SELECT COUNT(*)  FROM proteins WHERE ID = ?";
 
-    public IProtein getProtein(String id)
-    {
-        Object[] args = { id };
+    public IProtein getProtein(String id) {
+        Object[] args = {id};
         SimpleJdbcTemplate template = getTemplate();
-        return template.queryForObject(PROTEIN_BY_ID, gProteinMapper, args);
+        try {
+            return template.queryForObject(PROTEIN_BY_ID, gProteinMapper, args);
+        }
+        catch (DataAccessException e) {
+            return null; // not found
+
+        }
     }
 
-    public IProtein[] getProteins( )
-      {
-           SimpleJdbcTemplate template = getTemplate();
-          List<IProtein> query = template.query("SELECT * FROM proteins", gProteinMapper);
-          return query.toArray(IProtein.EMPTY_ARRAY);
-      }
-    
-    public boolean hasProtein(String id)
-    {
-        Object[] args = { id };
+    public IProtein[] getProteins() {
         SimpleJdbcTemplate template = getTemplate();
-        return template.queryForInt(COUNT_PROTEIN_BY_ID,  args) == 1;
+        List<IProtein> query = template.query("SELECT * FROM proteins", gProteinMapper);
+        return query.toArray(IProtein.EMPTY_ARRAY);
     }
 
-    public static final String INSERT_PROTEIN = "INSERT  INTO  proteins VALUES(? , ? , ? )";
-    public void addProtein(IProtein p)
-    {
+    public boolean hasProtein(String id) {
+        Object[] args = {id};
+        SimpleJdbcTemplate template = getTemplate();
+        return template.queryForInt(COUNT_PROTEIN_BY_ID, args) == 1;
+    }
+
+    public static final String INSERT_PROTEIN = "INSERT  INTO  proteins (id,annotation,sequence)  VALUES(?,?,? )";
+
+    public void addProtein(IProtein p) {
         String id = p.getId();
-        if(hasProtein(id))
-               return;
+        if (hasProtein(id))
+            return;
         addNewProtein(p);
 
     }
@@ -309,9 +313,9 @@ public class SpaghettiDatabase {
         String id = p.getId();
         String sequence = p.getSequence();
         String annotation = p.getAnnotation();
-        Object[] args = {id, sequence, annotation};
+        Object[] args = {id, annotation, sequence};
         SimpleJdbcTemplate template = getTemplate();
-        template.update(INSERT_PROTEIN,args);
+        template.update(INSERT_PROTEIN, args);
     }
 
 
@@ -356,44 +360,139 @@ public class SpaghettiDatabase {
         }
     }
 
-    private static class ProteinRowMapper implements ParameterizedRowMapper<IProtein>
-    {
-    	public IProtein mapRow(ResultSet rs, int rowNum) throws SQLException {
+    private static class ProteinRowMapper implements ParameterizedRowMapper<IProtein> {
+        public IProtein mapRow(ResultSet rs, int rowNum) throws SQLException {
             String id = rs.getString("ID");
             String sequence = rs.getString("SEQUENCE");
             String annotation = rs.getString("ANNOTATION");
-    		IProtein protein = Protein.buildProtein(id,sequence,annotation,"") ;
-      		return protein;
-    	}
+            IProtein protein = Protein.buildProtein(id, sequence, annotation, "");
+            return protein;
+        }
 
     }
 
-    private static void populateProteins(final SpaghettiDatabase pSd,int maxInserts) {
-         ProteinDatabase pd = ProteinDatabase.getInstance();
-         String[] ids = pd.getIds();
+    private static void populateProteins(final SpaghettiDatabase pSd, int maxInserts) {
+        //     pSd.getTemplate().update("DELETE  from PROTEINS");
+        ProteinDatabase pd = ProteinDatabase.getInstance();
+        String[] ids = pd.getIds();
+        for (int i = 0; i < ids.length; i++) {
+            String id = ids[i];
+            Protein protein = pd.getProtein(id);
+            pSd.addNewProtein(protein);
+            if (maxInserts > 0 && i > maxInserts)
+                break;
+        }
+    }
+
+    private static void populateProteins(final SpaghettiDatabase pSd) {
+        populateProteins(pSd, 0);
+    }
+
+    public static final String UNFOUND_FILE =  "unfoundIds.txt";
+    public static final String UNFOUND2_FILE =  "unfoundIds2.txt";
+
+    public static Collection<String> readUnfoundIds()
+    {
+        String[] strings = FileUtilities.readInLines(UNFOUND_FILE);
+        Set<String> holder = new HashSet<String>();
+        for (int i = 0; i < strings.length; i++) {
+            String string = strings[i];
+            if(string.length() > 6)
+                string = string.substring(0,6);
+            holder.add(string);
+        }
+
+        return holder;
+    }
+
+    public static String[] getUnfoundIDs()
+    {
+        Collection<String> idSet = readUnfoundIds();
+        String[] ids = idSet.toArray(new String[0]);
+        Arrays.sort(ids);
+        return ids;
+    }
+
+    private static void testIDS(SpaghettiDatabase sd, String[] ids,String fileName) throws IOException {
+         List<String> holder = new ArrayList<String>();
+
          for (int i = 0; i < ids.length; i++) {
              String id = ids[i];
-             Protein protein = pd.getProtein(id);
-             pSd.addProtein(protein);
-             if(i < maxInserts)
-                 break;
+             IProtein protein = sd.getProtein(id);
+             if(protein == null)
+                 holder.add(id);
+
          }
+         PrintWriter out = new PrintWriter(new FileWriter(fileName));
+         for(String s : holder)    {
+             out.println(s);
+         }
+         out.close();
      }
+
+
+    private static void getSequences(SpaghettiDatabase sd, String[] ids,String fileName) throws IOException {
+         List<String> holder = new ArrayList<String>();
+
+         for (int i = 0; i < ids.length; i++) {
+             String id = ids[i];
+             Uniprot uniprot = Uniprot.getUniprot(id);
+             if(uniprot != null)    {
+                 String id1 = uniprot.getId();
+                 Sequence sequence = uniprot.getSequence();
+                 String pSequence = sequence.seqString();
+                 Protein protein = Protein.getProtein(id1, id1, pSequence,"");
+                 sd.addNewProtein(protein);
+             }
+         }
+         PrintWriter out = new PrintWriter(new FileWriter(fileName));
+         for(String s : holder)    {
+             out.println(s);
+         }
+         out.close();
+     }
+
 
     public static final int MAX_INSERTS = 10;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         SpaghettiDatabase sd = getDatabase();
-        populateProteins(sd,MAX_INSERTS);
-        IProtein[] prots = sd.getProteins();
-        for (int i = 0; i < prots.length; i++) {
-            IProtein prot = prots[i];
+        String[] ids = getUnfoundIDs(); // PeptideAtlas.getProteinIds();
+        getSequences(sd, ids, UNFOUND2_FILE);
 
-        }
-        
+//        IProtein[] prots = sd.getProteins();
+//        for (int i = 0; i < prots.length; i++) {
+//            IProtein prot = prots[i];
+//
+//        }
+//         String sequence = "MTMDKSELVQKAKLAEQAERYDDMAAAMKAVTEQGHELSNEERNLLSVAYKNVVGARRSS" +
+//                 "WRVISSIEQKTERNEKKQQMGKEYREKIEAELQDICNDVLELLDKYLIPNATQPESKVFY" +
+//                 "LKMKGDYFRYLSEVASGDNKQTTVSNSQQAYQEAFEISKKEMQPTHPIRLGLALNFSVFY" +
+//                 "YEILNSPEKACSLAKTAFDEAIAELDTLNEESYKDSTLIMQLLRDNLTLWTSENQGDEGD" +
+//                 "AGEGEN";
+//        String id = "P31946XXX";
+//        String annotation = "sp|P31946|1433B_HUMAN 14-3-3 protein beta/alpha OS=Homo sapiens GN=YWHAB PE=1 SV=3";
+//
+//
+//           Map<String, Object> parameters = new HashMap<String, Object>();
+//      		parameters.put("id", id);
+//      		parameters.put("annotation", annotation);
+//      		parameters.put("sequence", sequence);
+//
+//         SimpleJdbcTemplate template = sd.getTemplate();
+//         template.update(INSERT_PROTEIN,id,annotation,sequence);
+
+//        populateProteins(sd);
+//        prots = sd.getProteins();
+//        for (int i = 0; i < prots.length; i++) {
+//            IProtein prot = prots[i];
+//
+//        }
+
     }
 
- 
+
+
 }
 
 
