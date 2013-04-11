@@ -1,9 +1,6 @@
 package org.systemsbiology.uniprot;
 
 import com.lordjoe.utilities.*;
-import org.apache.commons.dbcp.*;
-import org.apache.commons.pool.*;
-import org.apache.commons.pool.impl.*;
 import org.systemsbiology.peptideatlas.*;
 import org.systemsbiology.xtandem.peptide.*;
 
@@ -19,7 +16,7 @@ import java.util.*;
  */
 public class PeptideAtlas {
     public static final PeptideAtlas[] EMPTY_ARRAY = {};
-    public static final int    CURRENT_ATLAS_BUILD = 368;
+    public static final int CURRENT_ATLAS_BUILD = 368;
 
     private static DataSource gDataSource;
 
@@ -30,18 +27,16 @@ public class PeptideAtlas {
         return gDataSource;
     }
 
-    public static String buildConnectionString()
-    {
+    public static String buildConnectionString() {
         StringBuilder sb = new StringBuilder();
-         //    Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        sb.append("jdbc:jtds:sqlserver://mssql:1433/peptideAtlas;" ) ;
-        sb.append("user=spaghetti;" ) ;
-        sb.append("password=" ) ;
-        sb.append(Encrypt.decryptString(SpaghettiDatabase.ENCRYPTED_PASSWORD)) ;
+        //    Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        sb.append("jdbc:jtds:sqlserver://mssql:1433/peptideAtlas;");
+        sb.append("user=spaghetti;");
+        sb.append("password=");
+        sb.append(Encrypt.decryptString(SpaghettiDatabase.ENCRYPTED_PASSWORD));
 
         return sb.toString();
     }
-
 
 
     private static DataSource buildDataSource() {
@@ -52,12 +47,14 @@ public class PeptideAtlas {
             DataSource ret = SpaghettiDatabase.setupDataSource(buildConnectionString());
             return ret;
         }
-        catch ( Exception e) {
+        catch (Exception e) {
             throw new RuntimeException(e);
 
         }
 
     }
+
+
 
     public static Connection getPeptideAtlasConnection() {
         try {
@@ -70,12 +67,17 @@ public class PeptideAtlas {
     }
 
     public static IPolypeptide[] getPeptides(IProtein protein) {
-        String[] peptideStrings = getPeptides(protein.getId()) ;
+          return getPeptides(protein, CURRENT_ATLAS_BUILD);
+      }
+
+
+    public static IPolypeptide[] getPeptides(IProtein protein, int peptideAtlasBuild) {
+        String[] peptideStrings = getPeptides(protein.getId(),peptideAtlasBuild);
         List<IPolypeptide> holder = new ArrayList<IPolypeptide>();
         for (int i = 0; i < peptideStrings.length; i++) {
             String peptideString = peptideStrings[i];
             IPolypeptide pp = Polypeptide.fromString(peptideString);
-            if(pp != null)
+            if (pp != null)
                 holder.add(pp);
         }
         IPolypeptide[] ret = new IPolypeptide[holder.size()];
@@ -84,6 +86,10 @@ public class PeptideAtlas {
     }
 
     public static String[] getPeptides(String protein_id) {
+        return getPeptides(protein_id, CURRENT_ATLAS_BUILD);
+    }
+
+    public static String[] getPeptides(String protein_id, int peptideAtlasBuild) {
 
         try {
             Connection con = getPeptideAtlasConnection();
@@ -151,16 +157,15 @@ public class PeptideAtlas {
         return ids;
     }
 
-    public static final String PEPTIDE_ID_FILE_NAME = "PeptideAtlasIds"  + CURRENT_ATLAS_BUILD + ".txt";
+    public static final String PEPTIDE_ID_FILE_NAME = "PeptideAtlasIds" + CURRENT_ATLAS_BUILD + ".txt";
 
-    public static String[] getProteinIds()
-    {
+    public static String[] getProteinIds() {
         File f = new File(PEPTIDE_ID_FILE_NAME);
-        if(f.exists())
+        if (f.exists())
             return FileUtilities.readInLines(f);
         try {
-            String[] ret =  lookUpProteinIds();
-            FileUtilities.writeFileLines(f,ret);
+            String[] ret = lookUpProteinIds();
+            FileUtilities.writeFileLines(f, ret);
             return ret;
         }
         catch (SQLException e) {

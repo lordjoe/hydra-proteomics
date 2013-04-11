@@ -61,13 +61,12 @@ public class PageServer extends HttpServlet {
     public static final String INDEX_PAGE = "IndexGood.html";
 
     private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
-    public static final String PAGE_DIRECTORYX =  "pages" ;
+    public static final String PAGE_DIRECTORYX = "pages";
     public static final File PAGE_DIRECTORY_URL = new File("pages");
     public static final String BASE_DIRECTORY = "Spaghetti";
 
-    public static File getPageDirectory()
-    {
-        File f = ProteinDatabase.getHomeDirectory(PAGE_DIRECTORYX,BASE_DIRECTORY ) ;
+    public static File getPageDirectory() {
+        File f = ProteinDatabase.getHomeDirectory(PAGE_DIRECTORYX, BASE_DIRECTORY);
         return f;
     }
 
@@ -142,7 +141,7 @@ public class PageServer extends HttpServlet {
                 return;
             }
             else {
-                String newPage =  "/" + getPageDirectory() + "/" + uniprot + ".html";
+                String newPage = "/" + getPageDirectory() + "/" + uniprot + ".html";
                 redirect(newPage, rsp);
 
             }
@@ -217,15 +216,30 @@ public class PageServer extends HttpServlet {
     }
 
 
-
     public static FoundPeptide[] fragmentsToFoundPeptides(Protein protein, String fragmants) {
         if (fragmants == null)
             return FoundPeptide.EMPTY_ARRAY;
-        List<FoundPeptide> holder = new ArrayList<FoundPeptide>();
         String[] frags = fragmants.split("\n");
-        for (int i = 0; i < frags.length; i++) {
-            String frag = frags[i].trim();
+        return fragmentsToFoundPeptides(protein, frags);
+    }
+
+    public static FoundPeptide[] fragmentsToFoundPeptides(final Protein protein, final String[] pFrags) {
+        List<FoundPeptide> holder = new ArrayList<FoundPeptide>();
+        for (int i = 0; i < pFrags.length; i++) {
+            String frag = pFrags[i].trim();
             IPolypeptide pp = Polypeptide.fromString(frag);
+            FoundPeptide fp = new FoundPeptide(pp, protein.getId(), 0);
+            holder.add(fp);
+        }
+        FoundPeptide[] ret = new FoundPeptide[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
+
+    public static FoundPeptide[] fragmentsToFoundPeptides(final Protein protein, final IPolypeptide[] pFrags) {
+        List<FoundPeptide> holder = new ArrayList<FoundPeptide>();
+        for (int i = 0; i < pFrags.length; i++) {
+            IPolypeptide pp = pFrags[i];
             FoundPeptide fp = new FoundPeptide(pp, protein.getId(), 0);
             holder.add(fp);
         }
