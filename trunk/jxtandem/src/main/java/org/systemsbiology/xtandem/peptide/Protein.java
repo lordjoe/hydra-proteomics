@@ -1,5 +1,7 @@
 package org.systemsbiology.xtandem.peptide;
 
+import java.util.*;
+
 /**
  * org.systemsbiology.xtandem.peptide.Protein
  *
@@ -34,6 +36,21 @@ public class Protein extends Polypeptide implements IProtein {
 //               return ret;
 //        }
 
+    }
+
+    /**
+     * turn a list of proteins into a map with id as the key
+     * @param prots  !null protein list
+     * @return  !null populated map;
+     */
+    public static Map<String,IProtein> asIdMap(IProtein[] prots)
+    {
+        Map<String,IProtein> ret = new HashMap<String, IProtein>() ;
+        for (int i = 0; i < prots.length; i++) {
+            IProtein prot = prots[i];
+            ret.put(prot.getId(),prot);
+        }
+        return ret;
     }
 
     /**
