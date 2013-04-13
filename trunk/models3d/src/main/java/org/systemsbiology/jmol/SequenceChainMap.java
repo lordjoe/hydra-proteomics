@@ -13,7 +13,7 @@ import java.util.*;
 public class SequenceChainMap  implements Comparable<SequenceChainMap> {
     public static final SequenceChainMap[] EMPTY_ARRAY = {};
 
-    private final Protein m_Protein;
+    private final IProtein m_Protein;
     private final int m_Pos;
     private final FastaAminoAcid m_AA;
     private final Map<ChainEnum,IAminoAcidAtLocation> m_ChainMappings = new HashMap<ChainEnum, IAminoAcidAtLocation>();
@@ -24,20 +24,20 @@ public class SequenceChainMap  implements Comparable<SequenceChainMap> {
      * @param pos
      * @param a
      */
-    public SequenceChainMap(Protein protein,  IAminoAcidAtLocation a) {
+    public SequenceChainMap(IProtein protein,  IAminoAcidAtLocation a) {
         m_Protein = protein;
         m_Pos =  a.getLocation();
         m_AA = a.getAminoAcid();
         addChainMapping(ChainEnum.A,a);
     }
 
-    public SequenceChainMap(Protein protein, int pos, FastaAminoAcid AA) {
+    public SequenceChainMap(IProtein protein, int pos, FastaAminoAcid AA) {
         m_Protein = protein;
         m_Pos = pos;
         m_AA = AA;
     }
 
-    public Protein getProtein() {
+    public IProtein getProtein() {
         return m_Protein;
     }
 

@@ -380,9 +380,9 @@ public class Uniprot {
     }
 
 
-    private final Protein m_Protein;
+    private final IProtein m_Protein;
     private final ProteinAminoAcid[] m_AminoAcids;
-    private final String[] m_Models;
+    private  String[] m_Models;
 
     private final Map<String, BioJavaModel> m_IdToMpdel = new HashMap<String, BioJavaModel>();
     private final File m_ModelDirectory = new File("models3d");
@@ -433,6 +433,30 @@ public class Uniprot {
         }
 
     }
+
+
+    public Uniprot(IProtein protein,IPolypeptide[] peptides) {
+
+        m_Protein = protein;
+        buildTheoreticalPeptides(PeptideBondDigester.getDigester("Trypsin"));
+        int seqLength = protein.getSequenceLength();
+        FastaAminoAcid[] fastaAminoAcids = FastaAminoAcid.asAminoAcids(protein.getSequence());
+        m_AminoAcids = new ProteinAminoAcid[fastaAminoAcids.length];
+        for (int i = 0; i < fastaAminoAcids.length; i++) {
+            FastaAminoAcid aa = fastaAminoAcids[i];
+            m_AminoAcids[i] = new ProteinAminoAcid(aa, i);
+            // cleavage code - not for lastt
+            if (i == fastaAminoAcids.length - 1)
+                continue;
+            if (aa == FastaAminoAcid.K || aa == FastaAminoAcid.R) {
+                if (fastaAminoAcids[i + 1] != FastaAminoAcid.P)
+                    m_AminoAcids[i].setPotentialCleavage(true);
+            }
+
+        }
+
+    }
+
 
     private static int gTotalUnacceptable;
     private static int gTotalPrptides;
@@ -648,7 +672,7 @@ public class Uniprot {
 
     }
 
-    public Protein getProtein() {
+    public IProtein getProtein() {
         return m_Protein;
     }
 
@@ -788,7 +812,7 @@ public class Uniprot {
     public void addFoundPeptide(IPolypeptide peptide) {
         m_Detected.add(peptide);
         String pst = peptide.getSequence();
-        Protein protein = getProtein();
+        IProtein protein = getProtein();
         String id = protein.getId();
         m_Found.add(new FoundPeptide(peptide, id, 0));
         String prost = protein.getSequence();
@@ -830,7 +854,7 @@ public class Uniprot {
     }
 
     public void analyze(final int[] statistics) {
-        Protein protein = getProtein();
+        IPolypeptide protein = getProtein();
         String id = protein.getId();
         final String[] models = getModels();
         if (models.length == 0) {
@@ -894,7 +918,7 @@ public class Uniprot {
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
             Uniprot up = new Uniprot(line);
-            Protein protein = up.getProtein();
+            IProtein protein = up.getProtein();
             holder.put(up.getId(), up);
         }
         return holder;
@@ -983,14 +1007,14 @@ public class Uniprot {
         FoundPeptides fps = null;
         if (inp != null)
             fps = FoundPeptides.readFoundPeptides(inp);
-        Protein[] proteins = new Protein[pts.length];
+        IProtein[] proteins = new Protein[pts.length];
         String[] ids = new String[pts.length];
         ProteinCollection pc = new ProteinCollection();
         File pdbDirectory = pc.getPDBDirectory();
         int count = 0;
         for (int i = 0; i < ids.length; i++) {
             Uniprot pt = pts[i];
-            Protein protein = pt.getProtein();
+            IProtein protein = pt.getProtein();
             proteins[i] = protein;
             String id = protein.getId();
             FoundPeptide[] peptides = FoundPeptide.EMPTY_ARRAY;
@@ -1518,7 +1542,7 @@ public class Uniprot {
 
         for (int i = 0; i < pts.length; i++) {
             Uniprot pt = pts[i];
-            Protein protein = pt.getProtein();
+            IPolypeptide protein = pt.getProtein();
             String id = protein.getId();
             FoundPeptide[] peptides1 = fps.getPeptides(id);
             for (int j = 0; j < peptides1.length; j++) {

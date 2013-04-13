@@ -59,7 +59,7 @@ public class ProteinCoveragePageBuilder {
         if(pfd == null)
             throw new UnsupportedOperationException("Fix This"); // // ToDo Is this expected
 
-        Protein prot = pfd.getProtein();
+        IPolypeptide prot = pfd.getProtein();
         ProteinFragment[] fragments = pfd.getFragments();
 //         for (int i = 0; i < fragments.length; i++) {
 //             ProteinFragment fragment = fragments[i];
@@ -173,7 +173,7 @@ public class ProteinCoveragePageBuilder {
         HTMLPageBuillder pb = new HTMLPageBuillder("Coverage for " + id);
         HTMLBodyBuillder body = pb.getBody();
         HTMLHeaderBuillder header = pb.getHeader();
-        Protein protein = pfd.getProtein();
+        IProtein protein = pfd.getProtein();
         body.addString("<a href=\"../" + HOME_PAGE + "\" >Home</a>\n");
          if (prev != null)
             body.addString("<a href=\"" + prev + ".html\" >Prev</a>\n");

@@ -770,7 +770,8 @@ public class PeptideAtlasTests {
     // Import the SQL Server JDBC Driver classes
     @Test
     public void getIDs() throws Exception {
-        String[] ids = PeptideAtlas.getProteinIds();
+        PeptideAtlas ps = PeptideAtlas.getDatabase();
+        String[] ids = ps.getProteinIds();
 
         Assert.assertEquals(38297, ids.length);
 
@@ -784,10 +785,11 @@ public class PeptideAtlasTests {
     // Import the SQL Server JDBC Driver classes
     @Test
     public void getPeptides() throws Exception {
-        Connection con = PeptideAtlas.getPeptideAtlasConnection();
+        PeptideAtlas ps = PeptideAtlas.getDatabase();
+        Connection con = ps.getPeptideAtlasConnection();
 
         System.out.println("Connected.");
-        String[] ids = PeptideAtlas.getPeptides(protein_id);
+        String[] ids = ps.getPeptides(protein_id);
 
 
         Assert.assertEquals(EXPECTED_PEPTIDES.length,ids.length );

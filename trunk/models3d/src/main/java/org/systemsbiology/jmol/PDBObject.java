@@ -18,7 +18,7 @@ public class PDBObject extends AsaMolecule {
     public static final PDBObject[] EMPTY_ARRAY = {};
 
     private File m_File;
-    private final Protein m_Protein;
+    private final IProtein m_Protein;
     private final SequenceChainMap[] m_Mappings;
     private int m_LastHandledLoc = -1;
     private ExperimentalType m_ExperimentalType = ExperimentalType.X_RAY_DIFFRACTION;
@@ -27,7 +27,7 @@ public class PDBObject extends AsaMolecule {
     private final Map<ChainEnum, ProteinSubunit> m_Chains = new HashMap<ChainEnum, ProteinSubunit>();
     private final Map<String, List<ProteinSubunit>> m_SequenceToChains = new HashMap<String, List<ProteinSubunit>>();
 
-    public PDBObject(File file, Protein p) {
+    public PDBObject(File file, IProtein p) {
         m_File = file;
         m_Protein = p;
         String sequence = p.getSequence();
@@ -51,7 +51,7 @@ public class PDBObject extends AsaMolecule {
 
     }
 
-    public Protein getProtein() {
+    public IProtein getProtein() {
         return m_Protein;
     }
 

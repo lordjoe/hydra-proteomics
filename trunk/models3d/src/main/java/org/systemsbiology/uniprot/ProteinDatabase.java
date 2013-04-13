@@ -160,7 +160,7 @@ public class ProteinDatabase {
         try {
             out.append(up.getId());
             out.append("\t");
-            Protein protein = up.getProtein();
+            IProtein protein = up.getProtein();
             String sequence = protein.getSequence();
 
             String[] fragments = makeFragments(sequence);

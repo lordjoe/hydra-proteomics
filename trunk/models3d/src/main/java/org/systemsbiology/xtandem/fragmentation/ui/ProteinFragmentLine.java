@@ -68,7 +68,7 @@ public class ProteinFragmentLine {
     public String getSequence()
     {
         ProteinFragmentationDescription fragments = getFragments();
-        Protein protein = fragments.getProtein();
+        IProtein protein = fragments.getProtein();
         String fullSequence = protein.getSequence();
         int start = getStart();
         int end = getEnd();

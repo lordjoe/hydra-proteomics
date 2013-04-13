@@ -18,14 +18,14 @@ import java.util.*;
 public class BioJavaModel {
     public static final BioJavaModel[] EMPTY_ARRAY = {};
 
-    private Protein m_Protein;
+    private IProtein m_Protein;
     private Structure m_Structure;
     private int m_SequenceLength;
     private int m_FitLength;
     private File m_File;
 
 
-    public BioJavaModel(final Protein protein) {
+    public BioJavaModel(final IProtein protein) {
         m_Protein = protein;
         m_SequenceLength = protein.getSequenceLength();
     }
@@ -57,7 +57,7 @@ public class BioJavaModel {
         return m_File;
     }
 
-    public Protein getProtein() {
+    public IProtein getProtein() {
         return m_Protein;
     }
 
@@ -106,7 +106,7 @@ public class BioJavaModel {
     public double resolveChains() {
         Structure s = getStructure();
         double ret = 0;
-        Protein protein = getProtein();
+        IProtein protein = getProtein();
         List<Chain> chains = s.getChains();
         for (Iterator<Chain> iterator = chains.iterator(); iterator.hasNext(); ) {
             Chain chn = iterator.next();
@@ -135,7 +135,7 @@ public class BioJavaModel {
     }
 
     public double resolveGroups(List<Group> groups) {
-        Protein p = getProtein();
+        IProtein p = getProtein();
         int matches = 0;
         int nonmatches = 0;
         String sequence = p.getSequence();
