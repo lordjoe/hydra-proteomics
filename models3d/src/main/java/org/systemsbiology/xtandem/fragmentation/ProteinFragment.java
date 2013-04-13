@@ -29,12 +29,12 @@ public class ProteinFragment implements Comparable<ProteinFragment> {
         }
     };
 
-    private final Protein m_ParentProtein;
+    private final IProtein m_ParentProtein;
     private final IPolypeptide m_Peptide;
     private int[] m_StartLocations;
     private final int m_Index;
 
-    public ProteinFragment(final Protein parentProtein, final IPolypeptide peptide, int index) {
+    public ProteinFragment(final IProtein parentProtein, final IPolypeptide peptide, int index) {
         m_ParentProtein = parentProtein;
         m_Peptide = peptide;
         m_Index = index;
@@ -58,7 +58,7 @@ public class ProteinFragment implements Comparable<ProteinFragment> {
         return m_Index;
     }
 
-    public Protein getParentProtein() {
+    public IProtein getParentProtein() {
         return m_ParentProtein;
     }
 

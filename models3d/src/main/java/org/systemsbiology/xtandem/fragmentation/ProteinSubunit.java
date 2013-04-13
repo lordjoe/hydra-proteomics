@@ -30,7 +30,7 @@ public class ProteinSubunit {
     }
 
     private final ChainEnum m_Chain;
-    private final Protein m_Protein;
+    private final IPolypeptide m_Protein;
     private final List<IAminoAcidAtLocation> m_Locations = new ArrayList<IAminoAcidAtLocation>();
     private final List<IAminoAcidAtLocation> m_Seqres = new ArrayList<IAminoAcidAtLocation>();
     private Map<Integer, IAminoAcidAtLocation> m_LocToAminoAcid = new HashMap<Integer, IAminoAcidAtLocation>();
@@ -38,13 +38,13 @@ public class ProteinSubunit {
  //   private final  ChainEnum[] m_ChainSet; // only non-null if multiple chains
     private int m_MinLoc = 0;
 
-    public ProteinSubunit( Protein prot,final ChainEnum chain) {
+    public ProteinSubunit( IProtein prot,final ChainEnum chain) {
         m_Chain = chain;
         m_Protein = prot;
   //      m_ChainSet = null;
     }
 
-    public ProteinSubunit(final ChainEnum chain, Protein prot, final IAminoAcidAtLocation[] locations) {
+    public ProteinSubunit(final ChainEnum chain, IProtein prot, final IAminoAcidAtLocation[] locations) {
        this( prot,chain);
         m_Locations.addAll(Arrays.asList(locations));
         m_Sequence = AminoAcidAtLocation.toSequence(locations);
@@ -91,7 +91,7 @@ public class ProteinSubunit {
         return sb.toString();
     }
 
-    public Protein getProtein() {
+    public IPolypeptide getProtein() {
         return m_Protein;
     }
 

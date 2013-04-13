@@ -17,8 +17,9 @@ public class SpaghettiDatabaseTests {
     @Test
     public void getProteins() throws Exception {
         SpaghettiDatabase sd =  SpaghettiDatabase.getDatabase();
+        PeptideAtlas ps = PeptideAtlas.getDatabase();
         sd.guaranteeTable("proteins");
-        String[] ids = PeptideAtlas.getProteinIds();
+        String[] ids = ps.getProteinIds();
 
         Assert.assertEquals(38297, ids.length);
 

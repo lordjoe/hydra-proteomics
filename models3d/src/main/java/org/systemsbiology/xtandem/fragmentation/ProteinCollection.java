@@ -211,7 +211,7 @@ public class ProteinCollection implements IFastaHandler {
     }
 
     protected void maybeAd3DModel(ProteinFragmentationDescription ret) {
-        Protein protein = ret.getProtein();
+        IPolypeptide protein = ret.getProtein();
         String id = protein.getId();
 
     }
@@ -347,7 +347,7 @@ public class ProteinCollection implements IFastaHandler {
 
     protected static void updateProteinFragmentationDescription(ProteinFragmentationDescription pfd, Uniprot upt) {
         ProteinAminoAcid[] aminoAcids = upt.getAminoAcids();
-        Protein protein = upt.getProtein();
+        IProtein protein = upt.getProtein();
         SequenceChainMap[] mappedAAs = new SequenceChainMap[aminoAcids.length];
         for (int i = 0; i < aminoAcids.length; i++) {
             ProteinAminoAcid aminoAcid = aminoAcids[i];
@@ -389,7 +389,7 @@ public class ProteinCollection implements IFastaHandler {
         Uniprot[] pts = idToUniprot.values().toArray(Uniprot.EMPTY_ARRAY);
         for (int i = 0; i < pts.length; i++) {
             Uniprot pt = pts[i];
-            Protein protein = pt.getProtein();
+            IProtein protein = pt.getProtein();
             String id = protein.getId();
             FoundPeptide[] peptides1 = fps.getPeptides(id);
             for (int j = 0; j < peptides1.length; j++) {
@@ -429,7 +429,7 @@ public class ProteinCollection implements IFastaHandler {
 
             Uniprot upt = interestingUniprots.get(id);
             FoundPeptide[] peptidesX = upt.getFound();
-            Protein protein = upt.getProtein();
+            IProtein protein = upt.getProtein();
             upt.analyze(statistics);
             ProteinFragmentationDescription pfd = new ProteinFragmentationDescription(id, pc, protein, peptidesX);
             pc.addProteinFragmentationDescription(pfd);

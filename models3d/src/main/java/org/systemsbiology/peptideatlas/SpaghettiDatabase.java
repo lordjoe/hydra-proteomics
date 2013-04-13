@@ -26,6 +26,28 @@ public class SpaghettiDatabase {
     public static final int MAXIMUM_PROTEIN_SIZE = 2000;
     public static final int MAXIMUM_PEPTIDE_SIZE = 40;
 
+    public static final Random RND = new Random();
+
+    /**
+     *
+     * @param items !null array = ,ay be empty
+     * @param <T> type of the array
+     * @return  a selected element of T or null if items is empty
+     * @throws NullPointerException if items is null
+     */
+    public static <T> T randomElement(T[] items)
+    {
+          switch( items.length  ) {
+            case 0:
+                return null;
+            case 1 :
+                return items[0];
+            default:
+                return items[RND.nextInt(items.length)];
+        }
+
+    }
+
 
     public static final String USER_NAME = "spaghetti";
     public static final String ENCRYPTED_PASSWORD = "Eu1+TeBdm9SivLcfi56hGKK8tx+LnqEYory3H4ueoRiivLcfi56hGA==";
@@ -413,6 +435,18 @@ public class SpaghettiDatabase {
         return ids;
     }
 
+    public static void populateFromPeptideAtlas(SpaghettiDatabase sd,PeptideAtlas pa)
+    {
+        IProtein[] found = sd.getProteins() ;
+        Map<String, IProtein> foundMap = Protein.asIdMap(found);
+        IProtein[] paProteins = pa.lookUpProteins();
+        for (int i = 0; i < paProteins.length; i++) {
+            IProtein paProtein = paProteins[i];
+            if(!foundMap.containsKey(paProtein.getId()))
+                sd.addNewProtein(paProtein);
+        }
+    }
+
     private static void testIDS(SpaghettiDatabase sd, String[] ids,String fileName) throws IOException {
          List<String> holder = new ArrayList<String>();
 
@@ -455,10 +489,31 @@ public class SpaghettiDatabase {
 
     public static final int MAX_INSERTS = 10;
 
+    public static final int DEFAULT_CHARGE = 0;
+
     public static void main(String[] args) throws Exception {
         SpaghettiDatabase sd = getDatabase();
-        String[] ids = getUnfoundIDs(); // PeptideAtlas.getProteinIds();
-        getSequences(sd, ids, UNFOUND2_FILE);
+        PeptideAtlas pa = PeptideAtlas.getDatabase();
+        populateFromPeptideAtlas(  sd,  pa);
+        if(true)
+            return;
+        IProtein[] prots = sd.getProteins();
+        List<Uniprot> holder = new ArrayList<Uniprot>();
+        for (int i = 0; i < MAX_INSERTS; i++) {
+            IProtein prot = randomElement(prots);
+               IPolypeptide[] peptides = pa.getPeptides(prot);
+            for (int j = 0; j < peptides.length; j++) {
+                IPolypeptide peptide = peptides[j];
+                 FoundPeptide fp = new FoundPeptide(peptide,prot.getId(),DEFAULT_CHARGE);
+            }
+
+        }
+
+        Uniprot[] ret = new Uniprot[holder.size()];
+        holder.toArray(ret);
+
+//        String[] ids = getUnfoundIDs(); // PeptideAtlas.getProteinIds();
+//        getSequences(sd, ids, UNFOUND2_FILE);
 
 //        IProtein[] prots = sd.getProteins();
 //        for (int i = 0; i < prots.length; i++) {

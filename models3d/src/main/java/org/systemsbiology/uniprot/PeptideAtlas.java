@@ -18,13 +18,22 @@ public class PeptideAtlas {
     public static final PeptideAtlas[] EMPTY_ARRAY = {};
     public static final int CURRENT_ATLAS_BUILD = 368;
 
-    private static DataSource gDataSource;
+    private   DataSource m_DataSource;
 
-    public static synchronized DataSource getDataSource() {
-        if (gDataSource == null) {
-            gDataSource = buildDataSource();
+    private static PeptideAtlas gDatabase;
+
+    public static synchronized PeptideAtlas getDatabase() {
+        if (gDatabase == null)
+            gDatabase = new PeptideAtlas();
+        return gDatabase;
+    }
+
+
+    public  synchronized DataSource getDataSource() {
+        if (m_DataSource == null) {
+            m_DataSource = buildDataSource();
         }
-        return gDataSource;
+        return m_DataSource;
     }
 
     public static String buildConnectionString() {
@@ -39,7 +48,7 @@ public class PeptideAtlas {
     }
 
 
-    private static DataSource buildDataSource() {
+    private  DataSource buildDataSource() {
         try {
             // Load the SQLServerDriver class, build the
             // connection string, and get a connection
@@ -56,7 +65,7 @@ public class PeptideAtlas {
 
 
 
-    public static Connection getPeptideAtlasConnection() {
+    public  Connection getPeptideAtlasConnection() {
         try {
             return getDataSource().getConnection();
         }
@@ -66,12 +75,12 @@ public class PeptideAtlas {
         }
     }
 
-    public static IPolypeptide[] getPeptides(IProtein protein) {
+    public   IPolypeptide[] getPeptides(IProtein protein) {
           return getPeptides(protein, CURRENT_ATLAS_BUILD);
       }
 
 
-    public static IPolypeptide[] getPeptides(IProtein protein, int peptideAtlasBuild) {
+    public   IPolypeptide[] getPeptides(IProtein protein, int peptideAtlasBuild) {
         String[] peptideStrings = getPeptides(protein.getId(),peptideAtlasBuild);
         List<IPolypeptide> holder = new ArrayList<IPolypeptide>();
         for (int i = 0; i < peptideStrings.length; i++) {
@@ -85,11 +94,11 @@ public class PeptideAtlas {
         return ret;
     }
 
-    public static String[] getPeptides(String protein_id) {
+    public   String[] getPeptides(String protein_id) {
         return getPeptides(protein_id, CURRENT_ATLAS_BUILD);
     }
 
-    public static String[] getPeptides(String protein_id, int peptideAtlasBuild) {
+    public   String[] getPeptides(String protein_id, int peptideAtlasBuild) {
 
         try {
             Connection con = getPeptideAtlasConnection();
@@ -128,8 +137,48 @@ public class PeptideAtlas {
         }
     }
 
-    protected static String[] lookUpProteinIds() throws SQLException {
-        Connection con = PeptideAtlas.getPeptideAtlasConnection();
+
+    public IProtein[] lookUpProteins() {
+        try {
+            Connection con =  getPeptideAtlasConnection();
+
+
+            // Create and execute an SQL statement that returns some data.
+            String SQL = "select  bs.biosequence_name, bs.biosequence_seq\n" +
+                    "from PeptideAtlas.dbo.biosequence bs\n" +
+                    "join PeptideAtlas.dbo.protein_identification pid\n" +
+                    "on pid.biosequence_id = bs.biosequence_id\n" +
+                    "where pid.atlas_build_id =" + PeptideAtlas.CURRENT_ATLAS_BUILD + "\n" +
+                    "and (bs.biosequence_name like '______'\n" +
+                    "    or bs.biosequence_name like '______-%')";
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(SQL);
+
+            List<IProtein> holder = new ArrayList<IProtein>();
+            // Iterate through the data in the result set and display it.
+            while (rs.next()) {
+                String id = rs.getString(1);
+                String sequence = rs.getString(2);
+                IProtein prot =  Protein.buildProtein(id,id,sequence,"");
+                //         System.out.println(rs.getString(1) + " " + rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4)  );
+                holder.add(prot);
+            }
+
+            con.close();
+
+            IProtein[] ids = new IProtein[holder.size()];
+            holder.toArray(ids);
+            return ids;
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
+
+
+    protected   String[] lookUpProteinIds() throws SQLException {
+        Connection con =  getPeptideAtlasConnection();
 
 
         // Create and execute an SQL statement that returns some data.
@@ -159,7 +208,7 @@ public class PeptideAtlas {
 
     public static final String PEPTIDE_ID_FILE_NAME = "PeptideAtlasIds" + CURRENT_ATLAS_BUILD + ".txt";
 
-    public static String[] getProteinIds() {
+    public   String[] getProteinIds() {
         File f = new File(PEPTIDE_ID_FILE_NAME);
         if (f.exists())
             return FileUtilities.readInLines(f);
