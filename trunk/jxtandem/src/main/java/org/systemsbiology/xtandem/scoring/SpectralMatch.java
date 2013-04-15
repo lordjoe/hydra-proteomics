@@ -169,12 +169,16 @@ public class SpectralMatch implements ISpectralMatch, Comparable<ISpectralMatch>
     @Override
     public void serializeAsString(final IXMLAppender adder) {
         IPolypeptide pp = getPeptide();
+        boolean isDecoy = pp.isDecoy();
         adder.openTag("match");
-        adder.appendAttribute("peak", pp.toString());  // include modifications
+        String pps = pp.toString();
+        if(isDecoy && pps.startsWith("DECOY_"))
+            pps = pps.substring("DECOY_".length()) ; // drop decoy from string
+        adder.appendAttribute("peak", pps);  // include modifications
         adder.appendAttribute("score", getScore());
         adder.appendAttribute("hyperscore", getScore());
         adder.appendAttribute("raw_score", getRawScore());
-        if(pp.isDecoy())
+        if(isDecoy)
             adder.appendAttribute("decoy", "yes");
         adder.endTag();
         adder.cr();

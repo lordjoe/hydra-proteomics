@@ -14,6 +14,11 @@ public class ProteinPosition implements IProteinPosition {
     public static final String TAG = "ProteinPosition";
     public static final String SERIALIZATION_SEPARATOR = "|";
 
+
+    public static IProteinPosition asDecoy(IPolypeptide peop,ProteinPosition pp)
+    {
+         return new  ProteinPosition(pp, peop,true);
+    }
     /**
      * give a sub peptide of the original peptide at offset build the new position objects
      *
@@ -53,14 +58,29 @@ public class ProteinPosition implements IProteinPosition {
     private final FastaAminoAcid m_Before;
     private final FastaAminoAcid m_After;
     private final int m_StartPosition;
+    private final boolean m_Decoy;
 
-      public ProteinPosition(final String pProtein, final IPolypeptide pPeptide, final FastaAminoAcid pBefore, final FastaAminoAcid pAfter, final int pStartPosition) {
+    public ProteinPosition(final String pProtein, final IPolypeptide pPeptide, final FastaAminoAcid pBefore, final FastaAminoAcid pAfter, final int pStartPosition) {
         m_Protein = XTandemUtilities.conditionProteinLabel(pProtein);
         m_Peptide = pPeptide;
         m_Before = pBefore;
         m_After = pAfter;
         m_StartPosition = pStartPosition;
+        m_Decoy = false;
     }
+
+
+    private ProteinPosition(ProteinPosition pp,IPolypeptide ppx,boolean decoy) {
+        m_Protein = "DECOY_" + pp.getProtein() ;
+        m_Peptide = ppx;
+        m_Before = null;
+        m_After = null;
+        m_StartPosition = pp.getStartPosition();
+        if(!decoy)
+            throw new IllegalArgumentException("This constructor is only toe making decoys");
+        m_Decoy = decoy;
+    }
+
 
 
     /**
@@ -86,6 +106,7 @@ public class ProteinPosition implements IProteinPosition {
         else
             m_After = FastaAminoAcid.asAminoAcidOrNull(oldSequence.charAt(newSequence.length()));
         m_StartPosition = oldpos.getStartPosition() + offset;
+        m_Decoy = false;
     }
 
     /**
@@ -103,6 +124,7 @@ public class ProteinPosition implements IProteinPosition {
         m_After = endpos.getAfter();
 
         m_StartPosition = startPos.getStartPosition();
+        m_Decoy = false;
     }
 
     public ProteinPosition(final IPolypeptide pPeptide, String str) {
@@ -127,6 +149,7 @@ public class ProteinPosition implements IProteinPosition {
             throw new RuntimeException(e);
 
         }
+        m_Decoy = false;
     }
 
 
@@ -137,12 +160,13 @@ public class ProteinPosition implements IProteinPosition {
      */
     public ProteinPosition(IProtein prot) {
         String id = prot.getId();
-   //     String id = prot.getAnnotation();
+        //     String id = prot.getAnnotation();
         m_Protein = XTandemUtilities.conditionProteinLabel(id);
         m_Peptide = prot;
         m_Before = null;
         m_After = null;
         m_StartPosition = 0;
+        m_Decoy = false;
     }
 
     @Override
@@ -152,14 +176,15 @@ public class ProteinPosition implements IProteinPosition {
 
     /**
      * unique id - descr up to first space
+     *
      * @return
      */
     @Override
     public String getProteinId() {
-        if(m_Protein != null) {
+        if (m_Protein != null) {
             int index = m_Protein.indexOf(" ");
-            if(index > -1)
-                return m_Protein.substring(0,index);
+            if (index > -1)
+                return m_Protein.substring(0, index);
         }
         return m_Protein;
     }
@@ -245,7 +270,7 @@ public class ProteinPosition implements IProteinPosition {
      * make a form suitable to
      * 1) reconstruct the original given access to starting conditions
      * 2) serialize
-      *
+     *
      * @param adder !null where to put the data
      */
     public void serializeAsString(IXMLAppender adder) {
