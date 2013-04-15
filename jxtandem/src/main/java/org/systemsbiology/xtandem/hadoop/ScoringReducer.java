@@ -69,11 +69,18 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
     private PrintWriter m_LogJamSpectra;
     private int m_Notifications;
     private Set<PeptideModification> m_Modifications;
-
+    private boolean m_CreateDecoyPeptides;
 
     public ScoringReducer() {
     }
 
+    public boolean isCreateDecoyPeptides() {
+        return m_CreateDecoyPeptides;
+    }
+
+    public void setCreateDecoyPeptides(boolean createDecoyPeptides) {
+        m_CreateDecoyPeptides = createDecoyPeptides;
+    }
 
     /**
      * notification to keep job running during long scoring
@@ -102,6 +109,11 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
 
         HadoopTandemMain application = getApplication();
         m_Taxonomy = application.getTaxonomy();
+
+        boolean makeDecoys = application.getBooleanParameter(XTandemUtilities.CREATE_DECOY_PEPTIDES_PROPERTY,false);
+        setCreateDecoyPeptides(makeDecoys);
+
+
 
         // Special code for logjam
         if (USING_LOGJAM) {
@@ -221,6 +233,10 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         ElapsedTimer et = new ElapsedTimer();
         try {
             IPolypeptide[] pps = getPeptidesOfExactMass(interval);
+
+            if(isCreateDecoyPeptides())   {
+                pps = addDecoyPeptides(pps);
+            }
 
             pps = filterPeptides(pps); // drop non-complient peptides
 //            pps = interval.filterPeptideList(pps);  // we may not use all peptides depending on the size
@@ -353,6 +369,22 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
 
         }
 
+    }
+
+    /**
+     * add decoy peptides
+     * @param pps
+     * @return
+     */
+    protected IPolypeptide[] addDecoyPeptides(IPolypeptide[] pps) {
+      IPolypeptide[] ret = new IPolypeptide[pps.length * 2];
+        for (int i = 0; i < pps.length; i++) {
+            IPolypeptide pp = pps[i];
+            ret[ 2 * i]  = pp;
+            ret[ 2 * i + 1] = pp.asDecoy();
+
+        }
+        return ret;
     }
 
     protected IPolypeptide[] filterPeptides(final IPolypeptide[] pPps) {

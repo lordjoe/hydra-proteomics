@@ -31,7 +31,7 @@ public class MatchScoreHandler extends AbstractElementSaxHandler<SpectralMatch> 
     private double m_RawScore;
     private SpectralPeakUsage m_Usage;
     private IPolypeptide m_Peptide;
-    private List<IProteinPosition> m_Positions = new ArrayList<IProteinPosition>();
+      private List<IProteinPosition> m_Positions = new ArrayList<IProteinPosition>();
 
     private final IonUseScore m_IonScore = new IonUseScore();
 
@@ -50,6 +50,8 @@ public class MatchScoreHandler extends AbstractElementSaxHandler<SpectralMatch> 
     public String getPeptideId() {
         return m_PeptideId;
     }
+
+
 
     public void setPeptideId(final String pPeptideId) {
         if (m_Peptide != null || m_PeptideId != null)
@@ -131,7 +133,8 @@ public class MatchScoreHandler extends AbstractElementSaxHandler<SpectralMatch> 
         setRawScore(XTandemSaxUtilities.getRequiredDoubleAttribute("raw_score", attr));
         setHyperScore(XTandemSaxUtilities.getRequiredDoubleAttribute("hyperscore", attr));
         boolean decoy = XTandemSaxUtilities.getBooleanAttribute("decoy", attr, false);
-        setDecoy(decoy);
+        if(decoy)
+            setDecoy(decoy);
         return;
     }
 

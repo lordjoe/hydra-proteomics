@@ -22,6 +22,12 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         return sb.toString();
     }
 
+
+    /**
+     * make a decoy by reversing a non-decoy polypaptide
+     * @param p
+     * @return
+     */
     public static IPolypeptide asDecoy(IPolypeptide p) {
         if (p.isDecoy())
             return p;
@@ -30,12 +36,30 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
     }
 
     /**
+     * make protein positions for decoy peptides
+     * @param pps normal peptide positions
+     * @return array of one position marked as a decoy
+     */
+    public static IProteinPosition[] asDecoyPositions(IPolypeptide pp,IProteinPosition[] pps)
+    {
+         if(pps == null || pps.length == 0)
+             return null;
+        IProteinPosition[] ret = {  ProteinPosition.asDecoy(pp,(ProteinPosition)pps[0]) };
+        return ret;
+    }
+
+    /**
      * used
      */
     private static class DecoyPolyPeptide extends Polypeptide implements IDecoyPeptide {
         private DecoyPolyPeptide(IPolypeptide pp) {
             super(getReversedSequence(pp));
+            IProteinPosition[] pps = pp.getProteinPositions();
+            setContainedInProteins(asDecoyPositions(this, pps));
         }
+        private DecoyPolyPeptide(String sequence) {
+             super(sequence,0);
+         }
 
         @Override
         public IPolypeptide asDecoy() {
@@ -92,6 +116,20 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         ret.setMissedCleavages(PeptideBondDigester.getDefaultDigester().probableNumberMissedCleavages(ret));
         return ret;
     }
+
+    /**
+     * this is useful hwen reading deecoys from XML
+     * @param sequence !null sequence - this is already reversed
+     * @return
+     */
+    public static IPolypeptide asAlreadyDecoy(String s) {
+        s = s.trim();
+        if (s.contains("["))
+            return ModifiedPolypeptide.asAlreadyDecoy(s);
+        else
+            return new DecoyPolyPeptide(s);
+     }
+
 
     private double m_Mass;
     private double m_MatchingMass;

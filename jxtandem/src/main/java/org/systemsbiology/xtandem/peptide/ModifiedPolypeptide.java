@@ -20,6 +20,25 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
 
 
     /**
+     * this is useful hwen reading deecoys from XML
+     *
+     * @param sequence !null sequence - this is already reversed and may be modified
+     * @return
+     */
+    public static IPolypeptide asAlreadyDecoy(String sequence) {
+        IPolypeptide pp = fromModifiedString(sequence);
+        if (pp instanceof IModifiedPeptide)   {
+            ModifiedDecoyPolyPeptide ret = new ModifiedDecoyPolyPeptide(pp.getSequence(), 0, ((IModifiedPeptide) pp).getModifications());
+
+            return ret;
+
+        }
+         else
+            return pp;
+    }
+
+
+    /**
      * used  to create decoys
      */
     private static class ModifiedDecoyPolyPeptide extends ModifiedPolypeptide implements IDecoyPeptide {
@@ -29,7 +48,10 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
 
         private ModifiedDecoyPolyPeptide(ModifiedPolypeptide pp) {
             this(getReversedSequence(pp), pp.getMissedCleavages(), Util.invert(pp.getModifications()));
+                   setContainedInProteins(asDecoyPositions( this,pp.getProteinPositions()));
+
         }
+
 
         @Override
         public IPolypeptide asDecoy() {
