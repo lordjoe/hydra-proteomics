@@ -39,11 +39,27 @@ public class HadoopUtilities {
     public static final String REPORT_KEY = SYSBIO_KEY_BASE + ".reportfile"; // "Report";
     public static final int IN_POSITION_START = 4;
     public static final String JAR_PROPERTY = "org.systemsbiology.tandem.hadoop.PrebuiltJar";
+    public static final String NUMBER_REMEMBERED_MATCHES ="org.systemsbiology.numberRememberedMatches";
 
     public static final int DEFAULT_REDUCE_TASKS = 14;
     // in development to speed up
     public static String gReuseJar; //"Mar231041_0.jar";   //  null; //
 
+
+    public static final int DEFAULT_CARRIED_MATCHES = 8;
+    public static int  gNumberCarriedMatches = DEFAULT_CARRIED_MATCHES;
+
+    /**
+     * how many matches including the best are retained
+     * @return
+     */
+    public static int getNumberCarriedMatches() {
+        return gNumberCarriedMatches;
+    }
+
+    public static void setNumberCarriedMatches(int numberCarriedMatches) {
+        gNumberCarriedMatches = numberCarriedMatches;
+    }
 
     private static Properties gRemoteProperties = new Properties();
 

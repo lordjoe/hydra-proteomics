@@ -4,10 +4,12 @@ import com.lordjoe.utilities.*;
 import org.apache.commons.dbcp.*;
 import org.apache.commons.pool.*;
 import org.apache.commons.pool.impl.*;
+import org.biojava.bio.program.formats.*;
 import org.biojava.bio.seq.*;
 import org.springframework.dao.*;
 import org.springframework.jdbc.core.simple.*;
 import org.systemsbiology.uniprot.*;
+import org.systemsbiology.xtandem.fragmentation.*;
 import org.systemsbiology.xtandem.peptide.*;
 
 import javax.sql.*;
@@ -57,7 +59,8 @@ public class SpaghettiDatabase {
     public static final String[] TABLES =
             {
                     "proteins",
-                      /*
+                    "models",
+                       /*
                     "average_mz_to_fragments",
                     "mono_mz_to_fragments",
                     "fragment_protein",
@@ -79,16 +82,18 @@ public class SpaghettiDatabase {
                             "  id varchar(32)   NOT NULL , " +
                             "  annotation varchar(767) NOT NULL, " +
                             "  sequence text NOT NULL, " +
-                            "  PRIMARY KEY (id) " +
+                              "  PRIMARY KEY (id) " +
                             ");  ",
-                    /*
-                    "CREATE TABLE  IF NOT EXISTS `average_mz_to_fragments` (\n" +
-                            "  `mz` int(11) NOT NULL,\n" +
-                            "  `sequence` varchar(" + MAXIMUM_PROTEIN_SIZE + ") NOT NULL,\n" +
-                            "  `real_mass` double default NULL,\n" +
-                            "  `missed_cleavages` int(11) DEFAULT NULL,\n" +
-                            "  PRIMARY KEY  (`mz`,`sequence`)\n" +
+                    "IF NOT EXISTS (SELECT * FROM sysobjects WHERE id = object_id( '[dbo].[models]')\n" +
+                                                "AND OBJECTPROPERTY(id,  'IsUserTable') = 1)" +
+                     "CREATE TABLE   models  (\n" +
+                             "  id varchar(32)   NOT NULL , " +
+                              "   models  varchar(200)  ,\n" +
+                              "   best_model  varchar(20),\n" +
+                            "  PRIMARY KEY  (  id ),\n" +
+                             " FOREIGN KEY (id) REFERENCES proteins(id) \n" +
                             ")",
+                       /*
                     "CREATE TABLE IF NOT EXISTS `mono_mz_to_fragments`  (\n" +
                             "  `mz` int(11) NOT NULL,\n" +
                             "  `sequence` varchar(" + MAXIMUM_PEPTIDE_SIZE + ") NOT NULL,\n" +
@@ -184,6 +189,24 @@ public class SpaghettiDatabase {
 
         return sb.toString();
     }
+
+    public   void getUniprots(String[] proteins)
+    {
+         for (String prot : proteins) {
+             Uniprot up = Uniprot.getUniprot(prot);
+            if (up != null) {
+                final String x = up.toString();
+                System.out.println(x);
+
+            }
+            else {
+                System.err.println("Cannot find " + prot);
+            }
+        }
+
+    }
+
+
 
     public static DataSource setupDataSource(String connectURI) {
         try {
@@ -387,11 +410,25 @@ public class SpaghettiDatabase {
             String id = rs.getString("ID");
             String sequence = rs.getString("SEQUENCE");
             String annotation = rs.getString("ANNOTATION");
-            IProtein protein = Protein.buildProtein(id, sequence, annotation, "");
-            return protein;
-        }
+            IProtein ret = Protein.buildProtein(id,annotation,sequence,"") ;
+            return ret;
+          }
+     }
 
-    }
+    private static class UniprotRowMapper implements ParameterizedRowMapper<Uniprot> {
+        public Uniprot mapRow(ResultSet rs, int rowNum) throws SQLException {
+            String id = rs.getString("ID");
+            String sequence = rs.getString("SEQUENCE");
+            String models = rs.getString("MODELS");
+            Uniprot ret = new Uniprot(id);
+            Sequence seq = SwissProt.parseSequence(sequence);
+            ret.setSequence(seq);
+            if(models != null && models.length() > 0)  {
+ //               ret.getModels()
+            }
+            return ret;
+          }
+     }
 
     private static void populateProteins(final SpaghettiDatabase pSd, int maxInserts) {
         //     pSd.getTemplate().update("DELETE  from PROTEINS");
@@ -493,7 +530,15 @@ public class SpaghettiDatabase {
 
     public static void main(String[] args) throws Exception {
         SpaghettiDatabase sd = getDatabase();
+        sd.guaranteeTable("models");
+
         PeptideAtlas pa = PeptideAtlas.getDatabase();
+        String[] protids = pa.getProteinIds();
+        sd.getUniprots(protids);
+        if(true)
+            throw new UnsupportedOperationException("Fix This"); // ToDo
+
+
         populateFromPeptideAtlas(  sd,  pa);
         if(true)
             return;
