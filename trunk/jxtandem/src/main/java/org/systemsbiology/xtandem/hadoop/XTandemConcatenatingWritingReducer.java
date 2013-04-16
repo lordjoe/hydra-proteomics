@@ -136,6 +136,12 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
         PeptideModification.setHardCodeModifications(doHardCoded);
 
 
+        int NMatches = application.getIntParameter(JXTandemLauncher.NUMBER_REMEMBERED_MATCHES,XTandemHadoopUtilities.DEFAULT_CARRIED_MATCHES);
+        XTandemHadoopUtilities.setNumberCarriedMatches(NMatches);
+
+
+
+
         String muliple = conf.get(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY);
         m_UseMultipleOutputFiles = "yes".equals(muliple);
         if (m_UseMultipleOutputFiles) {

@@ -1,7 +1,7 @@
 package org.systemsbiology.xtandem.scoring;
 
 import   com.lordjoe.utilities.*;
-import org.systemsbiology.hadoop.*;
+ import org.systemsbiology.xtandem.hadoop.*;
 
 import java.util.*;
 
@@ -32,7 +32,7 @@ public class BoundedMatchSet extends BoundedTreeSet<ISpectralMatch> {
       }
 
     public BoundedMatchSet( ) {
-         super(COOMPARER, HadoopUtilities.getNumberCarriedMatches());
+         super(COOMPARER, XTandemHadoopUtilities.getNumberCarriedMatches());
      }
     public BoundedMatchSet(Collection<? extends ISpectralMatch> col) {
          this();

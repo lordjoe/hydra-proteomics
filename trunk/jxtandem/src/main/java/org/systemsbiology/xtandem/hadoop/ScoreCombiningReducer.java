@@ -47,6 +47,11 @@ public class ScoreCombiningReducer extends AbstractTandemReducer {
 
         boolean doHardCoded = application.getBooleanParameter(JXTandemLauncher.HARDCODED_MODIFICATIONS_PROPERTY,true);
         PeptideModification.setHardCodeModifications(doHardCoded);
+
+
+        int NMatches = application.getIntParameter(JXTandemLauncher.NUMBER_REMEMBERED_MATCHES,XTandemHadoopUtilities.DEFAULT_CARRIED_MATCHES);
+        XTandemHadoopUtilities.setNumberCarriedMatches(NMatches);
+
     }
     
     private boolean gPrintThisLine = false;
