@@ -5,6 +5,7 @@ import org.apache.hadoop.io.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.mgf.*;
+import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.pepxml.*;
 import org.systemsbiology.xtandem.reporting.*;
 import org.systemsbiology.xtandem.scoring.*;
@@ -130,6 +131,9 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
         if ("yes".equals(application.getParameter(JXTandemLauncher.TURN_ON_SCAN_OUTPUT_PROPERTY)))
             setWriteScans(true);
 
+
+        boolean doHardCoded = application.getBooleanParameter(JXTandemLauncher.HARDCODED_MODIFICATIONS_PROPERTY,true);
+        PeptideModification.setHardCodeModifications(doHardCoded);
 
 
         String muliple = conf.get(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY);

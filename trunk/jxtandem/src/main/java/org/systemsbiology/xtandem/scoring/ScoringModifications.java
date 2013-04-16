@@ -51,6 +51,7 @@ public class ScoringModifications {
             holder.addAll(Arrays.asList(peptideModifications));
         }
         boolean doHardCoded = app.getBooleanParameter(JXTandemLauncher.HARDCODED_MODIFICATIONS_PROPERTY,true);
+        PeptideModification.setHardCodeModifications(doHardCoded);
         if(doHardCoded)    {
             holder.add(PeptideModification.getCysteinModification());
         }

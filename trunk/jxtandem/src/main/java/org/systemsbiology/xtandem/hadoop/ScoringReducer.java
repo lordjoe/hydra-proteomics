@@ -113,6 +113,11 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         boolean makeDecoys = application.getBooleanParameter(XTandemUtilities.CREATE_DECOY_PEPTIDES_PROPERTY,false);
         setCreateDecoyPeptides(makeDecoys);
 
+        boolean doHardCoded = application.getBooleanParameter(JXTandemLauncher.HARDCODED_MODIFICATIONS_PROPERTY,true);
+        PeptideModification.setHardCodeModifications(doHardCoded);
+
+        int NMatches = application.getIntParameter(HadoopUtilities.NUMBER_REMEMBERED_MATCHES,HadoopUtilities.DEFAULT_CARRIED_MATCHES);
+        HadoopUtilities.setNumberCarriedMatches(NMatches);
 
 
         // Special code for logjam
