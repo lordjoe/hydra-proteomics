@@ -4,6 +4,7 @@ import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.util.*;
 import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.scoring.*;
 import org.systemsbiology.xtandem.testing.*;
 import org.apache.hadoop.util.VersionInfo;
@@ -67,6 +68,11 @@ public class ScanTagMapper extends AbstractTandemMapper<Writable> {
         app.loadScoring();
         m_DatabaseSizes = XTandemHadoopUtilities.readDatabaseSizes(app);
         m_MaxScoredPeptides = XTandemHadoopUtilities.getMaxScoredPeptides(context.getConfiguration());
+
+
+        boolean doHardCoded = app.getBooleanParameter(JXTandemLauncher.HARDCODED_MODIFICATIONS_PROPERTY,true);
+        PeptideModification.setHardCodeModifications(doHardCoded);
+
 
         // sneaky trick to extract the version
         String version = VersionInfo.getVersion();

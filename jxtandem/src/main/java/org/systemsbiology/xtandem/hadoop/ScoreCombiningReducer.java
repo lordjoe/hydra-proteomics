@@ -3,6 +3,7 @@ package org.systemsbiology.xtandem.hadoop;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
 import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.sax.*;
 import org.systemsbiology.xtandem.scoring.*;
 
@@ -43,6 +44,9 @@ public class ScoreCombiningReducer extends AbstractTandemReducer {
         Configuration conf = context.getConfiguration();
 
         HadoopTandemMain application = getApplication();
+
+        boolean doHardCoded = application.getBooleanParameter(JXTandemLauncher.HARDCODED_MODIFICATIONS_PROPERTY,true);
+        PeptideModification.setHardCodeModifications(doHardCoded);
     }
     
     private boolean gPrintThisLine = false;

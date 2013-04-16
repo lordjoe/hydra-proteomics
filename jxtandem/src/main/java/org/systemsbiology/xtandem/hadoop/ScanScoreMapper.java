@@ -3,6 +3,7 @@ package org.systemsbiology.xtandem.hadoop;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
 import org.systemsbiology.hadoop.*;
+import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.scoring.*;
 
 import java.io.*;
@@ -30,7 +31,12 @@ public class ScanScoreMapper extends AbstractTandemMapper<Text> {
 
         // m_Factory.setValidationStringency(SAMFileReader.ValidationStringency.LENIENT)
 
-          getApplication().loadTaxonomy();
+        HadoopTandemMain application = getApplication();
+        application.loadTaxonomy();
+
+
+        boolean doHardCoded = application.getBooleanParameter(JXTandemLauncher.HARDCODED_MODIFICATIONS_PROPERTY,true);
+        PeptideModification.setHardCodeModifications(doHardCoded);
 
     }
 
