@@ -40,6 +40,18 @@ public enum FastaAminoAcid {
 
     ;
 
+    public static final Random RND = new Random();
+    public static final FastaAminoAcid[] UNIQUE_AMINO_ACIDS = { A,C,D,E,F,G,H,I,K,L,M,N,P,Q,R,S,T,V,W,Y };
+
+    /**
+     * choose a random unique Amino acid - this is used primarily for testing
+     * @return
+     */
+    public static FastaAminoAcid randomAminoAcid() {
+        return FastaAminoAcid.UNIQUE_AMINO_ACIDS[RND.nextInt(FastaAminoAcid.UNIQUE_AMINO_ACIDS.length)];
+    }
+
+
     public static final double MAX_HYDROPHOBICITY = 100;
     public static final double MIN_HYDROPHOBICITY = -46;
 
@@ -525,4 +537,5 @@ public enum FastaAminoAcid {
             return "X";
         return super.toString();
     }
+
 }

@@ -18,6 +18,22 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
     public static final int DEFAULT_MAX_MODIFICATIONS = 2;
     private static int gMaxPeptideModifications = DEFAULT_MAX_MODIFICATIONS;
 
+    public static final Random RND = new Random();
+
+    public static IModifiedPeptide randomModifiedPeptide() {
+        IPolypeptide pp = Polypeptide.randomPeptide();
+        final String sequence = pp.getSequence();
+        PeptideModification[] mods = new PeptideModification[sequence.length()];
+        int nods = 1 + RND.nextInt(2);
+        for (int i = 0; i < nods; i++) {
+            int index = RND.nextInt(mods.length);
+            mods[index] = PeptideModification.randomModification();
+
+        }
+        ModifiedPolypeptide ret = new ModifiedPolypeptide(sequence, 0, mods);
+        ret.setMissedCleavages(PeptideBondDigester.getDefaultDigester().probableNumberMissedCleavages(ret));
+        return ret;
+    }
 
     /**
      * this is useful hwen reading deecoys from XML
@@ -27,13 +43,13 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
      */
     public static IPolypeptide asAlreadyDecoy(String sequence) {
         IPolypeptide pp = fromModifiedString(sequence);
-        if (pp instanceof IModifiedPeptide)   {
+        if (pp instanceof IModifiedPeptide) {
             ModifiedDecoyPolyPeptide ret = new ModifiedDecoyPolyPeptide(pp.getSequence(), 0, ((IModifiedPeptide) pp).getModifications());
 
             return ret;
 
         }
-         else
+        else
             return pp;
     }
 
@@ -48,7 +64,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
 
         private ModifiedDecoyPolyPeptide(ModifiedPolypeptide pp) {
             this(getReversedSequence(pp), pp.getMissedCleavages(), Util.invert(pp.getModifications()));
-                   setContainedInProteins(asDecoyPositions( this,pp.getProteinPositions()));
+            setContainedInProteins(asDecoyPositions(this, pp.getProteinPositions()));
 
         }
 

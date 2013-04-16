@@ -12,6 +12,19 @@ import java.util.*;
 public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
     public static final Polypeptide[] EMPTY_ARRAY = {};
 
+    public static final Random RND = new Random();
+
+    public static IPolypeptide randomPeptide()
+    {
+        int length = 6 + RND.nextInt(20) ;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <  length; i++) {
+            sb.append(FastaAminoAcid.randomAminoAcid().toString());
+
+        }
+        return new Polypeptide(sb.toString()) ;
+    }
+
     public static final Comparator<IPolypeptide> SEQUENCE_COMPARATOR = new SequenceComparator();
 
     public static String getReversedSequence(IPolypeptide p) {
@@ -42,9 +55,11 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
      */
     public static IProteinPosition[] asDecoyPositions(IPolypeptide pp,IProteinPosition[] pps)
     {
-         if(pps == null || pps.length == 0)
-             return null;
-        IProteinPosition[] ret = {  ProteinPosition.asDecoy(pp,(ProteinPosition)pps[0]) };
+        if(pps == null  )
+              return null;
+        if( pps.length == 0)
+              return pps;
+          IProteinPosition[] ret = {  ProteinPosition.asDecoy(pp,(ProteinPosition)pps[0]) };
         return ret;
     }
 
@@ -55,7 +70,8 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         private DecoyPolyPeptide(IPolypeptide pp) {
             super(getReversedSequence(pp));
             IProteinPosition[] pps = pp.getProteinPositions();
-            setContainedInProteins(asDecoyPositions(this, pps));
+            if(pps != null )
+                setContainedInProteins(asDecoyPositions(this, pps));
         }
         private DecoyPolyPeptide(String sequence) {
              super(sequence,0);
