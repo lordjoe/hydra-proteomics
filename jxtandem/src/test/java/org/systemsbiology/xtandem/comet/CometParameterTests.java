@@ -318,8 +318,11 @@ public class CometParameterTests {
         return TEST_PARAMS_FILE.split("\n");
     }
 
+    /**
+     *
+     */
     @Test
-    public void testReadXTandemReport() {
+    public void testCometParamsReport() {
         String[] lines = getTestParameters();
         ISetableParameterHolder hdr = new TestMain();
         CometParameterUtilities.parseParameters(hdr, lines);
