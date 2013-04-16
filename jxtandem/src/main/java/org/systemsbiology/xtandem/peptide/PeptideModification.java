@@ -16,6 +16,21 @@ public class PeptideModification implements Comparable<PeptideModification> {
 
     private static boolean gHardCodeModifications = true;
 
+    public static final Random RND = new Random();
+
+
+    public static final int MAX_RANDOM_MASS_CHANGE = 20;
+
+    /**
+     * used by test code
+     * @return
+     */
+    public static PeptideModification randomModification()
+    {
+        double randomMassChange = RND.nextDouble() * MAX_RANDOM_MASS_CHANGE;
+        return new PeptideModification(FastaAminoAcid.randomAminoAcid(),randomMassChange);
+    }
+
 
     public static PeptideModification[] selectFixedModifications(PeptideModification[] mods)
     {

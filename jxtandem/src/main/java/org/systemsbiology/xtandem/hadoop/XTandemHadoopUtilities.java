@@ -554,6 +554,23 @@ public class XTandemHadoopUtilities {
     public static final int DEFAULT_MAX_SCORED_PEPTIDES = 30000;
     public static final int DEFAULT_MAX_SPLIT_SIZE = 64 * 1024 * 1024;
 
+    public static final int DEFAULT_CARRIED_MATCHES = 8;
+      public static int  gNumberCarriedMatches = DEFAULT_CARRIED_MATCHES;
+
+      /**
+       * how many matches including the best are retained
+       * @return
+       */
+      public static int getNumberCarriedMatches() {
+          return gNumberCarriedMatches;
+      }
+
+      public static void setNumberCarriedMatches(int numberCarriedMatches) {
+          gNumberCarriedMatches = numberCarriedMatches;
+      }
+
+
+
     private static int gMaxScoredPeptides = DEFAULT_MAX_SCORED_PEPTIDES;
     private static int gMaxSplitSize = DEFAULT_MAX_SPLIT_SIZE;
 

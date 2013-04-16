@@ -38,6 +38,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     public static final String DO_NOT_COPY_FILES_PROPERTY = "org.systemsbiology.xtandem.DoNotCopyFilesToLocalMachine";
     public static final String HARDCODED_MODIFICATIONS_PROPERTY = "org.systemsbiology.xtandem.HardCodeModifications";
     public static final String INPUT_FILES_PROPERTY = "org.systemsbiology.xtandem.InputFiles";
+    public static final String NUMBER_REMEMBERED_MATCHES ="org.systemsbiology.numberRememberedMatches";
+
     public static final int MAX_DISPLAY_LENGTH = 4 * 1000 * 1000;
     public static final int NUMBER_STAGES = 3;
     public static final boolean BUILD_DATABASE = true;
