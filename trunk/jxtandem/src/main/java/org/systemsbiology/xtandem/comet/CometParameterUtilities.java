@@ -13,11 +13,21 @@ import java.io.*;
 public class CometParameterUtilities {
     public static final CometParameterUtilities[] EMPTY_ARRAY = {};
 
+    /**
+     * read a comet.params file
+     * @param hdr
+     * @param is
+     */
     public static void parseParameters(ISetableParameterHolder hdr,InputStream is) {
         String[] strings = FileUtilities.readInLines(new InputStreamReader(is));
         parseParameters(hdr, strings);
     }
 
+    /**
+     * read a comet.params file
+      * @param hdr
+     * @param strings
+     */
     public static void parseParameters(ISetableParameterHolder hdr, String[] strings) {
         for (int i = 0; i < strings.length; i++) {
             String line = strings[i];

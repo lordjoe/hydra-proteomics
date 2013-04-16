@@ -14,6 +14,20 @@ import java.util.*;
 public class PeptideModification implements Comparable<PeptideModification> {
     public static final PeptideModification[] EMPTY_ARRAY = {};
 
+    public static final Random RND = new Random();
+
+    public static final int MAX_RANDOM_MASS_CHANGE = 20;
+
+    /**
+     * used by test code
+     * @return
+     */
+    public static PeptideModification randomModification()
+    {
+        double randomMassChange = RND.nextDouble() * MAX_RANDOM_MASS_CHANGE;
+        return new PeptideModification(FastaAminoAcid.randomAminoAcid(),randomMassChange);
+    }
+
     private static boolean gHardCodeModifications = false;
 
 
@@ -370,6 +384,20 @@ public class PeptideModification implements Comparable<PeptideModification> {
     public double getMassStepChange() {
         int value = (int) (1000 * (getMassChange() + 0.0005));
         return value / 1000.0;
+    }
+
+    public boolean equivalent(final PeptideModification o)
+    {
+        if(o == this)
+            return true;
+        if(o.getAminoAcid() != getAminoAcid())
+            return false;
+        if(o.getRestriction() != getRestriction())
+            return false;
+        if(Math.abs(o.getMassChange() -getMassChange()) > 0.001)
+            return false;
+
+        return true;
     }
 
     @Override
