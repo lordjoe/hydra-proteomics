@@ -1,6 +1,9 @@
 package org.systemsbiology.xtandem;
 
+import org.apache.hadoop.mapreduce.*;
+import org.systemsbiology.xtandem.hadoop.*;
 import org.systemsbiology.xtandem.ionization.*;
+import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.scoring.*;
 import org.systemsbiology.xtandem.testing.*;
 
@@ -419,6 +422,245 @@ public abstract  class AbstractScoringAlgorithm implements ITandemScoringAlgorit
      */
     @Override
     public abstract double scoreSpectrum(final IMeasuredSpectrum measured, final ITheoreticalSpectrum theory, final Object... otherdata);
+
+
+    /**
+     * an algorithm may choose not to score a petide - for example high resolution algorithms may
+     * choose not to score ppetides too far away
+     * @param ts !null peptide spectrum
+     * @param pScan  !null scan to score
+     * @return true if scoring is desired
+     */
+    @Override
+    public boolean isTheoreticalSpectrumScored(ITheoreticalSpectrum ts,IMeasuredSpectrum pScan)
+    {
+        return true; // override for better filtering
+    }
+
+    /**
+      * actually do the scorring
+      * @param scorer  !null scorrer
+      * @param scan  !null scan to score
+      * @param pPps  !null set of peptides ot score
+      * @return !null score
+      */
+     public IScoredScan handleScan(final Scorer scorer,  final RawPeptideScan scan, final IPolypeptide[] pPps,TaskInputOutputContext context)
+     {
+         String id = scan.getId();
+          OriginatingScoredScan scoring = new OriginatingScoredScan(scan);
+          scoring.setAlgorithm( getName());
+          IonUseCounter counter = new IonUseCounter();
+          final ITheoreticalSpectrumSet[] tss = scorer.getAllSpectra();
+
+          int numberDotProducts = scoreScan(scorer,   counter, tss, scoring);
+         context.getCounter("Performance", "TotalDotProducts").increment(numberDotProducts);
+          return scoring;
+
+     }
+
+    /**
+     * fill bins - by default these are global but they do not have to be
+     * @param peaks
+     */
+    protected void fillSpectrumPeaks(final IMeasuredSpectrum pScan) {
+        ISpectrumPeak[] peaks = pScan.getPeaks();
+        Arrays.fill(Scorer.PEAKS_BY_MASS, 0);
+        // build list of peaks as ints  with the index being the imass
+        for (int i = 0; i < peaks.length; i++) {
+            ISpectrumPeak peak = peaks[i];
+            int imass = TandemKScoringAlgorithm.massChargeRatioAsInt(peak);
+            Scorer.PEAKS_BY_MASS[imass] += peak.getPeak();
+        }
+    }
+
+    protected int scoreOnePeptide(  final IonUseCounter pCounter, final IScoredScan pConditionedScan, final IMeasuredSpectrum pScan, final double[] pPeaksByMass, final int pPrecursorCharge, final ITheoreticalSpectrumSet pTsSet) {
+        double oldscore = 0;
+        int numberScored = 0;
+
+
+        OriginatingScoredScan conditionedScan = (OriginatingScoredScan) pConditionedScan;
+
+        Map<ScanScoringIdentifier, ITheoreticalIonsScoring> ScoringIons = new HashMap<ScanScoringIdentifier, ITheoreticalIonsScoring>();
+
+
+        final ITheoreticalSpectrum[] spectrums = pTsSet.getSpectra();
+        int numberSpectra = spectrums.length;
+        if (numberSpectra == 0)
+            return 0;
+        String sequence = spectrums[0].getPeptide().getSequence();
+        pCounter.clear();
+        final int maxCharge = pTsSet.getMaxCharge();
+
+        String scanid = pScan.getId();
+
+        DebugDotProduct logDotProductB = null;
+        DebugDotProduct logDotProductY = null;
+
+        SpectralPeakUsage usage = new SpectralPeakUsage();
+        for (int i = 0; i < numberSpectra; i++) {
+            ITheoreticalSpectrum ts = spectrums[i];
+
+            double lowestScoreToAdd = conditionedScan.lowestHyperscoreToAdd();
+
+            final int charge = ts.getCharge();
+            if (pPrecursorCharge != 0 && charge > pPrecursorCharge)
+                continue;
+            //     JXTandemLauncher.logMessage(scanid + "\t" + sequence + "\t" + charge);
+            if (maxCharge <= charge) // if (maxCharge <= charge)  // do NOT score the maximum charge
+                continue;
+
+            if(!isTheoreticalSpectrumScored( ts,  pScan))
+                continue;
+
+            List<DebugMatchPeak> holder = new ArrayList<DebugMatchPeak>();
+
+            // filter the theoretical peaks
+            ITheoreticalSpectrum scoredScan =  buildScoredScan(ts);
+
+            XTandemUtilities.showProgress(i, 10);
+
+            // handleDebugging(pScan, logDotProductB, logDotProductY, ts, scoredScan);
+
+            double dot_product = 0;
+            dot_product =  dot_product(pScan, scoredScan, pCounter, holder, pPeaksByMass, usage);
+
+            if (dot_product == 0)
+                continue; // really nothing further to do
+            oldscore += dot_product;
+            numberScored++;
+
+
+            final IonUseScore useScore1 = new IonUseScore(pCounter);
+            for (DebugMatchPeak peak : holder) {
+                ScanScoringIdentifier key = null;
+
+                switch (peak.getType()) {
+                    case B:
+                        key = new ScanScoringIdentifier(sequence, charge, IonType.B);
+                        if (XTandemDebugging.isDebugging()) {
+                            if (logDotProductB != null)
+                                logDotProductB.addMatchedPeaks(peak);
+                        }
+                        break;
+
+                    case Y:
+                        key = new ScanScoringIdentifier(sequence, charge, IonType.Y);
+                        if (XTandemDebugging.isDebugging()) {
+                            logDotProductY.addMatchedPeaks(peak);
+                        }
+                        break;
+                }
+                TheoreticalIonsScoring tsi = (TheoreticalIonsScoring) ScoringIons.get(key);
+                if (tsi == null) {
+                    tsi = new TheoreticalIonsScoring(key, null);
+                    ScoringIons.put(key, tsi);
+                }
+                tsi.addScoringMass(peak);
+
+
+            }
+            if (XTandemDebugging.isDebugging()) {
+                if (logDotProductB != null)
+                    logDotProductB.setScore(useScore1);
+                logDotProductY.setScore(useScore1);
+            }
+
+
+            if (oldscore == 0)
+                continue;
+
+        }
+
+//        if (LOG_INTERMEDIATE_RESULTS)
+//            XTandemUtilities.breakHere();
+
+        double score =  conditionScore(oldscore, pScan, pTsSet, pCounter);
+        String algorithm =  getName();
+        if (score <= 0)
+            return 0; // nothing to do
+        double hyperscore =  buildHyperscoreScore(score, pScan, pTsSet, pCounter);
+
+        final IonUseScore useScore = new IonUseScore(pCounter);
+
+        ITheoreticalIonsScoring[] ionMatches = ScoringIons.values().toArray(ITheoreticalIonsScoring.EMPTY_ARRAY);
+        IExtendedSpectralMatch match = new ExtendedSpectralMatch(pTsSet.getPeptide(), pScan, score, hyperscore, oldscore,
+                useScore, pTsSet, ionMatches);
+
+        SpectralPeakUsage matchUsage = match.getUsage();
+        matchUsage.addTo(usage); // remember usage
+
+
+        double hyperScore = match.getHyperScore();
+        if (hyperScore > 0) {
+            conditionedScan.addHyperscore(hyperScore);
+            conditionedScan.addSpectralMatch(match);
+        }
+        return numberScored;
+    }
+
+
+
+    /**
+      *
+      * @param scorer
+      * @param sa
+      * @param pCounter
+      * @param pSpectrums
+      * @param pConditionedScan
+      * @return
+      */
+     protected int scoreScan(final Scorer scorer,   final IonUseCounter pCounter, final ITheoreticalSpectrumSet[] pSpectrums, final IScoredScan pConditionedScan) {
+         int numberScoredSpectra = 0;
+         boolean LOG_INTERMEDIATE_RESULTS = false;
+         SpectrumCondition sc = scorer.getSpectrumCondition();
+         IMeasuredSpectrum scan = pConditionedScan.conditionScan(this, sc);
+         if (scan == null)
+             return 0; // not scoring this one
+         if(! canScore(scan))
+             return 0; // not scoring this one
+
+            // NOTE this is totally NOT Thread Safe
+         fillSpectrumPeaks(scan);
+
+ //        DebugDotProduct logDotProductB = null;
+ //        DebugDotProduct logDotProductY = null;
+
+         if (!pConditionedScan.isValid())
+             return 0;
+         String scanid = scan.getId();
+ //        if (scanid.equals("7868"))
+ //            XTandemUtilities.breakHere();
+         int precursorCharge = scan.getPrecursorCharge();
+
+         double testmass = scan.getPrecursorMass();
+         if (pSpectrums.length == 0)
+             return 0; // nothing to do
+         // for debugging isolate one case
+
+         for (int j = 0; j < pSpectrums.length; j++) {
+             ITheoreticalSpectrumSet tsSet = pSpectrums[j];
+             // debugging test
+             IPolypeptide peptide = tsSet.getPeptide();
+             double matching = peptide.getMatchingMass();
+
+
+             if (scorer.isTheoreticalSpectrumScored(pConditionedScan, tsSet)) {
+                 numberScoredSpectra += scoreOnePeptide(  pCounter, pConditionedScan, scan, Scorer.PEAKS_BY_MASS, precursorCharge, tsSet);
+             }
+             else {
+                 // for the moment reiterate the code to find out why not scored
+                 if (XTandemHadoopUtilities.isNotScored(pConditionedScan.getRaw())) {
+                     XTandemUtilities.breakHere();
+                     boolean notDone = scorer.isTheoreticalSpectrumScored(pConditionedScan, tsSet);
+                     ScoringReducer.gNumberNotScored++;
+
+                 }
+             }
+         }
+         return numberScoredSpectra;
+     }
+
+
 
     /**
      * Cheat by rounding mass to the nearest int and limiting to MAX_MASS

@@ -404,7 +404,7 @@ public class ProbIdScoringAlgorithm extends AbstractScoringAlgorithm  {
             int end = Math.min(start + space, numberPeaks);
             normalizePeakRange(myPeaks, start, end);
         }
-        MutableMeasuredSpectrum out = new MutableMeasuredSpectrum(in.getPrecursorCharge(), in.getPrecursorMass(), in.getScanData(), myPeaks);
+        MutableMeasuredSpectrum out = new MutableMeasuredSpectrum(in.getPrecursorCharge(), in.getPrecursorMassChargeRatio(), in.getScanData(), myPeaks);
         return out;
     }
 

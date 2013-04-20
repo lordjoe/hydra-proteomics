@@ -1,6 +1,9 @@
 package org.systemsbiology.xtandem;
 
+import org.apache.hadoop.mapreduce.*;
 import org.systemsbiology.xtandem.ionization.*;
+import org.systemsbiology.xtandem.peptide.*;
+import org.systemsbiology.xtandem.scoring.*;
 
 /**
  * org.systemsbiology.xtandem.ITandemScoringAlgorithm
@@ -56,6 +59,15 @@ public interface ITandemScoringAlgorithm extends IScoringAlgorithm {
     public double getCountFactor(IonUseScore counter);
 
     /**
+     * an algorithm may choose not to score a petide - for example high resolution algorithms may
+     * choose not to score ppetides too far away
+     * @param ts !null peptide spectrum
+     * @param pScan  !null scan to score
+     * @return true if scoring is desired
+     */
+    public boolean isTheoreticalSpectrumScored(ITheoreticalSpectrum ts,IMeasuredSpectrum pScan);
+
+    /**
      * score the two spectra
      *
      * @param measured !null measured spectrum
@@ -63,4 +75,14 @@ public interface ITandemScoringAlgorithm extends IScoringAlgorithm {
      * @return value of the score
      */
     public double scoreSpectrum(IMeasuredSpectrum measured, ITheoreticalSpectrum theory, Object... otherdata);
+
+    /**
+     * actually do the scorring
+     * @param scorer  !null scorrer
+     * @param scan  !null scan to score
+     * @param pPps  !null set of peptides ot score
+     * @return !null score
+     */
+    public IScoredScan handleScan(final Scorer scorer,  final RawPeptideScan scan, final IPolypeptide[] pPps,TaskInputOutputContext context);
+
 }

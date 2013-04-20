@@ -292,9 +292,15 @@ public class Uniprot {
             Sequence sq = getBioJavaSequence(accession);
             if (sq != null)
                 ret.setSequence(sq);
+            BioJavaModel[] allModels = ret.getAllModels();
+            BioJavaModel bestModel = ret.getBestModel();
             return ret;
         }
+        catch (BadAminoAcidException e) {
+            return null;
+        }
         catch (Exception e) {
+            System.out.println("Failed getting accession " + accession);
             throw new RuntimeException(e);
         }
 
@@ -496,13 +502,29 @@ public class Uniprot {
 
     public void setSequence(Sequence sequence) {
         m_Sequence = sequence;
+        int seqlen = m_Sequence.length();
         Feature[] fts = SwissProt.getAnalyzedFeatures(sequence);
         List<Feature> holder = new ArrayList<Feature>();
 
         for (int i = 0; i < fts.length; i++) {
             Feature ft = fts[i];
+            Location location = ft.getLocation();
+            int minLOc = location.getMin();
+            int maxLoc = location.getMax();
+            if(minLOc < 0 || minLOc >= seqlen)
+                continue;
+             if(maxLoc < 0 || maxLoc >= seqlen)
+                 continue;
+
             holder.add(ft);
-            handleFeature(ft);
+            try {
+                handleFeature(ft);
+            }
+            catch (Exception e) {
+                handleFeature(ft);     // for debugging
+                throw new RuntimeException(e);
+
+            }
         }
         m_InterestingFeatures = new Feature[holder.size()];
         holder.toArray(m_InterestingFeatures);
@@ -536,7 +558,7 @@ public class Uniprot {
     private void setFeatureAtLocation(Feature ft, UniprotFeatureType type) {
         Location location = ft.getLocation();
         int min = location.getMin() - 1;
-        int max = location.getMax();
+         int max = location.getMax();
         ProteinAminoAcid[] aminoAcids = getAminoAcids();
         switch (type) {
             case DISULFID:

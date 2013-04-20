@@ -14,6 +14,8 @@ import java.util.*;
 public class MutableMeasuredSpectrum implements IMeasuredSpectrum {
     public static MutableMeasuredSpectrum[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = MutableMeasuredSpectrum.class;
+    public static final double PROTON_MASS = MassCalculator.getDefaultCalculator().calcMass("H");
+
 
     private int m_PrecursorCharge;
     private double m_PrecursorMass;
@@ -34,10 +36,11 @@ public class MutableMeasuredSpectrum implements IMeasuredSpectrum {
         this(0, 0, null, ISpectrumPeak.EMPTY_ARRAY);
     }
 
-    public MutableMeasuredSpectrum(int precursorCharge, double precursorMass, ISpectralScan scan, ISpectrumPeak[] peaks) {
+    public MutableMeasuredSpectrum(int precursorCharge, double precursorMassChargeRatio, ISpectralScan scan, ISpectrumPeak[] peaks) {
         m_Scan = scan;
         m_PrecursorCharge = precursorCharge;
-        m_PrecursorMass = precursorMass;
+        m_PrecursorMassChargeRatio = precursorMassChargeRatio;
+        m_PrecursorMass = m_PrecursorMassChargeRatio * m_PrecursorCharge - PROTON_MASS ;
         // copy array making sure the peaks are ummutable
         setPeaks(peaks);
     }
