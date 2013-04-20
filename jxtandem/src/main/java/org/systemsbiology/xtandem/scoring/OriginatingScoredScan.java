@@ -345,8 +345,13 @@ public class OriginatingScoredScan implements IScoredScan, IAddable<IScoredScan>
 //        return raw.isMassWithinRange(mass);
 //    }
 
+    public static final int ID_LENGTH = 12;
     public String getKey() {
-        return getId() + ":" + this.getCharge();
+        String id = getId();
+        String s = id + ":" + this.getCharge();
+        while(s.length() < ID_LENGTH)
+            s = "0" + s; // this allows better alphabetical sort
+        return s;
     }
 
     /**
@@ -426,6 +431,8 @@ public class OriginatingScoredScan implements IScoredScan, IAddable<IScoredScan>
     }
 
     public IMeasuredSpectrum getNormalizedRawScan() {
+        if(m_NormalizedRawScan == null)
+            m_NormalizedRawScan = getRaw();
         return m_NormalizedRawScan;
     }
 

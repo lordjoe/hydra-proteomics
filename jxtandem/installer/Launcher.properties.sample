@@ -101,6 +101,8 @@ DEFINE_org.systemsbiology.xtandem.MultipleOutputFiles=yes
 DEFINE_java.net.preferIPv4Stack=true
 # binning to use on fragment ions
 DEFINE_comet.fragment_bin_tol=0.03
+# tolerance to mass difference
+DEFINE_comet.mass_tolerance=0.03
 # offset position to start the binning
 DEFINE_comet.fragment_bin_offset=0.00
 #

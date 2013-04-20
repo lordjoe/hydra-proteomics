@@ -926,7 +926,12 @@ public class XTandemUtilities {
 
 
     public static double getMaxPeak(ISpectrum peaks) {
-        return getMaxPeak(peaks.getPeaks());
+        if(peaks == null)
+            return 0;
+        ISpectrumPeak[] pks = peaks.getPeaks();
+        if(pks == null)
+             return 0;
+        return getMaxPeak(pks);
     }
 
     public static double getMaxPeak(ISpectrumPeak[] peaks) {
@@ -942,7 +947,13 @@ public class XTandemUtilities {
 
 
     public static double getSumPeaks(ISpectrum peaks) {
-        return getSumPeaks(peaks.getPeaks());
+         if(peaks == null)
+             return 0;
+
+        ISpectrumPeak[] peaks1 = peaks.getPeaks();
+        if(peaks1 == null)
+             return 0;
+        return getSumPeaks(peaks1);
     }
 
     public static double getSumPeaks(ISpectrumPeak[] peaks) {

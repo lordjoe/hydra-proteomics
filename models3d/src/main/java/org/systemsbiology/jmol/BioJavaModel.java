@@ -111,7 +111,14 @@ public class BioJavaModel {
         for (Iterator<Chain> iterator = chains.iterator(); iterator.hasNext(); ) {
             Chain chn = iterator.next();
             List<Group> groups = chn.getAtomGroups("amino");
-            double fraction = resolveGroups(groups);
+            double fraction = 0;
+            try {
+                fraction = resolveGroups(groups);
+            }
+            catch (Exception e) {
+               fraction = 0; // I guess this did not work
+
+            }
 //            System.out.println(protein.getId() + " matches " +
 //                String.format("%5.3f",fraction) + " of " + protein.getSequenceLength() +
 //                    " on chain " + chn.getChainID()

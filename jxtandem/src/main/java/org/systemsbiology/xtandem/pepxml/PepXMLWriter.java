@@ -265,8 +265,11 @@ public class PepXMLWriter {
         int charge = scan.getCharge();
 
         out.print("      <spectrum_query ");
-        double precursorMass = scan.getRaw().getPrecursorMass();
-        String path = getPath();
+        double precursorMass = scan.getRaw().getPrecursorMass() - XTandemUtilities.getProtonMass();
+        String path = getPath().replace("\\","/");
+        int dirIndex = path.lastIndexOf("/");
+        if(dirIndex > -1)
+            path = path.substring(dirIndex + 1);
          out.print(" spectrum=\"" + path +  "." + idString +"." + idString + "." + charge + "\"");
         out.print(" start_scan=\""   + id + "\" end_scan=\""   + id + "\" ");
         out.print(" precursor_neutral_mass=\"" + String.format("%10.4f", precursorMass).trim() + "\"");

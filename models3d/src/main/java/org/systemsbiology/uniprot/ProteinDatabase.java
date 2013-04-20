@@ -217,6 +217,14 @@ public class ProteinDatabase {
 
     }
 
+    public static String toRealId(String in) {
+        int index = in.indexOf("-");
+        if (index >= 0) {
+            in = in.substring(0, index);
+        }
+        return in;
+
+    }
 
     public static final int MAX_SAMPLES = 30;
 
@@ -226,7 +234,7 @@ public class ProteinDatabase {
         PrintWriter out = new PrintWriter(new FileWriter("samples_withmodels.txt"));
         int nSamples = 0;
         for (int i = 0; i < ids.length; i++) {
-            String id = ids[i];
+            String id = toRealId(ids[i]);
             Uniprot up = Uniprot.buildUniprot(id);
             if (up == null)
                 continue;

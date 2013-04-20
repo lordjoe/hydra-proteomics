@@ -22,7 +22,7 @@ public class MeasuredSpectrumIonsHandler extends AbstractElementSaxHandler<IMeas
     public MeasuredSpectrumIonsHandler(IElementHandler parent, IScanScoring ss) {
         super(TAG, parent);
         DotProductScoringHandler realParent = (DotProductScoringHandler) parent;
-        m_Spectrum = new MutableMeasuredSpectrum(0, 0, null, ISpectrumPeak.EMPTY_ARRAY);
+        m_Spectrum = new MutableMeasuredSpectrum( );
         setElementObject(m_Spectrum);
     }
 
