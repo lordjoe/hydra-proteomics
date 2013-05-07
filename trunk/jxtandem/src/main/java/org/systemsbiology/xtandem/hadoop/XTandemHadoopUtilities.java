@@ -1425,9 +1425,9 @@ public class XTandemHadoopUtilities {
         // note we are reading from hdsf
         HDFSStreamOpener opener = new HDFSStreamOpener(configuration);
 
-        String filePath = opener.buildFilePath(paramsFile);
-        if (added != null)
+         if (added != null)
             paramsFile += added;
+        String filePath = opener.buildFilePath(paramsFile);
         XTandemMain.addPreLoadOpener(opener);
         // note we are reading from hdsf
         safeWrite(context, "Output File", paramsFile);

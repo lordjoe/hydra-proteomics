@@ -38,7 +38,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     public static final String DO_NOT_COPY_FILES_PROPERTY = "org.systemsbiology.xtandem.DoNotCopyFilesToLocalMachine";
     public static final String HARDCODED_MODIFICATIONS_PROPERTY = "org.systemsbiology.xtandem.HardCodeModifications";
     public static final String INPUT_FILES_PROPERTY = "org.systemsbiology.xtandem.InputFiles";
-    public static final String NUMBER_REMEMBERED_MATCHES ="org.systemsbiology.numberRememberedMatches";
+    public static final String NUMBER_REMEMBERED_MATCHES = "org.systemsbiology.numberRememberedMatches";
 
     public static final int MAX_DISPLAY_LENGTH = 4 * 1000 * 1000;
     public static final int NUMBER_STAGES = 3;
@@ -144,8 +144,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         initOpeners();
         try {
             handleInputs(new FileInputStream(pTaskFile), pTaskFile.getName(), new Configuration());
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
@@ -490,8 +489,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         final String descriptiveFile = getTaxonomyInfo();
         try {
             m_Taxonomy = new Taxonomy(getApplication(), taxonomyName, descriptiveFile);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             if ("InputStream cannot be null".equals(e.getMessage()))
                 throw new IllegalStateException("The taxonomy file listed in params under the key \"list path, taxonomy information\" cannot be found");
             throw new RuntimeException(e);
@@ -512,8 +510,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             is = open(path);
             String[] annotationfiles = XTandemUtilities.parseFile(is, taxonHandler, path);
 
-        }
-        else {
+        } else {
 
         }
 
@@ -575,9 +572,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             String s = "remote file " + hdfsPath + " does not exist";
             System.out.println(s);
             return null;
-           // throw new IllegalArgumentException(s);
-        }
-        else
+            // throw new IllegalArgumentException(s);
+        } else
             XTandemUtilities.outputLine("Copying file " + hdfsPath + " to " + localFile);
         File out = new File(localFile);
         acc.copyFromFileSystem(hdfsPath, out);
@@ -601,8 +597,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 XTandemUtilities.outputLine("Writing to remote " + file1 + " " + file1.length() / 1000 + "kb");
                 accessor.writeToFileSystem(path, file1);
                 ret++;
-            }
-            else {
+            } else {
                 ret += guaranteeRemoteDirectory(remotepath, file);
             }
         }
@@ -677,7 +672,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             saveDatabaseSizes(jobs);
             statistics.endJob("MassFinder");
             statistics.endJob("Build Database");
-             if (isDatabaseBuildOnly()) {
+            if (isDatabaseBuildOnly()) {
                 if ("true".equalsIgnoreCase(HadoopUtilities.getProperty(DELETE_OUTPUT_DIRECTORIES_PROPERTY)))
                     deleteRemoteIntermediateDirectories();
                 return;
@@ -810,8 +805,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         // maybe we need to copy to the remote system or maybe it iw already there
         if (spectrumFile.exists()) {
             guaranteeRemoteFilePath(spectrumFile, pRbase);
-        }
-        else {
+        } else {
             guaranteExistanceofRemoteFile(spectrumFile, pRbase, "the Spectrum file designated by \"spectrum, path\" ");
         }
 
@@ -824,8 +818,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 // maybe we need to copy to the remote system or maybe it iw already there
                 if (taxonomy.exists()) {
                     guaranteeRemoteFilePath(taxonomy, pRbase);
-                }
-                else {
+                } else {
                     guaranteExistanceofRemoteFile(taxonomy, pRbase, "Taxonomy file ");
                 }
             }
@@ -868,8 +861,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             XTandemUtilities.outputLine("Writing to remote " + pFile1 + " " + pFile1.length() / 1000 + "kb");
             accessor.guaranteeFile(remotepath, pFile1);
             return 1;
-        }
-        else {
+        } else {
             if (accessor.exists(remotepath)) {
                 long existingLength = accessor.fileLength(remotepath);
                 // for very large data files we will tolerate a lot of error to avoid recopying them
@@ -1040,8 +1032,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             InputStream fsout = fs.openFileForRead(hdfsPath);
             DigesterDescription ret = new DigesterDescription(fsout);
             return ret;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
 
@@ -1058,8 +1049,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             FileSystem fs = dpath.getFileSystem(application.getContext());
             fs.delete(new Path(dpath, "full_tandem_output"), true);
             XTandemHadoopUtilities.cleanFileSystem(fs, dpath);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1075,8 +1065,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         DigesterDescription dd = null;
         try {
             dd = readDigesterDescription(application);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return true; // bad descriptor
         }
         // we have a database
@@ -1084,22 +1073,19 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             DigesterDescription desired = DigesterDescription.fromApplication(application);
             if (desired.equivalent(dd)) {
                 buildDatabase = false;
-            }
-            else {
+            } else {
                 buildDatabase = true;
                 Path dpath = XTandemHadoopUtilities.getRelativePath(application.getDatabaseName());
                 try {
                     FileSystem fileSystem = dpath.getFileSystem(application.getContext());
                     XTandemHadoopUtilities.expunge(dpath, fileSystem);
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     throw new RuntimeException(e);
 
                 }
             }
 
-        }
-        else {
+        } else {
             buildDatabase = true;
         }
         Map<Integer, Integer> sizeMap = XTandemHadoopUtilities.guaranteeDatabaseSizes(application);
@@ -1388,12 +1374,12 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             // print the version and exit
-            if("version".equals(arg))  {
+            if ("version".equals(arg)) {
                 System.out.println("Hydra Version = " + HYDRA_VERSION);
                 System.exit(0);
             }
             // Clear user properties and exit
-            if("clear_properties".equals(arg))  {
+            if ("clear_properties".equals(arg)) {
                 clearProperties();
                 System.exit(0);
             }
@@ -1419,8 +1405,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 if (is == null)
                     throw new IllegalStateException("params file " + gParamsFile + " does not exist - in the command line you must say params=<paramsFile> and that file MUST exist");
                 is.close();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
 
             }
@@ -1446,9 +1431,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         if (pArg.startsWith("remoteBaseDirectory=")) {
             gPassedBaseDirctory = pArg.substring("remoteBaseDirectory=".length());
             return;
-        }
-
-        else {
+        } else {
             throw new IllegalArgumentException("wrong argument provided: " + pArg);
         }
 
@@ -1461,8 +1444,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         Properties props = new Properties();
         try {
             props.load(describedStream);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1579,14 +1561,14 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         throw new UnsupportedOperationException("Property " + pProperty + " with value " + pValue + " Not handled");
     }
 
-    public void copyCreaterdFiles(String passedBaseDirctory, String outFileName) {
+    public void copyCreatedFiles(String passedBaseDirctory, String outFileName) {
         HadoopTandemMain application = getApplication();
-        if(application.getBooleanParameter(JXTandemLauncher.DO_NOT_COPY_FILES_PROPERTY,false) )
-              return;
+        if (application.getBooleanParameter(JXTandemLauncher.DO_NOT_COPY_FILES_PROPERTY, false))
+            return;
         String[] outputFiles = null;
         String muliple = application.getParameter(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY);
         boolean multipleFiles = "yes".equals(muliple);
-        String outFile =   outFileName;
+        String outFile = outFileName;
 
 
         if (multipleFiles) {
@@ -1596,7 +1578,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 outputFiles = files.split(",");
                 for (int i = 0; i < outputFiles.length; i++) {
                     outputFiles[i] += ".hydra";
-                  }
+                }
             }
 
         }
@@ -1609,23 +1591,22 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
 
             try {
+                // case where there is a single outut file
                 if (outputFiles == null) {
                     outFile = copyOutputFile(outFile, application, hdfsPath);
 
-                }
-                else {
+                } else {
                     for (int i = 0; i < outputFiles.length; i++) {
                         outFile = outputFiles[i];
                         hdfsPath = passedBaseDirctory + "/" + XTandemUtilities.asLocalFile(outFile);
-                        outFile = outFile.replace(".mzXML","");
-                          outFile = outFile.replace(".mzML","");
-                        outFile = outFile.replace(".mzxml","");
-                          outFile = outFile.replace(".mzml","");
-                           if (isUseMultipleFiles()) {
+                        outFile = outFile.replace(".mzXML", "");
+                        outFile = outFile.replace(".mzML", "");
+                        outFile = outFile.replace(".mzxml", "");
+                        outFile = outFile.replace(".mzml", "");
+                        if (isUseMultipleFiles()) {
                             outFile = copyOutputFile(outFile, application, hdfsPath);
 
-                        }
-                        else {
+                        } else {
                             outFile = copyOutputFile(outFile, application, hdfsPath);
 
                         }
@@ -1638,20 +1619,31 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                  * if we are writine out high scoring mgf files then cop them back
                  */
 
-                  // used for filter on expected value limit_2
+                // used for filter on expected value limit_2
 
-                double limit_2 = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY_2,0);
-                double limit = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY,0);
-                if(limit > 0 || limit_2 > 0 ) {
-                            String fileName = hdfsPath +    ".mgf";
-                        String outFile2 = outFileName +   ".mgf";
-                        readRemoteFile(fileName, outFile2);
-                  }
+                double limit_2 = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY_2, 0);
+                double limit = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY, 0);
+                if (limit > 0 || limit_2 > 0) {
+                    String fileName = hdfsPath + ".mgf";
+                    String outFile2 = outFileName + ".mgf";
+                    readRemoteFile(fileName, outFile2);
+                }
+                if (application.getBooleanParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY)) {
+                    ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
+                    for (int i = 0; i < algorithms.length; i++) {
+                        ITandemScoringAlgorithm algorithm = algorithms[i];
+                        String algo = algorithm.getName();
+                        String extension = ".pep.xml";
+                        if (!"KScore".equals(algo))
+                            extension = "." + algo + extension;
+                        copyOutputFile(outFile + extension, application, hdfsPath + extension);
+
+                    }
+
+                }
 
 
-
-            }
-            catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 XTandemUtilities.outputLine("Cannot copy remote file " + hdfsPath + " to local file " + outFile +
                         " because " + e.getMessage());
                 e.printStackTrace();
@@ -1671,16 +1663,16 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         if (outFile.endsWith(".hydra"))
             outFile = outFile.substring(0, outFile.length() - ".hydra".length());
 
-        outFile = outFile.replace(".mzXML","");
-        outFile = outFile.replace(".mzML","");
+        outFile = outFile.replace(".mzXML", "");
+        outFile = outFile.replace(".mzML", "");
 
         // read in the larger scans file
         if (isReadScanFile()) {  // todo add a way to turn this on
             IFileSystem acc = getAccessor();
             if (acc.exists(hdfsPath)) {
-                String outFileS  = outFile + ".scans";
+                String outFileS = outFile + ".scans";
                 f = readRemoteFile(hdfsPath, outFileS);
-                if(f != null )
+                if (f != null)
                     XTandemUtilities.outputLine("Created output file " + f.getAbsolutePath());
             }
         }
@@ -1702,9 +1694,9 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
             for (int i = 0; i < algorithms.length; i++) {
                 ITandemScoringAlgorithm algorithm = algorithms[i];
-                String fileName = hdfsPath +   "." + algorithm.getName() +   ".pep.xml";
-                if("KScore".equals(algorithm.getName()))   // drop kscore algo name
-                      fileName = hdfsPath +   ".pep.xml";
+                String fileName = hdfsPath + "." + algorithm.getName() + ".pep.xml";
+                if ("KScore".equals(algorithm.getName()))   // drop kscore algo name
+                    fileName = hdfsPath + ".pep.xml";
                 String outFile2 = outFile + /* "." + algorithm.getName() +  */ ".pep.xml";
                 if (application.getBooleanParameter(MULTIPLE_OUTPUT_FILES_PROPERTY))
                     outFile2 = fileName;
@@ -1750,7 +1742,6 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         }
 
 
-
         ElapsedTimer total = new ElapsedTimer();
 
 
@@ -1763,13 +1754,11 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             if (isRemote) {
                 if (isAmazon) {
                     cfg.set("fs.default.name", "s3n://");
-                }
-                else {
+                } else {
                     cfg.set("fs.default.name", "hdfs://" + RemoteUtilities.getHost() + ":" + RemoteUtilities.getPort());
 
                 }
-            }
-            else {
+            } else {
                 cfg.set("fs.default.name", "file:///");    // use local
 
             }
@@ -1795,8 +1784,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                     Object[] cargs = {"MyJobName"};
                     Class lClass = Class.forName("org.systemsbiology.aws.AWSMapReduceLauncher");
                     launcher = (IHadoopController) lClass.newInstance();
-                }
-                else {
+                } else {
                     String host = RemoteUtilities.getHost();
                     int port = RemoteUtilities.getPort();
                     main.setRemoteHost(host);
@@ -1813,8 +1801,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 }
                 main.setRemoteBaseDirectory(passedBaseDirctory);
 
-            }
-            else {
+            } else {
                 IFileSystem access = new LocalFileSystem(new File(main.getRemoteBaseDirectory()));
                 main.setAccessor(access);
                 main.setBuildJar(false);
@@ -1842,14 +1829,13 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 HDFSUtilities.setOutputDirectoriesPrecleared(true);
                 //   main.expungeRemoteDirectories();
                 elapsed.showElapsed("Finished Setup");
-            }
-            else {
+            } else {
                 main.expungeLocalDirectories();
 
             }
             main.runJobs(launcher);
 
-            main.copyCreaterdFiles(passedBaseDirctory, outFile);
+            main.copyCreatedFiles(passedBaseDirctory, outFile);
 
             XTandemUtilities.outputLine("Fragment Database Size " + main.getTotalFragments());
 
@@ -1862,8 +1848,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             total.showElapsed("Total Time", System.out);
 
             // I think hadoop has launched some threads so we can shut down now
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             if (e != e.getCause() && e.getCause() != null) {
                 while (e != e.getCause() && e.getCause() != null) {
@@ -1876,8 +1861,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                     XTandemUtilities.outputLine(se.toString());
                 }
             }
-        }
-        finally {
+        } finally {
             System.exit(0);
         }
     }
