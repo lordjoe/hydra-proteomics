@@ -772,12 +772,14 @@ public class TandemKScoringAlgorithm extends TandemScoringAlgorithm {
 
 
         double product = 0;
+        // for each theoretical peak
         for (int i = 0; i < tps.length; i++) {
             ITheoreticalPeak tp = tps[i];
             double mz = tp.getMassChargeRatio();
-            int imass = massChargeRatioAsInt(tp);
+            int imass = massChargeRatioAsInt(tp);  // convert to index in peaksByMass array
 
-            if (imass >= peaksByMass.length)
+            // if the index is too big do not handle the peak
+            if (imass >= peaksByMass.length - 1)      // because we use imass + 1
                 continue;
 
             double directValue = peaksByMass[imass];

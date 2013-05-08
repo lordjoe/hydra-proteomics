@@ -125,11 +125,13 @@ public abstract class AbstractTandemReducer  extends Reducer<Text, Text, Text, T
     @Override
     public void reduce(Text key, Iterable<Text> values,
                        Context context) throws IOException, InterruptedException {
-
+        // keys starting with # come BEFORE ALL other keys
         String sequence = key.toString();
+        // these are special and will ALL behandled FIRST
         if(sequence.startsWith("#"))
              reduceSpecial(  key, values, context);
         else {
+            // we will get NO MORE special keys
             setAllSpecialKeysHandled(true);
             reduceNormal(  key, values, context);
         }

@@ -43,7 +43,7 @@ public class XTandemUtilities {
     public static final int FLOAT64_SIZE = 8; // bytes per float 64
     public static final int MINIMUM_SEQUENCE_PEPTIDES = 4; // ignore peptides smaller than this
     public static final int MAXIMUM_SEQUENCE_PEPTIDES = 40; // ignore peptides larger than this
-    public static final int MAX_SCORED_MASS = 5000;
+    public static final int MAX_SCORED_MASS = 5000;   // maximum MZ in daltons - XTandem uses 5000
 
 
     private static IMZToInteger gDefaultConverter = TandemKScoringAlgorithm.K_SCORING_CONVERTER;
@@ -717,6 +717,25 @@ public class XTandemUtilities {
      * note we want to break - usually used in debugging
      */
     public static void breakHere() {
+
+    }
+
+
+    /**
+     * convert a String to something which sorts well ablpabeticalli - if it is a number append
+     * 00 else return the string
+     * @param s
+     * @return
+     */
+    public static String asAlphabeticalId(String s)
+    {
+        // can we trreat as number
+        for(int i = 0; i < s.length(); i++)  {
+            if(!Character.isDigit(s.charAt(i)))
+                return s.trim(); // not a number
+        }
+        // ok it is a number
+        return String.format("%08d", Integer.parseInt(s));    // return padded with 0 so it alphabetizes well
 
     }
 

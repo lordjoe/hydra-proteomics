@@ -2379,4 +2379,28 @@ public class XTandemUtilitiesTest {
         return true;
     }
 
+    @Test
+    public void testAsAlphabeticalId()
+    {
+        String returned;
+        String test;
+        test = "12345T";
+        returned = XTandemUtilities.asAlphabeticalId(test);
+        Assert.assertEquals(test,returned);
+        test = "12345T";
+         returned = XTandemUtilities.asAlphabeticalId(test);
+         Assert.assertEquals(test,returned);
+        test = "G12345";
+         returned = XTandemUtilities.asAlphabeticalId(test);
+         Assert.assertEquals(test,returned);
+        test = "123rt45";
+         returned = XTandemUtilities.asAlphabeticalId(test);
+         Assert.assertEquals(test,returned);
+        test = "12345";
+         returned = XTandemUtilities.asAlphabeticalId(test);
+         Assert.assertNotSame(test,returned);
+        Assert.assertEquals(12345,Integer.parseInt("12345"));
+
+     }
+
 }

@@ -128,7 +128,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
 
 
         HadoopTandemMain application = getApplication();
-        if ("yes".equals(application.getParameter(JXTandemLauncher.TURN_ON_SCAN_OUTPUT_PROPERTY)))
+        if ( application.getBooleanParameter(JXTandemLauncher.TURN_ON_SCAN_OUTPUT_PROPERTY,false))
             setWriteScans(true);
 
 
@@ -205,7 +205,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
 
         m_Reporter.writeHeader(getWriter(), 0);
 
-        if ("yes".equals(application.getParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY))) {
+        if ( application.getBooleanParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY,Boolean.FALSE)) {
             setWritePepXML(true);
             ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
             m_pepXMLWriter = new PepXMLWriter[algorithms.length];
@@ -335,6 +335,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
             app.clearRetainedData();
 
         }
+        // Look more closely - why are you doing this - what else is possible
         catch (NumberFormatException e) {
             Text onlyKey = getOnlyKey();
             Text onlyValue = getOnlyValue();
