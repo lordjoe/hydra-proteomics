@@ -40,39 +40,20 @@ public class SpectrumPeak implements Comparable<ISpectrumPeak>, ISpectrumPeak
         }
     }
 
-    private final double m_Mass;
+    private final double m_MZ;
     private final float m_Peak;
 
-    public SpectrumPeak(double pMass, double pPeak)
+    public SpectrumPeak(double pMZ, double pPeak)
     {
-        m_Mass = pMass;
+        m_MZ = pMZ;
         m_Peak = (float)pPeak;
-        // for debugging find some familiar peaks
-        if (XTandemUtilities.isCloseTo(m_Peak, 5.93) ||
-                XTandemUtilities.isCloseTo(m_Peak, 28.93) ||
-                XTandemUtilities.isCloseTo(m_Peak, 40.50) ||
-                XTandemUtilities.isCloseTo(m_Peak, 64.29) ||
-                XTandemUtilities.isCloseTo(m_Peak, 32.11)
-                )
-            XTandemUtilities.breakHere();
-        if (
-                XTandemUtilities.isCloseTo(m_Mass, 248.28)
-                        ||
-                        XTandemUtilities.isCloseTo(m_Mass, 319.3)
-//                       ||
-//                        XTandemUtilities.isCloseTo(m_Mass, 388) ||
-//                        XTandemUtilities.isCloseTo(m_Mass, 503.2) ||
-//                        XTandemUtilities.isCloseTo(m_Mass, 632) ||
-//                        XTandemUtilities.isCloseTo(m_Mass, 719.2)
-                )
-            XTandemUtilities.breakHere();
 
     }
 
 
     public SpectrumPeak(ISpectrumPeak in)
     {
-        m_Mass = in.getMassChargeRatio();
+        m_MZ = in.getMassChargeRatio();
         m_Peak = in.getPeak();
     }
 
@@ -91,7 +72,7 @@ public class SpectrumPeak implements Comparable<ISpectrumPeak>, ISpectrumPeak
     @Override
     public double getMassChargeRatio()
     {
-        return m_Mass;
+        return m_MZ;
     }
 
     @Override

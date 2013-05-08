@@ -261,7 +261,7 @@ public class PepXMLWriter {
 
     protected void writeScanHeader(IScoredScan scan, PrintWriter out) {
         String id = scan.getId();
-        String idString = String.format("%05d", Integer.parseInt(id));
+        String idString = XTandemUtilities.asAlphabeticalId(id);   // will be safew for parsing as int
         int charge = scan.getCharge();
 
         out.print("      <spectrum_query ");
