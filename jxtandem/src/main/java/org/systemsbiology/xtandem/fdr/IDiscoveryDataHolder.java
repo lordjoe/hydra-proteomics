@@ -46,6 +46,18 @@ public interface IDiscoveryDataHolder {
      */
     public int getNumberFalsePositivesAbove(double score) ;
 
+    /**
+     * return the lowest score with values
+     * Note this may be an approximation due to binning
+     * @return
+     */
+    public double getFirstScore();
 
+    /**
+     * return the hihgest score with values
+     * Note this may be an approximation due to binning
+     * @return
+     */
+    public double getLastScore();
 
 }
