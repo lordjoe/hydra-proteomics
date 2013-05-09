@@ -4,8 +4,9 @@ import java.util.*;
 
 /**
  * org.systemsbiology.xtandem.fdr.StupidDiscoveryDataHolder
- *   a simple implementation of  IDiscoveryDataHolder
- *   hard coded to handle scores of 0 to 100
+ * a simple implementation of  IDiscoveryDataHolder
+ * hard coded to handle scores of 0 to 100
+ *
  * @author Steve Lewis
  * @date 09/05/13
  */
@@ -20,13 +21,14 @@ public class StupidDiscoveryDataHolder implements IDiscoveryDataHolder {
 
     /**
      * convert a score into an index into  m_TrueBin or  m_FalseBin
+     *
      * @param score
-     * @return   the index >= 0 <  MAX_SIZE
+     * @return the index >= 0 <  MAX_SIZE
      */
     protected int asBin(double score) {
-        if(score <= 0)
+        if (score <= 0)
             return 0;
-        return Math.min((int)score,MAX_SIZE - 1);
+        return Math.min((int) score, MAX_SIZE - 1);
     }
 
     /**
@@ -34,8 +36,8 @@ public class StupidDiscoveryDataHolder implements IDiscoveryDataHolder {
      */
     @Override
     public void clear() {
-        Arrays.fill(m_TrueBin,0);
-        Arrays.fill(m_FalseBin,0);
+        Arrays.fill(m_TrueBin, 0);
+        Arrays.fill(m_FalseBin, 0);
     }
 
     /**
@@ -45,7 +47,7 @@ public class StupidDiscoveryDataHolder implements IDiscoveryDataHolder {
      */
     @Override
     public void addTrueDiscovery(double score) {
-       int index = asBin(score);
+        int index = asBin(score);
         m_TrueBin[index]++;
 
     }
@@ -71,7 +73,7 @@ public class StupidDiscoveryDataHolder implements IDiscoveryDataHolder {
     public double computeFDR(double score) {
         int trueCount = getNumberTruePositivesAbove(score);
         int falseCount = getNumberFalsePositivesAbove(score);
-         return ((double)falseCount) / (trueCount + falseCount);
+        return ((double) falseCount) / (trueCount + falseCount);
     }
 
     /**
@@ -84,7 +86,7 @@ public class StupidDiscoveryDataHolder implements IDiscoveryDataHolder {
         int index = asBin(score);
         int ret = 0;
         for (int i = index; i < m_TrueBin.length; i++) {
-            ret +=  m_TrueBin[i];
+            ret += m_TrueBin[i];
 
         }
         return ret;
@@ -100,9 +102,45 @@ public class StupidDiscoveryDataHolder implements IDiscoveryDataHolder {
         int index = asBin(score);
         int ret = 0;
         for (int i = index; i < m_FalseBin.length; i++) {
-            ret +=  m_FalseBin[i];
+            ret += m_FalseBin[i];
 
         }
         return ret;
     }
+
+    /**
+     * return the lowest score with values
+     * Note this may be an approximation due to binning
+     *
+     * @return
+     */
+    @Override
+    public double getFirstScore() {
+        for (int i = 0; i < m_TrueBin.length; i++) {
+            if (m_TrueBin[i] > 0)
+                return i;
+            if (m_FalseBin[i] > 0)
+                return i;
+
+        }
+        return  m_TrueBin.length;
+    }
+
+    /**
+     * return the hihgest score with values
+     * Note this may be an approximation due to binning
+     *
+     * @return
+     */
+    @Override
+    public double getLastScore() {
+        for (int i =  m_TrueBin.length - 1; i <= 0; i++) {
+            if (m_TrueBin[i] > 0)
+                return i;
+            if (m_FalseBin[i] > 0)
+                return i;
+
+        }
+        return  m_TrueBin.length;
+     }
 }

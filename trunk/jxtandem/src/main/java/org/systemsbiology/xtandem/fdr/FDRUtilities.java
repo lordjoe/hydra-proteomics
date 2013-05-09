@@ -39,6 +39,18 @@ public class FDRUtilities {
         return ret;
     }
 
+    /**
+     * convert - approximately from a bin number to a  score
+     * @param index   bin number
+     * @return
+     */
+    public static double fromBin(int index) {
+        if(index <= 0)
+            return MINIMUM_SCORE;
+        if(index >= NUMBER_BINS)
+            return MAXIMUM_SCORE;
+        return MINIMUM_SCORE * Math.pow(index,10);
+     }
 
     /**
      * return a discovery holder for default algorithm and direction
@@ -46,7 +58,8 @@ public class FDRUtilities {
      * @return !null   IDiscoveryDataHolder
      */
     public static IDiscoveryDataHolder getDiscoveryDataHolder() {
-        return getDiscoveryDataHolder(null);
+        return new StupidDiscoveryDataHolder();
+   //     return getDiscoveryDataHolder(null);
     }
 
     /**
@@ -57,7 +70,7 @@ public class FDRUtilities {
      * @return
      */
     public static IDiscoveryDataHolder getDiscoveryDataHolder(String algorithmName) {
-        return getDiscoveryDataHolder(algorithmName, true);
+         return getDiscoveryDataHolder(algorithmName, true);
 
     }
 
@@ -69,6 +82,24 @@ public class FDRUtilities {
      * @return
      */
     public static IDiscoveryDataHolder getDiscoveryDataHolder(String algorithmName, boolean direction) {
-        return new StupidDiscoveryDataHolder( );
+        return new FalseDiscoveryDataHolder(algorithmName,   direction );
     }
+
+    /**
+     * comu up with a list of FDRs in the hiolder
+     * @param hd !null holder
+     * @return  strung with all values
+     */
+    public String listFDR(IDiscoveryDataHolder hd) {
+        double start = hd.getFirstScore();
+        double last = hd.getLastScore();
+        StringBuilder sb = new StringBuilder();
+
+         for (double score = start; score <= last; score *= 1.1) {
+
+
+        }
+        return sb.toString();
+    }
+
 }
