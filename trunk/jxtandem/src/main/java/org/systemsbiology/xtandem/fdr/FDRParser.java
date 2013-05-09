@@ -30,6 +30,8 @@ public class FDRParser {
         else
             m_Handler = FDRUtilities.getDiscoveryDataHolder("Default Algorighm", true);   // better us high
 
+        readFileAndGenerateFDR();    // read file populate the  IDiscoveryDataHolder
+
     }
 
     public String getFilename() {
@@ -40,14 +42,16 @@ public class FDRParser {
         return m_Handler;
     }
 
-
-    public void generateFDR() {
+    /**
+     *
+     */
+    private void readFileAndGenerateFDR() {
         String[] lines = FileUtilities.readInLines(m_Filename);
 
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
             if (line.contains("<search_hit")) {
-  //              System.out.println(line);
+                //              System.out.println(line);
                 i = handleSearchHit(lines, i);
 
             }
@@ -140,7 +144,6 @@ public class FDRParser {
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             FDRParser fdrParser = new FDRParser(arg);
-            fdrParser.generateFDR();
             final IDiscoveryDataHolder handler = fdrParser.getHandler();
             final String s = FDRUtilities.listFDRAndCount(handler);
             System.out.println(s);

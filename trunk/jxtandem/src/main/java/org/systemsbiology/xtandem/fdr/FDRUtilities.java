@@ -118,7 +118,7 @@ public class FDRUtilities {
          for (double score = start; score <= last; score *= 1.1) {
              String scoreStr = String.format("%10.3e",score);
              final double v = hd.computeFDR(score);
-             String fdrStr = String.format("%10.4e", v);
+             String fdrStr = String.format("%10.4f", v);
              String count = Integer.toString(hd.getNumberTruePositivesAbove(score));
              String fcount = Integer.toString(hd.getNumberFalsePositivesAbove(score));
               sb.append(scoreStr + "," + fdrStr + "," + count+ "," + fcount);
