@@ -103,7 +103,11 @@ public class FalseDiscoveryDataHolder implements IDiscoveryDataHolder {
     public double computeFDR(double score) {
         int trueCount = getNumberTruePositivesAbove(score);
         int falseCount = getNumberFalsePositivesAbove(score);
-        return ((double) falseCount) / (trueCount + falseCount);
+
+        final int total = trueCount + falseCount;
+        if (total == 0)
+            return 0;
+        return ((double) falseCount) / total;
     }
 
     /**
@@ -131,6 +135,21 @@ public class FalseDiscoveryDataHolder implements IDiscoveryDataHolder {
 
             if (isHighIsBetter()) {
                 // sum up high is better
+                int i = m_FalseBin.length - 1;
+                for (; i >= 0; i--) {
+                    if (m_FalseBin[i] > 0) {
+                        falseSum += m_FalseBin[i];
+                    }
+                    m_FalseSumBin[i] = falseSum;
+
+                    if (m_TrueBin[i] > 0) {
+                        trueSum += m_TrueBin[i];
+                    }
+                    m_TrueSumBin[i] = trueSum;
+
+                }
+            } else {
+                // low is better so sum backwards
                 for (int i = 0; i < m_FalseBin.length; i++) {
                     falseSum += m_FalseBin[i];
                     m_FalseSumBin[i] = falseSum;
@@ -139,21 +158,10 @@ public class FalseDiscoveryDataHolder implements IDiscoveryDataHolder {
                     m_TrueSumBin[i] = trueSum;
 
                 }
-             }
-            else {
-                // low is better so sum backwards
-                for (int i = m_FalseBin.length - 1; i <= 0; i--) {
-                     falseSum += m_FalseBin[i];
-                     m_FalseSumBin[i] = falseSum;
-
-                     trueSum += m_TrueBin[i];
-                     m_TrueSumBin[i] = trueSum;
-
-                 }
 
             }
             setDirty(false); // nopt dirty until we add more data
-        }
+         }
     }
 
     /**
@@ -165,7 +173,7 @@ public class FalseDiscoveryDataHolder implements IDiscoveryDataHolder {
     public int getNumberFalsePositivesAbove(double score) {
         guaranteeSumsIfDirty(); // compute sums if needed
         int index = FDRUtilities.asBin(score); // convert a score to an index
-        return m_TrueSumBin[index];
+        return m_FalseSumBin[index];
     }
 
     /**
@@ -194,13 +202,13 @@ public class FalseDiscoveryDataHolder implements IDiscoveryDataHolder {
      */
     @Override
     public double getLastScore() {
-        for (int i =  m_TrueBin.length - 1; i <= 0; i++) {
+        for (int i = m_TrueBin.length - 1; i >= 0; i--) {
             if (m_TrueBin[i] > 0)
                 return FDRUtilities.fromBin(i);
             if (m_FalseBin[i] > 0)
                 return FDRUtilities.fromBin(i);
         }
         return FDRUtilities.fromBin(FDRUtilities.NUMBER_BINS);
-     }
+    }
 }
 

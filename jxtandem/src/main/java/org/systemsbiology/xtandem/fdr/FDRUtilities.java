@@ -49,7 +49,7 @@ public class FDRUtilities {
             return MINIMUM_SCORE;
         if(index >= NUMBER_BINS)
             return MAXIMUM_SCORE;
-        return MINIMUM_SCORE * Math.pow(index,10);
+        return MINIMUM_SCORE * Math.pow(10,DEL_LOG * index);
      }
 
     /**
@@ -58,8 +58,8 @@ public class FDRUtilities {
      * @return !null   IDiscoveryDataHolder
      */
     public static IDiscoveryDataHolder getDiscoveryDataHolder() {
-        return new StupidDiscoveryDataHolder();
-   //     return getDiscoveryDataHolder(null);
+    //    return new StupidDiscoveryDataHolder();
+         return getDiscoveryDataHolder(null);
     }
 
     /**
@@ -86,18 +86,43 @@ public class FDRUtilities {
     }
 
     /**
-     * comu up with a list of FDRs in the hiolder
+     * come up with a list of FDRs in the hiolder
      * @param hd !null holder
      * @return  strung with all values
      */
-    public String listFDR(IDiscoveryDataHolder hd) {
+    public static String listFDR(IDiscoveryDataHolder hd) {
         double start = hd.getFirstScore();
         double last = hd.getLastScore();
         StringBuilder sb = new StringBuilder();
 
          for (double score = start; score <= last; score *= 1.1) {
+             String scoreStr = String.format("%10.3e",score);
+             final double v = hd.computeFDR(score);
+             String fdrStr = String.format("%10.4e", v);
+             sb.append(scoreStr + "," + fdrStr);
+             sb.append("\n");
+        }
+        return sb.toString();
+    }
 
+    /**
+     * comu up with a list of FDRs in the hiolder
+     * @param hd !null holder
+     * @return  strung with all values
+     */
+    public static String listFDRAndCount(IDiscoveryDataHolder hd) {
+        double start = hd.getFirstScore();
+        double last = hd.getLastScore();
+        StringBuilder sb = new StringBuilder();
 
+         for (double score = start; score <= last; score *= 1.1) {
+             String scoreStr = String.format("%10.3e",score);
+             final double v = hd.computeFDR(score);
+             String fdrStr = String.format("%10.4e", v);
+             String count = Integer.toString(hd.getNumberTruePositivesAbove(score));
+             String fcount = Integer.toString(hd.getNumberFalsePositivesAbove(score));
+              sb.append(scoreStr + "," + fdrStr + "," + count+ "," + fcount);
+             sb.append("\n");
         }
         return sb.toString();
     }

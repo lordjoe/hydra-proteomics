@@ -134,7 +134,7 @@ public class StupidDiscoveryDataHolder implements IDiscoveryDataHolder {
      */
     @Override
     public double getLastScore() {
-        for (int i =  m_TrueBin.length - 1; i <= 0; i++) {
+        for (int i =  m_TrueBin.length - 1; i >= 0; i--) {
             if (m_TrueBin[i] > 0)
                 return i;
             if (m_FalseBin[i] > 0)
