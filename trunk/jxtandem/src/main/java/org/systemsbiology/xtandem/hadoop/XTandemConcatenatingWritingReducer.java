@@ -27,6 +27,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
     private boolean m_WritePepXML;
     private boolean m_WriteHighScoringMGF;
     private double m_MinimumScoreForMGFWrite;  // ToDo should this be on a per algorithm basis
+    private double m_MinimumExpectedValueMGFWrite;  // ToDo should this be on a per algorithm basis
 
     private PrintWriter m_Writer;
     private PrintWriter m_ScansWriter;
@@ -82,6 +83,14 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
 
     public PrintWriter getMgfOutWriter(int index) {
         return m_MGFOutWriter[index];
+    }
+
+    public double getMinimumExpectedValueMGFWrite() {
+        return m_MinimumExpectedValueMGFWrite;
+    }
+
+    public void setMinimumExpectedValueMGFWrite(double minimumExpectedValueMGFWrite) {
+        m_MinimumExpectedValueMGFWrite = minimumExpectedValueMGFWrite;
     }
 
     public double getMinimumScoreForMGFWrite() {
@@ -230,10 +239,11 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
         }
 
         double limit = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY, 0);
-        double limit_2 = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY_2,0);
-        if (limit > 0 || limit_2 > 0) {
+        double limit_ExpectedValue = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY_2,0);
+        if (limit > 0 || limit_ExpectedValue > 0) {
             setWriteHighScoringMGF(true);
             setMinimumScoreForMGFWrite(limit);
+            setMinimumExpectedValueMGFWrite(limit_ExpectedValue);
             ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
             m_MFGWriters = new MGFWriter[algorithms.length];
             m_MGFOutWriter = new PrintWriter[algorithms.length];
@@ -246,9 +256,9 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
                 m_MGFOutWriter[i] = XTandemHadoopUtilities.buildPrintWriter(context, s, extension);
                 MGFWriter px;
 
-                if (limit_2 > 0)
+                if (limit_ExpectedValue > 0)
 
-                    px = new MGFExpectedWriter(application, limit_2);
+                    px = new MGFExpectedWriter(application, limit_ExpectedValue);
 
                 else
 
