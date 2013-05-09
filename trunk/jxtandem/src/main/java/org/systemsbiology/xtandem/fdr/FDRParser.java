@@ -19,7 +19,7 @@ public class FDRParser {
 
 
     public FDRParser(String filename) {
-        this(filename, Integer.MAX_VALUE);
+        this(filename, 1);
     }
 
     public FDRParser(String filename, int maxhits) {
@@ -67,7 +67,7 @@ public class FDRParser {
         Double hyperScoreValue = null;
 
         String line = lines[index++];   // handle first line
-        Boolean trueHit = !line.contains("protein=\"DECOY_");
+        boolean trueHit = !line.contains("protein=\"DECOY_");
         boolean processSpectrum = parseHitValue(line) <= m_MaxHits;
 
         for (; index < lines.length; index++) {
@@ -85,7 +85,11 @@ public class FDRParser {
                 if (trueHit)
                     processSpectrum = false; // one decoy one not
             }
-        }
+            if (line.contains("<alternative_protein")) {  // another protein
+                  if (!trueHit && !line.contains("protein=\"DECOY_")) // we start as decoy and fit to a real
+                      processSpectrum = false; // one decoy one not
+              }
+          }
 
         if (processSpectrum) {
             final IDiscoveryDataHolder hd = getHandler();
