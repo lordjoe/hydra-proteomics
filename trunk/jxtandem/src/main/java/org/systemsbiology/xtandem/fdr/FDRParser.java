@@ -11,7 +11,7 @@ import com.lordjoe.utilities.FileUtilities;
  */
 public class FDRParser {
 
-    public static final boolean USE_EXPECTED = true; // otherwise use score
+    public static final boolean USE_EXPECTED = false; // otherwise use score
 
     private final String m_Filename;
     private final IDiscoveryDataHolder m_Handler;
@@ -47,7 +47,7 @@ public class FDRParser {
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
             if (line.contains("<search_hit")) {
-                System.out.println(line);
+  //              System.out.println(line);
                 i = handleSearchHit(lines, i);
 
             }
@@ -141,6 +141,9 @@ public class FDRParser {
             String arg = args[i];
             FDRParser fdrParser = new FDRParser(arg);
             fdrParser.generateFDR();
+            final IDiscoveryDataHolder handler = fdrParser.getHandler();
+            final String s = FDRUtilities.listFDRAndCount(handler);
+            System.out.println(s);
         }
 
     }
