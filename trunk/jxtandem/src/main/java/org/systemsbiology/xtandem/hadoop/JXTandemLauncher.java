@@ -1628,7 +1628,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                     String outFile2 = outFileName + ".mgf";
                     readRemoteFile(fileName, outFile2);
                 }
-                if (application.getBooleanParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY)) {
+                if (application.getBooleanParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY,false)) {
                     ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
                     for (int i = 0; i < algorithms.length; i++) {
                         ITandemScoringAlgorithm algorithm = algorithms[i];
@@ -1698,7 +1698,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 if ("KScore".equals(algorithm.getName()))   // drop kscore algo name
                     fileName = hdfsPath + ".pep.xml";
                 String outFile2 = outFile + /* "." + algorithm.getName() +  */ ".pep.xml";
-                if (application.getBooleanParameter(MULTIPLE_OUTPUT_FILES_PROPERTY))
+                if (application.getBooleanParameter(MULTIPLE_OUTPUT_FILES_PROPERTY,false))
                     outFile2 = fileName;
                 readRemoteFile(fileName, outFile2);
             }

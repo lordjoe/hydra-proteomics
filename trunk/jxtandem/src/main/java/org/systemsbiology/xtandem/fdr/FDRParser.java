@@ -2,6 +2,9 @@ package org.systemsbiology.xtandem.fdr;
 
 import com.lordjoe.utilities.FileUtilities;
 
+import java.io.*;
+import java.util.*;
+
 
 /**
  * org.systemsbiology.xtandem.fdr.FDRUtilities
@@ -13,7 +16,7 @@ public class FDRParser {
 
     public static final boolean USE_EXPECTED = false; // otherwise use score
 
-    private final String m_Filename;
+    private final File m_File;
     private final IDiscoveryDataHolder m_Handler;
     private final int m_MaxHits;
 
@@ -23,7 +26,7 @@ public class FDRParser {
     }
 
     public FDRParser(String filename, int maxhits) {
-        m_Filename = filename;
+        m_File = new File(filename);
         m_MaxHits = maxhits;
         if (USE_EXPECTED)
             m_Handler = FDRUtilities.getDiscoveryDataHolder("Default Algorighm", false);      // better us low
@@ -34,8 +37,8 @@ public class FDRParser {
 
     }
 
-    public String getFilename() {
-        return m_Filename;
+    public File getFilename() {
+        return m_File;
     }
 
     public IDiscoveryDataHolder getHandler() {
@@ -46,26 +49,51 @@ public class FDRParser {
      *
      */
     private void readFileAndGenerateFDR() {
-        String[] lines = FileUtilities.readInLines(m_Filename);
-
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
-            if (line.contains("<search_hit")) {
-                //              System.out.println(line);
-                i = handleSearchHit(lines, i);
+        try {
+            LineNumberReader rdr = new LineNumberReader(new FileReader(m_File));
+            String line = rdr.readLine();
+            while (line != null) {
+                if (line.contains("<search_hit")) {
+                    String[] searchHitLines = readSearchHitLines(line, rdr);
+                    //              System.out.println(line);
+                    handleSearchHit(searchHitLines);
+                 }
+                line = rdr.readLine();
 
             }
-
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }
 
+    protected String[] readSearchHitLines(String line, LineNumberReader rdr) {
+        List<String> holder = new ArrayList<String>();
 
-    protected int handleSearchHit(String[] lines, int index) {
+        try {
+            while (line != null) {
+                holder.add(line);
+                if (line.contains("</search_hit")) {
+                    break; // done
+                }
+                line = rdr.readLine();  // read next line
+
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        String[] ret = new String[holder.size()];
+        holder.toArray(ret);
+        return ret;
+    }
+
+
+    protected void handleSearchHit(String[] lines) {
 
         Double expectedValue = null;
         Double hyperScoreValue = null;
-
+        int index = 0;
         String line = lines[index++];   // handle first line
         boolean trueHit = !line.contains("protein=\"DECOY_");
         boolean processSpectrum = parseHitValue(line) <= m_MaxHits;
@@ -86,10 +114,10 @@ public class FDRParser {
                     processSpectrum = false; // one decoy one not
             }
             if (line.contains("<alternative_protein")) {  // another protein
-                  if (!trueHit && !line.contains("protein=\"DECOY_")) // we start as decoy and fit to a real
-                      processSpectrum = false; // one decoy one not
-              }
-          }
+                if (!trueHit && !line.contains("protein=\"DECOY_")) // we start as decoy and fit to a real
+                    processSpectrum = false; // one decoy one not
+            }
+        }
 
         if (processSpectrum) {
             final IDiscoveryDataHolder hd = getHandler();
@@ -105,7 +133,7 @@ public class FDRParser {
                 hd.addFalseDiscovery(score);
 
         }
-        return index;
+
 
     }
 
