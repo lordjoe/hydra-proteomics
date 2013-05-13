@@ -32,7 +32,7 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
     // todo run off a parameter
     // setting this small forces many mappers
     public static final int SPLIT_BLOCK_SIZE = 10 * 1024 * 1024;
-    public static final int MIN_BLOCK_SIZE =    1024 * 1024;
+    public static final int MIN_BLOCK_SIZE = 128 * 1024;
 
 
     private static final double SPLIT_SLOP = 1.1;   // 10% slop
@@ -128,8 +128,11 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
             if ((length != 0) && isSplitable(job, path)) {
                 long blockSize = file.getBlockSize();
                 // use desired mappers to force more splits
-                if (forceNumberMappers && desiredMappers > 0)
-                    maxSize = Math.min(maxSize, Math.max(MIN_BLOCK_SIZE,length / desiredMappers));
+                if (forceNumberMappers && desiredMappers > 0) {
+                    final long ms1 = length / desiredMappers;
+                    final long ms2 = Math.max(MIN_BLOCK_SIZE, ms1);
+                    maxSize = Math.min(maxSize, ms2);
+                }
                 long splitSize = computeSplitSize(blockSize, minSize, maxSize);
 
                 long bytesRemaining = length;
@@ -144,11 +147,9 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
                     splits.add(new FileSplit(path, length - bytesRemaining, bytesRemaining,
                             blkLocations[blkLocations.length - 1].getHosts()));
                 }
-            }
-            else if (length != 0) {
+            } else if (length != 0) {
                 splits.add(new FileSplit(path, 0, length, blkLocations[0].getHosts()));
-            }
-            else {
+            } else {
                 //Create empty hosts array for zero length files
                 splits.add(new FileSplit(path, 0, length, new String[0]));
             }
@@ -183,7 +184,7 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
             FileSplit split = (FileSplit) genericSplit;
             Configuration job = context.getConfiguration();
             m_MaxLineLength = job.getInt("mapred.linerecordreader.maxlength",
-                                             Integer.MAX_VALUE);
+                    Integer.MAX_VALUE);
             m_Sb.setLength(0);
             m_Start = split.getStart();
             m_End = m_Start + split.getLength();
@@ -196,21 +197,20 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
             FileSystem fs = file.getFileSystem(job);
             m_FileIn = fs.open(split.getPath());
             if (codec != null) {
-                  m_Input = new LineReader(codec.createInputStream(m_FileIn), job);
+                m_Input = new LineReader(codec.createInputStream(m_FileIn), job);
                 m_End = Long.MAX_VALUE;
-            }
-            else {
+            } else {
                 if (m_Start != 0) {
                     skipFirstLine = true;
                     --m_Start;
                     m_FileIn.seek(m_Start);
                 }
-                m_Input = new LineReader(m_FileIn,job);
+                m_Input = new LineReader(m_FileIn, job);
             }
             // not at the beginning so go to first line
             if (skipFirstLine) {  // skip first line and re-establish "start".
-              m_Start += m_Input.readLine(new Text(), 0,
-                           (int)Math.min((long)Integer.MAX_VALUE, m_End - m_Start));
+                m_Start += m_Input.readLine(new Text(), 0,
+                        (int) Math.min((long) Integer.MAX_VALUE, m_End - m_Start));
             }
             m_Current = m_Start;
             if (m_Key == null) {
@@ -242,12 +242,17 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
 //                m_CurrentLine = m_Input.readLine();
 //            }
             // read more data
-            if (m_CurrentLine == null)   {
-                 m_CurrentLine = readNextLine();
+            if (m_CurrentLine == null) {
+                m_CurrentLine = readNextLine();
+                if (m_CurrentLine == null) {
+                    m_Key = null;
+                    m_Value = null;
+                    return false;
+                }
             }
 
-            while (m_FileIn.getPos() < m_End && m_CurrentLine != null && !m_CurrentLine.startsWith(">"))    {
-                m_CurrentLine  = readNextLine();
+            while (m_FileIn.getPos() < m_End && m_CurrentLine != null && !m_CurrentLine.startsWith(">")) {
+                m_CurrentLine = readNextLine();
             }
 
             if (m_CurrentLine == null || !m_CurrentLine.startsWith(">")) {  // we are the the end of data
@@ -261,18 +266,18 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
             m_Key.set(key);
 
             m_Sb.setLength(0);
-            m_CurrentLine =  readNextLine();
+            m_CurrentLine = readNextLine();
             while (m_CurrentLine != null && !m_CurrentLine.startsWith(">")) {
                 m_Sb.append(m_CurrentLine);
-                m_CurrentLine =   readNextLine();
+                m_CurrentLine = readNextLine();
 
             }
 
             if (m_Sb.length() == 0) {  // cannot read
-                  m_Key = null;
-                  m_Value = null;
-                  return false;
-              }
+                m_Key = null;
+                m_Value = null;
+                return false;
+            }
 
 
             String value = m_Sb.toString();
@@ -284,15 +289,14 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
         }
 
 
-        protected String readNextLine()   throws IOException
-        {
-            int  newSize = m_Input.readLine(m_Line, m_MaxLineLength,
-                            Math.max((int)Math.min(Integer.MAX_VALUE, (int)(m_End - m_Current)),
-                                     m_MaxLineLength));
-             m_Current += newSize;
-            if(newSize == 0)
+        protected String readNextLine() throws IOException {
+            int newSize = m_Input.readLine(m_Line, m_MaxLineLength,
+                    Math.max((int) Math.min(Integer.MAX_VALUE, (int) (m_End - m_Current)),
+                            m_MaxLineLength));
+            m_Current += newSize;
+            if (newSize == 0)
                 return null;
-            return  m_Line.toString();
+            return m_Line.toString();
         }
 
         @Override
