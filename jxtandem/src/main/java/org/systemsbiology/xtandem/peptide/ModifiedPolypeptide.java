@@ -471,7 +471,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         return new Polypeptide(pSequence, missedCleavages);
     }
 
-
+    // array of modifications of the SAME length as the sequence - most are usually null
     private final PeptideModification[] m_SequenceModifications;
     private final int m_NumberModifications;
 

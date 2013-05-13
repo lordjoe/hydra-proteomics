@@ -1062,19 +1062,20 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         HadoopTandemMain application = getApplication();
         boolean buildDatabase;
         // Validate build parameters
-        DigesterDescription dd = null;
+        DigesterDescription existingDatabaseParameters = null;
         try {
-            dd = readDigesterDescription(application);
+            existingDatabaseParameters = readDigesterDescription(application);
         } catch (Exception e) {
             return true; // bad descriptor
         }
         // we have a database
-        if (dd != null) {
+        if (existingDatabaseParameters != null) {
             DigesterDescription desired = DigesterDescription.fromApplication(application);
-            if (desired.equivalent(dd)) {
+            if (desired.equivalent(existingDatabaseParameters)) {
                 buildDatabase = false;
             } else {
                 buildDatabase = true;
+                // kill the database
                 Path dpath = XTandemHadoopUtilities.getRelativePath(application.getDatabaseName());
                 try {
                     FileSystem fileSystem = dpath.getFileSystem(application.getContext());
