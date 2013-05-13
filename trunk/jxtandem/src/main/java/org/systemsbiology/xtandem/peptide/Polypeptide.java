@@ -14,6 +14,10 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
 
     public static final Random RND = new Random();
 
+    /**
+     * fot testing only
+     * @return  maka a random peptide
+     */
     public static IPolypeptide randomPeptide()
     {
         int length = 6 + RND.nextInt(20) ;
@@ -27,6 +31,11 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
 
     public static final Comparator<IPolypeptide> SEQUENCE_COMPARATOR = new SequenceComparator();
 
+    /**
+     * reverse the sequence - used in creating Decoys
+     * @param p  !null polypeptide
+     * @return
+     */
     public static String getReversedSequence(IPolypeptide p) {
         StringBuilder sb = new StringBuilder();
         String sequence = p.getSequence();
@@ -124,10 +133,22 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         }
     }
 
+    // ===================================
+    // Really Important
+    //====================================
+    /**
+     * create a peptide from a sequebnce string
+     *  liek STGHKKED or     ST[18.5]GHKK[15.6]ED
+     *  the later is a modified peptide
+     * @param s
+     * @return
+     */
     public static IPolypeptide fromString(String s) {
         s = s.trim();
+        // has modifications so make a modified peptide
         if (s.contains("["))
             return ModifiedPolypeptide.fromModifiedString(s);
+        // mot modified - make from sequence
         Polypeptide ret = new Polypeptide(s);
         ret.setMissedCleavages(PeptideBondDigester.getDefaultDigester().probableNumberMissedCleavages(ret));
         return ret;

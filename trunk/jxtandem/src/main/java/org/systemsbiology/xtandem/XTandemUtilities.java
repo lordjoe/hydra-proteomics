@@ -74,6 +74,7 @@ public class XTandemUtilities {
      * @return true of all mods are in the set
      */
     public static boolean isModificationsCompatable(final IModifiedPeptide pMp, final Set<PeptideModification> pModifications) {
+        // get all the modifications
         PeptideModification[] modifications = pMp.getModifications();
         int sequenceLength = pMp.getSequenceLength();
         // ignore terminal modifications

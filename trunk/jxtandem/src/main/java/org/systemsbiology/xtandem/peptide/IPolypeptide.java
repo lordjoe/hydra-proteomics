@@ -92,7 +92,7 @@ public interface  IPolypeptide {
 
 
     /**
-     * check fo r common errors like * in AA seqience
+     * check for common errors like * in AA seqience
      *
      * @return
      */

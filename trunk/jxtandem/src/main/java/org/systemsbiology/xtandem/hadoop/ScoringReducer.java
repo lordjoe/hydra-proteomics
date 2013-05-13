@@ -239,11 +239,13 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         try {
             IPolypeptide[] pps = getPeptidesOfExactMass(interval);
 
+            pps = filterPeptides(pps); // drop non-complient peptides
+
+
             if(isCreateDecoyPeptides())   {
                 pps = addDecoyPeptides(pps);
             }
 
-            pps = filterPeptides(pps); // drop non-complient peptides
 //            pps = interval.filterPeptideList(pps);  // we may not use all peptides depending on the size
             numberScoredPeptides = pps.length;
 
@@ -397,13 +399,18 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         return ret;
     }
 
+    /**
+     * this method removes any peptides that do not meet the current search criteria
+     * @param pPps
+     * @return
+     */
     protected IPolypeptide[] filterPeptides(final IPolypeptide[] pPps) {
         List<IPolypeptide> holder = new ArrayList<IPolypeptide>();
         HadoopTandemMain application = getApplication();
         IPeptideDigester digester = application.getDigester();
         for (int i = 0; i < pPps.length; i++) {
             IPolypeptide pp = pPps[i];
-            if (isAcceptablePeptide(application, digester, pp))
+            if (isAcceptablePeptide(application, digester, pp))   // the work here
                 holder.add(pp);
 //            else {
 //                if (!XTandemUtilities.isProbablySemitryptic(pp)) {
@@ -418,16 +425,26 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         return ret;
     }
 
+    /**
+     * test if a peptide matches the current search criteria
+     * @param pApplication
+     * @param digester
+     * @param pp
+     * @return
+     */
     protected boolean isAcceptablePeptide(final HadoopTandemMain pApplication, final IPeptideDigester digester, final IPolypeptide pp) {
         boolean semiTryptic = digester.isSemiTryptic();
 //        if (!semiTryptic) {
 //            if (XTandemUtilities.isProbablySemitryptic(pp))
 //                return false;
 //        }
+        // are there optional modifications
         if (pp.isModified()) {
             IModifiedPeptide mp = (IModifiedPeptide) pp;
+            // if we have no mofidications then reject
             if (m_Modifications.isEmpty())
                 return false;
+            // if any modifications in the peptide are NOT in the current search set then reject
             return XTandemUtilities.isModificationsCompatable(mp, m_Modifications);
             //  pApplication.getDigestandModificationsString()
         }
