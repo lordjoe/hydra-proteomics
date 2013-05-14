@@ -415,7 +415,8 @@ public class HadoopDeployer {
             File file = list[i];
             if (file.isDirectory()) {
                 final String np = nextPath(s, file.getName());
-                copyLibraryDirectory(np, file, pOut);
+                if(!np.startsWith("META-INF"))
+                    copyLibraryDirectory(np, file, pOut);
             }
             else {
                 final String np = nextPath(s, file.getName());
