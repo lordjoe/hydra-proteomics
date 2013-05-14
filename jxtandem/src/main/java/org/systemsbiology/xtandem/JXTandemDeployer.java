@@ -6,6 +6,7 @@ import org.systemsbiology.remotecontrol.*;
 import org.systemsbiology.xtandem.hadoop.*;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * org.systemsbiology.xtandem.JXTandemDeployer
@@ -67,25 +68,40 @@ public class JXTandemDeployer extends Deployer {
 
             };
 
+    public JXTandemDeployer() {
+        super();
+    }
+
     @Override
     protected void buildCommandLine(final Class mainClass, final String[] args, final StringBuffer pSb) {
         if (isQuiet()) {
             pSb.append(/* "jre" + WINDOWS_DIRECTORY_SEPARATOR + "bin" + WINDOWS_DIRECTORY_SEPARATOR + */ "javaw ");
-        }
-        else {
+        } else {
             pSb.append(/* "jre\\bin\\" + */ "java ");
         }
         pSb.append(" -Xmx1024m -Xms128m -cp %q4path% " + mainClass.getName() + " ");
         for (int i = 2; i < args.length; i++) {
             pSb.append(" " + args[i]);
         }
-         if (mainClass == JXTandemLauncher.class)    {
-             pSb.append(" config=%HYDRA_HOME%/data/Launcher.properties jar=%HYDRA_HOME%/data/Hydra.jar ");
+        if (mainClass == JXTandemLauncher.class) {
+            pSb.append(" config=%HYDRA_HOME%/data/Launcher.properties jar=%HYDRA_HOME%/data/Hydra.jar ");
             pSb.append("params=%1 %2 %3 %4 \n");
-        }
-        else
+        } else
             pSb.append("%1 %2 %3 %4 \n");
 
+    }
+
+    /**
+     * jar all directories into one big jar called Target.jar
+     *
+     * @param libDir
+     * @param jarDirectories
+     * @param holder
+     */
+    @Override
+    protected void makeJars(File libDir, List<File> jarDirectories, List<File> holder) {
+        File jarFile = new File(libDir, "Target.jar");
+        makeOneJar(jarDirectories, holder, jarFile);
     }
 
     @Override
@@ -98,31 +114,30 @@ public class JXTandemDeployer extends Deployer {
         for (int i = 2; i < args.length; i++) {
             pSb.append(" " + args[i].replace('%', '$'));
         }
-        if (mainClass == JXTandemLauncher.class)   {
+        if (mainClass == JXTandemLauncher.class) {
             pSb.append("config=$HYDRA_HOME/data/Launcher.properties jar=$HYDRA_HOME/data/Hydra.jar  ");
             pSb.append("params=$1 $2 $3 $4 $5 $6 $7 $8\n");
-        }
-        else
+        } else
             pSb.append("$1 $2 $3 $4 $5 $6 $7 $8\n");
 
         return pSb.toString();
     }
 
 
-    public void makeTestRunners(File[] pathLibs, File deployDir,  final String commandName, String[] commandText) {
-          File binDir = new File(deployDir, "bin");
-           File rb = new File(binDir, commandName + ".bat");
+    public void makeTestRunners(File[] pathLibs, File deployDir, final String commandName, String[] commandText) {
+        File binDir = new File(deployDir, "bin");
+        File rb = new File(binDir, commandName + ".bat");
         String bf = commandText[0];
-         writeFile(rb, bf);
-          File rs = new File(binDir,  commandName + ".sh");
+        writeFile(rb, bf);
+        File rs = new File(binDir, commandName + ".sh");
         String sf = commandText[0];
-         writeFile(rs, sf);
+        writeFile(rs, sf);
 
-      }
+    }
 
 
     @Override
-    public  String[] makeRunners(File[] pathLibs, File deployDir, Class mainClass, String commandName, String[] args) {
+    public String[] makeRunners(File[] pathLibs, File deployDir, Class mainClass, String commandName, String[] args) {
         String[] text = super.makeRunners(pathLibs, deployDir, mainClass, commandName, args);
         makeTestRunners(pathLibs, deployDir, "Nshot", text);
         return text;
@@ -144,14 +159,13 @@ public class JXTandemDeployer extends Deployer {
         HadoopDeployer.makeHadoopJar(datadir.getAbsolutePath() + "/Hydra.jar");
     }
 
-    private static void usage()
-    {
+    private static void usage() {
         System.out.println("Usage: <DeployDirectory> ");
     }
 
     public static void main(String[] args) {
 
-        if(args.length == 0)  {
+        if (args.length == 0) {
             usage();
             return;
         }
@@ -169,8 +183,7 @@ public class JXTandemDeployer extends Deployer {
             d.setQuiet(true);
             rightArgs = new String[args.length - 1];
             System.arraycopy(args, 1, rightArgs, 0, args.length - 1);
-        }
-        else {
+        } else {
             rightArgs = args;
         }
         if (rightArgs.length > 0) {
