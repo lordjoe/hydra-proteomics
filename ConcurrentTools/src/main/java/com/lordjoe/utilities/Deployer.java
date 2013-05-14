@@ -4,6 +4,7 @@ import org.systemsbiology.remotecontrol.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.jar.*;
 
 /**
  * com.lordjoe.utilities.Deployer
@@ -84,6 +85,9 @@ public class Deployer {
             "spring-tx-2.5.6.jar",
 
     };
+
+
+
     public final Set<String> EXCLUDED_JARS = new HashSet(Arrays.asList(EEXCLUDED_JARS_LIST));
 
     private final Set<String> m_TaskExcludeJar = new HashSet();
