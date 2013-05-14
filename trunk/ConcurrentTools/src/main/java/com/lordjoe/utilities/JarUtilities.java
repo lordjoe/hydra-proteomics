@@ -70,6 +70,9 @@ public class JarUtilities {
      */
     public void jarDirectories(File jarFile, File... directorys) {
         try {
+            File parentDir = jarFile.getParentFile();
+            if(parentDir != null)
+                parentDir.mkdirs();
             Manifest manifest = new Manifest();
             manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
             JarOutputStream target = new JarOutputStream(new FileOutputStream(jarFile, false), manifest);

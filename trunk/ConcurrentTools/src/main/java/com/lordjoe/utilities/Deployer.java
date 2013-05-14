@@ -87,10 +87,14 @@ public class Deployer {
     };
 
 
-
     public final Set<String> EXCLUDED_JARS = new HashSet(Arrays.asList(EEXCLUDED_JARS_LIST));
 
     private final Set<String> m_TaskExcludeJar = new HashSet();
+
+    public Deployer() {
+    }
+
+
 
     public void clearTaskExcludeJars() {
         m_TaskExcludeJar.clear();
@@ -113,6 +117,7 @@ public class Deployer {
     public File[] filterClassPath(String[] pathItems, String javaHome, File libDir) {
 
         List holder = new ArrayList();
+        List<File> directoryHolder = new ArrayList();
         for (int i = 0; i < pathItems.length; i++) {
             String item = pathItems[i];
             if (".".equals(item))
@@ -129,14 +134,17 @@ public class Deployer {
                 continue;
             }
             if (itemFile.isDirectory()) {
-                File e = makeJar(libDir, itemFile);
-                if (!holder.contains(e))
-                    holder.add(e);
-                else
-                    System.out.println("Block duplicate jar " + e);
+                directoryHolder.add(itemFile);
             }
+          }
+
+        if (!directoryHolder.isEmpty()) {
+            makeJars(libDir,directoryHolder,holder);
 
         }
+
+        String test = "a,ffff,ggg";
+        String[] items = test.split(",");
 
         for (int i = 0; i < pathItems.length; i++) {
             String item = pathItems[i];
@@ -186,6 +194,44 @@ public class Deployer {
         return test + ".jar";
     }
 
+//    public File makeencryptJars(File libDir,  itemFile) {
+//          String jarName = pathToJarName(itemFile);
+//          File jarFile = new File(libDir, jarName);
+//          String cmd = "jar -cvf " + jarFile.getAbsolutePath() + " -C " + itemFile.getAbsolutePath() + " .";
+//          System.out.println(cmd);
+//          try {
+//              Runtime.getRuntime().exec(cmd);
+//          }
+//          catch (IOException e) {
+//              throw new RuntimeException(e);
+//          }
+//          return jarFile;
+//      }
+
+    protected void makeJars(File libDir, List<File> jarDirectories, List<File> holder) {
+        for (File jarDirectory : jarDirectories) {
+            File jar = new File(jarDirectory.getName() + ".jar");
+                    File added = makeJar(libDir, jar);
+            holder.add(added);
+        }
+    }
+
+
+    /**
+     * jar all directories into one big jar called Target.jar
+     *
+     * @param jarDirectories
+     * @param holder
+     * @param jarFile        file to create
+     */
+    protected void makeOneJar(List<File> jarDirectories, List<File> holder, File jarFile) {
+        JarUtilities jarUtilities = new JarUtilities(jarFile);
+        jarUtilities.jarDirectories(jarFile, jarDirectories.toArray(new File[0]));
+
+
+        holder.add(jarFile);
+    }
+
     public File makeJar(File libDir, File itemFile) {
         String jarName = pathToJarName(itemFile);
         File jarFile = new File(libDir, jarName);
@@ -193,8 +239,7 @@ public class Deployer {
         System.out.println(cmd);
         try {
             Runtime.getRuntime().exec(cmd);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return jarFile;
@@ -245,8 +290,7 @@ public class Deployer {
             srcFile.close();
             dstFile.close();
             return true;
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             return (false);
         }
     }
@@ -272,11 +316,9 @@ public class Deployer {
             }
             return (false);
             // failure
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             return (false); // browser disallows
-        }
-        catch (SecurityException ex) {
+        } catch (SecurityException ex) {
             return (false); // browser disallows
         }
     }
@@ -288,12 +330,10 @@ public class Deployer {
         String[] pathItems = null;
         if (classpath.contains(";")) {
             pathItems = classpath.split(";");
-        }
-        else {
+        } else {
             if (classpath.contains(":")) {
                 pathItems = classpath.split(":");   // Linux stlye
-            }
-            else {
+            } else {
                 String[] items = {classpath};
                 pathItems = items; // only 1 I guess
             }
@@ -323,8 +363,7 @@ public class Deployer {
     protected void buildCommandLine(final Class mainClass, final String[] args, final StringBuffer pSb) {
         if (isQuiet()) {
             pSb.append(/* "jre" + WINDOWS_DIRECTORY_SEPARATOR + "bin" + WINDOWS_DIRECTORY_SEPARATOR + */ "javaw ");
-        }
-        else {
+        } else {
             pSb.append(/* "jre\\bin\\" + */ "java ");
         }
         pSb.append(" -Xmx1024m -Xms128m -cp %q4path% " + mainClass.getName() + " ");
@@ -376,10 +415,10 @@ public class Deployer {
 
     }
 
-    protected String buildShellCommandLine(final Class mainClass, final String[] args ) {
+    protected String buildShellCommandLine(final Class mainClass, final String[] args) {
         StringBuilder pSb = new StringBuilder();
 
-         pSb.append("java ");
+        pSb.append("java ");
         pSb.append(" -Xmx400m -Xms64m ");
         pSb.append(" -cp $q4path " + mainClass.getName() + " ");
         for (int i = 2; i < args.length; i++) {
@@ -390,29 +429,29 @@ public class Deployer {
         //  config=%HYDRA_HOME%/Launcher.properties config=%HYDRA_HOME%/data/JXTandem.jar
     }
 
-    public String[] makeRunners(File[] pathLibs, File deployDir, final Class mainClass,final String commandName, String[] args) {
-          File binDir = new File(deployDir, "bin");
+    public String[] makeRunners(File[] pathLibs, File deployDir, final Class mainClass, final String commandName, String[] args) {
+        File binDir = new File(deployDir, "bin");
         binDir.mkdirs();
         String bf = buildBatchFile(pathLibs, deployDir, mainClass, args);
         File rb = new File(binDir, commandName + ".bat");
         writeFile(rb, bf);
         String sf = buildShellFile(pathLibs, deployDir, mainClass, args);
-        File rs = new File(binDir,  commandName + ".sh");
+        File rs = new File(binDir, commandName + ".sh");
         writeFile(rs, sf);
-        String[] ret = { bf,sf};
+        String[] ret = {bf, sf};
         return ret;
 
-     }
+    }
 
 
     public void deploy(final File pDeployDir, final Class mainClass, final String[] pRightArgs) {
         String deployPath = pDeployDir.getAbsolutePath();
         pDeployDir.mkdirs();
         File[] pathLibs = deployLibraries(pDeployDir);
-        makeRunners(pathLibs, pDeployDir, mainClass,"hydra", pRightArgs);
+        makeRunners(pathLibs, pDeployDir, mainClass, "hydra", pRightArgs);
         // add configure code
-        makeRunners(pathLibs, pDeployDir, RemoteUtilities.class,"configure", pRightArgs);
-      }
+        makeRunners(pathLibs, pDeployDir, RemoteUtilities.class, "configure", pRightArgs);
+    }
 
     public static void main(String[] args) throws Exception {
         //   testRegex();
@@ -423,8 +462,7 @@ public class Deployer {
             d.setQuiet(true);
             rightArgs = new String[args.length - 1];
             System.arraycopy(args, 1, rightArgs, 0, args.length - 1);
-        }
-        else {
+        } else {
             rightArgs = args;
         }
         if (rightArgs.length > 0) {
