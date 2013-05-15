@@ -59,15 +59,14 @@ public class FDRUtilities {
      */
     public static IDiscoveryDataHolder getDiscoveryDataHolder() {
     //    return new StupidDiscoveryDataHolder();
-         return getDiscoveryDataHolder(null);
+        return getDiscoveryDataHolder(null);
     }
 
     /**
      * return a discovery holder for default algorithm and direction
      *
      * @param algorithmName POSSIBLY NULL ALGORITHM NAME
-     * @param direction     true is ascending is good
-     * @return
+        * @return
      */
     public static IDiscoveryDataHolder getDiscoveryDataHolder(String algorithmName) {
          return getDiscoveryDataHolder(algorithmName, true);
