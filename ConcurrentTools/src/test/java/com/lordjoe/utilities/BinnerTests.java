@@ -34,5 +34,20 @@ public class BinnerTests {
         Assert.assertEquals(0, binner.asBin(-BIN_SIZE));
     }
 
+    @Test
+    public void testLinearBinner() throws Exception{
+
+        IBinner binner = new LinearBinner(MAX_VALUE, BIN_SIZE);
+
+        for (int bin = 0; bin < binner.getNumberBins(); bin++) {
+            Assert.assertEquals((int) (bin / BIN_SIZE), binner.asBin(bin));
+            double value = binner.fromBin(bin);
+            int actualBin = binner.asBin(value);
+            Assert.assertEquals(bin, actualBin);
+
+        }
+
+    }
+
 
 }

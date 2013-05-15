@@ -1,7 +1,5 @@
 package org.systemsbiology.xtandem.fdr;
 
-import com.lordjoe.utilities.FileUtilities;
-
 import java.io.*;
 import java.util.*;
 
