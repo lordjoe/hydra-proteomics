@@ -84,25 +84,26 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
 
     }
 
-    public static final String[] INTERESTING_SEQUENCES =
-            {
-//                    "DAQDLIGKILVVDPRQR",
-//                      "NTNSNSGNGGANMNNKHGLPEPMSR",
-//                    "KHSTSTSSSSASATSSK",
-                    "DLKFPLPHR",
-                    "TAEARAK",
-                    "FGLSGIR" ,
-                    "IGGPINIALAYEAATAGK" ,
+    // purely for debuggomg to walk through interesting sequences
+    public static final String[] INTERESTING_SEQUENCES = {
+            "DLKFPLPHR",
+            "TAEARAK",
+            "FGLSGIR",
+            "IGGPINIALAYEAATAGK",
 
-            };
+    };
+    public static final Set<String> INTERESTING_SEQUENCE_SET = new HashSet<String>(); //Arrays.asList(INTERESTING_SEQUENCES));
 
-    public static final Set<String> INTERESTING_SEQUENCE_SET = new HashSet<String>(Arrays.asList(INTERESTING_SEQUENCES));
-
-    public static boolean isInterestingSequence( String sequence) {
+    /**
+     * test for a sequence I care about
+     * @param sequence
+     * @return
+     */
+    public static boolean isInterestingSequence(String sequence) {
         // debugging code  to see why some sequewnces are not scored
-        if (INTERESTING_SEQUENCES.length > 0) {
-             if (INTERESTING_SEQUENCE_SET.contains(sequence)) {
-                   return true;
+        if (!INTERESTING_SEQUENCE_SET.isEmpty()) {
+            if (INTERESTING_SEQUENCE_SET.contains(sequence)) {
+                return true;
             }
         }
         return false;
@@ -145,8 +146,8 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
                     String sequence = items[0];
 
                     // this is a debugging step
-               //     if(isInterestingSequence(   sequence))
-               //          XTandemUtilities.breakHere();
+                    //     if(isInterestingSequence(   sequence))
+                    //          XTandemUtilities.breakHere();
 
                     IPolypeptide pp = Polypeptide.fromString(sequence);
                     double pep_mass = Double.parseDouble(items[1]);
@@ -166,22 +167,17 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
                 if (out != null)
                     out.close();
 
-            }
-
-            catch (RuntimeException e) {
+            } catch (RuntimeException e) {
                 throw e;
 
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
 
-            }
-            finally {
+            } finally {
                 if (out != null)
                     try {
                         out.close();
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         // forgive
                     }
 
@@ -279,8 +275,7 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
 
             if (JXTandemLauncher.isSequenceFilesUsed()) {
                 job.setInputFormatClass(SequenceFileInputFormat.class);
-            }
-            else {
+            } else {
                 job.setInputFormatClass(TextInputFormat.class);
             }
 
@@ -325,9 +320,9 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
 
             boolean ans = job.waitForCompletion(true);
             int ret = ans ? 0 : 1;
-            if(ans)
-                 XTandemHadoopUtilities.saveCounters(fileSystem,  XTandemHadoopUtilities.buildCounterFileName(this,conf),job);
-           else
+            if (ans)
+                XTandemHadoopUtilities.saveCounters(fileSystem, XTandemHadoopUtilities.buildCounterFileName(this, conf), job);
+            else
                 throw new IllegalStateException("Job Failed");
 
 
@@ -335,16 +330,13 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
             //       throw new IllegalStateException("problem"); // ToDo change
 
             return ret;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
 
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
 
         }

@@ -114,8 +114,11 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             if (sequence.endsWith("*"))
                 sequence = sequence.substring(0, sequence.length() - 1);
 
-            if (label.toUpperCase().contains("DECOY")) {
-                incrementNumberDecoysProteins(context);
+            // if this returns true than the protein is already a decoy
+            String decoyLabel = XTandemHadoopUtilities.asDecoy(label);
+            if (decoyLabel != null) {
+                label = decoyLabel;
+                 incrementNumberDecoysProteins(context);
                 isDecoy = true;
             }
 

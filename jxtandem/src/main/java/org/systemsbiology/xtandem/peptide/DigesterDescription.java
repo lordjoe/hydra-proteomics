@@ -144,6 +144,9 @@ public class DigesterDescription implements IEquivalent<DigesterDescription> {
         if (!theirMods.containsAll(myMods))
             return false;
 
+        if(isHasDecoys() != o.isHasDecoys())
+            return false;
+
         return true; // I can use this database
     }
 }
