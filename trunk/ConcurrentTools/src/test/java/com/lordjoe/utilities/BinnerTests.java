@@ -49,5 +49,17 @@ public class BinnerTests {
 
     }
 
+//    @Test
+//    public void testLinearBinnerWithValues() throws Exception{
+//
+//        IBinner binner = new LinearBinner(MAX_VALUE, BIN_SIZE);
+//
+//        Double value1 = 1.0;
+//        Double value2 = 2.0;
+//        Double value3 = 3.0;
+//
+//
+//    }
+
 
 }
