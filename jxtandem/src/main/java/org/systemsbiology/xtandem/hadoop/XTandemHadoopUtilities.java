@@ -57,10 +57,11 @@ public class XTandemHadoopUtilities {
     // the protein is a decoy if a label starts with one of these
     public static final String[] DECOY_PREFIX = {
             //           "DECOY_",
-            "####REV###",
+            "###REV###",
             "###RND###",
             "RND_",
-            "REV_"
+            "REV_",
+            "REV1_",
 
 
     };
@@ -77,7 +78,7 @@ public class XTandemHadoopUtilities {
      * take the label of a protein which might represent a decoy
      * - if it is a decoy return the label with DECOY_ prepended and all other
      * decoy designating text dropped - if it is not a decoy return null
-     * - we assume that ifthe method returns not null than the return is assigned as the protein label and
+     * - we assume that if the method returns not null than the return is assigned as the protein label and
      * the protein is marked as a decoy
      *
      * @param label !null label
@@ -89,13 +90,26 @@ public class XTandemHadoopUtilities {
         for (int i = 0; i < DECOY_PREFIX.length; i++) {
             String prefix = DECOY_PREFIX[i];
             if (label.startsWith(prefix)) {
-                // prefix
-               throw new UnsupportedOperationException("Fix This"); // ToDo
+                // prefix length removed from label and label goes into substring processed_label
+
+                String processed_label = label.substring(prefix.length(), label.length());
+
+                // if protein accession is prefix then we cannot handle the case
+                if (processed_label.length() == 0) {
+                    throw new IllegalArgumentException("The protein accession is the same as the decoy prefix!");
+                                }
+
+                // standard DECOY_ prefix gets added to label and return that
+
+                String post_label = DEFAULT_DECOY_PREFIX + processed_label;
+
+
+                return post_label;
 
             }
-
-
         }
+        // the label does not contain a decoy prefix and gets ignored
+
         return null;
     }
 
