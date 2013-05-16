@@ -35,6 +35,17 @@ public class XTandemUtilities {
     public static final String WRITING_MGF_PROPERTY = "org.systemsbiology.xtandem.hadoop.WriteMGFSpectraWithHyperscoreGreaterThan";
     public static final String WRITING_MGF_PROPERTY_2 = "org.systemsbiology.xtandem.hadoop.WriteMGFSpectraWithExpectValueLowerThan";
     public static final String CREATE_DECOY_PEPTIDES_PROPERTY = "org.systemsbiology.xtandem.CreateDecoyPeptides";
+
+
+
+
+    public static final String EMAIL_ADDRESS_PROPERTY = "org.systemsbiology.xtandem.sender";
+    //# password to send emmail
+    public static final String EMAIL_PASSWORD_PROPERTY = "org.systemsbiology.xtandem.encryptedEmailPassword";
+    //# email recipient
+    public static final String EMAIL_RECIPIENT_PROPERTY = "org.systemsbiology.xtandem.emailrecipient";
+
+
      // do not plan to deal with larger charges
     public static final int MAX_CHARGE = 4;
 

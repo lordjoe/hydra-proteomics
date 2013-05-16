@@ -72,6 +72,7 @@ public class FastaHadoopLoader {
         m_Application = app;
         m_Digester = m_Application.getDigester();
 
+
         ScoringModifications scoringMods = m_Application.getScoringMods();
 
         PeptideModification[] modifications = scoringMods.getModifications();
@@ -91,6 +92,10 @@ public class FastaHadoopLoader {
                 ret.addModification(modifications[i]);
             }
         }
+        // if true we better have decoys in the database
+        boolean hasDecoys = m_Application.getBooleanParameter(XTandemUtilities.CREATE_DECOY_PEPTIDES_PROPERTY,Boolean.FALSE);
+        ret.setHasDecoys(hasDecoys);
+
         return ret;
     }
 

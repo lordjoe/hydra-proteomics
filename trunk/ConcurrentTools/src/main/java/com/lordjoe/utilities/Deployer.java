@@ -191,7 +191,9 @@ public class Deployer {
         if ("classes".equalsIgnoreCase(test)) {
             test = itemFile.getParentFile().getName();
         }
-        return test + ".jar";
+        if(!test.endsWith(".jar"))
+            test += ".jar";
+        return test;
     }
 
 //    public File makeencryptJars(File libDir,  itemFile) {
@@ -210,8 +212,9 @@ public class Deployer {
 
     protected void makeJars(File libDir, List<File> jarDirectories, List<File> holder) {
         for (File jarDirectory : jarDirectories) {
-            File jar = new File(jarDirectory.getName() + ".jar");
-                    File added = makeJar(libDir, jar);
+            String name = jarDirectory.getName();
+      //      File jar = new File(name + ".jar");
+            File added = makeJar(libDir,jarDirectory, name + ".jar");
             holder.add(added);
         }
     }
@@ -232,9 +235,8 @@ public class Deployer {
         holder.add(jarFile);
     }
 
-    public File makeJar(File libDir, File itemFile) {
-        String jarName = pathToJarName(itemFile);
-        File jarFile = new File(libDir, jarName);
+    public File makeJar(File libDir, File itemFile,String jarName) {
+          File jarFile = new File(libDir, jarName);
         String cmd = "jar -cvf " + jarFile.getAbsolutePath() + " -C " + itemFile.getAbsolutePath() + " .";
         System.out.println(cmd);
         try {
