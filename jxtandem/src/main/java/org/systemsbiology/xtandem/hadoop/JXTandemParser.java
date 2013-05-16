@@ -29,11 +29,20 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
         private FastaHadoopLoader m_Loader;
         private int m_Proteins;
         private int m_ProteinsReported;
+        private boolean m_GenerateDecoys;
 
         public FastaHadoopLoader getLoader() {
             return m_Loader;
         }
 
+
+        public boolean isGenerateDecoys() {
+            return m_GenerateDecoys;
+        }
+
+        public void setGenerateDecoys(boolean generateDecoys) {
+            m_GenerateDecoys = generateDecoys;
+        }
 
         public void incrementNumberMappedProteins(Context context) {
             Counter counter = context.getCounter("Parser", "TotalProteins");
@@ -52,8 +61,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
                     FastaAminoAcid aa = null;
                     try {
                         aa = FastaAminoAcid.fromChar(sequence.charAt(i));
-                    }
-                    catch (BadAminoAcidException e) {
+                    } catch (BadAminoAcidException e) {
                         continue;
                     }
                     if (aa == null)
@@ -88,6 +96,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             //    application.loadTaxonomy();
             m_Loader = new FastaHadoopLoader(application);
 
+            setGenerateDecoys(application.getBooleanParameter(XTandemUtilities.CREATE_DECOY_PEPTIDES_PROPERTY, Boolean.FALSE));
             long freemem = setMinimalFree();
             XTandemUtilities.outputLine("Free Memory " + String.format("%7.2fmb", freemem / 1000000.0) +
                     " minimum " + String.format("%7.2fmb", getMinimumFreeMemory() / 1000000.0));
@@ -98,20 +107,33 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
         ) throws IOException, InterruptedException {
 
             String label = key.toString();
+            boolean isDecoy = false;
             label = XTandemUtilities.conditionProteinLabel(label);
             String sequence = value.toString();
             // drop terminating *
             if (sequence.endsWith("*"))
                 sequence = sequence.substring(0, sequence.length() - 1);
 
-            if (label.toUpperCase().contains("DECOY"))
+            if (label.toUpperCase().contains("DECOY")) {
                 incrementNumberDecoysProteins(context);
+                isDecoy = true;
+            }
+
+            FastaHadoopLoader loader = getLoader();
 
             incrementNumberAminoAcids(context, sequence);
             incrementNumberMappedProteins(context);
-            FastaHadoopLoader loader = getLoader();
             loader.handleProtein(label, sequence, context);
-            //  context.write(key, value);
+
+            // make a decoy
+            if (isGenerateDecoys() && !isDecoy) {
+                // reverse the sequence
+                String reverseSequence = new StringBuffer(sequence).reverse().toString();
+                incrementNumberAminoAcids(context, reverseSequence);
+                incrementNumberMappedProteins(context);
+                loader.handleProtein("DECOY_" + label, reverseSequence, context);
+            }
+
 
             if (m_Proteins++ % REPORT_INTERVAL_PROTEINS == 0) {
                 showStatistics();
@@ -199,34 +221,38 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 
             IPolypeptide pp = Polypeptide.fromString(sequence);
 
-//Only XScore DMQYFE  832.318
-//Only XScore EGNELYK  834.399
-//Only XScore EKDNTDE  832.332
-//Only XScore IQPTRMS  832.435
-//Only XScore LIVKYLS  835.529
-//
-//            String rawSequence = pp.getSequence();
-//            if (
-//                    "DMQYFE".equals(rawSequence) ||
-//                            "EGNELYK".equals(rawSequence) ||
-//                            "EKDNTDE".equals(rawSequence) ||
-//                            "IQPTRMS".equals(rawSequence) ||
-//                            "LIVKYLS".equals(rawSequence)
-//                    )
+            // code to break and look at handling modifications
+//             if (sequence.contains("["))
 //                XTandemUtilities.breakHere();
-//
-            if (sequence.contains("["))
-                XTandemUtilities.breakHere();
 
             StringBuilder sb = new StringBuilder();
             // should work even if we use a combiner
+
+            int numberNonDecoy = 0;
+            int numberDecoy = 0;
+
             for (Text val : values) {
                 totalDuplicates++;
                 if (sb.length() > 0)
                     sb.append(";");
+
                 String str = val.toString();
+                if (str.startsWith("DECOY"))
+                    numberDecoy++;
+                else
+                    numberNonDecoy++;
+
                 sb.append(str);
             }
+
+            if (numberDecoy > 0) {
+                // same peptide is in decoy and non-decoy
+                if (numberNonDecoy > 0) {
+                   // todo handle mixed decoy/non-decoy peptide
+                }
+
+            }
+
             String proteins = sb.toString();
 
             HadoopTandemMain application = getApplication();
@@ -384,16 +410,13 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 
 
             return ret;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
 
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
 
         }

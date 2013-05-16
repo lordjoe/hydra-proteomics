@@ -168,8 +168,9 @@ public class ScanTagMapper extends AbstractTandemMapper<Writable> {
 
         String id = scan.getId();
 
-        if(XTandemHadoopUtilities.isNotScored(scan))
-            XTandemUtilities.breakHere();
+        // debugging code
+//        if(XTandemHadoopUtilities.isNotScored(scan))
+//            XTandemUtilities.breakHere();
 
  //       if("8840".equals(id))
 //            XTandemUtilities.breakHere();

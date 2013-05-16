@@ -54,6 +54,19 @@ public class XTandemHadoopUtilities {
             "Map output records",
             "Reduce output records",
     };
+    // the protein is a decoy if a label starts with one of these
+    public static final String[] DECOY_PREFIX = {
+            //           "DECOY_",
+            "####REV###",
+            "###RND###",
+            "RND_",
+            "REV_"
+
+
+    };
+
+    public static final String DEFAULT_DECOY_PREFIX = "DECOY_";
+
     public static final Set<String> HADOOP_INTERNAL_COUNTER_SET = new HashSet<String>(Arrays.asList(HADOOP_INTERNAL_COUNTERS));
 
     public static boolean isCounterHadoopInternal(String name) {
@@ -61,431 +74,43 @@ public class XTandemHadoopUtilities {
     }
 
     /**
-     * Framework ot work out why some scans are not scored
+     * take the label of a protein which might represent a decoy
+     * - if it is a decoy return the label with DECOY_ prepended and all other
+     * decoy designating text dropped - if it is not a decoy return null
+     * - we assume that ifthe method returns not null than the return is assigned as the protein label and
+     * the protein is marked as a decoy
+     *
+     * @param label !null label
+     * @return possibly null new label as above
      */
-    public static final String[] NOT_SCORRED_SCANS =
-            {
-                    "1630","1636","1642","1648","1654","1660","1666","1671","1676","1682",
-                   "1688",
-                   "1694",
-                   "1700",
-                   "1706",
-                   "1712",
-                   "1718",
-                   "1723",
-                   "1728",
-                   "1734",
-                   "1740",
-                   "1746",
-                   "1752",
-                   "1758",
-                   "1764",
-                   "1770",
-                   "1776",
-                   "1781",
-                   "1787",
-                   "1792",
-                   "1798",
-                   "1804",
-                   "1810",
-                   "1816",
-                   "1821",
-                   "1827",
-                   "1833",
-                   "1838",
-                   "1844",
-                   "1850",
-                   "1856",
-                   "1862",
-                   "1868",
-                   "1874",
-                   "1880",
-                   "1885",
-                   "1891",
-                   "1896",
-                   "1902",
-                   "1908",
-                   "1914",
-                   "1920",
-                   "1926",
-                   "1932",
-                   "1938",
-                   "1944",
-                   "1950",
-                   "1956",
-                   "1962",
-                   "1968",
-                   "1974",
-                   "1980",
-                   "1986",
-                   "1992",
-                   "1998",
-                   "2004",
-                   "2010",
-                   "2016",
-                   "2022",
-                   "2028",
-                   "2034",
-                   "2040",
-                   "2046",
-                   "2052",
-                   "2058",
-                   "2064",
-                   "2070",
-                   "2075",
-                   "2081",
-                   "2087",
-                   "2093",
-                   "2105",
-                   "2111",
-                   "2115",
-                   "2121",
-                   "2127",
-                   "2133",
-                   "2139",
-                   "2145",
-                   "2151",
-                   "2157",
-                   "2163",
-                   "2169",
-                   "2175",
-                   "2181",
-                   "2187",
-                   "2193",
-                   "2199",
-                   "2205",
-                   "2211",
-                   "2217",
-                   "2223",
-                   "2229",
-                   "2235",
-                   "2241",
-                   "2247",
-                   "2253",
-                   "2259",
-                   "2265",
-                   "2271",
-                   "2277",
-                   "2281",
-                   "2287",
-                   "2293",
-                   "2299",
-                   "2305",
-                   "2311",
-                   "2317",
-                   "2323",
-                   "2329",
-                   "2335",
-                   "2341",
-                   "2345",
-                   "2351",
-                   "2357",
-                   "2363",
-                   "2369",
-                   "2375",
-                   "2381",
-                   "2387",
-                   "2393",
-                   "2399",
-                   "2405",
-                   "2410",
-                   "2416",
-                   "2422",
-                   "2428",
-                   "2434",
-                   "2440",
-                   "2446",
-                   "2452",
-                   "2458",
-                   "2464",
-                   "2470",
-                   "2475",
-                   "2481",
-                   "2487",
-                   "2493",
-                   "2499",
-                   "2505",
-                   "2511",
-                   "2517",
-                   "2523",
-                   "2529",
-                   "2535",
-                   "2541",
-                   "2547",
-                   "2553",
-                   "2559",
-                   "2565",
-                   "2571",
-                   "2577",
-                   "2583",
-                   "2589",
-                   "2595",
-                   "2601",
-                   "2607",
-                   "2613",
-                   "2617",
-                   "2623",
-                   "2629",
-                   "2635",
-                   "2641",
-                   "2647",
-                   "2653",
-                   "2659",
-                   "2665",
-                   "2670",
-                   "2674",
-                   "2679",
-                   "2685",
-                   "2691",
-                   "2697",
-                   "2703",
-                   "2709",
-                   "2715",
-                   "2721",
-                   "2727",
-                   "2732",
-                   "2743",
-                   "2749",
-                   "2755",
-                   "2761",
-                   "2767",
-                   "2773",
-                   "2779",
-                   "2791",
-                   "2797",
-                   "2803",
-                   "2809",
-                   "2815",
-                   "2821",
-                   "2826",
-                   "2831",
-                   "2836",
-                   "2842",
-                   "2848",
-                   "2854",
-                   "2860",
-                   "2866",
-                   "2872",
-                   "2878",
-                   "2884",
-                   "2890",
-                   "2896",
-                   "2902",
-                   "2908",
-                   "2914",
-                   "2920",
-                   "2926",
-                   "2932",
-                   "2938",
-                   "2944",
-                   "2950",
-                   "2956",
-                   "2962",
-                   "2968",
-                   "2974",
-                   "2980",
-                   "2986",
-                   "2992",
-                   "2998",
-                   "3004",
-                   "3010",
-                   "3016",
-                   "3022",
-                   "3028",
-                   "3034",
-                   "3040",
-                   "3046",
-                   "3052",
-                   "3058",
-                   "3064",
-                   "3070",
-                   "3076",
-                   "3082",
-                   "3088",
-                   "3094",
-                   "3106",
-                   "3112",
-                   "3118",
-                   "3124",
-                   "3130",
-                   "3135",
-                   "3141",
-                   "3147",
-                   "3153",
-                   "3159",
-                   "3165",
-                   "3171",
-                   "3177",
-                   "3183",
-                   "3189",
-                   "3195",
-                   "3201",
-                   "3207",
-                   "3213",
-                   "3219",
-                   "3225",
-                   "3231",
-                   "3237",
-                   "3243",
-                   "3249",
-                   "3255",
-                   "3261",
-                   "3267",
-                   "3273",
-                   "3279",
-                   "3285",
-                   "3291",
-                   "3297",
-                   "3303",
-                   "3309",
-                   "3315",
-                   "3321",
-                   "3327",
-                   "3333",
-                   "3339",
-                   "3345",
-                   "3351",
-                   "3357",
-                   "3363",
-                   "3369",
-                   "3375",
-                   "3381",
-                   "3387",
-                   "3393",
-                   "3399",
-                   "3405",
-                   "3411",
-                   "3417",
-                   "3423",
-                   "3429",
-                   "3435",
-                   "3441",
-                   "3453",
-                   "3459",
-                   "3465",
-                   "3471",
-                   "3477",
-                   "3483",
-                   "3489",
-                   "3495",
-                   "3501",
-                   "3507",
-                   "3513",
-                   "3519",
-                   "3525",
-                   "3531",
-                   "3537",
-                   "3543",
-                   "3549",
-                   "3555",
-                   "3561",
-                   "3567",
-                   "3573",
-                   "3579",
-                   "3585",
-                   "3591",
-                   "3597",
-                   "3603",
-                   "3609",
-                   "3615",
-                   "3621",
-                   "3627",
-                   "3633",
-                   "3639",
-                   "3645",
-                   "3651",
-                   "3657",
-                   "3663",
-                   "3669",
-                   "3675",
-                   "3681",
-                   "3687",
-                   "3692",
-                   "3696",
-                   "3702",
-                   "3708",
-                   "3714",
-                   "3720",
-                   "3726",
-                   "3732",
-                   "3738",
-                   "3744",
-                   "3750",
-                   "3756",
-                   "3762",
-                   "3768",
-                   "3774",
-                   "3780",
-                   "3786",
-                   "3792",
-                   "3798",
-                   "3804",
-                   "3810",
-                   "3816",
-                   "3822",
-                   "3828",
-                   "3834",
-                   "3839",
-                   "3844",
-                   "3850",
-                   "3856",
-                   "3862",
-                   "3868",
-                   "3873",
-                   "3878",
-                   "3884",
-                   "3890",
-                   "3895",
-                   "3900",
-                   "3905",
-                   "3911",
-                   "3917",
-                   "3923",
-                   "3929",
-                   "3939",
-                   "3945",
-                   "3951",
-                   "3957",
-                   "3963",
-                   "3969",
-                   "3975",
-                   "3981",
-                   "3987",
-                   "3993",
-                   "3998",
-                   "4003",
-                   "4020",
-                   "4026",
-                   "4032",
-                   "4038",
-                   "4044",
-                   "4050",
-                   "4056",
-                   "4062",
-                   "4067",
-                   "4073",
-                   "4078",
-                   "4084",
-                   "4089",
-                   "4095",
-                   "4101",
-                   "4107",
-                   "4113",
-                   "4118",
-                   "4124","4130",
-               };
+    public static String asDecoy(String label) {
+        if (label.startsWith(DEFAULT_DECOY_PREFIX))
+            return label;
+        for (int i = 0; i < DECOY_PREFIX.length; i++) {
+            String prefix = DECOY_PREFIX[i];
+            if (label.startsWith(prefix)) {
+                // prefix
+               throw new UnsupportedOperationException("Fix This"); // ToDo
 
-    private static Set<String> gNotScoredIds = new HashSet<String>(Arrays.asList(NOT_SCORRED_SCANS));
+            }
 
-    public static boolean isIdNotScored(String id) {
-        return gNotScoredIds.contains(id);
+
+        }
+        return null;
     }
 
-    public static boolean isNotScored(ISpectralScan scan) {
-         return isIdNotScored(scan.getId());
-     }
 
-
+//    private static Set<String> gNotScoredIds = new HashSet<String>(Arrays.asList(NOT_SCORRED_SCANS));
+//
+//    public static boolean isIdNotScored(String id) {
+//        return gNotScoredIds.contains(id);
+//    }
+//
+//    public static boolean isNotScored(ISpectralScan scan) {
+//         return isIdNotScored(scan.getId());
+//     }
+//
+//
 
 
     /**
@@ -511,8 +136,7 @@ public class XTandemHadoopUtilities {
 
                 }
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -555,20 +179,20 @@ public class XTandemHadoopUtilities {
     public static final int DEFAULT_MAX_SPLIT_SIZE = 64 * 1024 * 1024;
 
     public static final int DEFAULT_CARRIED_MATCHES = 8;
-      public static int  gNumberCarriedMatches = DEFAULT_CARRIED_MATCHES;
+    public static int gNumberCarriedMatches = DEFAULT_CARRIED_MATCHES;
 
-      /**
-       * how many matches including the best are retained
-       * @return
-       */
-      public static int getNumberCarriedMatches() {
-          return gNumberCarriedMatches;
-      }
+    /**
+     * how many matches including the best are retained
+     *
+     * @return
+     */
+    public static int getNumberCarriedMatches() {
+        return gNumberCarriedMatches;
+    }
 
-      public static void setNumberCarriedMatches(int numberCarriedMatches) {
-          gNumberCarriedMatches = numberCarriedMatches;
-      }
-
+    public static void setNumberCarriedMatches(int numberCarriedMatches) {
+        gNumberCarriedMatches = numberCarriedMatches;
+    }
 
 
     private static int gMaxScoredPeptides = DEFAULT_MAX_SCORED_PEPTIDES;
@@ -701,8 +325,7 @@ public class XTandemHadoopUtilities {
             Counter[] ret = new Counter[holder.size()];
             holder.toArray(ret);
             return ret;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -790,8 +413,7 @@ public class XTandemHadoopUtilities {
                 return doneOK;
             }
             throw new IllegalStateException("should be file of directory if it exists");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -823,16 +445,14 @@ public class XTandemHadoopUtilities {
             int reduces = conf.getInt("reduces", -1);
             if (reduces >= 0) {
                 job.setNumReduceTasks(reduces);
-            }
-            else {
+            } else {
                 reduces = (int) Math.ceil((double) maxReduceTasks * 9.0 / 10.0);
             }
             if (reduces < getMaxReduceTasks())
                 reduces = getMaxReduceTasks();
             job.setNumReduceTasks(reduces);
 
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -890,8 +510,7 @@ public class XTandemHadoopUtilities {
             ret = XTandemHadoopUtilities.readDatabaseSizes(pApplication);
             if (ret != null && ret.size() > 0)
                 return ret;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
         return buildDatabaseSizes(pApplication);
@@ -925,12 +544,10 @@ public class XTandemHadoopUtilities {
                 out.println(line);
             }
             return pDbSizes;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
-        }
-        finally {
+        } finally {
             if (out != null)
                 out.close();
         }
@@ -968,8 +585,7 @@ public class XTandemHadoopUtilities {
             InputStream fsout = fs.open(dd);
             Map<Integer, Integer> ret = parseDataFileSizes(fsout);
             return ret;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             return null;
 
         }
@@ -1040,8 +656,7 @@ public class XTandemHadoopUtilities {
             FileSystem fs = FileSystem.get(cfg);
             OutputStream fsout = fs.create(dd);
             FileUtilities.writeFile(fsout, sizestr);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1087,8 +702,7 @@ public class XTandemHadoopUtilities {
 
             T scan = XTandemUtilities.parseFile(inp, handler, "");
             return scan;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             FileUtilities.writeFile("parseError.xml", text);
             FileUtilities.writeFile("parseError2.xml", new String(bytes));
@@ -1126,8 +740,7 @@ public class XTandemHadoopUtilities {
         try {
             InputStream is = new ByteArrayInputStream(text.getBytes("UTF-8"));
             inp = new LineNumberReader(new InputStreamReader(is));
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
         return XTandemUtilities.readMGFScan(inp, "");
@@ -1151,8 +764,7 @@ public class XTandemHadoopUtilities {
             RawPeptideScan rawPeptideScan = null;
             try {
                 rawPeptideScan = parseXMLString(text, handler);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.err.println(text);
                 throw new RuntimeException(e);
 
@@ -1223,8 +835,7 @@ public class XTandemHadoopUtilities {
             String fileName = "ScanData/" + XTandemHadoopUtilities.buildFileNameFromMass(mass);
             Path filePath = new Path(fileName);
             return new SequenceFile.Writer(fs, configuration, filePath, Text.class, Text.class);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1242,8 +853,7 @@ public class XTandemHadoopUtilities {
             String fileName = "ScanData/" + XTandemHadoopUtilities.buildFileNameFromMass(mass);
             Path filePath = new Path(fileName);
             return new SequenceFile.Reader(fs, filePath, configuration);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1263,8 +873,7 @@ public class XTandemHadoopUtilities {
                 return null;
             }
             return valueTxt.toString();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1314,13 +923,11 @@ public class XTandemHadoopUtilities {
             opener = new HDFSStreamOpener(pConfiguration);
             XTandemMain.addPreLoadOpener(opener);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
             if (e instanceof RuntimeException) {
                 throw (RuntimeException) e;
-            }
-            else {
+            } else {
                 throw new RuntimeException(e);
             }
             //   opener = new FileStreamOpener();
@@ -1331,12 +938,10 @@ public class XTandemHadoopUtilities {
         if (context != null) {
             if (context instanceof MapContext) {
                 System.err.println("in mapper paramsFile = " + paramsFile);
-            }
-            else if (context instanceof ReduceContext) {
+            } else if (context instanceof ReduceContext) {
                 System.err.println("in reducer paramsFile = " + paramsFile);
 
-            }
-            else {
+            } else {
                 // Huh - who knows where we are
                 System.err.println("in context " + context.getClass().getName() + " paramsFile = " + paramsFile);
 
@@ -1368,12 +973,10 @@ public class XTandemHadoopUtilities {
                 fs.delete(outputDir, true); // get rid of the output directory
             FileOutputFormat.setOutputPath(job, outputDir);
 
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             // in a local file ststem this may lead to an error so make the directory
             FileOutputFormat.setOutputPath(job, outputDir);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1425,7 +1028,7 @@ public class XTandemHadoopUtilities {
         // note we are reading from hdsf
         HDFSStreamOpener opener = new HDFSStreamOpener(configuration);
 
-         if (added != null)
+        if (added != null)
             paramsFile += added;
         String filePath = opener.buildFilePath(paramsFile);
         XTandemMain.addPreLoadOpener(opener);
@@ -1539,12 +1142,10 @@ public class XTandemHadoopUtilities {
                                  final String value) {
         try {
             context.write(new Text(key), new Text(value));
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
 
         }
@@ -1558,8 +1159,7 @@ public class XTandemHadoopUtilities {
                 System.err.println("Input Path " + arg);
                 XTandemHadoopUtilities.setInputPath(pJob, arg);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1662,8 +1262,7 @@ public class XTandemHadoopUtilities {
         try {
             FileSystem fs = FileSystem.get(conf);
             return getNumberLines(path, fs);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1681,8 +1280,7 @@ public class XTandemHadoopUtilities {
                 return 0;
             FSDataInputStream open = pFs.open(path);
             return FileUtilities.getNumberLines(open);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             return 0;
 
         }
@@ -1709,8 +1307,7 @@ public class XTandemHadoopUtilities {
             String[] ret = new String[holder.size()];
             holder.toArray(ret);
             return ret;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1735,8 +1332,7 @@ public class XTandemHadoopUtilities {
                 addPathSize(ret, fs, path);
             }
             return ret;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1779,12 +1375,10 @@ public class XTandemHadoopUtilities {
             for (String s : items) {
                 out.println(s + "=" + counters.get(s));
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
-        }
-        finally {
+        } finally {
             if (out != null)
                 out.close();
         }
@@ -1800,8 +1394,7 @@ public class XTandemHadoopUtilities {
                 addCounterGroup(iterator.next(), ret);
             }
             return ret;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1848,15 +1441,12 @@ public class XTandemHadoopUtilities {
             FSDataInputStream open = fs.open(path);
             try {
                 return FileUtilities.readInLines(new InputStreamReader(open));
-            }
-            catch (RuntimeException e) {
+            } catch (RuntimeException e) {
                 throw new RuntimeException("cannot read path" + path.getName() + " caused by " + e.getMessage(), e);
-            }
-            finally {
+            } finally {
                 FileUtilities.guaranteeClosed(open);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1878,11 +1468,9 @@ public class XTandemHadoopUtilities {
                 return null;
             FSDataInputStream open = fs.open(path);
             return new LineNumberReader(new InputStreamReader(open));
-        }
-        catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             throw new RuntimeException("cannot read path" + path.getName() + " caused by " + e.getMessage(), e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -1901,8 +1489,7 @@ public class XTandemHadoopUtilities {
             FileSystem fs = FileSystem.get(cfg);
             Map<Integer, Integer> ret = getDatabaseSizes(databasePath, cfg);
             return ret;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }

@@ -292,9 +292,9 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
                 numberScans++;
                 String id = scan.getId();
 
-
-                if (XTandemHadoopUtilities.isNotScored(scan))
-                    XTandemUtilities.breakHere();
+                // debugging code
+//                if (XTandemHadoopUtilities.isNotScored(scan))
+//                    XTandemUtilities.breakHere();
 
 
                 // special code to store scans fo rtiming later

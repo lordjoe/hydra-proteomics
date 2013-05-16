@@ -100,8 +100,11 @@ public class JXTandemDeployer extends Deployer {
      */
     @Override
     protected void makeJars(File libDir, List<File> jarDirectories, List<File> holder) {
-        File jarFile = new File(libDir, "Target.jar");
-        makeOneJar(jarDirectories, holder, jarFile);
+        if(jarDirectories.size() != 1)
+            throw new IllegalStateException("all modules need to compile to a single jar!!!");
+        super.makeJars(libDir,  jarDirectories,  holder);
+    //    File jarFile = new File(libDir, "Target.jar");
+   //     makeOneJar(jarDirectories, holder, jarFile);
     }
 
     @Override

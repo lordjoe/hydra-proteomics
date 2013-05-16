@@ -24,6 +24,7 @@ public class DigesterDescription implements IEquivalent<DigesterDescription> {
     }
 
     private String m_Version = "0";
+    private boolean m_HasDecoys;
     private PeptideBondDigester m_Digester;
     private final List<PeptideModification> m_Modification = new ArrayList<PeptideModification>();
 
@@ -39,6 +40,14 @@ public class DigesterDescription implements IEquivalent<DigesterDescription> {
         final DigesterDescriptorHandler handler1 = new DigesterDescriptorHandler(handler, this);
         handler.pushCurrentHandler(handler1);
         handler.parseDocument(is);
+    }
+
+    public boolean isHasDecoys() {
+        return m_HasDecoys;
+    }
+
+    public void setHasDecoys(boolean hasDecoys) {
+        m_HasDecoys = hasDecoys;
     }
 
     public void addModification(PeptideModification added) {
@@ -78,6 +87,7 @@ public class DigesterDescription implements IEquivalent<DigesterDescription> {
         String digestRules = digester.toString();
         ap.openTag(TAG);
         ap.appendAttribute("version", getVersion());
+        ap.appendAttribute("hasDecoys", Boolean.toString(isHasDecoys()));
         ap.appendAttribute("rules", digestRules);
         ap.appendAttribute("semityptic", digester.isSemiTryptic());
         ap.appendAttribute("numberMissedCleavages", digester.getNumberMissedCleavages());
