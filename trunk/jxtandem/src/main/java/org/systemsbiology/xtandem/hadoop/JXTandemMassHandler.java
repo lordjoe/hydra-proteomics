@@ -143,8 +143,10 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
                         continue;
                     String[] items = valStr.split(",");
                     String sequence = items[0];
-                    if(isInterestingSequence(   sequence))
-                         XTandemUtilities.breakHere();
+
+                    // this is a debugging step
+               //     if(isInterestingSequence(   sequence))
+               //          XTandemUtilities.breakHere();
 
                     IPolypeptide pp = Polypeptide.fromString(sequence);
                     double pep_mass = Double.parseDouble(items[1]);

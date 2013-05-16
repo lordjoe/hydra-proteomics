@@ -16,8 +16,42 @@ public class HadoopDeployer {
     public static HadoopDeployer[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = HadoopDeployer.class;
 
+    public static final String[] EXCLUDED_JARS_PREFIXES = {
+  //          core-3.1.1.jar,\
+            "hadoop-",
+            "commons-logging-",
+            "commons-lang-",
+            "commons-codec-",
+            "commons-httpclient-",
+            "commons-net-",
+             "avro-",
+            "jackson-",
+            "hsqldb-",
+            "ftpserver-",
+            "ftplet-",
+            "jackson-",
+            "ant-",
+            "aspectjtools-",
+            "aspectjrt-",
+            "slf4j-",
+            "xmlenc-",
+            "paranamer-",
+            "qdox-",
+            "jetty-",
+            "jsp-",
+            "jasper-",
+            "jetty-",
+            "jets3t-",
+            "jdiff-",
+            "aws-",
+            "mockito-",
+            "oro-",
+            "mina-",
+            "kfs-",
+            "jetty-",
+       };
 
-    public static final String[] EEXCLUDED_JARS_LIST = {
+    public static final String[] EXCLUDED_JARS_LIST = {
             "idea_rt.jar",
             "javaws.jar",
             "jce.jar",
@@ -34,11 +68,11 @@ public class HadoopDeployer {
             "ui.jar",
             "testng-5.5-jdk15.jar",
             "junit-dep-4.8.1.jar",
-        //    "hadoop-0.20.2-core.jar",
+            //    "hadoop-0.20.2-core.jar",
             "hadoop-0.20.2-tools.jar",
-       //     "hadoop-core-0.20.1.jar",
-        //    "commons-logging-1.1.1.jar",
-       //     "commons-cli-1.2.jar",
+            //     "hadoop-core-0.20.1.jar",
+            //    "commons-logging-1.1.1.jar",
+            //     "commons-cli-1.2.jar",
             //     "commons-logging-1.1.1.jar",
             "slf4j-log4j12-1.4.3.jar",
             "log4j-1.2.15.jar",
@@ -51,39 +85,39 @@ public class HadoopDeployer {
             "karmasphere-client.jar",
             "servlet-api-2.5-6.1.14.jar",
             //    "commons-codec-1.3.jar",     //
-      //      "commons-el-1.0.jar",
+            //      "commons-el-1.0.jar",
             // //   "commons-io-1.4.jar",
             //    "aws-java-sdk-1.0.005.jar",    // leave off
             "mysql-connector-java-5.0.4.jar",
             "junit-4.4.jar",
             "aws-java-sdk-1.0.12.jar",
-       //     "commons-httpclient-3.1.jar",
-        //    "commons-codec-1.3.jar",
+            //     "commons-httpclient-3.1.jar",
+            //    "commons-codec-1.3.jar",
             "jackson-core-asl-1.6.1.jar",
             "stax-api-1.0.1.jar",
             "jetty-6.1.25.jar",
             "jetty-util-6.1.25.jar",
-         //   "servlet-api-2.5-20081211.jar",
+            //   "servlet-api-2.5-20081211.jar",
             "servlet-api-2.5.jar",
             "log4j-1.2.9.jar",
             "junit-4.8.1.jar",
             "openjpa-persistence-2.0.0.jar",
             "openjpa-kernel-2.0.0.jar",
             "openjpa-lib-2.0.0.jar",
-      //      "commons-lang-2.1.jar",
-      //      "commons-collections-3.2.1.jar",
+            //      "commons-lang-2.1.jar",
+            //      "commons-collections-3.2.1.jar",
             "serp-1.13.1.jar",
             "geronimo-jms_1.1_spec-1.1.1.jar",
             "geronimo-jta_1.1_spec-1.1.1.jar",
             "commons-pool-1.5.3.jar",
             "geronimo-jpa_2.0_spec-1.0.jar",
             "jackson-core-asl-1.7.4.jar",
-         //   "xml-apis-1.0.b2.jar",
-        //    "xml-apis-ext-1.3.04.jar",
+            //   "xml-apis-1.0.b2.jar",
+            //    "xml-apis-ext-1.3.04.jar",
             "gragent.jar"
     };
 
-    public static final Set<String> EXCLUDED_JARS = new HashSet(Arrays.asList(EEXCLUDED_JARS_LIST));
+    public static final Set<String> EXCLUDED_JARS = new HashSet(Arrays.asList(EXCLUDED_JARS_LIST));
 
     public static void addExcludedLibrary(String lib) {
         EXCLUDED_JARS.add(lib);
@@ -130,15 +164,15 @@ public class HadoopDeployer {
                 continue;
             if (item.indexOf(javaHome) > -1)
                 continue;
-            if(jarName.startsWith("hadoop"))
-                 jarName = itemFile.getName();
+            if (jarName.startsWith("hadoop"))
+                jarName = itemFile.getName();
 
-            if (EXCLUDED_JARS.contains(item))
+              if (HADOOP_HOME.indexOf(javaHome) > -1)
                 continue;
-            if (EXCLUDED_JARS.contains(jarName))
+
+            if( applyRulesToExclude(  item,  jarName))
                 continue;
-            if (HADOOP_HOME.indexOf(javaHome) > -1)
-                continue;
+
             if (!itemFile.exists())
                 continue;
             if (itemFile.isFile()) {
@@ -155,18 +189,42 @@ public class HadoopDeployer {
         return ret;
     }
 
+    /**
+     * get rid of a lot of libraries we don't need
+     * @param item
+     * @param jarName
+     * @return
+     */
+    protected static boolean applyRulesToExclude(String item,String jarName) {
+        if (EXCLUDED_JARS.contains(item))
+              return true;  // exclude
+          if (EXCLUDED_JARS.contains(jarName))
+              return true;  // exclude
+        for (int i = 0; i < EXCLUDED_JARS_PREFIXES.length; i++) {
+            String testPrefix = EXCLUDED_JARS_PREFIXES[i];
+            if(item.startsWith(testPrefix))
+                return true;  // exclude
+            if(item.startsWith(jarName))
+                 return true;  // exclude
+
+        }
+        return false; // OK
+    }
+
     private static void readExcludedProperties() {
         try {
             gExcludedProperty = new Properties();
-            gExcludedProperty.load(HadoopDeployer.class.getResourceAsStream("ExcludedLibraries.properties"));
-            String prop = gExcludedProperty.getProperty("ExcludedLibraries");
-            String[] props = prop.split(",");
-            for (int i = 0; i < props.length; i++) {
-                String s = props[i];
-                EXCLUDED_JARS.add(s);
+            InputStream resourceAsStream = HadoopDeployer.class.getResourceAsStream("ExcludedLibraries.properties");
+            if (resourceAsStream != null) {
+                gExcludedProperty.load(resourceAsStream);
+                String prop = gExcludedProperty.getProperty("ExcludedLibraries");
+                String[] props = prop.split(",");
+                for (int i = 0; i < props.length; i++) {
+                    String s = props[i];
+                    EXCLUDED_JARS.add(s);
+                }
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -202,8 +260,8 @@ public class HadoopDeployer {
     }
 
     protected static boolean inExcludedJars(String s) {
-        for (int i = 0; i < EEXCLUDED_JARS_LIST.length; i++) {
-            String test = EEXCLUDED_JARS_LIST[i];
+        for (int i = 0; i < EXCLUDED_JARS_LIST.length; i++) {
+            String test = EXCLUDED_JARS_LIST[i];
             if (s.endsWith(test))
                 return true;
         }
@@ -277,8 +335,7 @@ public class HadoopDeployer {
             }
             srcFile.close();
             return true;
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             return (false);
         }
     }
@@ -304,11 +361,9 @@ public class HadoopDeployer {
             }
             return (false);
             // failure
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             return (false); // browser disallows
-        }
-        catch (SecurityException ex) {
+        } catch (SecurityException ex) {
             return (false); // browser disallows
         }
     }
@@ -317,8 +372,8 @@ public class HadoopDeployer {
     public static void deployLibrariesToJar(File deployDir) {
         try {
             File parentFile = deployDir.getParentFile();
-            if(parentFile != null)
-                 parentFile.mkdirs();
+            if (parentFile != null)
+                parentFile.mkdirs();
 
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(deployDir));
 
@@ -327,12 +382,10 @@ public class HadoopDeployer {
             String[] pathItems = null;
             if (classpath.contains(";")) {
                 pathItems = classpath.split(";");
-            }
-            else {
+            } else {
                 if (classpath.contains(":")) {
                     pathItems = classpath.split(":");   // Linux stlye
-                }
-                else {
+                } else {
                     String[] items = {classpath};
                     pathItems = items; // only 1 I guess
                 }
@@ -347,18 +400,17 @@ public class HadoopDeployer {
             out.flush();
             out.close();
 
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
     }
 
-    public static void deployClassesToJar(File deployDir,String... loadedPackages) {
+    public static void deployClassesToJar(File deployDir, String... loadedPackages) {
         try {
             File parentFile = deployDir.getParentFile();
-            if(parentFile != null)
-                 parentFile.mkdirs();
+            if (parentFile != null)
+                parentFile.mkdirs();
 
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(deployDir));
 
@@ -367,12 +419,10 @@ public class HadoopDeployer {
             String[] pathItems = null;
             if (classpath.contains(";")) {
                 pathItems = classpath.split(";");
-            }
-            else {
+            } else {
                 if (classpath.contains(":")) {
                     pathItems = classpath.split(":");   // Linux stlye
-                }
-                else {
+                } else {
                     String[] items = {classpath};
                     pathItems = items; // only 1 I guess
                 }
@@ -385,7 +435,7 @@ public class HadoopDeployer {
 
             }
 
-   //           ignore libraries
+            //           ignore libraries
 //            copyLibraries(out, pathLibs);
             File[] pathDirectories = filterClassPathDirectories(pathItems, javaHome);
             for (int i = 0; i < pathDirectories.length; i++) {
@@ -395,8 +445,7 @@ public class HadoopDeployer {
             out.flush();
             out.close();
 
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -415,10 +464,8 @@ public class HadoopDeployer {
             File file = list[i];
             if (file.isDirectory()) {
                 final String np = nextPath(s, file.getName());
-                if(!np.startsWith("META-INF"))
-                    copyLibraryDirectory(np, file, pOut);
-            }
-            else {
+                copyLibraryDirectory(np, file, pOut);
+            } else {
                 final String np = nextPath(s, file.getName());
                 ZipEntry ze = new ZipEntry(np);
                 pOut.putNextEntry(ze);
@@ -429,7 +476,7 @@ public class HadoopDeployer {
     }
 
 
-    private static void copySpecifiesLibraryDirectory(final String s, final File dir, final ZipOutputStream pOut,Set<String> paths) throws IOException {
+    private static void copySpecifiesLibraryDirectory(final String s, final File dir, final ZipOutputStream pOut, Set<String> paths) throws IOException {
         File[] list = dir.listFiles();
         if (list == null) return;
         for (int i = 0; i < list.length; i++) {
@@ -437,9 +484,8 @@ public class HadoopDeployer {
             if (file.isDirectory()) {
                 final String np = nextPath(s, file.getName());
                 copySpecifiesLibraryDirectory(np, file, pOut, paths);
-            }
-            else {
-                 if(!paths.contains(s))
+            } else {
+                if (!paths.contains(s))
                     continue;
                 final String np = nextPath(s, file.getName());
                 ZipEntry ze = new ZipEntry(np);
@@ -459,9 +505,10 @@ public class HadoopDeployer {
 
     /**
      * make a small jar for debugging
+     *
      * @param pJarName
      */
-    public static File makeClassOnlyHadoopJar(final String pJarName,String... loadedClasses) {
+    public static File makeClassOnlyHadoopJar(final String pJarName, String... loadedClasses) {
         File deployDir = new File(pJarName);
         deployClassesToJar(deployDir, loadedClasses);
         return deployDir;

@@ -647,15 +647,17 @@ public abstract  class AbstractScoringAlgorithm implements ITandemScoringAlgorit
              if (scorer.isTheoreticalSpectrumScored(pConditionedScan, tsSet)) {
                  numberScoredSpectra += scoreOnePeptide(  pCounter, pConditionedScan, scan, Scorer.PEAKS_BY_MASS, precursorCharge, tsSet);
              }
-             else {
-                 // for the moment reiterate the code to find out why not scored
-                 if (XTandemHadoopUtilities.isNotScored(pConditionedScan.getRaw())) {
-                     XTandemUtilities.breakHere();
-                     boolean notDone = scorer.isTheoreticalSpectrumScored(pConditionedScan, tsSet);
-                     ScoringReducer.gNumberNotScored++;
 
-                 }
-             }
+             // debugging code -t look at why some specrta are NOT scored
+//             else {
+//                 // for the moment reiterate the code to find out why not scored
+//                 if (XTandemHadoopUtilities.isNotScored(pConditionedScan.getRaw())) {
+//                     XTandemUtilities.breakHere();
+//                     boolean notDone = scorer.isTheoreticalSpectrumScored(pConditionedScan, tsSet);
+//                     ScoringReducer.gNumberNotScored++;
+//
+//                 }
+//             }
          }
          return numberScoredSpectra;
      }

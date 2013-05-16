@@ -33,6 +33,7 @@ public class DigesterDescriptorHandler extends AbstractElementSaxHandler<Digeste
         DigesterDescription dig = getElementObject();
         PeptideBondDigester digester = PeptideBondDigester.getDigester(rules);
         dig.setDigester(digester);
+
         boolean semi = XTandemSaxUtilities.getRequiredBooleanAttribute( "semityptic", attr);
         digester.setSemiTryptic(semi);
         String version = attr.getValue("version");
@@ -41,6 +42,8 @@ public class DigesterDescriptorHandler extends AbstractElementSaxHandler<Digeste
         int missedCleavages = XTandemSaxUtilities.getRequiredIntegerAttribute( "numberMissedCleavages", attr);
          digester.setNumberMissedCleavages(missedCleavages);
 
+        boolean hasDecoys = XTandemSaxUtilities.getBooleanAttribute("hasDecoys", attr,false);
+        dig.setHasDecoys(hasDecoys);
 
         return;
     }
