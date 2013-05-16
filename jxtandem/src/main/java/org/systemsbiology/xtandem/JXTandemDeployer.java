@@ -157,8 +157,7 @@ public class JXTandemDeployer extends Deployer {
         datadir.mkdirs();
         for (int i = 0; i < data.length; i++) {
             File file = data[i];
-            File dst = new File(datadir, file.getName());
-            FileUtilities.copyFile(file, dst);
+            FileUtilities.copyFile(file, new File(datadir, file.getName()));
         }
         HadoopDeployer.makeHadoopJar(datadir.getAbsolutePath() + "/Hydra.jar");
     }
