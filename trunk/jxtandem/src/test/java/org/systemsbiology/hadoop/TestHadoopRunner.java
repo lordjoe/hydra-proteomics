@@ -66,9 +66,9 @@ public class TestHadoopRunner {
         conf.set("mapred.jar", jarFile);
 
         String[] args = {"TestOut"};
-        HDFSAccessor hfs = null;
+        IHDFSFileSystem hfs = null;
         try {
-            hfs = new HDFSAccessor();
+            hfs = HDFSAccessor.getFileSystem();
         }
         catch (Exception e) {
               Throwable cause = XTandemUtilities.getUltimateCause(e);

@@ -8,6 +8,7 @@ import org.apache.hadoop.fs.permission.*;
 import org.apache.hadoop.security.*;
 import org.systemsbiology.common.*;
 import org.systemsbiology.remotecontrol.*;
+import org.systemsbiology.remotecontrol.LocalFileSystem;
 
 import java.io.*;
 import java.security.*;
@@ -25,31 +26,52 @@ public class HDFSAccessor implements IHDFSFileSystem {
     public static Class THIS_CLASS = HDFSAccessor.class;
 
     public static IHDFSFileSystem getFileSystem() {
-        if (HDFSAccessor.isHDFSHasSecurity())
-            return new HDFSAsUserAccessor();
-        else
+        if (HDFSAccessor.isHDFSHasSecurity()) {
+            if (true)
+                throw new UnsupportedOperationException("Fix This"); // ToDo
+              //         return new HDFSAsUserAccessor();
+        } else {
             return new HDFSAccessor();
-
+        }
+       throw new UnsupportedOperationException("Fix This"); // ToDo
     }
+
     public static IHDFSFileSystem getFileSystem(Configuration config) {
-        if (HDFSAccessor.isHDFSHasSecurity())
-            return new HDFSAsUserAccessor(config);
-        else
+        if (HDFSAccessor.isHDFSHasSecurity()) {
+            if (true) {
+                throw new UnsupportedOperationException("Fix This"); // ToDo
+            }
+//                return new HDFSAsUserAccessor(config);
+        } else {
             return new HDFSAccessor(config);
+        }
 
+        throw new UnsupportedOperationException("Fix This"); // ToDo
     }
+
     public static IHDFSFileSystem getFileSystem(final String host, final int port) {
-        if (HDFSAccessor.isHDFSHasSecurity())
-            return new HDFSAsUserAccessor(host, port);
-        else
-            return new HDFSAccessor(host,  port);
+        if (HDFSAccessor.isHDFSHasSecurity()) {
+            if (true) {
+                throw new UnsupportedOperationException("Fix This"); // ToDo
+            }
+            //     return new HDFSAsUserAccessor(host, port);
+        } else {
+            return new HDFSAccessor(host, port);
+        }
 
+        throw new UnsupportedOperationException("Fix This"); // ToDo
     }
-    public static IHDFSFileSystem getFileSystem(final String host, final int port,String user) {
-        if (HDFSAccessor.isHDFSHasSecurity())
-            return new HDFSAsUserAccessor(host, port,user);
-        else
-            return new HDFSAccessor(host,  port, user);
+
+    public static IHDFSFileSystem getFileSystem(final String host, final int port, String user) {
+        if (HDFSAccessor.isHDFSHasSecurity()) {
+            if (true) {
+                throw new UnsupportedOperationException("Fix This"); // ToDo
+            }
+            //  return new HDFSAsUserAccessor(host, port, user);
+        } else  {
+            return new HDFSAccessor(host, port, user);
+        }
+        throw new UnsupportedOperationException("Fix This"); // ToDo
 
     }
 
@@ -72,6 +94,7 @@ public class HDFSAccessor implements IHDFSFileSystem {
     public static void setHDFSHasSecurity(boolean HDFSHasSecurity) {
         g_HDFSHasSecurity = HDFSHasSecurity;
     }
+
     private FileSystem m_DFS;
 
 
@@ -92,6 +115,18 @@ public class HDFSAccessor implements IHDFSFileSystem {
     private HDFSAccessor(final String host, final int port) {
         this(host, port, RemoteUtilities.getUser());
     }
+
+    /**
+      * true of you aer running on a local disk
+      *
+      * @return as above
+      */
+     @Override
+     public boolean isLocal() {
+           return false;
+     }
+
+
 
 
 //    public HDFSAccessor( String host) {
@@ -375,8 +410,9 @@ public class HDFSAccessor implements IHDFSFileSystem {
      * @param hdfsPath !null path - probably of an existing file
      * @return !null stream
      */
-    @Override
-    public InputStream openFileForRead(String hdfsPath) {
+
+    public InputStream openFileForRead(Path src ) {
+        String hdfsPath = src.getName();
         if (isFileNameLocal(hdfsPath)) {
             try {
                 return new FileInputStream(hdfsPath); // better be local
@@ -386,7 +422,6 @@ public class HDFSAccessor implements IHDFSFileSystem {
             }
         }
         final FileSystem fs = getDFS();
-        Path src = new Path(hdfsPath);
         try {
             return fs.open(src);
         } catch (IOException e) {
@@ -406,8 +441,8 @@ public class HDFSAccessor implements IHDFSFileSystem {
      * @param hdfsPath !null path -
      * @return !null stream
      */
-    @Override
-    public OutputStream openFileForWrite(String hdfsPath) {
+
+    protected OutputStream openFileForWrite(String hdfsPath) {
         if (isFileNameLocal(hdfsPath)) {
             try {
                 return new FileOutputStream(hdfsPath); // better be local
@@ -421,7 +456,8 @@ public class HDFSAccessor implements IHDFSFileSystem {
         return openFileForWrite(src);
     }
 
-    private OutputStream openFileForWrite(Path src) {
+    @Override
+    public OutputStream openFileForWrite(Path src) {
         final FileSystem fs = getDFS();
         try {
             Path parent = src.getParent();
@@ -506,7 +542,7 @@ public class HDFSAccessor implements IHDFSFileSystem {
      */
     @Override
     public String readFromFileSystem(String hdfsPath) {
-        InputStream is = openFileForRead(hdfsPath);
+        InputStream is = openFileForRead(new Path(hdfsPath));
         return FileUtilities.readInFile(is);
     }
 
@@ -525,5 +561,21 @@ public class HDFSAccessor implements IHDFSFileSystem {
 
         //       dfs.writeToFileSystem( "/user/howdah/moby/",new File("E:/moby"));
         dfs.copyFromFileSystem("/user/howdah/JXTandem/data/HoopmanSample/Only_yeast.2012_04_115_15_32_53.t.xml.scans", new File("E:/ForSteven/HoopmanSample/Only_yeast.2012_04_115_15_32_53.t.xml.scans"));
+    }
+
+    /**
+     * there are issues with hdfs and running as a remote user
+     * InputFormats should be running in the cluster and should alerday be the
+     * right user
+     *
+     * @return true is you are running on the cluster
+     */
+    @Override
+    public boolean isRunningAsUser() {
+        if(isLocal())
+            return true;
+        if (true)
+            throw new UnsupportedOperationException("Fix This");
+        return false;
     }
 }

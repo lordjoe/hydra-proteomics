@@ -2,7 +2,9 @@ package org.systemsbiology.xtandem.taxonomy;
 
 //import org.springframework.dao.*;
 //import org.springframework.jdbc.core.simple.*;
+import org.apache.hadoop.fs.*;
 import org.systemsbiology.common.*;
+import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.scoring.*;
@@ -115,13 +117,14 @@ public class FastaLoader implements IFastaHandler {
     }
 
 
-    public static PrintWriter buildRemoteWriter(IFileSystem fs, String remoteDirectory, File localFile) {
+    public static PrintWriter buildRemoteWriter(IHDFSFileSystem fs, String remoteDirectory, File localFile) {
         String name = remoteDirectory + "/" + localFile.getName();
-        OutputStream os = fs.openFileForWrite(name);
+        Path path = new Path(name);
+        OutputStream os = fs.openFileForWrite(path);
         return new PrintWriter(new OutputStreamWriter(os));
     }
 
-    public void parseToRemote(InputStream is, IFileSystem fs, String remoteDirectory, String url) {
+    public void parseToRemote(InputStream is, IHDFSFileSystem fs, String remoteDirectory, String url) {
         m_ProteinIndex = 1;
         try {
             m_ProteinWriter = buildRemoteWriter(fs, remoteDirectory, m_ProteinLoadFile);

@@ -1,5 +1,6 @@
 package org.systemsbiology.xtandem.testing;
 
+import org.apache.hadoop.fs.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.hadoop.*;
@@ -88,7 +89,7 @@ public class MZXMLReader {
 
 
     private static void handleHDFSFile(final String pArg) throws IOException {
-        HDFSAccessor fs = new HDFSAccessor();
+        IHDFSFileSystem fs = HDFSAccessor.getFileSystem();
 
         if (fs.isDirectory(pArg)) {
             throw new UnsupportedOperationException("Fix This"); // ToDo
@@ -96,7 +97,8 @@ public class MZXMLReader {
         else {
             String name = pArg;
             XTandemUtilities.outputLine(name);
-            InputStream is = fs.openFileForRead(name);
+            Path path = new Path(name);
+            InputStream is = fs.openFileForRead(path);
             processStream(is);
         }
         gTimer.showElapsed("Handled " + gTotalScans + " nested " + gNestedTotalScans);

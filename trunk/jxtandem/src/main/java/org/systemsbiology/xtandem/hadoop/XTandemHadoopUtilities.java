@@ -1049,7 +1049,8 @@ public class XTandemHadoopUtilities {
         // note we are reading from hdsf
         safeWrite(context, "Output File", paramsFile);
         HDFSAccessor accesor = opener.getAccesor();
-        OutputStream os = accesor.openFileForWrite(paramsFile);
+        Path path = new Path(paramsFile);
+        OutputStream os = accesor.openFileForWrite(path);
 
         return os;
     }
@@ -1089,7 +1090,8 @@ public class XTandemHadoopUtilities {
         // note we are reading from hdsf
         safeWrite(context, "Output File", paramsFile);
         HDFSAccessor accesor = opener.getAccesor();
-        OutputStream os = accesor.openFileForWrite(paramsFile);
+        Path path = new Path(paramsFile);
+        OutputStream os = accesor.openFileForWrite(path);
 
         return os;
     }

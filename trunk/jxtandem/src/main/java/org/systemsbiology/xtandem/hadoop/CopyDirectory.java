@@ -56,7 +56,7 @@ public class CopyDirectory {
             return;
         }
 
-        HDFSAccessor accessor = new HDFSAccessor();
+        IHDFSFileSystem accessor = HDFSAccessor.getFileSystem();
         String source = args[0];
         File localFile = new File(args[1]);
         if (!accessor.exists(source)) {

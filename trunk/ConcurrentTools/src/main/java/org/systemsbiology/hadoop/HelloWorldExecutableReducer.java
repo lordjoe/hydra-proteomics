@@ -83,7 +83,7 @@ public class HelloWorldExecutableReducer extends AbstractExecutableReducer<Text,
                     File file = localFs.pathToFile(new Path(s));
                     String path = file.getAbsolutePath();
                     System.err.println("Exe path " + prop);
-                    int ret = FileUtilUnndded.chmod(path, "a+x");
+                    int ret = FileUtil.chmod(path, "a+x");
                     //Runtime.getRuntime().exec("chmod a+x Hello");
                 }
             }

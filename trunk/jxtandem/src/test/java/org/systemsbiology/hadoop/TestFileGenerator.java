@@ -78,7 +78,7 @@ public class TestFileGenerator {
     public static final String BASE_DIRECTORY = "/user/howdah/";
 
     public static void writeToHDFS(File myFile) {
-        HDFSAccessor access = new HDFSAccessor(NAME_NODE, HDFS_PORT);
+        IHDFSFileSystem access =   HDFSAccessor.getFileSystem(NAME_NODE, HDFS_PORT);
         String filePath = BASE_DIRECTORY + myFile.getName();
         access.guaranteeDirectory(BASE_DIRECTORY);
         access.writeToFileSystem(filePath, myFile);
