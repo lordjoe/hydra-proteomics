@@ -49,6 +49,16 @@ public class FTPWrapper implements IFileSystem {
     }
 
     /**
+      * true of you aer running on a local disk
+      *
+      * @return as above
+      */
+     @Override
+     public boolean isLocal() {
+           return false;
+     }
+
+    /**
      * some file systems simply delete emptydirectories - others allow them
      * @return
      */
@@ -309,8 +319,7 @@ public class FTPWrapper implements IFileSystem {
      * @param path !null path - probably of an existing file
      * @return !null stream
      */
-    @Override
-    public InputStream openFileForRead(final String path) {
+     protected InputStream openFileForRead(final String path) {
         ChannelSftp channel = getFtpChannel();
         try {
             return channel.get(path);
@@ -327,8 +336,8 @@ public class FTPWrapper implements IFileSystem {
      * @param hdfsPath !null path -
      * @return !null stream
      */
-    @Override
-    public OutputStream openFileForWrite(final String path) {
+
+    protected OutputStream openFileForWrite(final String path) {
          ChannelSftp channel = getFtpChannel();
         try {
             return channel.put(path);

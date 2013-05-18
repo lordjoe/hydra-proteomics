@@ -23,8 +23,8 @@ public class HDFSAsUserAccessor implements IHDFSFileSystem {
     public static HDFSAsUserAccessor[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = HDFSAsUserAccessor.class;
 
-    public static final FsPermission ALL_READ = new FsPermission("766");
-    public static final FsPermission ALL_ACCESS = new FsPermission("777");
+    public static final FsPermission ALL_READ = new FsPermission((short)0766);
+    public static final FsPermission ALL_ACCESS = new FsPermission((short)777);
 
     public static boolean canAllRead(FsPermission p) {
         FsAction otherAction = p.getOtherAction();
@@ -46,8 +46,7 @@ public class HDFSAsUserAccessor implements IHDFSFileSystem {
     private static UserGroupInformation getCurrentUserGroup() {
         if (g_CurrentUserGroup == null) {
             final String user = RemoteUtilities.getUser();
-            g_CurrentUserGroup
-                    = UserGroupInformation.createRemoteUser(user);
+            g_CurrentUserGroup = UserGroupInformation.createRemoteUser(user);
 
         }
         return g_CurrentUserGroup;
@@ -195,6 +194,16 @@ public class HDFSAsUserAccessor implements IHDFSFileSystem {
                     " exception of class " + e.getClass(), e);
         }
     }
+
+    /**
+      * true of you aer running on a local disk
+      *
+      * @return as above
+      */
+     @Override
+     public boolean isLocal() {
+           return false;
+     }
 
     /**
      * some file systems simply delete emptydirectories - others allow them
@@ -636,40 +645,40 @@ public class HDFSAsUserAccessor implements IHDFSFileSystem {
         }
     }
 
-    /**
-     * open a file for writing
-     *
-     * @param hdfsPath !null path -
-     * @return !null stream
-     */
-    @Override
-    public OutputStream openFileForWrite(String hdfsPath) {
-        if (isFileNameLocal(hdfsPath)) {
-            try {
-                return new FileOutputStream(hdfsPath); // better be local
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-
-            }
-        }
-
-        Path src = new Path(hdfsPath);
-        return openFileForWrite(src);
-    }
-
-    private OutputStream openFileForWrite(final Path src) {
-        if (true)
-            throw new UnsupportedOperationException("Fix This"); // ToDo
-        final FileSystem fs = getDFS();
-        try {
-            Path parent = src.getParent();
-            guaranteeDirectory(parent);
-            return FileSystem.create(fs, src, FULL_FILE_ACCESS);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-
-        }
-    }
+//    /**
+//     * open a file for writing
+//     *
+//     * @param hdfsPath !null path -
+//     * @return !null stream
+//     */
+//    @Override
+//    public OutputStream openFileForWrite(String hdfsPath) {
+//        if (isFileNameLocal(hdfsPath)) {
+//            try {
+//                return new FileOutputStream(hdfsPath); // better be local
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//
+//            }
+//        }
+//
+//        Path src = new Path(hdfsPath);
+//        return openFileForWrite(src);
+//    }
+//
+//    private OutputStream openFileForWrite(final Path src) {
+//        if (true)
+//            throw new UnsupportedOperationException("Fix This"); // ToDo
+//        final FileSystem fs = getDFS();
+//        try {
+//            Path parent = src.getParent();
+//            guaranteeDirectory(parent);
+//            return FileSystem.create(fs, src, FULL_FILE_ACCESS);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//
+//        }
+//    }
 
     /**
      * print the current file system location

@@ -69,7 +69,10 @@ public class RemoteHadoopConfiguration {
     protected void readConfigurationFile(IFileSystem fs, String file) {
         String home = RemoteUtilities.getProperty(RemoteUtilities.HADOOP_HOME);
         String hdfsPath = home + "/conf/" + file;
-        InputStream is = fs.openFileForRead(hdfsPath);
+
+        String configString = fs.readFromFileSystem(hdfsPath);
+        InputStream is = new StringBufferInputStream(configString);
+
         HadoopConfigurationPropertySet ps = XTandemHadoopUtilities.parseHadoopProperties(is);
 
         for (HadoopConfigurationProperty prop : ps.getHadoopProperties()) {

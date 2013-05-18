@@ -111,14 +111,14 @@ public class FastaHadoopLoader {
     public void setModifications(final PeptideModification[] pModifications) {
         m_Modifications = pModifications;
     }
-
-    public static PrintWriter buildRemoteWriter(IFileSystem fs, String remoteDirectory, File localFile) {
-        String name = remoteDirectory + "/" + localFile.getName();
-        OutputStream os = fs.openFileForWrite(name);
-        return new PrintWriter(new OutputStreamWriter(os));
-    }
-
-
+//
+//    public static PrintWriter buildRemoteWriter(IFileSystem fs, String remoteDirectory, File localFile) {
+//        String name = remoteDirectory + "/" + localFile.getName();
+//        OutputStream os = fs.openFileForWrite(name);
+//        return new PrintWriter(new OutputStreamWriter(os));
+//    }
+//
+//
     public IPeptideDigester getDigester() {
         return m_Digester;
     }

@@ -11,6 +11,12 @@ import java.io.*;
 public interface IFileSystem {
     public static final IFileSystem[] EMPTY_ARRAY = {};
 
+    /**
+     * true of you aer running on a local disk
+     * @return  as above
+     */
+    public boolean isLocal();
+
    public  void copyFromFileSystem(String hdfsPath, File localPath);
 
     /**
@@ -99,20 +105,20 @@ public interface IFileSystem {
      * @param hdfsPath !null path - on the remote system
      */
     public void guaranteeDirectory(String hdfsPath);
-
-    /**
-     * open a file for reading
-     * @param hdfsPath !null path - probably of an existing file
-     * @return !null stream
-     */
-    public InputStream openFileForRead(String hdfsPath);
-
-    /**
-      * open a file for writing
-      * @param hdfsPath !null path -
-      * @return !null stream
-      */
-    public OutputStream openFileForWrite(String hdfsPath);
+//
+//    /**
+//     * open a file for reading
+//     * @param hdfsPath !null path - probably of an existing file
+//     * @return !null stream
+//     */
+//    public InputStream openFileForReadX(String hdfsPath);
+//
+//    /**
+//      * open a file for writing
+//      * @param hdfsPath !null path -
+//      * @return !null stream
+//      */
+//    public OutputStream openFileForWriteX(String hdfsPath);
 
     /**
       * write text to a remote file system

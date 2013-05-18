@@ -1,7 +1,7 @@
 package org.systemsbiology.xtandem.hadoop;
 
 import org.apache.hadoop.conf.*;
-import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
 
@@ -69,8 +69,9 @@ public class HDFSStreamOpener implements IStreamOpener {
     @Override
     public InputStream open(final String fileName, final Object... otherData) {
         String hdsfPath = buildFilePath(fileName);
+        Path path = new Path(hdsfPath);
         HDFSAccessor accesor = getAccesor();
-        return accesor.openFileForRead(hdsfPath);
+        return accesor.openFileForRead(path);
     }
 
        /**
@@ -82,9 +83,10 @@ public class HDFSStreamOpener implements IStreamOpener {
      */
  
     public OutputStream openForWrite(final String fileName, final Object... otherData) {
-        String hdsfPath = buildFilePath(fileName);
+         String hdsfPath = buildFilePath(fileName);
+         Path path = new Path(hdsfPath);
         HDFSAccessor accesor = getAccesor();
-        return accesor.openFileForWrite(hdsfPath);
+        return accesor.openFileForWrite(path);
     }
 
     public String buildFilePath(  String fileName) {

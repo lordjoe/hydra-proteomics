@@ -26,6 +26,16 @@ public class LocalFileSystem implements IFileSystem {
     }
 
     /**
+     * true of you aer running on a local disk
+     *
+     * @return as above
+     */
+    @Override
+    public boolean isLocal() {
+          return true;
+    }
+
+    /**
      * some file systems simply delete emptydirectories - others allow them
      * @return
      */
@@ -187,8 +197,7 @@ public class LocalFileSystem implements IFileSystem {
      * @param hdfsPath !null path - probably of an existing file
      * @return !null stream
      */
-    @Override
-    public InputStream openFileForRead(final String hdfsPath) {
+     public InputStream openFileForRead(final String hdfsPath) {
         try {
             return new FileInputStream(new File(hdfsPath));
         }
@@ -204,8 +213,7 @@ public class LocalFileSystem implements IFileSystem {
      * @param hdfsPath !null path -
      * @return !null stream
      */
-    @Override
-    public OutputStream openFileForWrite(final String hdfsPath) {
+     public OutputStream openFileForWrite(final String hdfsPath) {
         try {
             return new FileOutputStream(new File(hdfsPath));
         }

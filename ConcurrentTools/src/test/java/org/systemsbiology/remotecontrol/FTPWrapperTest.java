@@ -94,7 +94,7 @@ public class FTPWrapperTest {
     public void testHDFSLS() {
             if(!RemoteTestConfiguration.isHDFSAccessible())
                 return;
-            IFileSystem fs = new HDFSAccessor( );
+            IFileSystem fs = HDFSAccessor.getFileSystem( );
            String[] items = fs.ls("/");
         Assert.assertTrue(items.length > 3);
         Set<String> fileSet = new HashSet<String>(Arrays.asList(items));
@@ -106,7 +106,7 @@ public class FTPWrapperTest {
     public void testHDFSGuaranteeDirectory() {
         if(!RemoteTestConfiguration.isHDFSAccessible())
             return;
-        IFileSystem fs = new HDFSAccessor( );
+        IFileSystem fs = HDFSAccessor.getFileSystem( );
           String myHome = fs.pwd();
         String newDir = myHome + "/foo";
         if (!fs.exists(newDir))
@@ -133,7 +133,7 @@ public class FTPWrapperTest {
     public void testHDFSFileReadWrite() {
         if(!RemoteTestConfiguration.isHDFSAccessible())
             return;
-        IFileSystem fs = new HDFSAccessor( );
+        IFileSystem fs = HDFSAccessor.getFileSystem( );
         String myHome = fs.pwd();
         String newDir = myHome + "/mary.txt";
         if (fs.exists(newDir))

@@ -20,7 +20,7 @@ public class JXTandemTestConfiguration {
 
     public static boolean isHDFSAccessible() {
 
-        HDFSAccessor access = null;
+        IHDFSFileSystem access = null;
         String host = RemoteUtilities.getHost();
         int port = RemoteUtilities.getPort();
         String user = RemoteUtilities.getUser();
@@ -29,7 +29,7 @@ public class JXTandemTestConfiguration {
         Boolean ret = gConditionToAvailability.get(connStr);
         if (ret == null) {
             try {
-                access = new HDFSAccessor(host, port);
+                access =  HDFSAccessor.getFileSystem(host, port);
                 ret = Boolean.TRUE;
             }
             catch (Exception e) {

@@ -882,9 +882,12 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         String paramsPath = getParamsPath();
         File f = new File(paramsPath);
         String remotepath = pRbase + "/" + f.getName();
-        OutputStream os = pAccessor.openFileForWrite(remotepath);
-        PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+
+        StringWriter sw = new StringWriter();
+        PrintWriter out = new PrintWriter(sw);
         writeAdjustedParameters(out);
+
+        pAccessor.writeToFileSystem(remotepath, sw.toString());
     }
 
 
@@ -896,9 +899,12 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         String remotepath = pRbase + "/" + f.getName();
         if (new File(remotepath).equals(f))
             return;
-        OutputStream os = pAccessor.openFileForWrite(remotepath);
-        PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+
+        StringWriter sw = new StringWriter();
+        PrintWriter out = new PrintWriter(sw);
         writeAdjustedTaxonomy(out);
+
+        pAccessor.writeToFileSystem(remotepath, out.toString());
     }
 
     /**
@@ -1029,7 +1035,12 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             IFileSystem fs = getAccessor();
             if (!fs.exists(hdfsPath))
                 return null;
-            InputStream fsout = fs.openFileForRead(hdfsPath);
+
+            String ddStr = fs.readFromFileSystem(hdfsPath);
+
+            InputStream fsout = new StringBufferInputStream(ddStr);
+
+
             DigesterDescription ret = new DigesterDescription(fsout);
             return ret;
         } catch (Exception e) {
@@ -1629,7 +1640,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                     String outFile2 = outFileName + ".mgf";
                     readRemoteFile(fileName, outFile2);
                 }
-                if (application.getBooleanParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY,false)) {
+                if (application.getBooleanParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY, false)) {
                     ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
                     for (int i = 0; i < algorithms.length; i++) {
                         ITandemScoringAlgorithm algorithm = algorithms[i];
@@ -1699,7 +1710,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 if ("KScore".equals(algorithm.getName()))   // drop kscore algo name
                     fileName = hdfsPath + ".pep.xml";
                 String outFile2 = outFile + /* "." + algorithm.getName() +  */ ".pep.xml";
-                if (application.getBooleanParameter(MULTIPLE_OUTPUT_FILES_PROPERTY,false))
+                if (application.getBooleanParameter(MULTIPLE_OUTPUT_FILES_PROPERTY, false))
                     outFile2 = fileName;
                 readRemoteFile(fileName, outFile2);
             }
@@ -1791,7 +1802,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                     main.setRemoteHost(host);
                     main.setRemoteHostPort(port);
                     // make sure directory exists
-                    IFileSystem access = new HDFSAccessor(host, port);
+                    IFileSystem access = HDFSAccessor.getFileSystem(host, port);
                     main.setAccessor(access);
                     String user = RemoteUtilities.getUser(); // "training";  //
                     String password = RemoteUtilities.getPassword(); // "training";  //

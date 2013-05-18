@@ -38,7 +38,7 @@ public class HDFSTests {
             return;
         }
         try {
-            HDFSAccessor access = new  HDFSAccessor(NAME_NODE,HDFS_PORT);
+            IHDFSFileSystem access = HDFSAccessor.getFileSystem(NAME_NODE,HDFS_PORT);
             String filePath = BASE_DIRECTORY + FILE_NAME;
             access.guaranteeDirectory(BASE_DIRECTORY);
             access.writeToFileSystem(filePath,TEST_CONTENT);
