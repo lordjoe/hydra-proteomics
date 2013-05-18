@@ -63,7 +63,8 @@ public class HDFSAsUserAccessor implements IHDFSFileSystem {
         //     RemoteUtilities.getPassword()
         String connStr = host + ":" + port + ":" + user + ":" + RemoteUtilities.getPassword();
 
-        final String userDir = "/user/" + user;
+      final String userDir = "/user/" + user;
+     //   final String userDir = "/user" ;
 
         try {
             UserGroupInformation ugi = getCurrentUserGroup();
@@ -72,7 +73,8 @@ public class HDFSAsUserAccessor implements IHDFSFileSystem {
                 public Void run() throws Exception {
 
                     Configuration conf = new Configuration();
-                    conf.set("fs.defaultFS", "hdfs://" + host + ":" + port);
+                    conf.set("fs.default.name","hdfs://" + host + ":" + port);
+                    conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
                     //       conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
                     conf.set("hadoop.job.ugi", user);
 
@@ -80,6 +82,12 @@ public class HDFSAsUserAccessor implements IHDFSFileSystem {
 
                     Path udir = new Path(userDir);
                     fs.setPermission(udir, ALL_ACCESS);
+
+                    FileStatus[] fileStatuses = fs.listStatus(udir);
+                    for (int i = 0; i < fileStatuses.length; i++) {
+                        FileStatus fileStatuse = fileStatuses[i];
+                        System.err.println(fileStatuse.getPath());
+                    }
 
 
 //                    fs.createNewFile(new Path(userDir + "/test"));
@@ -167,6 +175,7 @@ public class HDFSAsUserAccessor implements IHDFSFileSystem {
         String connectString = "hdfs://" + host + ":" + port + "/";
         final String userDir = "/user/" + user;
         m_Config = new Configuration();
+        m_Config.set("fs.default.name","hdfs://" + host + ":" + port);
         m_Config.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
         m_Config.set("hadoop.job.ugi", user);
 
@@ -199,7 +208,8 @@ public class HDFSAsUserAccessor implements IHDFSFileSystem {
 
     public FileSystem getDFS() {
         try {
-            return FileSystem.get(m_Config);
+            FileSystem fileSystem = FileSystem.get(m_Config);
+            return fileSystem;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
