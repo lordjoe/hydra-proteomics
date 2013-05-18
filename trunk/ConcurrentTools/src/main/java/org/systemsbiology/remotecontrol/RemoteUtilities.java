@@ -15,7 +15,7 @@ import java.util.prefs.*;
 public class RemoteUtilities {
     public static final RemoteUtilities[] EMPTY_ARRAY = {};
 
-    public static final boolean USE_1_0_3 = false;
+    public static final boolean USE_1_0_3 = true;
 
     public static final String EDIT_REMOTE_PRPOERTIES =
             "You will need to configure asccess properties java  org.systemsbiology.remotecontrol.RemoteUtilities user=<user_name> password=<password> path=<hdfs_path> \n" +
