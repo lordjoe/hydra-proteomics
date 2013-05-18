@@ -195,7 +195,7 @@ public class CapitalWordCount  extends ConfiguredJobRunner implements IJobRunner
     public int run(final String[] args) throws Exception {
         Configuration conf = getConf();
         if(conf == null)
-            conf = new Configuration();
+            conf = HDFSAccessor.getSharedConfiguration();
         //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
         return runJob(conf, args);
     }

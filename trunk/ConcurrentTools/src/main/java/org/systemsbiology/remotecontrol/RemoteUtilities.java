@@ -15,6 +15,8 @@ import java.util.prefs.*;
 public class RemoteUtilities {
     public static final RemoteUtilities[] EMPTY_ARRAY = {};
 
+    public static final boolean USE_1_0_3 = false;
+
     public static final String EDIT_REMOTE_PRPOERTIES =
             "You will need to configure asccess properties java  org.systemsbiology.remotecontrol.RemoteUtilities user=<user_name> password=<password> path=<hdfs_path> \n" +
                     " - user should be the name of the user on the hadoop main system \n" +
@@ -84,26 +86,62 @@ public class RemoteUtilities {
 
 
     public static String getUser() {
-           return getProperty(USER_STRING);
+        return getProperty(USER_STRING);
+    }
+
+    public static final File KEYTAB_DIR = new File("/keytabs");
+
+    /**
+     * look for a keytab file with Kerboros keys
+     * for the user may be local ot in .keytabs
+     * see http://kb.iu.edu/data/aumh.html
+     *
+     * @return possibly null file
+     */
+    public static File getKeyTabFile() {
+        String fileName = getUser() + ".keytab";
+        File local = new File(fileName);
+        if (local.exists())
+            return local;
+        if (KEYTAB_DIR.exists() && KEYTAB_DIR.isDirectory()) {
+            local = new File(KEYTAB_DIR, fileName);
+            if (local.exists())
+                return local;
+        }
+        return null;
     }
 
     public static String getPassword() {
-           String encrypted = getProperty(PASSWORD_STRING);
+        String encrypted = getProperty(PASSWORD_STRING);
         if (encrypted == null)
             return null;
         return Encrypt.decryptString(encrypted);
     }
 
     public static String getHost() {
-        return getProperty(HOST_STRING);
+        String property = getProperty(HOST_STRING);
+        if (USE_1_0_3) {
+            // for the momeent hard code for 1.03 system
+            property = "hadoop-master-01.ebi.ac.uk";
+            //  property = "hadoop-slave-011.ebi.ac.uk";
+            //     property = "hadoop-slave-027.ebi.ac.uk";
+        }
+        return property;
     }
 
     public static String getJobTracker() {
-        return getProperty(JOB_TRACKER_STRING);
+        String property = getProperty(JOB_TRACKER_STRING);
+        return property;
     }
 
     public static int getPort() {
-        return Integer.parseInt(getProperty(PORT_STRING));
+        final String property = getProperty(PORT_STRING);
+        int port = Integer.parseInt(property);
+        if (USE_1_0_3) {
+            // for the momeent hard code for 1.03 system
+            port = 8020;
+        }
+        return port;
     }
 
     public static String getDefaultPath() {
@@ -297,7 +335,7 @@ public class RemoteUtilities {
         String path = getDefaultPath();
         String jobtracker = getJobTracker();
         int port = getPort();
-        HDFSAccessor access = new HDFSAccessor(host, port);
+        IHDFSFileSystem access = HDFSAccessor.getFileSystem(host, port);
         String BASE_DIRECTORY = path + "/test/";
         String filePath = BASE_DIRECTORY + FILE_NAME;
         access.guaranteeDirectory(path);
@@ -323,8 +361,6 @@ public class RemoteUtilities {
         if (access.exists(filePath))
             throw new IllegalStateException("File Delete failed");
     }
-
-
 
 
     /**

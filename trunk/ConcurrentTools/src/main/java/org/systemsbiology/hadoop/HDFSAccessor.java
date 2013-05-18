@@ -5,10 +5,12 @@ import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.fs.permission.*;
+import org.apache.hadoop.security.*;
 import org.systemsbiology.common.*;
 import org.systemsbiology.remotecontrol.*;
 
 import java.io.*;
+import java.security.*;
 import java.util.*;
 
 /**
@@ -18,64 +20,109 @@ import java.util.*;
  * @author Steve Lewis
  * @date Nov 15, 2010
  */
-public class HDFSAccessor implements IFileSystem {
+public class HDFSAccessor implements IHDFSFileSystem {
     public static HDFSAccessor[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = HDFSAccessor.class;
 
-    public static final FsPermission FULL_ACCESS = new FsPermission(Short.parseShort("777",8));
-    public static final FsPermission FULL_FILE_ACCESS = new FsPermission(Short.parseShort("666",8));
-    private final FileSystem m_DFS;
+    public static IHDFSFileSystem getFileSystem() {
+        if (HDFSAccessor.isHDFSHasSecurity())
+            return new HDFSAsUserAccessor();
+        else
+            return new HDFSAccessor();
+
+    }
+    public static IHDFSFileSystem getFileSystem(Configuration config) {
+        if (HDFSAccessor.isHDFSHasSecurity())
+            return new HDFSAsUserAccessor(config);
+        else
+            return new HDFSAccessor(config);
+
+    }
+    public static IHDFSFileSystem getFileSystem(final String host, final int port) {
+        if (HDFSAccessor.isHDFSHasSecurity())
+            return new HDFSAsUserAccessor(host, port);
+        else
+            return new HDFSAccessor(host,  port);
+
+    }
+    public static IHDFSFileSystem getFileSystem(final String host, final int port,String user) {
+        if (HDFSAccessor.isHDFSHasSecurity())
+            return new HDFSAsUserAccessor(host, port,user);
+        else
+            return new HDFSAccessor(host,  port, user);
+
+    }
+
+    private static Configuration g_SharedConfiguration = new Configuration();
+
+    public static Configuration getSharedConfiguration() {
+        return g_SharedConfiguration;
+    }
+
+    public static void setSharedConfiguration(Configuration sharedConfiguration) {
+        g_SharedConfiguration = sharedConfiguration;
+    }
+
+    private static boolean g_HDFSHasSecurity;
+
+    public static boolean isHDFSHasSecurity() {
+        return g_HDFSHasSecurity;
+    }
+
+    public static void setHDFSHasSecurity(boolean HDFSHasSecurity) {
+        g_HDFSHasSecurity = HDFSHasSecurity;
+    }
+    private FileSystem m_DFS;
 
 
-    public HDFSAccessor( ) {
-          this(RemoteUtilities.getHost(),  RemoteUtilities.getPort()   );
-      }
-    
+    private HDFSAccessor() {
+        this(RemoteUtilities.getHost(), RemoteUtilities.getPort(), RemoteUtilities.getUser());
+    }
 
 
-    public HDFSAccessor( Configuration config ) {
+    private HDFSAccessor(Configuration config) {
         try {
             m_DFS = FileSystem.get(config);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
     }
 
-
+    private HDFSAccessor(final String host, final int port) {
+        this(host, port, RemoteUtilities.getUser());
+    }
 
 
 //    public HDFSAccessor( String host) {
 //          this(host,RemoteUtilities.getPort());
 //      }
 
-    public HDFSAccessor(String host,int port) {
-        if(port <= 0)
+    private HDFSAccessor(final String host, final int port, final String user) {
+        if (port <= 0)
             throw new IllegalArgumentException("bad port " + port);
-        String connectString =   "hdfs://" + host + ":" + port + "/";
+        String connectString = "hdfs://" + host + ":" + port + "/";
+        final String userDir = "/user/" + user;
+
+
         try {
             Configuration config = new Configuration();
-
-            config.set("fs.default.name",connectString);
-
+            config.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
             m_DFS = FileSystem.get(config);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Failed to connect on " + connectString + " because " + e.getMessage() +
-               " exception of class " + e.getClass(),e);
+                    " exception of class " + e.getClass(), e);
         }
     }
 
     /**
      * some file systems simply delete emptydirectories - others allow them
+     *
      * @return
      */
-    public boolean isEmptyDirectoryAllowed()
-    {
+    public boolean isEmptyDirectoryAllowed() {
         return true;
     }
-
 
 
     public HDFSAccessor(FileSystem fs) {
@@ -97,8 +144,7 @@ public class HDFSAccessor implements IFileSystem {
 
         try {
             fileSystem.copyToLocalFile(src, dst);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -114,8 +160,7 @@ public class HDFSAccessor implements IFileSystem {
 
         try {
             fileSystem.copyFromLocalFile(src, dst);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -145,8 +190,7 @@ public class HDFSAccessor implements IFileSystem {
         Path dst = new Path(hdfsPath);
         try {
             return fileSystem.isDirectory(dst);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -161,14 +205,13 @@ public class HDFSAccessor implements IFileSystem {
     @Override
     public boolean isFile(final String hdfsPath) {
         final FileSystem fileSystem = getDFS();
-         Path dst = new Path(hdfsPath);
-         try {
-             return fileSystem.isFile(dst);
-         }
-         catch (IOException e) {
-             throw new RuntimeException(e);
+        Path dst = new Path(hdfsPath);
+        try {
+            return fileSystem.isFile(dst);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
 
-         }
+        }
     }
 
     /**
@@ -179,7 +222,7 @@ public class HDFSAccessor implements IFileSystem {
      */
     @Override
     public void writeToFileSystem(final String hdfsPath, final InputStream content) {
-          throw new UnsupportedOperationException("Fix This"); // ToDo
+        throw new UnsupportedOperationException("Fix This"); // ToDo
     }
 
     /**
@@ -208,8 +251,7 @@ public class HDFSAccessor implements IFileSystem {
                 return doneOK;
             }
             throw new IllegalStateException("should be file of directory if it exists");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -227,8 +269,7 @@ public class HDFSAccessor implements IFileSystem {
         try {
             Path src = new Path(hdfsPath);
             return fs.exists(src);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -244,15 +285,14 @@ public class HDFSAccessor implements IFileSystem {
     public long fileLength(String hdfsPath) {
         final FileSystem fs = getDFS();
         try {
-            if(!exists(hdfsPath))
+            if (!exists(hdfsPath))
                 return 0;
             Path src = new Path(hdfsPath);
             ContentSummary contentSummary = fs.getContentSummary(src);
-            if(contentSummary == null)
+            if (contentSummary == null)
                 return 0;
             return contentSummary.getLength();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -270,8 +310,7 @@ public class HDFSAccessor implements IFileSystem {
             Path src = new Path(hdfsPath);
             fs.delete(src, false);
             return fs.exists(src);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -293,8 +332,7 @@ public class HDFSAccessor implements IFileSystem {
             if (fs.exists(src))
                 return;
             this.writeToFileSystem(hdfsPath, file);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -320,15 +358,13 @@ public class HDFSAccessor implements IFileSystem {
             if (fs.exists(src)) {
                 if (!fs.isFile(src)) {
                     return;
-                }
-                else {
+                } else {
                     fs.delete(src, false);   // drop a file we want a directory
                 }
-                fs.setPermission(src,FULL_ACCESS);
+                fs.setPermission(src, FULL_ACCESS);
             }
-            fs.mkdirs(src,FULL_ACCESS);
-        }
-        catch (IOException e) {
+            fs.mkdirs(src, FULL_ACCESS);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -344,8 +380,7 @@ public class HDFSAccessor implements IFileSystem {
         if (isFileNameLocal(hdfsPath)) {
             try {
                 return new FileInputStream(hdfsPath); // better be local
-            }
-            catch (FileNotFoundException e) {
+            } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
 
             }
@@ -354,8 +389,7 @@ public class HDFSAccessor implements IFileSystem {
         Path src = new Path(hdfsPath);
         try {
             return fs.open(src);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -377,8 +411,7 @@ public class HDFSAccessor implements IFileSystem {
         if (isFileNameLocal(hdfsPath)) {
             try {
                 return new FileOutputStream(hdfsPath); // better be local
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
 
             }
@@ -391,14 +424,13 @@ public class HDFSAccessor implements IFileSystem {
     private OutputStream openFileForWrite(Path src) {
         final FileSystem fs = getDFS();
         try {
-           Path parent = src.getParent();
-           guaranteeDirectory(  parent);
-           return  FileSystem.create(fs, src, FULL_FILE_ACCESS);
-       }
-       catch (IOException e) {
-           throw new RuntimeException(e);
+            Path parent = src.getParent();
+            guaranteeDirectory(parent);
+            return FileSystem.create(fs, src, FULL_FILE_ACCESS);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
 
-       }
+        }
     }
 
     /**
@@ -412,19 +444,18 @@ public class HDFSAccessor implements IFileSystem {
         return absolutePath(fs.getWorkingDirectory());
     }
 
-    public static String absolutePath(Path p)
-    {
-        if(p == null)
+    public static String absolutePath(Path p) {
+        if (p == null)
             return "";
-       StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         Path parentPath = p.getParent();
-        if(parentPath == null)
+        if (parentPath == null)
             return "/";
         sb.append(absolutePath(parentPath));
-        if(sb.length() > 1)
+        if (sb.length() > 1)
             sb.append("/");
         sb.append(p.getName());
-       return sb.toString();
+        return sb.toString();
     }
 
     /**
@@ -438,7 +469,7 @@ public class HDFSAccessor implements IFileSystem {
         final FileSystem fs = getDFS();
         try {
             FileStatus[] statuses = fs.listStatus(new Path(hdfsPath));
-            if(statuses == null)
+            if (statuses == null)
                 return new String[0];
             List<String> holder = new ArrayList<String>();
             for (int i = 0; i < statuses.length; i++) {
@@ -449,8 +480,7 @@ public class HDFSAccessor implements IFileSystem {
             String[] ret = new String[holder.size()];
             holder.toArray(ret);
             return ret;
-         }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -482,7 +512,7 @@ public class HDFSAccessor implements IFileSystem {
 
 
     public static void main(String[] args) {
-        HDFSAccessor dfs = new HDFSAccessor("glados", 9000 );
+        HDFSAccessor dfs = new HDFSAccessor("glados", 9000, "slewis");
         final Path path = dfs.getDFS().getHomeDirectory();
         System.out.println(path);
         String[] ls = dfs.ls("/user/howdah/JXTandem/data/HoopmanSample/");
@@ -491,9 +521,9 @@ public class HDFSAccessor implements IFileSystem {
             System.out.println(l);
         }
         //      dfs.expunge(RemoteUtilities.getDefaultPath() + "/JXTandem/data/largerSample");
-   //     dfs.expunge(RemoteUtilities.getDefaultPath() + "/JXTandem/data/largeSample");
+        //     dfs.expunge(RemoteUtilities.getDefaultPath() + "/JXTandem/data/largeSample");
 
-    //       dfs.writeToFileSystem( "/user/howdah/moby/",new File("E:/moby"));
-               dfs.copyFromFileSystem( "/user/howdah/JXTandem/data/HoopmanSample/Only_yeast.2012_04_115_15_32_53.t.xml.scans" , new File("E:/ForSteven/HoopmanSample/Only_yeast.2012_04_115_15_32_53.t.xml.scans"));
+        //       dfs.writeToFileSystem( "/user/howdah/moby/",new File("E:/moby"));
+        dfs.copyFromFileSystem("/user/howdah/JXTandem/data/HoopmanSample/Only_yeast.2012_04_115_15_32_53.t.xml.scans", new File("E:/ForSteven/HoopmanSample/Only_yeast.2012_04_115_15_32_53.t.xml.scans"));
     }
 }

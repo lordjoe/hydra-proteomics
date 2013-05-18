@@ -31,7 +31,7 @@ public class RemoteHadoopController implements IHadoopController {
 
     public RemoteHadoopController(final RemoteSession pSession) {
         m_Session = pSession;
-        m_HDFSAccessor = new HDFSAccessor(m_Session.getHost(), RemoteUtilities.getPort());
+        m_HDFSAccessor = HDFSAccessor.getFileSystem(m_Session.getHost(), RemoteUtilities.getPort());
         //  m_FTPAccessor = new FTPWrapper(m_Session.getUser(), m_Session.getPassword(), m_Session.getHost());
     }
 

@@ -80,7 +80,7 @@ public class LocalHadoopController implements IHadoopController {
         // maybe point at a different file system
         fileSystemConfigurer.configureFileSystem(conf, e);
 
-        IFileSystem fs =  new HDFSAccessor(conf);
+        IFileSystem fs =  HDFSAccessor.getFileSystem(conf);
         fs.expunge(e);
    //     FileUtilities.expungeDirectory(new File(e));
         holder.add(e);

@@ -39,7 +39,7 @@ public class HDFSUtilities {
      * @throws  IllegalStateException or error
      */
     public static  void hDFSSanityTest(String nameNode, int port) {
-        HDFSAccessor access = new HDFSAccessor(nameNode, port);
+        IHDFSFileSystem access = HDFSAccessor.getFileSystem(nameNode, port);
         String filePath = BASE_DIRECTORY + FILE_NAME;
         access.guaranteeDirectory(BASE_DIRECTORY);
         access.writeToFileSystem(filePath, TEST_CONTENT);
