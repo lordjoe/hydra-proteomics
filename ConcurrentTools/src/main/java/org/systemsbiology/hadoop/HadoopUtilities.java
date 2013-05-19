@@ -1,6 +1,7 @@
 package org.systemsbiology.hadoop;
 
 import com.lordjoe.utilities.*;
+import org.apache.hadoop.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.filecache.*;
 import org.apache.hadoop.fs.*;
@@ -43,6 +44,19 @@ public class HadoopUtilities {
     public static final int DEFAULT_REDUCE_TASKS = 14;
     // in development to speed up
     public static String gReuseJar; //"Mar231041_0.jar";   //  null; //
+
+    // Find the current hadooop version
+    public static final HadoopMajorVersion HADOOP_MAJOR_VERSION = HadoopMajorVersion.getHadoopVersion();
+
+    public static String getHadoopVersion()
+    {
+        // force teh class loader to load a class in the package so we can read the package
+        Class hadoopVersionAnnotation = HadoopVersionAnnotation.class; // make cure the class loader know about packages
+         Package aPackage = Package.getPackage("org.apache.hadoop");
+          HadoopVersionAnnotation annotation = (HadoopVersionAnnotation)aPackage.getAnnotation(HadoopVersionAnnotation.class);
+        String version = annotation.version();
+        return version;
+    }
 
 
     private static Properties gRemoteProperties = new Properties();
