@@ -1740,20 +1740,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
     }
 
-    // Call with
-    // params=tandem.params remoteHost=Glados remoteBaseDirectory=/user/howdah/JXTandem/data/largeSample
-    //
-    public static void main(String[] args) {
-        if (args.length == 0) {
-            usage();
-            return;
-        }
-        if ("params=".equals(args[1])) {
-            usage2();
-            return;
-        }
 
-
+    private static void workingMain(String[] args) {
         ElapsedTimer total = new ElapsedTimer();
 
 
@@ -1873,10 +1861,28 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                     XTandemUtilities.outputLine(se.toString());
                 }
             }
-        } finally {
-            System.exit(0);
         }
     }
 
+
+
+    // Call with
+    // params=tandem.params remoteHost=Glados remoteBaseDirectory=/user/howdah/JXTandem/data/largeSample
+    //
+    public static void main(String[] args) {
+        if (args.length == 0) {
+            usage();
+            return;
+        }
+        if ("params=".equals(args[1])) {
+            usage2();
+            return;
+        }
+
+        if(HadoopUtilities.HADOOP_MAJOR_VERSION != HadoopMajorVersion.Version1)
+            throw new IllegalStateException("Version 1 is required for this code");
+
+        workingMain(args);
+    }
 
 }
