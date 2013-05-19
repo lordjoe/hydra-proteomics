@@ -27,13 +27,10 @@ public class HDFSAccessor implements IHDFSFileSystem {
 
     public static IHDFSFileSystem getFileSystem() {
         if (HDFSAccessor.isHDFSHasSecurity()) {
-            if (true)
-                throw new UnsupportedOperationException("Fix This"); // ToDo
-              //         return new HDFSAsUserAccessor();
+            return new HDFWithNameAccessor();
         } else {
             return new HDFSAccessor();
         }
-       throw new UnsupportedOperationException("Fix This"); // ToDo
     }
 
     public static IHDFSFileSystem getFileSystem(Configuration config) {
@@ -68,7 +65,7 @@ public class HDFSAccessor implements IHDFSFileSystem {
                 throw new UnsupportedOperationException("Fix This"); // ToDo
             }
             //  return new HDFSAsUserAccessor(host, port, user);
-        } else  {
+        } else {
             return new HDFSAccessor(host, port, user);
         }
         throw new UnsupportedOperationException("Fix This"); // ToDo
@@ -98,12 +95,12 @@ public class HDFSAccessor implements IHDFSFileSystem {
     private FileSystem m_DFS;
 
 
-    private HDFSAccessor() {
+    protected HDFSAccessor() {
         this(RemoteUtilities.getHost(), RemoteUtilities.getPort(), RemoteUtilities.getUser());
     }
 
 
-    private HDFSAccessor(Configuration config) {
+    protected HDFSAccessor(Configuration config) {
         try {
             m_DFS = FileSystem.get(config);
         } catch (IOException e) {
@@ -112,28 +109,26 @@ public class HDFSAccessor implements IHDFSFileSystem {
         }
     }
 
-    private HDFSAccessor(final String host, final int port) {
+    protected HDFSAccessor(final String host, final int port) {
         this(host, port, RemoteUtilities.getUser());
     }
 
     /**
-      * true of you aer running on a local disk
-      *
-      * @return as above
-      */
-     @Override
-     public boolean isLocal() {
-           return false;
-     }
-
-
+     * true of you aer running on a local disk
+     *
+     * @return as above
+     */
+    @Override
+    public boolean isLocal() {
+        return false;
+    }
 
 
 //    public HDFSAccessor( String host) {
 //          this(host,RemoteUtilities.getPort());
 //      }
 
-    private HDFSAccessor(final String host, final int port, final String user) {
+    protected HDFSAccessor(final String host, final int port, final String user) {
         if (port <= 0)
             throw new IllegalArgumentException("bad port " + port);
         String connectString = "hdfs://" + host + ":" + port + "/";
@@ -411,7 +406,7 @@ public class HDFSAccessor implements IHDFSFileSystem {
      * @return !null stream
      */
 
-    public InputStream openFileForRead(Path src ) {
+    public InputStream openFileForRead(Path src) {
         String hdfsPath = src.getName();
         if (isFileNameLocal(hdfsPath)) {
             try {
@@ -572,7 +567,7 @@ public class HDFSAccessor implements IHDFSFileSystem {
      */
     @Override
     public boolean isRunningAsUser() {
-        if(isLocal())
+        if (isLocal())
             return true;
         if (true)
             throw new UnsupportedOperationException("Fix This");
