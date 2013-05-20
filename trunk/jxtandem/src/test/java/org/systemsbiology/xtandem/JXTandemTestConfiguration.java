@@ -1,9 +1,14 @@
 package org.systemsbiology.xtandem;
 
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.fs.*;
+import org.apache.hadoop.security.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.remotecontrol.*;
 import org.systemsbiology.xtandem.taxonomy.*;
 
+import java.io.*;
+import java.security.*;
 import java.util.*;
 
 /**
@@ -21,32 +26,88 @@ public class JXTandemTestConfiguration {
     public static boolean isHDFSAccessible() {
 
         IHDFSFileSystem access = null;
-        String host = RemoteUtilities.getHost();
-        int port = RemoteUtilities.getPort();
-        String user = RemoteUtilities.getUser();
-   //     RemoteUtilities.getPassword()
+        final String host = RemoteUtilities.getHost();
+        final int port = RemoteUtilities.getPort();
+        final String user = RemoteUtilities.getUser();
+        //     RemoteUtilities.getPassword()
         String connStr = host + ":" + port + ":" + user + ":" + RemoteUtilities.getPassword();
+        // do we already know
         Boolean ret = gConditionToAvailability.get(connStr);
         if (ret == null) {
-            try {
-                access =  HDFSAccessor.getFileSystem(host, port);
-                ret = Boolean.TRUE;
-            }
-            catch (Exception e) {
-                ret = Boolean.FALSE;
-            }
 
-//             try {
-//                 new FTPWrapper(RemoteUtilities.getUser(), RemoteUtilities.getPassword(), RemoteUtilities.getHost());
-//                 ret = Boolean.TRUE;
-//             }
-//             catch (Exception e) {
-//                 ret = Boolean.FALSE;
+        final String userDir =  "/user/" + user;
+        try {
+            UserGroupInformation ugi
+                    = UserGroupInformation.createRemoteUser(user);
+
+            ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+                public Void run() throws Exception {
+
+                    Configuration conf = new Configuration();
+                    conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
+                    conf.set("hadoop.job.ugi", user);
+
+                    FileSystem fs = FileSystem.get(conf);
+
+//                    fs.createNewFile(new Path(userDir + "/test"));
 //
-//             }
-            gConditionToAvailability.put(connStr, ret);
+//                    FileStatus[] status = fs.listStatus(new Path("/user/" + user));
+//                    for (int i = 0; i < status.length; i++) {
+//                        System.out.println(status[i].getPath());
+//                    }
+                    return null;
+
+                }
+            });
+            ret = true;
+             gConditionToAvailability.put(connStr,ret);
+        } catch (Exception e) {
+             ret = false;
+            gConditionToAvailability.put(connStr,ret);
+
+        }
+         gConditionToAvailability.put(connStr,Boolean.TRUE);
+
         }
         return ret;
+//        // never get here
+//
+//        UserGroupInformation currentUser = null;
+//        try {
+//            Configuration conf = HDFSAccessor.getSharedConfiguration();
+//            UserGroupInformation.setConfiguration(conf);
+//            File keyTab = RemoteUtilities.getKeyTabFile();
+//            String canonicalPath = keyTab.getCanonicalPath();
+//            SecurityUtil.login(conf, canonicalPath, "dfs.namenode.kerberos.principal");
+//            currentUser = UserGroupInformation.getCurrentUser();
+//
+//            //    if(kt != null)
+//            //         UserGroupInformation.loginUserFromKeytab(user,kt.getPath());
+//            currentUser = UserGroupInformation.getCurrentUser();
+//        } catch (IOException e) {
+//            throw new UnsupportedOperationException(e);
+//        }
+//
+//          if (ret == null) {
+//            try {
+//                access = HDFSAccessor.getFileSystem(host, port);
+//                ret = Boolean.TRUE;
+//            } catch (Exception e) {
+//                ret = Boolean.FALSE;
+//            }
+//
+////             try {
+////                 new FTPWrapper(RemoteUtilities.getUser(), RemoteUtilities.getPassword(), RemoteUtilities.getHost());
+////                 ret = Boolean.TRUE;
+////             }
+////             catch (Exception e) {
+////                 ret = Boolean.FALSE;
+////
+////             }
+//            gConditionToAvailability.put(connStr, ret);
+//        }
+//        return ret;
     }
 
 
