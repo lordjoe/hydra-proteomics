@@ -4,6 +4,7 @@ import com.lordjoe.utilities.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.*;
+import org.apache.hadoop.security.*;
 import org.systemsbiology.common.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.remotecontrol.*;
@@ -15,6 +16,7 @@ import org.systemsbiology.xtandem.sax.*;
 import org.systemsbiology.xtandem.taxonomy.*;
 
 import java.io.*;
+import java.security.*;
 import java.util.*;
 import java.util.prefs.*;
 
@@ -1461,6 +1463,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
         }
         for (String property : props.stringPropertyNames()) {
+            if (property.length() == 0)    // todo why do we get this
+                continue;
             String value = props.getProperty(property);
             handleValue(property, value);
         }
@@ -1865,11 +1869,10 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     }
 
 
-
     // Call with
     // params=tandem.params remoteHost=Glados remoteBaseDirectory=/user/howdah/JXTandem/data/largeSample
     //
-    public static void main(String[] args) {
+    public static void main(final String[] args) throws Exception {
         if (args.length == 0) {
             usage();
             return;
@@ -1879,10 +1882,21 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             return;
         }
 
-        if(HadoopUtilities.HADOOP_MAJOR_VERSION != HadoopMajorVersion.Version1)
+        if (HadoopUtilities.HADOOP_MAJOR_VERSION != HadoopMajorVersion.Version1)
             throw new IllegalStateException("Version 1 is required for this code");
+        else
+            HDFSAccessor.setHDFSHasSecurity(true);
 
-        workingMain(args);
+        UserGroupInformation ugi = HDFWithNameAccessor.getCurrentUserGroup();
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                 workingMain(args);
+                return null;
+
+             }
+         });
+
     }
 
 }
