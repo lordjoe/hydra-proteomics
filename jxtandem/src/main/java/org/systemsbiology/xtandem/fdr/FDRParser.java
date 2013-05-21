@@ -175,7 +175,8 @@ public class FDRParser {
             String arg = args[i];
             FDRParser fdrParser = new FDRParser(arg);
             final IDiscoveryDataHolder handler = fdrParser.getHandler();
-            final String s = FDRUtilities.listFDRAndCount(handler);
+            //final String s = FDRUtilities.listFDRAndCount(handler);
+            final String s = FDRUtilities.listFDRAndRates(handler);
             System.out.println(s);
         }
 

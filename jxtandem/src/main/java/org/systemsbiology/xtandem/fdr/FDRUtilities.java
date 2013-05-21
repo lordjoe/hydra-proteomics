@@ -126,4 +126,40 @@ public class FDRUtilities {
         return sb.toString();
     }
 
+
+    /**
+     * comu up with a list of scores, FDRs, TPs, FPs plus TP rate (TP(score)/Total TP) and FP rate (FP(score)/total FP) in the holder
+     * @param hd !null holder
+     * @return  string with all values
+     */
+    public static String listFDRAndRates(IDiscoveryDataHolder hd) {
+        double start = hd.getFirstScore();
+        double last = hd.getLastScore();
+        StringBuilder sb = new StringBuilder();
+
+         for (double score = start; score <= last; score *= 1.05) {
+             String scoreStr = String.format("%10.3e",score);
+             final double v = hd.computeFDR(score);
+             String fdrStr = String.format("%10.4f", v);
+             String count = Integer.toString(hd.getNumberTruePositivesAbove(score));
+             String fcount = Integer.toString(hd.getNumberFalsePositivesAbove(score));
+             // calculating TP rate (TP(score)/Total TP) for ROC curve
+             // for Total TP use getFirstScore() working with doubles, giving doubles as result
+             double numberTruePositivesAboveFirstScore = hd.getNumberTruePositivesAbove(start);
+             double tpr = hd.getNumberTruePositivesAbove(score) / numberTruePositivesAboveFirstScore;
+             // format double up to 4 decimals before printing out
+             String tprStr = String.format("%10.4f", tpr);
+             // String tprate = Double.toString(tpr);
+
+             // calculating FP rate (FP(score)/total FP) for ROC curve
+             double numberFalsePositivesAboveFirstScore = hd.getNumberFalsePositivesAbove(start);
+             double fpr = hd.getNumberFalsePositivesAbove(score) / numberFalsePositivesAboveFirstScore;
+             String fprStr = String.format("%10.4f", fpr);
+             //String fprate = Double.toString(fpr);
+              sb.append(scoreStr + "," + fdrStr + "," + count+ "," + fcount + "," + tprStr + "," + fprStr);
+             sb.append("\n");
+        }
+        return sb.toString();
+    }
+
 }
