@@ -111,7 +111,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         m_Taxonomy = application.getTaxonomy();
 
         boolean makeDecoys = application.getBooleanParameter(XTandemUtilities.CREATE_DECOY_PEPTIDES_PROPERTY,false);
-        setCreateDecoyPeptides(makeDecoys);
+        //setCreateDecoyPeptides(makeDecoys);
 
         boolean doHardCoded = application.getBooleanParameter(JXTandemLauncher.HARDCODED_MODIFICATIONS_PROPERTY,true);
         PeptideModification.setHardCodeModifications(doHardCoded);
@@ -197,6 +197,8 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
 
         MassPeptideInterval interval = new MassPeptideInterval(keyStr);
         int mass = interval.getMass();
+        if(!interval.isUnlimited())
+            System.err.println(interval.toString());
 
         // Special code to store scans at mass for timing studeies
 //        if (STORING_SCANS) {
@@ -238,6 +240,9 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         ElapsedTimer et = new ElapsedTimer();
         try {
             IPolypeptide[] pps = getPeptidesOfExactMass(interval);
+
+            if(!interval.isUnlimited())
+                System.err.println("Number peptides = " + pps.length );
 
             pps = filterPeptides(pps); // drop non-complient peptides
 
