@@ -176,7 +176,7 @@ public class HadoopFileTaxonomy implements ITaxonomy {
         return ret;
     }
 
-    public IPolypeptide buildPeptideFromDatabaseString(final String pItem) {
+    public static IPolypeptide buildPeptideFromDatabaseString(final String pItem) {
         String item = pItem;
         String[] values = item.split(",");
         String sequence = values[0];
@@ -235,7 +235,7 @@ public class HadoopFileTaxonomy implements ITaxonomy {
         }
     }
 
-    protected IPolypeptide[] buildReadPeptides(final LineNumberReader pReader, final MassPeptideInterval pInterval, final boolean pSemi) {
+    public static IPolypeptide[] buildReadPeptides(final LineNumberReader pReader, final MassPeptideInterval pInterval, final boolean pSemi) {
         List<IPolypeptide> holder = new ArrayList<IPolypeptide>();
         int numberLines = -1;
         try {
