@@ -25,6 +25,8 @@ public class ScanTagMapper extends AbstractTandemMapper<Writable> {
 
     public static final int REPORT_INTERVAL_SCANS = 1000;
 
+    public static final Random RND = new Random();
+
 
 
     /// Some debugging hooks when we walk interesting cases
@@ -313,7 +315,10 @@ public class ScanTagMapper extends AbstractTandemMapper<Writable> {
         final Text onlyKey = getOnlyKey();
         final Text onlyValue = getOnlyValue();
         onlyValue.set(valueStr);
-        if (numberEntries < maxScored) {
+
+        int numberSeparateReducers =  1 + (numberEntries / maxScored);
+
+        if (numberSeparateReducers == 1) {
 
             //   System.err.println("Sending mass " + mass + " for id " + id );
             onlyKey.set(keyStr);
@@ -321,16 +326,19 @@ public class ScanTagMapper extends AbstractTandemMapper<Writable> {
             m_KeyWriteCount++;
         }
         else {
+            int chosen = RND.nextInt(numberSeparateReducers); // choose one reducer
+
             // too big split into multiple tasks
-            int start = 0;
-            while (numberEntries > 0) {
-                 String key = keyStr + ":" + start + ":" + (start + maxScored);
+            int start = maxScored * chosen;
+            int end = (maxScored + 1)  * chosen;
+           // while (numberEntries > 0) {
+                String key = keyStr + ":" + start + ":" + end;
                 start += maxScored;
                 numberEntries -= maxScored;
                 onlyKey.set(key);
                 context.write(onlyKey, onlyValue);
                 m_KeyWriteCount++;
-            }
+          //  }
         }
         long elapsedProcessingTime = System.currentTimeMillis() - startTime;
         m_KeyWriteTime += elapsedProcessingTime;
