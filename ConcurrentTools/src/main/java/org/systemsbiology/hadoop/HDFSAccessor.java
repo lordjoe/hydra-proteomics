@@ -30,7 +30,7 @@ public class HDFSAccessor implements IHDFSFileSystem {
     public static IHDFSFileSystem getFileSystem() {
         if (HadoopMajorVersion.CURRENT_VERSION != HadoopMajorVersion.Version0 && HDFSAccessor.isHDFSHasSecurity()) {
             try {
-                Class<? extends IHDFSFileSystem> cls = (Class<? extends IHDFSFileSystem>) Class.forName("org.systemsbiology.hadoop.HDFSAsUserAccessor");
+                Class<? extends IHDFSFileSystem> cls = (Class<? extends IHDFSFileSystem>) Class.forName("org.systemsbiology.hadoop.HDFWithNameAccessor");
                 IHDFSFileSystem ret = cls.newInstance();
                 return ret;
             } catch (ClassNotFoundException e) {
@@ -48,7 +48,7 @@ public class HDFSAccessor implements IHDFSFileSystem {
     public static IHDFSFileSystem getFileSystem(Configuration config) {
         if (HadoopMajorVersion.CURRENT_VERSION != HadoopMajorVersion.Version0 && HDFSAccessor.isHDFSHasSecurity()) {
              try {
-                 Class<? extends IHDFSFileSystem> cls = (Class<? extends IHDFSFileSystem>) Class.forName("org.systemsbiology.hadoop.HDFSAsUserAccessor");
+                 Class<? extends IHDFSFileSystem> cls = (Class<? extends IHDFSFileSystem>) Class.forName("org.systemsbiology.hadoop.HDFWithNameAccessor");
 
                  Class[] argType = {Configuration.class };
                  Constructor<? extends IHDFSFileSystem> constructor = cls.getConstructor(argType);
@@ -67,7 +67,7 @@ public class HDFSAccessor implements IHDFSFileSystem {
     public static IHDFSFileSystem getFileSystem(final String host, final int port) {
         if (HadoopMajorVersion.CURRENT_VERSION != HadoopMajorVersion.Version0 && HDFSAccessor.isHDFSHasSecurity()) {
             try {
-                Class<? extends IHDFSFileSystem> cls = (Class<? extends IHDFSFileSystem>) Class.forName("org.systemsbiology.hadoop.HDFSAsUserAccessor");
+                Class<? extends IHDFSFileSystem> cls = (Class<? extends IHDFSFileSystem>) Class.forName("org.systemsbiology.hadoop.HDFWithNameAccessor");
 
                 Class[] argType = {String.class, int.class};
                 Constructor<? extends IHDFSFileSystem> constructor = cls.getConstructor(argType);

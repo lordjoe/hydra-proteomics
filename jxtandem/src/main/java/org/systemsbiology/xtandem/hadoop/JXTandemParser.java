@@ -7,7 +7,6 @@ import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.output.*;
-import org.apache.hadoop.security.*;
 import org.apache.hadoop.util.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
@@ -341,9 +340,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 //            System.exit(2);
 //        }
 
-            UserGroupInformation current = UserGroupInformation.getCurrentUser();
-
-            Job job = new Job(conf, "Fasta Format");
+              Job job = new Job(conf, "Fasta Format");
             setJob(job);
             conf = job.getConfiguration(); // NOTE JOB Copies the configuraton
             // make default settings

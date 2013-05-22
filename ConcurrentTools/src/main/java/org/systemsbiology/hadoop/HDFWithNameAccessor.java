@@ -18,7 +18,7 @@ import java.util.*;
  * Note under Hadoop 0.2 it is OK to exclude this class from compilation - it is only used
  * with reflection
  * +++++++++++++++++++++++++++++++++++++++++++
- * org.systemsbiology.hadoop.HDFSAsUserAccessor
+ * org.systemsbiology.hadoop.HDFWithNameAccessor
  * Code for accessing a remote file system
  *
  * @author Steve Lewis
