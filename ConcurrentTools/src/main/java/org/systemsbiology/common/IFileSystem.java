@@ -147,4 +147,11 @@ public interface IFileSystem {
      * @return  content as text
      */
     public String readFromFileSystem(String hdfsPath);
+
+
+    /**
+     * shut down all running sessions   on local file systems
+     * this may be a noop but for remote systems shut all connections
+     */
+    public void disconnect();
 }

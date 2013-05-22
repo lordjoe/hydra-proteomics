@@ -1,10 +1,12 @@
 package org.systemsbiology.remotecontrol;
 
 import com.jcraft.jsch.*;
+import org.apache.hadoop.security.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.hadoopgenerated.*;
 
 import java.io.*;
+import java.security.*;
 
 /**
  * org.systemsbiology.remotecontrol.RemoteSession
@@ -31,8 +33,7 @@ public class RemoteSession implements UserInfo {
             m_Session = m_JSCH.getSession(m_User, m_Host, m_Port);
             m_Session.setUserInfo(this);
             m_Session.setConfig("StrictHostKeyChecking", "no");
-        }
-        catch (JSchException e) {
+        } catch (JSchException e) {
             throw new RuntimeException(e);
 
         }
@@ -77,13 +78,11 @@ public class RemoteSession implements UserInfo {
         if (pConnected) {
             try {
                 m_Session.connect();
-            }
-            catch (JSchException e) {
+            } catch (JSchException e) {
                 throw new RuntimeException(e);
             }
             m_Connected = true;
-        }
-        else {
+        } else {
             m_Session.disconnect();
             m_Connected = false;
 
@@ -137,11 +136,11 @@ public class RemoteSession implements UserInfo {
 
     private static boolean runWordCount(final IHadoopController pHc) {
         //   pHc.guaranteeFilesOnHDFS(new File("E:/data/Moby"), "/user/slewis/moby", "/user/slewis/moby");
+        String inputDirectory = RemoteUtilities.getDefaultPath() + "/books";
         IHadoopJob job = HadoopJob.buildJob(
                 CapitalWordCount.class,
-                //             RemoteUtilities.getDefaultPath() + "/moby",     // data on hdfs
-                "/user/howdah" + "/moby",     // data on hdfs
-                "/users/slewis/jobs",      // jar location
+                inputDirectory,     // data on hdfs
+                  "/homes/slewis/jobs",      // jar location
                 RemoteUtilities.getDefaultPath() + "/output"             // output location - will have outputN added
 
         );
@@ -283,7 +282,7 @@ public class RemoteSession implements UserInfo {
         pHc.runJob(job);
     }
 
-    private static void runHadoopTest(final IHadoopController pHc,String[] args) {
+    private static void runHadoopTest(final IHadoopController pHc, String[] args) {
         Class<HadoopTest> mainClass = HadoopTest.class;
         String jobName = mainClass.getSimpleName();
 
@@ -300,41 +299,60 @@ public class RemoteSession implements UserInfo {
         );
 
         // make a small jar file
-  //      File jarFile = HadoopDeployer.makeClassOnlyHadoopJar(jarLocation + "/HadoopTest.jar", "org.systemsbiology.hadoopgenerated" );
-   //     String jarString = jarFile.toString().replace("\\", "/");
-  //      job.setJarFile(jarString);
+        //      File jarFile = HadoopDeployer.makeClassOnlyHadoopJar(jarLocation + "/HadoopTest.jar", "org.systemsbiology.hadoopgenerated" );
+        //     String jarString = jarFile.toString().replace("\\", "/");
+        //      job.setJarFile(jarString);
 
 
         pHc.runJob(job);
     }
 
 
-    public static void main(String[] args) {
-        String user = RemoteUtilities.getUser(); // "training";  //
-        String password = RemoteUtilities.getPassword(); // "training";  //
-        String host = RemoteUtilities.getHost(); // "192.168.244.128"; // "hadoop1";
-        RemoteSession rs = new RemoteSession(host, user, password);
+    public static void main(String[] args) throws Exception {
+        final String user = RemoteUtilities.getUser(); // "training";  //
+        final String password = RemoteUtilities.getPassword(); // "training";  //
+        final String host = RemoteUtilities.getHost(); // "192.168.244.128"; // "hadoop1";
+
+        if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version0)
+            throw new IllegalStateException("Version 1 is required for this code");
+
+        UserGroupInformation ugi = HDFWithNameAccessor.getCurrentUserGroup();
+        UserGroupInformation current = UserGroupInformation.getCurrentUser();
+
+        final RemoteSession rs = new RemoteSession(host, user, password);
         rs.setConnected(true);
 
-        final RemoteHadoopController hc = new RemoteHadoopController(rs);
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
 
 
-        //   String path = RemoteUtilities.guaranteeClassPath(hc,"/user/howdah/lib");
-        // File test = new File("AverageWordLength.txt");
-        //  hc.copyDirectoryToHDFS(test,"/user/training/avg.txt");
-        //   runShakesphear(hc);
-        //      runYeastBreaks(hc);
-        // runSimGenerator(hc);
-        // runClouderaYeastBreaks(hc);
-        //    runStatisticalWordCount(hc);
-        //  runMotifLocator(hc);
-        //  runSubstringCount(hc);
-        // runWordCount(hc);
-          runNShotTest(hc);
-        // runHadoopTest(hc,args);
-        // runProbes(hc);
-        //  runYeastHowdahProcess(hc);
-        //  runHumanHowdahProcess(hc);
+            final RemoteHadoopController hc = new RemoteHadoopController(rs);
+
+
+            public Void run() throws Exception {
+                UserGroupInformation current = UserGroupInformation.getCurrentUser();
+                //   String path = RemoteUtilities.guaranteeClassPath(hc,"/user/howdah/lib");
+                // File test = new File("AverageWordLength.txt");
+                //  hc.copyDirectoryToHDFS(test,"/user/training/avg.txt");
+                //   runShakesphear(hc);
+                //      runYeastBreaks(hc);
+                // runSimGenerator(hc);
+                // runClouderaYeastBreaks(hc);
+                //    runStatisticalWordCount(hc);
+                //  runMotifLocator(hc);
+                //  runSubstringCount(hc);
+                runWordCount(hc);
+                //   runNShotTest(hc);
+                // runHadoopTest(hc,args);
+                // runProbes(hc);
+                //  runYeastHowdahProcess(hc);
+                //  runHumanHowdahProcess(hc);
+                return null;
+
+            }
+        });
+        rs.setConnected(false);
+        System.err.println("Done");
+
     }
 
 }

@@ -11,6 +11,11 @@ import org.apache.hadoop.*;
 public enum HadoopMajorVersion {
     Version0("0.2"), Version1("1."), Version2("2.");
 
+    /**
+     * the major version of Hadoop we are using
+     */
+    public static  HadoopMajorVersion CURRENT_VERSION =  getHadoopVersion();
+
     private final String m_StartText;
 
     private HadoopMajorVersion(String startText) {
@@ -27,7 +32,7 @@ public enum HadoopMajorVersion {
      * @return !null majoe version
      * @throws  IllegalStateException if presented with a version it does not understand
      */
-    public static HadoopMajorVersion getHadoopVersion() {
+    private static HadoopMajorVersion getHadoopVersion() {
         // force the class loader to load a class in the package so we can read the package
         Class hadoopVersionAnnotation = HadoopVersionAnnotation.class; // make cure the class loader know about packages
         Package aPackage = Package.getPackage("org.apache.hadoop");

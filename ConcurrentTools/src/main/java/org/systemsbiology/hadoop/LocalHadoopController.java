@@ -364,6 +364,14 @@ public class LocalHadoopController implements IHadoopController {
         return launcher.runJob(job);
     }
 
+    /**
+     * shut down all running sessions
+     */
+    @Override
+    public void disconnect() {
+        // do nothing
+
+    }
 
     public static void main(String[] args) {
         // No need to make s jar for local processes

@@ -16,9 +16,8 @@ public interface IHDFSFileSystem extends IFileSystem {
     public static IHDFSFileSystem[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = IHDFSFileSystem.class;
 
-
-    public static final FsPermission FULL_ACCESS = new FsPermission(Short.parseShort("777", 8));
-    public static final FsPermission FULL_FILE_ACCESS = new FsPermission(Short.parseShort("666", 8));
+    public static final FsPermission FULL_ACCESS = new FsPermission(  FsAction.ALL,FsAction.READ_EXECUTE,FsAction.READ_EXECUTE);
+    public static final FsPermission FULL_FILE_ACCESS = new FsPermission(  FsAction.READ_WRITE,FsAction.READ_WRITE,FsAction.READ_WRITE);
 
     /**
      * there are issues with hdfs and running as a remote user

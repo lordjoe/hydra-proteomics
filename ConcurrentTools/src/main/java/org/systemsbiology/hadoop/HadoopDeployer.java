@@ -17,14 +17,14 @@ public class HadoopDeployer {
     public static Class THIS_CLASS = HadoopDeployer.class;
 
     public static final String[] EXCLUDED_JARS_PREFIXES = {
-  //          core-3.1.1.jar,\
+            //          core-3.1.1.jar,\
             "hadoop-",
             "commons-logging-",
             "commons-lang-",
             "commons-codec-",
             "commons-httpclient-",
             "commons-net-",
-             "avro-",
+            "avro-",
             "jackson-",
             "hsqldb-",
             "ftpserver-",
@@ -47,9 +47,23 @@ public class HadoopDeployer {
             "mockito-",
             "oro-",
             "mina-",
+            "jersey",
             "kfs-",
             "jetty-",
-       };
+            "snappy",
+            "servlet",
+            "google",
+            "jfreechart",
+            "core",
+             "gdata",
+            "netty",
+            "guava",
+            "protobuf",
+             "jaxb",
+            "jettison",
+            "jsr305",
+            "velocity",
+    };
 
     public static final String[] EXCLUDED_JARS_LIST = {
             "idea_rt.jar",
@@ -114,6 +128,7 @@ public class HadoopDeployer {
             "jackson-core-asl-1.7.4.jar",
             //   "xml-apis-1.0.b2.jar",
             //    "xml-apis-ext-1.3.04.jar",
+            "tools.jar",
             "gragent.jar"
     };
 
@@ -133,7 +148,8 @@ public class HadoopDeployer {
     public static File[] filterClassPath(String[] pathItems, String javaHome) {
         readExcludedProperties();
 
-        List holder = new ArrayList();
+        List<File> holder = new ArrayList<File>();
+        List<String> pathholder = new ArrayList<String>();
         for (int i = 0; i < pathItems.length; i++) {
             String item = pathItems[i];
             String jarName = new File(item).getName();
@@ -149,10 +165,12 @@ public class HadoopDeployer {
             if (!itemFile.exists())
                 continue;
             if (itemFile.isFile()) {
-                continue;
+                pathholder.add(item);
             }
-
+            //   pathholder.add(item);
         }
+
+        pathItems = pathholder.toArray(new String[0]);
 
         for (int i = 0; i < pathItems.length; i++) {
             String item = pathItems[i];
@@ -160,17 +178,17 @@ public class HadoopDeployer {
             String jarName = itemFile.getName();
             if (".".equals(item))
                 continue;
-            if (inExcludedJars(item))
+            if (inExcludedJars(jarName))
                 continue;
             if (item.indexOf(javaHome) > -1)
                 continue;
             if (jarName.startsWith("hadoop"))
                 jarName = itemFile.getName();
 
-              if (HADOOP_HOME.indexOf(javaHome) > -1)
+            if (HADOOP_HOME.indexOf(javaHome) > -1)
                 continue;
 
-            if( applyRulesToExclude(  item,  jarName))
+            if (applyRulesToExclude(item, jarName))
                 continue;
 
             if (!itemFile.exists())
@@ -191,21 +209,22 @@ public class HadoopDeployer {
 
     /**
      * get rid of a lot of libraries we don't need
+     *
      * @param item
      * @param jarName
      * @return
      */
-    protected static boolean applyRulesToExclude(String item,String jarName) {
+    protected static boolean applyRulesToExclude(String item, String jarName) {
         if (EXCLUDED_JARS.contains(item))
-              return true;  // exclude
-          if (EXCLUDED_JARS.contains(jarName))
-              return true;  // exclude
+            return true;  // exclude
+        if (EXCLUDED_JARS.contains(jarName))
+            return true;  // exclude
         for (int i = 0; i < EXCLUDED_JARS_PREFIXES.length; i++) {
             String testPrefix = EXCLUDED_JARS_PREFIXES[i];
-            if(item.startsWith(testPrefix))
+            if (item.startsWith(testPrefix))
                 return true;  // exclude
-            if(item.startsWith(jarName))
-                 return true;  // exclude
+            if (jarName.startsWith(testPrefix))
+                return true;  // exclude
 
         }
         return false; // OK
@@ -276,20 +295,18 @@ public class HadoopDeployer {
         return test + ".jar";
     }
 
-//    public static File makeJar(File libDir, File itemFile)
-//    {
-//        String jarName = pathToJarName(itemFile);
-//        File jarFile = new File(libDir, jarName);
-//        String cmd = "jar -cvf " + jarFile.getAbsolutePath() + " -C " + itemFile.getAbsolutePath() + " .";
-//        System.out.println(cmd);
-//        try {
-//            Runtime.getRuntime().exec(cmd);
-//        }
-//        catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        return jarFile;
-//    }
+    public static File makeJar(File libDir, File itemFile) {
+        String jarName = pathToJarName(itemFile);
+        File jarFile = new File(libDir, jarName);
+        String cmd = "jar -cvf " + jarFile.getAbsolutePath() + " -C " + itemFile.getAbsolutePath() + " .";
+        System.out.println(cmd);
+        try {
+            Runtime.getRuntime().exec(cmd);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return jarFile;
+    }
 
     public static void copyLibraries(ZipOutputStream out, File[] libs) throws IOException {
         for (int i = 0; i < libs.length; i++) {
