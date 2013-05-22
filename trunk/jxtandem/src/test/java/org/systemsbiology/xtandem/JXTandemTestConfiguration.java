@@ -29,48 +29,52 @@ public class JXTandemTestConfiguration {
         final String host = RemoteUtilities.getHost();
         final int port = RemoteUtilities.getPort();
         final String user = RemoteUtilities.getUser();
-        //     RemoteUtilities.getPassword()
-        String connStr = host + ":" + port + ":" + user + ":" + RemoteUtilities.getPassword();
-        // do we already know
-        Boolean ret = gConditionToAvailability.get(connStr);
-        if (ret == null) {
 
-        final String userDir =  "/user/" + user;
-        try {
-            UserGroupInformation ugi
-                    = UserGroupInformation.createRemoteUser(user);
+        access = HDFSAccessor.getFileSystem(host,port) ;
+        return true;
 
-            ugi.doAs(new PrivilegedExceptionAction<Void>() {
-
-                public Void run() throws Exception {
-
-                    Configuration conf = new Configuration();
-                    conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
-                    conf.set("hadoop.job.ugi", user);
-
-                    FileSystem fs = FileSystem.get(conf);
-
-//                    fs.createNewFile(new Path(userDir + "/test"));
+//        //     RemoteUtilities.getPassword()
+//        String connStr = host + ":" + port + ":" + user + ":" + RemoteUtilities.getPassword();
+//        // do we already know
+//        Boolean ret = gConditionToAvailability.get(connStr);
+//        if (ret == null) {
 //
-//                    FileStatus[] status = fs.listStatus(new Path("/user/" + user));
-//                    for (int i = 0; i < status.length; i++) {
-//                        System.out.println(status[i].getPath());
-//                    }
-                    return null;
-
-                }
-            });
-            ret = true;
-             gConditionToAvailability.put(connStr,ret);
-        } catch (Exception e) {
-             ret = false;
-            gConditionToAvailability.put(connStr,ret);
-
-        }
-         gConditionToAvailability.put(connStr,Boolean.TRUE);
-
-        }
-        return ret;
+//        final String userDir =  "/user/" + user;
+//        try {
+//            UserGroupInformation ugi
+//                    = UserGroupInformation.createRemoteUser(user);
+//
+//            ugi.doAs(new PrivilegedExceptionAction<Void>() {
+//
+//                public Void run() throws Exception {
+//
+//                    Configuration conf = new Configuration();
+//                    conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
+//                    conf.set("hadoop.job.ugi", user);
+//
+//                    FileSystem fs = FileSystem.get(conf);
+//
+////                    fs.createNewFile(new Path(userDir + "/test"));
+////
+////                    FileStatus[] status = fs.listStatus(new Path("/user/" + user));
+////                    for (int i = 0; i < status.length; i++) {
+////                        System.out.println(status[i].getPath());
+////                    }
+//                    return null;
+//
+//                }
+//            });
+//            ret = true;
+//             gConditionToAvailability.put(connStr,ret);
+//        } catch (Exception e) {
+//             ret = false;
+//            gConditionToAvailability.put(connStr,ret);
+//
+//        }
+//         gConditionToAvailability.put(connStr,Boolean.TRUE);
+//
+//        }
+//        return ret;
 //        // never get here
 //
 //        UserGroupInformation currentUser = null;

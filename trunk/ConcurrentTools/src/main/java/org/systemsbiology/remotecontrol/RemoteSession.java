@@ -307,52 +307,52 @@ public class RemoteSession implements UserInfo {
         pHc.runJob(job);
     }
 
-
-    public static void main(String[] args) throws Exception {
-        final String user = RemoteUtilities.getUser(); // "training";  //
-        final String password = RemoteUtilities.getPassword(); // "training";  //
-        final String host = RemoteUtilities.getHost(); // "192.168.244.128"; // "hadoop1";
-
-        if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version0)
-            throw new IllegalStateException("Version 1 is required for this code");
-
-        UserGroupInformation ugi = HDFWithNameAccessor.getCurrentUserGroup();
-        UserGroupInformation current = UserGroupInformation.getCurrentUser();
-
-        final RemoteSession rs = new RemoteSession(host, user, password);
-        rs.setConnected(true);
-
-        ugi.doAs(new PrivilegedExceptionAction<Void>() {
-
-
-            final RemoteHadoopController hc = new RemoteHadoopController(rs);
-
-
-            public Void run() throws Exception {
-                UserGroupInformation current = UserGroupInformation.getCurrentUser();
-                //   String path = RemoteUtilities.guaranteeClassPath(hc,"/user/howdah/lib");
-                // File test = new File("AverageWordLength.txt");
-                //  hc.copyDirectoryToHDFS(test,"/user/training/avg.txt");
-                //   runShakesphear(hc);
-                //      runYeastBreaks(hc);
-                // runSimGenerator(hc);
-                // runClouderaYeastBreaks(hc);
-                //    runStatisticalWordCount(hc);
-                //  runMotifLocator(hc);
-                //  runSubstringCount(hc);
-                runWordCount(hc);
-                //   runNShotTest(hc);
-                // runHadoopTest(hc,args);
-                // runProbes(hc);
-                //  runYeastHowdahProcess(hc);
-                //  runHumanHowdahProcess(hc);
-                return null;
-
-            }
-        });
-        rs.setConnected(false);
-        System.err.println("Done");
-
-    }
+//
+//    public static void main(String[] args) throws Exception {
+//        final String user = RemoteUtilities.getUser(); // "training";  //
+//        final String password = RemoteUtilities.getPassword(); // "training";  //
+//        final String host = RemoteUtilities.getHost(); // "192.168.244.128"; // "hadoop1";
+//
+//        if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version0)
+//            throw new IllegalStateException("Version 1 is required for this code");
+//
+//        UserGroupInformation ugi = HDFWithNameAccessor.getCurrentUserGroup();
+//        UserGroupInformation current = UserGroupInformation.getCurrentUser();
+//
+//        final RemoteSession rs = new RemoteSession(host, user, password);
+//        rs.setConnected(true);
+//
+//        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+//
+//
+//            final RemoteHadoopController hc = new RemoteHadoopController(rs);
+//
+//
+//            public Void run() throws Exception {
+//                UserGroupInformation current = UserGroupInformation.getCurrentUser();
+//                //   String path = RemoteUtilities.guaranteeClassPath(hc,"/user/howdah/lib");
+//                // File test = new File("AverageWordLength.txt");
+//                //  hc.copyDirectoryToHDFS(test,"/user/training/avg.txt");
+//                //   runShakesphear(hc);
+//                //      runYeastBreaks(hc);
+//                // runSimGenerator(hc);
+//                // runClouderaYeastBreaks(hc);
+//                //    runStatisticalWordCount(hc);
+//                //  runMotifLocator(hc);
+//                //  runSubstringCount(hc);
+//                runWordCount(hc);
+//                //   runNShotTest(hc);
+//                // runHadoopTest(hc,args);
+//                // runProbes(hc);
+//                //  runYeastHowdahProcess(hc);
+//                //  runHumanHowdahProcess(hc);
+//                return null;
+//
+//            }
+//        });
+//        rs.setConnected(false);
+//        System.err.println("Done");
+//
+//    }
 
 }

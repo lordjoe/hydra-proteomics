@@ -1,9 +1,6 @@
 package org.systemsbiology.hadoop;
 
-import org.apache.hadoop.*;
-import org.apache.hadoop.conf.*;
-import org.apache.hadoop.fs.*;
-import org.apache.hadoop.fs.permission.*;
+
 import org.junit.*;
 import org.systemsbiology.remotecontrol.*;
 import org.systemsbiology.xtandem.*;
@@ -25,64 +22,7 @@ public class HDFSTests {
     public static final String FILE_NAME = "little_lamb2.txt";
     public static final String FILE_NAME2 = "little_lamb_stays2.txt";
 
-    @Test
-    public void setPermissionTest()
-    {
-       // We can tell from the code - hard wired to use security over 0.2
-       // HDFSAccessor.setHDFSHasSecurity(true);
 
-         if(!HDFWithNameAccessor.isHDFSAccessible())  {
-             System.out.println("Not running HDFS tests");
-             return;
-         }
-         try {
-             HDFWithNameAccessor access = (HDFWithNameAccessor)HDFSAccessor.getFileSystem(NAME_NODE,HDFS_PORT);
-        //     access.setPermissions(new Path("/user/slewis"),IHDFSFileSystem.FULL_ACCESS);
-
-      //       access.mkdir(BASE_DIRECTORY + "/ebi/");
-       //      access.mkdir(BASE_DIRECTORY + "/ebi/Sample2/");
-             FsPermission permissions ;
-
-
-             Path src = new Path("/user/slewis/ebi");
-             access.expunge("/user/slewis/ebi");
-
-             access.mkdir("/user/slewis/ebi");
-            access.setPermissions(src,IHDFSFileSystem.FULL_ACCESS);
-             permissions = access.getPermissions(src);
-             Assert.assertTrue(HDFWithNameAccessor.canAllRead(permissions));
-
-             String filePath = RemoteUtilities.getDefaultPath() + "/ebi/Sample2/";
-             access.mkdir(filePath);
-             src = new Path(filePath);
-             permissions = access.getPermissions(src);
-
-             access.setPermissions(src,IHDFSFileSystem.FULL_ACCESS);
-             permissions = access.getPermissions(src);
-
-
-             access.writeToFileSystem(filePath, TEST_CONTENT);
-             access.setPermissions(src,IHDFSFileSystem.FULL_ACCESS);
-             access.setPermissions(new Path(filePath),IHDFSFileSystem.FULL_ACCESS);
-
-              permissions = access.getPermissions("/user/slewis");
-             Assert.assertTrue(HDFWithNameAccessor.canAllRead(permissions));
-
-              permissions = access.getPermissions("/user/slewis");
-             Assert.assertTrue(HDFWithNameAccessor.canAllRead(permissions));
-
-              permissions = access.getPermissions(filePath);
-             Assert.assertTrue(HDFWithNameAccessor.canAllRead(permissions));
-           }
-        catch (Exception e) {
-            Throwable cause = XTandemUtilities.getUltimateCause(e);
-            if (cause instanceof EOFException) {   // hdfs not available
-                return;
-            }
-            throw new RuntimeException(e);
-
-        }
-    }
 
     public static final String TEST_CONTENT =
             "Mary had a little lamb,\n" +
@@ -105,6 +45,62 @@ public class HDFSTests {
          Assert.assertEquals(HadoopMajorVersion.Version1,mv);
        }
 
+    public static boolean isHDFSAccessible() {
+
+         IHDFSFileSystem access = null;
+         final String host = RemoteUtilities.getHost();
+         final int port = RemoteUtilities.getPort();
+         final String user = RemoteUtilities.getUser();
+
+         access = HDFSAccessor.getFileSystem(host,port) ;
+         return true;
+    }
+//
+//     RemoteUtilities.getPassword()
+//     String connStr = host + ":" + port + ":" + user + ":" + RemoteUtilities.getPassword();
+//    // do we already know
+//       Boolean ret = gConditionToAvailability.get(connStr);
+//         if (ret == null) {
+ //
+ //        final String userDir =  "/user/" + user;
+ //        try {
+ //            UserGroupInformation ugi
+ //                    = UserGroupInformation.createRemoteUser(user);
+ //
+ //            ugi.doAs(new PrivilegedExceptionAction<Void>() {
+ //
+ //                public Void run() throws Exception {
+ //
+ //                    Configuration conf = new Configuration();
+ //                    conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
+ //                    conf.set("hadoop.job.ugi", user);
+ //
+ //                    FileSystem fs = FileSystem.get(conf);
+ //
+ ////                    fs.createNewFile(new Path(userDir + "/test"));
+ ////
+ ////                    FileStatus[] status = fs.listStatus(new Path("/user/" + user));
+ ////                    for (int i = 0; i < status.length; i++) {
+ ////                        System.out.println(status[i].getPath());
+ ////                    }
+ //                    return null;
+ //
+ //                }
+ //            });
+ //            ret = true;
+ //             gConditionToAvailability.put(connStr,ret);
+ //        } catch (Exception e) {
+ //             ret = false;
+ //            gConditionToAvailability.put(connStr,ret);
+ //
+ //        }
+ //         gConditionToAvailability.put(connStr,Boolean.TRUE);
+ //
+ //        }
+ //        return ret;
+ //        // never get here
+
+
    @Test
     public void HDFSReadTest()
     {
@@ -114,7 +110,7 @@ public class HDFSTests {
 
 
 
-        if(!JXTandemTestConfiguration.isHDFSAccessible())  {
+        if( isHDFSAccessible())  {
             System.out.println("Not running HDFS tests");
             return;
         }

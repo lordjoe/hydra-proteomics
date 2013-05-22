@@ -1952,6 +1952,9 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version0) {
             workingMain(args);
         } else {
+            if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version0)
+                throw new IllegalStateException("This Code will not work under Version 0.2");
+
             // by using reflection the class is never loaded when running
             Class[] paramTypes = {String[].class};
             Class<? extends RunAsUser> cls = (Class<? extends RunAsUser>) Class.forName("org.systemsbiology.hadoop.RunAsUserUseWithReflection");
