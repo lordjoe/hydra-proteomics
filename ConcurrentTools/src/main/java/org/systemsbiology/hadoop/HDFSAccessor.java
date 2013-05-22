@@ -7,6 +7,7 @@ import org.apache.hadoop.fs.*;
 import org.systemsbiology.remotecontrol.*;
 
 import java.io.*;
+import java.lang.reflect.*;
 import java.util.*;
 
 /**
@@ -23,6 +24,7 @@ public class HDFSAccessor implements IHDFSFileSystem {
     /**
      * Note the use of reflection will cause things work even under 0.2 when  HDFSAsUserAccessor
      * will not compile
+     *
      * @return
      */
     public static IHDFSFileSystem getFileSystem() {
@@ -44,38 +46,42 @@ public class HDFSAccessor implements IHDFSFileSystem {
     }
 
     public static IHDFSFileSystem getFileSystem(Configuration config) {
-        if (HDFSAccessor.isHDFSHasSecurity()) {
-            return new HDFSAccessor(config);
-//            if (true) {
-//                throw new UnsupportedOperationException("Fix This"); // ToDo
-//            }
-//                return new HDFSAsUserAccessor(config);
-        } else {
-            return new HDFSAccessor(config);
-        }
+        if (HadoopMajorVersion.CURRENT_VERSION != HadoopMajorVersion.Version0 && HDFSAccessor.isHDFSHasSecurity()) {
+             try {
+                 Class<? extends IHDFSFileSystem> cls = (Class<? extends IHDFSFileSystem>) Class.forName("org.systemsbiology.hadoop.HDFSAsUserAccessor");
+
+                 Class[] argType = {Configuration.class };
+                 Constructor<? extends IHDFSFileSystem> constructor = cls.getConstructor(argType);
+                 IHDFSFileSystem ret = constructor.newInstance(config);
+                 return ret;
+             } catch (Exception e) {
+                 throw new RuntimeException(e);
+             }
+         } else {
+             return new HDFSAccessor(config);
+         }
+
 
     }
 
     public static IHDFSFileSystem getFileSystem(final String host, final int port) {
-        if (HDFSAccessor.isHDFSHasSecurity()) {
-            return new HDFWithNameAccessor(host, port);
-        } else {
-            return new HDFSAccessor(host, port);
-        }
-    }
+        if (HadoopMajorVersion.CURRENT_VERSION != HadoopMajorVersion.Version0 && HDFSAccessor.isHDFSHasSecurity()) {
+            try {
+                Class<? extends IHDFSFileSystem> cls = (Class<? extends IHDFSFileSystem>) Class.forName("org.systemsbiology.hadoop.HDFSAsUserAccessor");
 
-    public static IHDFSFileSystem getFileSystem(final String host, final int port, String user) {
-        if (HDFSAccessor.isHDFSHasSecurity()) {
-            if (true) {
-                throw new UnsupportedOperationException("Fix This"); // ToDo
+                Class[] argType = {String.class, int.class};
+                Constructor<? extends IHDFSFileSystem> constructor = cls.getConstructor(argType);
+                IHDFSFileSystem ret = constructor.newInstance(host, new Integer(port));
+                return ret;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            //  return new HDFSAsUserAccessor(host, port, user);
         } else {
-            return new HDFSAccessor(host, port, user);
+            return new HDFSAccessor(host,   port);
         }
-        throw new UnsupportedOperationException("Fix This"); // ToDo
 
     }
+
 
     private static Configuration g_SharedConfiguration = new Configuration();
 
