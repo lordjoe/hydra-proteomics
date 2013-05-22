@@ -16,6 +16,7 @@ import org.systemsbiology.xtandem.sax.*;
 import org.systemsbiology.xtandem.taxonomy.*;
 
 import java.io.*;
+import java.lang.reflect.*;
 import java.security.*;
 import java.util.*;
 import java.util.prefs.*;
@@ -45,6 +46,27 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     public static final int MAX_DISPLAY_LENGTH = 4 * 1000 * 1000;
     public static final int NUMBER_STAGES = 3;
     public static final boolean BUILD_DATABASE = true;
+
+    private static HadoopMajorVersion g_RunningHadoopVersion = HadoopMajorVersion.CURRENT_VERSION;
+
+    /**
+     * you can try forcing code to run against a lower Hadoop version
+     *
+     * @return
+     */
+    public static HadoopMajorVersion getRunningHadoopVersion() {
+        return g_RunningHadoopVersion;
+    }
+
+    public static void setRunningHadoopVersion(HadoopMajorVersion runningHadoopVersion) {
+        if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version0 &&
+                runningHadoopVersion != HadoopMajorVersion.Version0)
+            throw new IllegalArgumentException("Cannot run against higher than the build version");
+        if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version1 &&
+                runningHadoopVersion == HadoopMajorVersion.Version2)
+            throw new IllegalArgumentException("Cannot run against higher than the build version");
+        g_RunningHadoopVersion = runningHadoopVersion;
+    }
 
     private static boolean gReadScanFile;
 
@@ -456,11 +478,11 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     }
 
     public void setParamsPath(String pParamsPath) {
-        String rbase = getRemoteBaseDirectory();
-        if (rbase != null) {
-            pParamsPath = rbase + "/" + pParamsPath;
-
-        }
+//        String rbase = getRemoteBaseDirectory();
+//        if (rbase != null) {
+//            pParamsPath = rbase + "/" + pParamsPath;
+//
+//        }
         setParameter("ParamsPath", pParamsPath);
     }
 
@@ -885,11 +907,13 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         File f = new File(paramsPath);
         String remotepath = pRbase + "/" + f.getName();
 
-        StringWriter sw = new StringWriter();
-        PrintWriter out = new PrintWriter(sw);
-        writeAdjustedParameters(out);
+        pAccessor.writeToFileSystem(remotepath, f);
 
-        pAccessor.writeToFileSystem(remotepath, sw.toString());
+//        StringWriter sw = new StringWriter();
+//        PrintWriter out = new PrintWriter(sw);
+//        writeAdjustedParameters(out);
+//
+//        pAccessor.writeToFileSystem(remotepath, sw.toString());
     }
 
 
@@ -906,7 +930,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         PrintWriter out = new PrintWriter(sw);
         writeAdjustedTaxonomy(out);
 
-        pAccessor.writeToFileSystem(remotepath, out.toString());
+        String content = sw.toString();
+        pAccessor.writeToFileSystem(remotepath, content);
     }
 
     /**
@@ -1484,6 +1509,13 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     public static final String DELETE_OUTPUT_DIRECTORIES_PROPERTY = "deleteOutputDirectories";
     public static final String COMPRESS_INTERMEDIATE_FILES_PROPERTY = "compressIntermediateFiles";
     public static final String MAX_CKUSTER_MEMORY_PROPERTY = "maxClusterMemory";
+    public static final String HADOOP02_HOST = "hadoop02Host";
+    public static final String HADOOP02_PORT = "hadoop02Port";
+    public static final String HADOOP02_JOBTRACKER = "hadoop02remoteJobTracker";
+    public static final String HADOOP10_HOST = "hadoop10Host";
+    public static final String HADOOP10_PORT = "hadoop10Port";
+    public static final String HADOOP10_JOBTRACKER = "hadoop10remoteJobTracker";
+
 
     protected static void handleValue(final String pProperty, String pValue) {
 
@@ -1561,10 +1593,31 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             HadoopUtilities.setProperty(MAX_CKUSTER_MEMORY_PROPERTY, pValue);
             return;
         }
-        if (MAX_CKUSTER_MEMORY_PROPERTY.equals(pProperty)) {
-            HadoopUtilities.setProperty(MAX_CKUSTER_MEMORY_PROPERTY, pValue);
+        if (HADOOP02_HOST.equals(pProperty)) {
+            HadoopUtilities.setProperty(HADOOP02_HOST, pValue);
             return;
         }
+        if (HADOOP02_PORT.equals(pProperty)) {
+             HadoopUtilities.setProperty(HADOOP02_PORT, pValue);
+             return;
+         }
+         if (HADOOP02_JOBTRACKER.equals(pProperty)) {
+            HadoopUtilities.setProperty(HADOOP02_JOBTRACKER, pValue);
+            return;
+        }
+        if (HADOOP10_HOST.equals(pProperty)) {
+            HadoopUtilities.setProperty(HADOOP10_HOST, pValue);
+            return;
+        }
+        if (HADOOP10_PORT.equals(pProperty)) {
+            HadoopUtilities.setProperty(HADOOP10_PORT, pValue);
+            return;
+        }
+        if (HADOOP10_JOBTRACKER.equals(pProperty)) {
+             HadoopUtilities.setProperty(HADOOP10_JOBTRACKER, pValue);
+             return;
+         }
+
         if (DELETE_OUTPUT_DIRECTORIES_PROPERTY.equals(pProperty)) {
             HadoopUtilities.setProperty(DELETE_OUTPUT_DIRECTORIES_PROPERTY, pValue);
             return;
@@ -1669,6 +1722,14 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         }
     }
 
+    /**
+     * really copy a series of files
+     *
+     * @param outFile
+     * @param application
+     * @param hdfsPath
+     * @return
+     */
     private String copyOutputFile(String outFile, HadoopTandemMain application, String hdfsPath) {
         File f;
         f = readRemoteFile(hdfsPath, outFile);
@@ -1744,8 +1805,12 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
     }
 
-
-    private static void workingMain(String[] args) {
+    /**
+     * do all the work in the main but may be run as a different user
+     *
+     * @param args
+     */
+    public static void workingMain(String[] args) {
         ElapsedTimer total = new ElapsedTimer();
 
 
@@ -1882,21 +1947,19 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             return;
         }
 
-        if (HadoopUtilities.HADOOP_MAJOR_VERSION != HadoopMajorVersion.Version1)
-            throw new IllegalStateException("Version 1 is required for this code");
-        else
-            HDFSAccessor.setHDFSHasSecurity(true);
+        HadoopMajorVersion.CURRENT_VERSION = HadoopMajorVersion.Version0; // force version 0.2
 
-        UserGroupInformation ugi = HDFWithNameAccessor.getCurrentUserGroup();
-        ugi.doAs(new PrivilegedExceptionAction<Void>() {
-
-            public Void run() throws Exception {
-                 workingMain(args);
-                return null;
-
-             }
-         });
-
+        if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version0) {
+            workingMain(args);
+        } else {
+            // by using reflection the class is never loaded when running
+            Class[] paramTypes = {String[].class};
+            Class<? extends RunAsUser> cls = (Class<? extends RunAsUser>) Class.forName("org.systemsbiology.hadoop.RunAsUserUseWithReflection");
+            RunAsUser runner = cls.newInstance();
+            String user = RemoteUtilities.getUser();
+            Object[] passedArgs = {args};
+            runner.runAsUser(user, passedArgs);
+        }
     }
 
 }

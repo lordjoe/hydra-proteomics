@@ -258,7 +258,7 @@ public class XTandemHadoopUtilities {
             String key = keyObj.toString();
             String value = gHadoopProperties.getProperty(key);
             pConf.set(key, value);
-
+            System.err.println(key + "=" + value);
         }
     }
 

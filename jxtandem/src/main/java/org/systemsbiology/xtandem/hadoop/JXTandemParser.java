@@ -7,6 +7,7 @@ import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.output.*;
+import org.apache.hadoop.security.*;
 import org.apache.hadoop.util.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
@@ -118,7 +119,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             String decoyLabel = XTandemHadoopUtilities.asDecoy(label);
             if (decoyLabel != null) {
                 label = decoyLabel;
-                 incrementNumberDecoysProteins(context);
+                incrementNumberDecoysProteins(context);
                 isDecoy = true;
             }
 
@@ -251,7 +252,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             if (numberDecoy > 0) {
                 // same peptide is in decoy and non-decoy
                 if (numberNonDecoy > 0) {
-                   // todo handle mixed decoy/non-decoy peptide
+                    // todo handle mixed decoy/non-decoy peptide
                 }
 
             }
@@ -287,8 +288,11 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
                 showReduceStatistics();
             }
             // bin number of duplicates to see if a combiner will help
-            Counter counter = context.getCounter("Parser", String.format("DuplicatesOfSize%04d", totalDuplicates));
-            counter.increment(1);
+            // todo put back but for now we are cuttine the number of counters
+            if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version2) {
+                Counter counter = context.getCounter("Parser", String.format("DuplicatesOfSize%04d", totalDuplicates));
+                counter.increment(1);
+            }
         }
 
 
@@ -337,6 +341,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 //            System.exit(2);
 //        }
 
+            UserGroupInformation current = UserGroupInformation.getCurrentUser();
 
             Job job = new Job(conf, "Fasta Format");
             setJob(job);
@@ -398,6 +403,8 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             FileOutputFormat.setOutputPath(job, outputDir);
 
 
+            System.err.println("Waiting for completion  ");
+
             boolean ans = job.waitForCompletion(true);
             if (ans)
                 XTandemHadoopUtilities.saveCounters(fileSystem, XTandemHadoopUtilities.buildCounterFileName(this, conf), job);
@@ -434,7 +441,9 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
      */
     @Override
     public int run(final String[] args) throws Exception {
-        Configuration conf = new Configuration();
+        Configuration conf = getConf();
+        if (conf == null)
+            conf = HDFSAccessor.getSharedConfiguration();
         //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
         return runJob(conf, args);
     }

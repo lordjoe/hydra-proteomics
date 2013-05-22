@@ -8,6 +8,7 @@ import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * org.systemsbiology.xtandem.hadoop.AbstractTandemReducer
@@ -67,6 +68,9 @@ public abstract class AbstractTandemReducer  extends Reducer<Text, Text, Text, T
 
         IAnalysisParameters ap = AnalysisParameters.getInstance();
         ap.setJobName(context.getJobName());
+
+
+
         String defaultPath = conf.get(XTandemHadoopUtilities.PATH_KEY);
         XTandemHadoopUtilities.setDefaultPath(defaultPath);
 

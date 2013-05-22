@@ -872,11 +872,10 @@ public class SpectrumCondition {
         m_SpectrumConditioned = params.getBooleanParameter(strKey, m_SpectrumConditioned);
 
         strKey = "spectrum, use noise suppression";
-        m_bUseNoiseSuppression = params.getBooleanParameter(strKey);
+        m_bUseNoiseSuppression = params.getBooleanParameter(strKey,true);
 
         strKey = "spectrum, use neutral loss window";
-        final Boolean booleanParameter = params.getBooleanParameter(strKey);
-        m_bUseNeutralLoss = booleanParameter != null ? booleanParameter : false;
+        m_bUseNeutralLoss = params.getBooleanParameter(strKey,m_bUseNeutralLoss);
 
         if (m_bUseNeutralLoss) {
             strKey = "spectrum, neutral loss window";

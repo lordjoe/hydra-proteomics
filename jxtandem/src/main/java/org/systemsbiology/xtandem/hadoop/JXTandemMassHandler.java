@@ -161,6 +161,7 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
                 // count what was done
                 Counter counter = context.getCounter(XTandemHadoopUtilities.DATABASE_COUNTER_GROUP_NAME, fileName);
                 counter.increment(numberPeptidesThisMass);
+
                 if (m_Proteins++ % REPORT_INTERVAL_PROTEINS == 0) {
                     showStatistics();
                 }
@@ -351,9 +352,10 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
      */
     @Override
     public int run(final String[] args) throws Exception {
-        Configuration conf = new Configuration();
-        //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
-        return runJob(conf, args);
+        Configuration conf = getConf();
+         if(conf == null)
+             conf = HDFSAccessor.getSharedConfiguration();
+         return runJob(conf, args);
     }
 
     public static void main(String[] args) throws Exception {

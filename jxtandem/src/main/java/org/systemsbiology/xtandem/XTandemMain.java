@@ -320,7 +320,12 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
                 m_SpectrumPath = requiredPrefix + m_SpectrumPath;
         }
 
-        readDefaultParameters(notes);
+        try {
+            readDefaultParameters(notes);
+        } catch (Exception e) {
+            // forgive
+            System.err.println("Cannot find file " + m_DefaultParameters);
+        }
 
         XTandemUtilities.validateParameters(this);
 

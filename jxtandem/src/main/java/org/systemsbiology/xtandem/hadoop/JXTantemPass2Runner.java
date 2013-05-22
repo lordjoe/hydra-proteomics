@@ -137,12 +137,14 @@ public class JXTantemPass2Runner extends ConfiguredJobRunner implements IJobRunn
      */
     @Override
     public int run(final String[] args) throws Exception {
-        Configuration conf = new Configuration();
-        return runJob(conf, args);
+        Configuration conf = getConf();
+         if(conf == null)
+             conf = HDFSAccessor.getSharedConfiguration();
+         return runJob(conf, args);
     }
 
     public static void main(String[] args) throws Exception {
-        int res = ToolRunner.run(new Configuration(), new JXTantemPass2Runner(), args);
+        int res = ToolRunner.run(new JXTantemPass2Runner(), args);
 
 
     }

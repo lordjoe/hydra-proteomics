@@ -10,6 +10,7 @@ import org.apache.hadoop.util.*;
 import org.systemsbiology.hadoop.*;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * org.systemsbiology.xtandem.hadoop.JXTantemPass1Runner
@@ -51,6 +52,10 @@ public class JXTantemPass1Runner extends ConfiguredJobRunner implements IJobRunn
 
     public int runJob(Configuration pConf, final String[] args) throws Exception {
         try {
+            for (int i = 0; i < args.length; i++) {
+                String arg = args[i];
+                System.err.println(arg);
+            }
             String[] otherArgs = new GenericOptionsParser(pConf, args).getRemainingArgs();
 
             // GenericOptionsParser stops after the first non-argument
@@ -224,12 +229,13 @@ public class JXTantemPass1Runner extends ConfiguredJobRunner implements IJobRunn
      */
     @Override
     public int run(final String[] args) throws Exception {
-        Configuration conf = new Configuration();
-        //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
+        Configuration conf = getConf();
+         if(conf == null)
+             conf = HDFSAccessor.getSharedConfiguration();
         return runJob(conf, args);
     }
 
     public static void main(String[] args) throws Exception {
-        int res = ToolRunner.run(new Configuration(), new JXTantemPass1Runner(), args);
+        int res = ToolRunner.run(new JXTantemPass1Runner(), args);
     }
 }
