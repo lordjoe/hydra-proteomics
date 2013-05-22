@@ -59,4 +59,9 @@ public interface IHadoopController {
    public  void uploadFile(File fname, String dst);
 
     public boolean isSingleCore();
+
+    /**
+     * shut down all running sessions
+     */
+    public void disconnect();
  }

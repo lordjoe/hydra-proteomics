@@ -59,6 +59,17 @@ public class FTPWrapper implements IFileSystem {
      }
 
     /**
+     * shut down all running sessions   on local file systems
+     * this may be a noop but for remote systems shut all connections
+     */
+    @Override
+    public void disconnect() {
+       setConnected(false);
+
+    }
+
+
+    /**
      * some file systems simply delete emptydirectories - others allow them
      * @return
      */

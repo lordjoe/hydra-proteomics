@@ -84,9 +84,16 @@ public class RemoteUtilities {
         return s;
     }
 
+    private static String g_User;
 
     public static String getUser() {
-        return getProperty(USER_STRING);
+        if (g_User == null)
+            g_User = getProperty(USER_STRING);
+        return g_User;
+    }
+
+    public static void setUser(String user) {
+        g_User = user;
     }
 
     public static final File KEYTAB_DIR = new File("/keytabs");
@@ -111,44 +118,75 @@ public class RemoteUtilities {
         return null;
     }
 
+    private static String g_Password;
+
     public static String getPassword() {
-        String encrypted = getProperty(PASSWORD_STRING);
-        if (encrypted == null)
-            return null;
-        return Encrypt.decryptString(encrypted);
+        if (g_Password == null) {
+            String encrypted = getProperty(PASSWORD_STRING);
+            if (encrypted != null)
+                g_Password = Encrypt.decryptString(encrypted);
+        }
+        return g_Password;
     }
+
+    public static void setPassword(String password) {
+        g_Password = password;
+    }
+
+    private static String g_Host;
 
     public static String getHost() {
-        String property = getProperty(HOST_STRING);
-        if (USE_1_0_3) {
-            // for the momeent hard code for 1.03 system
-            property = "hadoop-master-01.ebi.ac.uk";
-            //  property = "hadoop-slave-011.ebi.ac.uk";
-            //     property = "hadoop-slave-027.ebi.ac.uk";
-        }
-        return property;
+        if (g_Host == null)
+            g_Host = getProperty(HOST_STRING);
+        return g_Host;
     }
+
+    public static void setHost(String host) {
+        g_Host = host;
+    }
+
+    private static String g_JobTracker;
 
     public static String getJobTracker() {
-        String property = getProperty(JOB_TRACKER_STRING);
-        return property;
+        if (g_JobTracker == null)
+            g_JobTracker = getProperty(JOB_TRACKER_STRING);
+        return g_JobTracker;
     }
+
+
+    public static void setJobTracker(String jobTracker) {
+        g_JobTracker = jobTracker;
+    }
+
+
+    private static Integer g_Port;
 
     public static int getPort() {
-        final String property = getProperty(PORT_STRING);
-        int port = Integer.parseInt(property);
-        if (USE_1_0_3) {
-            // for the momeent hard code for 1.03 system
-            port = 8020;
+        if (g_Port == null) {
+            final String property = getProperty(PORT_STRING);
+            g_Port = Integer.parseInt(property);
         }
-        return port;
+        return g_Port;
+//          if (USE_1_0_3) {
+//            // for the momeent hard code for 1.03 system
+//            port = 8020;
     }
+
+    public static void setPort(int port) {
+        g_Port = port;
+    }
+
+    private static String g_DefaultPath;
 
     public static String getDefaultPath() {
-        return getProperty(DEFAULT_PATH_STRING);
+        if (g_DefaultPath == null)
+            g_DefaultPath = getProperty(DEFAULT_PATH_STRING);
+        return g_DefaultPath;
+     }
 
+    public static void setDefaultPath(String defaultPath) {
+        g_DefaultPath = defaultPath;
     }
-
 
     public static final String[] EEXCLUDED_JARS_LIST = {
             "idea_rt.jar",

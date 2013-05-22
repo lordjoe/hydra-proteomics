@@ -14,25 +14,25 @@ import java.util.*;
 public interface IHadoopJob {
     public static final IHadoopJob[] EMPTY_ARRAY = {};
 
-    public Map<String,Long> getAllCounterValues();
+    public Map<String, Long> getAllCounterValues();
 
     public Job getJob();
 
     public String getName();
 
-     public UUID getUID();
+    public UUID getUID();
 
-     public void setJob(Job pJob);
+    public void setJob(Job pJob);
 
     public void makeJarAsNeeded();
 
     public int getStepNumber();
 
-     public void incrementStepNumber();
+    public void incrementStepNumber();
 
     public int getNumberInstances();
 
-     public void setNumberInstances(final int pNumberInstances);
+    public void setNumberInstances(final int pNumberInstances);
 
     public String getJarFile();
 
@@ -69,4 +69,12 @@ public interface IHadoopJob {
     public void setOtherArgs(String[] pOtherArgs);
 
     public String buildCommandString();
+
+    /**
+     * build command string to make all files in directoru public
+     * as this is not the default
+     *
+     * @return
+     */
+    public String buildChmodCommandString();
 }

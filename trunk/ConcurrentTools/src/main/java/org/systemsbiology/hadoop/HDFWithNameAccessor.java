@@ -7,12 +7,17 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.permission.*;
 import org.apache.hadoop.security.*;
 import org.systemsbiology.remotecontrol.*;
+import org.apache.hadoop.fs.LocalFileSystem;
 
 import java.io.*;
 import java.security.*;
 import java.util.*;
 
 /**
+ * +++++++++++++++++++++++++++++++++++++++++++
+ * Note under Hadoop 0.2 it is OK to exclude this class from compilation - it is only used
+ * with reflection
+ * +++++++++++++++++++++++++++++++++++++++++++
  * org.systemsbiology.hadoop.HDFSAsUserAccessor
  * Code for accessing a remote file system
  *
@@ -23,8 +28,6 @@ public class HDFWithNameAccessor extends HDFSAccessor {
     public static HDFWithNameAccessor[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = HDFWithNameAccessor.class;
 
-    public static final FsPermission ALL_READ = new FsPermission((short) 0766);
-    public static final FsPermission ALL_ACCESS = new FsPermission((short) 777);
 
     public static boolean canAllRead(FsPermission p) {
         FsAction otherAction = p.getOtherAction();
@@ -43,9 +46,10 @@ public class HDFWithNameAccessor extends HDFSAccessor {
 
     private static UserGroupInformation g_CurrentUserGroup;
 
-    private static UserGroupInformation getCurrentUserGroup() {
+    public static UserGroupInformation getCurrentUserGroup() {
         if (g_CurrentUserGroup == null) {
-            final String user = RemoteUtilities.getUser();
+            String user = RemoteUtilities.getUser();
+            //     user = "hdfs";
             g_CurrentUserGroup = UserGroupInformation.createRemoteUser(user);
 
         }
@@ -58,8 +62,8 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         IHDFSFileSystem access = null;
         final String host = RemoteUtilities.getHost();
         final int port = RemoteUtilities.getPort();
-        final String user = RemoteUtilities.getUser();
         //     RemoteUtilities.getPassword()
+        final String user = RemoteUtilities.getUser();
         String connStr = host + ":" + port + ":" + user + ":" + RemoteUtilities.getPassword();
 
         final String userDir = "/user/" + user;
@@ -75,12 +79,25 @@ public class HDFWithNameAccessor extends HDFSAccessor {
                     conf.set("fs.default.name", "hdfs://" + host + ":" + port);
                     conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
                     //       conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
+                    //              conf.set("hadoop.job.ugi", user);
                     conf.set("hadoop.job.ugi", user);
+                    //             conf.set("hadoop.job.ugi", "hdfs");
 
                     FileSystem fs = FileSystem.get(conf);
 
+
                     Path udir = new Path(userDir);
-                    fs.setPermission(udir, ALL_ACCESS);
+
+                    FileStatus fileStatus = fs.getFileStatus(udir);
+                    FsPermission permission = fileStatus.getPermission();
+
+                    //           fs.setPermission(udir, ALL_ACCESS);
+
+                    fileStatus = fs.getFileStatus(udir);
+                    permission = fileStatus.getPermission();
+
+                    //         fs.mkdirs(new Path(userDir + "/ebi/" ),IHDFSFileSystem.FULL_ACCESS);
+                    //         fs.mkdirs(new Path(userDir + "/ebi/Sample2/" ),IHDFSFileSystem.FULL_ACCESS);
 
                     FileStatus[] fileStatuses = fs.listStatus(udir);
                     for (int i = 0; i < fileStatuses.length; i++) {
@@ -110,7 +127,6 @@ public class HDFWithNameAccessor extends HDFSAccessor {
     }
 
 
-
     protected HDFWithNameAccessor() {
         this(RemoteUtilities.getHost(), RemoteUtilities.getPort(), RemoteUtilities.getUser());
     }
@@ -131,7 +147,7 @@ public class HDFWithNameAccessor extends HDFSAccessor {
 //      }
 
     protected HDFWithNameAccessor(final String host, final int port, final String user) {
-        super(host,  port,  user);
+        super(host, port, user);
         if (port <= 0)
             throw new IllegalArgumentException("bad port " + port);
         String connectString = "hdfs://" + host + ":" + port + "/";
@@ -154,6 +170,78 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         }
     }
 
+    /**
+      * shut down all running sessions   on local file systems
+      * this may be a noop but for remote systems shut all connections
+      */
+     @Override
+     public void disconnect() {
+       //  noop
+
+     }
+
+
+    @Override
+    public synchronized FileSystem getDFS() {
+//        FileSystem ret = super.getDFS();
+//        if (ret == null || ret instanceof LocalFileSystem) {
+//            FileSystem remote = getNewDFS();
+//            setDFS(remote);
+//        }
+//        return ret;
+
+        return getNewDFS();
+    }
+
+    protected FileSystem getNewDFS() {
+        final FileSystem[] returned = new FileSystem[1];
+        IHDFSFileSystem access = null;
+        final String host = RemoteUtilities.getHost();
+        final int port = RemoteUtilities.getPort();
+        //     RemoteUtilities.getPassword()
+        final String user = RemoteUtilities.getUser();
+        String connStr = host + ":" + port + ":" + user + ":" + RemoteUtilities.getPassword();
+
+        final String userDir = "/user/" + user;
+        //   final String userDir = "/user" ;
+
+        try {
+            UserGroupInformation ugi = getCurrentUserGroup();
+            ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+                public Void run() throws Exception {
+
+                    Configuration conf = new Configuration();
+                    conf.set("fs.default.name", "hdfs://" + host + ":" + port);
+                    conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
+                    //       conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
+                    //              conf.set("hadoop.job.ugi", user);
+                    conf.set("hadoop.job.ugi", user);
+                    //             conf.set("hadoop.job.ugi", "hdfs");
+
+                    returned[0] = FileSystem.get(conf);
+
+
+                    return null;
+
+                }
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        if (returned[0] == null)
+            throw new IllegalStateException("cannot get file system");
+        return returned[0];
+
+    }
+
+    @Override
+    protected void setDFS(FileSystem DFS) {
+        if (DFS instanceof LocalFileSystem)
+            throw new IllegalArgumentException("This class must talk to a remote file system"); // ToDo change
+        super.setDFS(DFS);
+    }
 
     /**
      * there are issues with hdfs and running as a remote user
@@ -196,14 +284,14 @@ public class HDFWithNameAccessor extends HDFSAccessor {
     }
 
 
-    public FileSystem getDFS() {
-        try {
-            FileSystem fileSystem = FileSystem.get(getSharedConfiguration());
-            return fileSystem;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public FileSystem getDFS() {
+//        try {
+//            FileSystem fileSystem = FileSystem.get(getSharedConfiguration());
+//            return fileSystem;
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     @Override
     public void copyFromFileSystem(final String hdfsPath, final File localPath) {
@@ -275,7 +363,7 @@ public class HDFWithNameAccessor extends HDFSAccessor {
      */
     @Override
     public boolean mkdir(final String hdfsPath) {
-        return false;
+        return true; // we create files not directories
     }
 
     /**
@@ -289,19 +377,17 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         if (isRunningAsUser()) {
             return super.isDirectory(hdfsPath);
         }
-        final boolean[] retHolder = new boolean[1];
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
+            return uig.doAs(new PrivilegedExceptionAction<Boolean>() {
 
-                public Void run() throws Exception {
+                public Boolean run() throws Exception {
                     FileSystem fileSystem = getDFS();
 
                     Path dst = new Path(hdfsPath);
 
                     boolean directory = fileSystem.isDirectory(dst);
-                    retHolder[0] = directory;
-                    return null;
+                    return directory;
 
                 }
             });
@@ -309,7 +395,6 @@ public class HDFWithNameAccessor extends HDFSAccessor {
             throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
-        return retHolder[0];
     }
 
     /**
@@ -323,19 +408,16 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         if (isRunningAsUser()) {
             return super.isFile(hdfsPath);
         }
-        final boolean[] retHolder = new boolean[1];
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
+            return uig.doAs(new PrivilegedExceptionAction<Boolean>() {
 
-                public Void run() throws Exception {
+                public Boolean run() throws Exception {
                     FileSystem fileSystem = getDFS();
 
                     Path dst = new Path(hdfsPath);
 
-                    boolean directory = fileSystem.isFile(dst);
-                    retHolder[0] = directory;
-                    return null;
+                    return fileSystem.isFile(dst);
 
                 }
             });
@@ -343,7 +425,6 @@ public class HDFWithNameAccessor extends HDFSAccessor {
             throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
-        return retHolder[0];
 
     }
 
@@ -369,32 +450,30 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         if (isRunningAsUser()) {
             return super.expunge(hdfsPath);
         }
-        final boolean[] retHolder = new boolean[1];
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
+            return uig.doAs(new PrivilegedExceptionAction<Boolean>() {
 
-                public Void run() throws Exception {
+                public Boolean run() throws Exception {
                     FileSystem fs = getDFS();
 
                     Path src = new Path(hdfsPath);
 
-
+                    boolean ret = true;
                     if (!fs.exists(src)) {
-                        retHolder[0] = true;
-                        return null;
+                        return ret;
                     }
                     // break these out
                     if (fs.getFileStatus(src).isDir()) {
                         boolean doneOK = fs.delete(src, true);
                         doneOK = !fs.exists(src);
-                        retHolder[0] = doneOK;
-                        return null;
+                        ret = doneOK;
+                        return ret;
                     }
                     if (fs.isFile(src)) {
                         boolean doneOK = fs.delete(src, false);
-                        retHolder[0] = doneOK;
-                        return null;
+                        ret = doneOK;
+                        return ret;
                     }
                     throw new IllegalStateException("should be file of directory if it exists");
 
@@ -402,10 +481,9 @@ public class HDFWithNameAccessor extends HDFSAccessor {
             });
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
+            throw new RuntimeException("Failed to expunge because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
-        return retHolder[0];
     }
 
     /**
@@ -419,19 +497,17 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         if (isRunningAsUser()) {
             return super.exists(hdfsPath);
         }
-        final boolean[] retHolder = new boolean[1];
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
+            return uig.doAs(new PrivilegedExceptionAction<Boolean>() {
 
-                public Void run() throws Exception {
+                public Boolean run() throws Exception {
                     FileSystem fileSystem = getDFS();
 
                     Path dst = new Path(hdfsPath);
 
                     boolean directory = fileSystem.exists(dst);
-                    retHolder[0] = directory;
-                    return null;
+                    return directory;
 
                 }
             });
@@ -439,9 +515,6 @@ public class HDFWithNameAccessor extends HDFSAccessor {
             throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
-        return retHolder[0];
-
-
     }
 
     /**
@@ -455,12 +528,11 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         if (isRunningAsUser()) {
             return super.fileLength(hdfsPath);
         }
-        final long[] retHolder = new long[1];
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
+            return uig.doAs(new PrivilegedExceptionAction<Long>() {
 
-                public Void run() throws Exception {
+                public Long run() throws Exception {
                     FileSystem fs = getDFS();
 
                     if (!exists(hdfsPath))
@@ -469,8 +541,7 @@ public class HDFWithNameAccessor extends HDFSAccessor {
                     ContentSummary contentSummary = fs.getContentSummary(src);
                     if (contentSummary == null)
                         return null;
-                    retHolder[0] = contentSummary.getLength();
-                    return null;
+                    return contentSummary.getLength();
 
                 }
             });
@@ -478,7 +549,6 @@ public class HDFWithNameAccessor extends HDFSAccessor {
             throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
-        return retHolder[0];
 
     }
 
@@ -615,16 +685,15 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         return getPermissions(new Path(hdfsPath));
     }
 
-    private FsPermission getPermissions(final Path src) {
-        final FsPermission[] retHolder = new FsPermission[1];
+    public FsPermission getPermissions(final Path src) {
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
-                public Void run() throws Exception {
+            return uig.doAs(new PrivilegedExceptionAction<FsPermission>() {
+                public FsPermission run() throws Exception {
                     FileSystem fs = getDFS();
                     if (fs.exists(src)) {
                         FileStatus fileStatus = fs.getFileStatus(src);
-                        retHolder[0] = fileStatus.getPermission();
+                        return fileStatus.getPermission();
                     }
                     return null;
 
@@ -634,18 +703,17 @@ public class HDFWithNameAccessor extends HDFSAccessor {
             throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
-        return retHolder[0];
     }
 
 
-    public void setPermissions(String hdfsPath, String premissions) {
+    public void setPermissions(String hdfsPath, short premissions) {
         Path src = new Path(hdfsPath);
         final FsPermission p = new FsPermission(premissions);
         setPermissions(src, p);
 
     }
 
-    private void setPermissions(final Path src, final FsPermission p) {
+    public void setPermissions(final Path src, final FsPermission p) {
         UserGroupInformation uig = getCurrentUserGroup();
         try {
             uig.doAs(new PrivilegedExceptionAction<Void>() {
@@ -726,8 +794,8 @@ public class HDFWithNameAccessor extends HDFSAccessor {
     @Override
     public String[] ls(final String hdfsPath) {
         if (isRunningAsUser()) {
-              return super.ls(hdfsPath);
-          }
+            return super.ls(hdfsPath);
+        }
         final FileSystem fs = getDFS();
         try {
             FileStatus[] statuses = fs.listStatus(new Path(hdfsPath));
@@ -757,9 +825,9 @@ public class HDFWithNameAccessor extends HDFSAccessor {
     @Override
     public void writeToFileSystem(final String hdfsPath, final String content) {
         if (isRunningAsUser()) {
-              super.writeToFileSystem(hdfsPath,content);
-              return;
-          }
+            super.writeToFileSystem(hdfsPath, content);
+            return;
+        }
         UserGroupInformation uig = getCurrentUserGroup();
         try {
             uig.doAs(new PrivilegedExceptionAction<Void>() {
@@ -790,20 +858,18 @@ public class HDFWithNameAccessor extends HDFSAccessor {
     @Override
     public String readFromFileSystem(final String hdfsPath) {
         if (isRunningAsUser()) {
-              return super.readFromFileSystem(hdfsPath );
-             }
-        final String[] retHolder = new String[1];
+            return super.readFromFileSystem(hdfsPath);
+        }
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
+            return uig.doAs(new PrivilegedExceptionAction<String>() {
 
-                public Void run() throws Exception {
+                public String run() throws Exception {
                     FileSystem fs = getDFS();
                     Path src = new Path(hdfsPath);
                     InputStream is = fs.open(src);
                     String ret = FileUtilities.readInFile(is);
-                    retHolder[0] = ret;
-                    return null;
+                    return ret;
 
                 }
             });
@@ -811,7 +877,7 @@ public class HDFWithNameAccessor extends HDFSAccessor {
             throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
-        return retHolder[0];
+
     }
 
 

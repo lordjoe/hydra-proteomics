@@ -24,16 +24,36 @@ public class RemoteHadoopController implements IHadoopController {
 
     private final RemoteSession m_Session;
     private final IFileSystem m_HDFSAccessor;
+    private final IFileSystem m_FTPAccessor;
     private String m_DefaultDirectory;
     private Set<String> m_ExistingDirectories = new HashSet<String>();
 
-    public static final String HADOOP_COMMAND = "/home/www/hadoop/bin/hadoop ";  //     "hadoop ";
+    public static final String HADOOP_COMMAND = "/usr/bin/hadoop "; //"hadoop "; // "/home/www/hadoop/bin/hadoop ";  //     "hadoop ";
 
     public RemoteHadoopController(final RemoteSession pSession) {
         m_Session = pSession;
-        m_HDFSAccessor = HDFSAccessor.getFileSystem(m_Session.getHost(), RemoteUtilities.getPort());
-        //  m_FTPAccessor = new FTPWrapper(m_Session.getUser(), m_Session.getPassword(), m_Session.getHost());
+        String host = m_Session.getHost();
+        int port = RemoteUtilities.getPort();
+        m_HDFSAccessor = HDFSAccessor.getFileSystem(host, port);
+        m_FTPAccessor = new FTPWrapper(m_Session.getUser(), m_Session.getPassword(), host);
     }
+
+
+    /**
+      * shut down all running sessions
+      */
+     @Override
+     public void disconnect()
+     {
+         if (m_FTPAccessor != null) {
+             m_FTPAccessor.disconnect();
+           }
+         if (m_HDFSAccessor != null) {
+             m_HDFSAccessor.disconnect();
+           }
+
+     }
+
 
     public RemoteSession getSession() {
         return m_Session;
@@ -42,6 +62,11 @@ public class RemoteHadoopController implements IHadoopController {
     public IFileSystem getHDFSAccessor() {
         return m_HDFSAccessor;
     }
+
+    public IFileSystem getFTPAccessor() {
+        return m_FTPAccessor;
+    }
+
 
 
     public String getDefaultDirectory() {
@@ -89,11 +114,13 @@ public class RemoteHadoopController implements IHadoopController {
         jar = new File(jarFile);
         if (!jar.exists())
             throw new IllegalStateException("Jar file " + jar + " does not exist");
+
+        guaranteeFileOnHost(jar, jarFile);
         //      guaranteeFiles(inputs, job.getFilesDirectory());
         Configuration conf = buildConfiguration(jarFile);
         //    conf.set("mapred.job.reuse.jvm.num.tasks", "1");
 
-       //conf.set("user.name",user);
+        //conf.set("user.name",user);
 
         IFileSystem hdfsAccessor = getHDFSAccessor();
         String s = job.getOutputDirectory();
@@ -102,68 +129,26 @@ public class RemoteHadoopController implements IHadoopController {
         //      _ think this is bad
         // hdfsAccessor.guaranteeDirectory(emptyOutputDirectory);
 
-        // todo fix this total hack
-        if ("org.systemsbiology.hadoopgenerated.HadoopTest".equals(job.getMainClass()))
-            hdfsAccessor.expunge(s); // which is it
-        if ("org.systemsbiology.hadoopgenerated.HadoopTest".equals(job.getMainClass()))
-            hdfsAccessor.expunge(s); // which is it
-        //      String cmd = HADOOP_COMMAND + "fs -mkdir " + s;
-        //      ech.execCommand(cmd, IOutputListener.DEFAULT_LISTENERS);
 
         job.setEmptyOutputDirectory(emptyOutputDirectory);
         job.setOutputDirectory(emptyOutputDirectory);
         hdfsAccessor.expunge(emptyOutputDirectory);
 
         String command = job.buildCommandString();
+        String chmodCommand = job.buildChmodCommandString();
         System.out.println(command);
-        String mainClass = job.getMainClass();
 
-        String[] allArgs = job.getAllArgs();
-
-        try {
-            Class<?> mainCls = Class.forName(mainClass);
-            if (IJobRunner.class.isAssignableFrom(mainCls)) {
-                Class<? extends IJobRunner> mClass = (Class<? extends IJobRunner>) mainCls;
-                IJobRunner realMain = mClass.newInstance();
-
-                int result = realMain.runJob(conf, allArgs);
-                ((HadoopJob) job).setJob(realMain.getJob());
-                return result == 0;
-            }
-            else {
-                if (Tool.class.isAssignableFrom(mainCls)) {
-                    Tool realMain = (Tool) mainCls.newInstance();
-                    String[] args = buildArgsFromConf(emptyOutputDirectory, conf, allArgs);
-                    WrappedToolRunner tr = new WrappedToolRunner(realMain);
-                    int result = tr.runJob(conf, allArgs);
-                    ((HadoopJob) job).setJob(tr.getJob());
-                     return result == 0;
-                }
-                else {
-                    throw new UnsupportedOperationException("Fix This"); // ToDo
-
-                }
-            }
-            //            if (result.contains("Job Failed"))
-//                throw new IllegalStateException(result);
-//            System.out.println(result);
-        }
-        catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        if (true) {
+            String out = executeCommand(command);
+            executeCommand(chmodCommand);  // make files public
+            return true;
+        } else {
+            return executeFromLocalMachine(job, conf, emptyOutputDirectory);
 
         }
-        catch (InstantiationException e) {
-            throw new RuntimeException(e);
 
-        }
-        catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
 
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
 
-        }
 
 
         // get the output
@@ -183,6 +168,51 @@ public class RemoteHadoopController implements IHadoopController {
         //  System.out.println("DONE!!!");
     }
 
+    private boolean executeFromLocalMachine(IHadoopJob job, Configuration conf, String emptyOutputDirectory) {
+        String mainClass = job.getMainClass();
+
+        String[] allArgs = job.getAllArgs();
+
+        try {
+            Class<?> mainCls = Class.forName(mainClass);
+            if (IJobRunner.class.isAssignableFrom(mainCls)) {
+                Class<? extends IJobRunner> mClass = (Class<? extends IJobRunner>) mainCls;
+                IJobRunner realMain = mClass.newInstance();
+
+                int result = realMain.runJob(conf, allArgs);
+                ((HadoopJob) job).setJob(realMain.getJob());
+                return result == 0;
+            } else {
+                if (Tool.class.isAssignableFrom(mainCls)) {
+                    Tool realMain = (Tool) mainCls.newInstance();
+                    String[] args = buildArgsFromConf(emptyOutputDirectory, conf, allArgs);
+                    WrappedToolRunner tr = new WrappedToolRunner(realMain);
+                    int result = tr.runJob(conf, allArgs);
+                    ((HadoopJob) job).setJob(tr.getJob());
+                    return result == 0;
+                } else {
+                    throw new UnsupportedOperationException("Fix This"); // ToDo
+
+                }
+            }
+            //            if (result.contains("Job Failed"))
+//                throw new IllegalStateException(result);
+//            System.out.println(result);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+
+        }
+    }
+
     private String[] buildArgsFromConf(String emptyOutputDirectory, Configuration conf, String[] allArgs) {
 
         String maxMamory = HadoopUtilities.getProperty("maxClusterMemory");
@@ -195,14 +225,14 @@ public class RemoteHadoopController implements IHadoopController {
         holder.add("-Dmapred.child.ulimit=" + value);  // in kb
         // DO NOT - DO NOT SET   -xx:-UseGCOverheadLimit   leads to error - Error reading task outputhttp://glad
         String childOptsString = "Xmx" + maxMamory + "m";
-       // DO NOT - DO NOT SET   childOptsString = " -xx:-UseGCOverheadLimit";   leads to error - Error reading task outputhttp://glad
+        // DO NOT - DO NOT SET   childOptsString = " -xx:-UseGCOverheadLimit";   leads to error - Error reading task outputhttp://glad
         childOptsString += " -XX:+UseConcMarkSweepGC";   // use a different garbage collector - might help with  : FAILED Error: GC overhead limit exceeded
         holder.add("-Dmapred.child.java.opts=" + childOptsString);
         holder.add("-Djava.net.preferIPv4Stack=true");
         System.err.println("Max memory " + maxMamory);
         System.err.println("mapred.child.ulimit " + value);
 
-        for (int i =  0; i < allArgs.length ; i++) {
+        for (int i = 0; i < allArgs.length; i++) {
             String allArg = allArgs[i];
             holder.add(allArg);
         }
@@ -234,7 +264,7 @@ public class RemoteHadoopController implements IHadoopController {
         // DO NOT - DO NOT SET   childOptsString = " -xx:-UseGCOverheadLimit";   leads to error - Error reading task outputhttp://glad
         childOptsString += " -XX:+UseConcMarkSweepGC";   // use a different garbage collector - might help with  : FAILED Error: GC overhead limit exceeded
         childOptsString += " -Djava.net.preferIPv4Stack=true";   //
-         conf.set("mapred.child.java.opts", childOptsString
+        conf.set("mapred.child.java.opts", childOptsString
         ); // NEVER DO THIS!!!! +   " -xx:-UseGCOverheadLimit");
         return conf;
     }
@@ -267,8 +297,7 @@ public class RemoteHadoopController implements IHadoopController {
             Path src = new Path(localFile.getAbsolutePath());
             Path dst = new Path(hdfsdest);
             fs.copyFromLocalFile(src, dst);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -295,20 +324,16 @@ public class RemoteHadoopController implements IHadoopController {
             Method met = cls.getMethod("runJob", types);
             met.invoke(null, conf, args);
             return "";
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
 
-        }
-        catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
 
-        }
-        catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
 
-        }
-        catch (InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
             Throwable cause = e;
             while (cause.getCause() != null && cause.getCause() != cause)
                 cause = cause.getCause();
@@ -357,6 +382,14 @@ public class RemoteHadoopController implements IHadoopController {
         return false;
     }
 
+    public boolean guaranteeFileOnHost(final File pJar, String dest) {
+        IFileSystem fs = getFTPAccessor();
+        if (fs.exists(dest))
+            return true;
+        fs.writeToFileSystem(dest, pJar);
+        return true;
+    }
+
     @Override
     public boolean hasFile(final File pJar, String dest) {
         RemoteSession remoteSession = getSession();
@@ -374,8 +407,7 @@ public class RemoteHadoopController implements IHadoopController {
             if (item.length() > MIN__FILE_LENGTH) {
                 try {
                     holder.add(new HDFSFile(item));
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                 }
             }
         }
@@ -385,11 +417,12 @@ public class RemoteHadoopController implements IHadoopController {
 
     }
 
+
     @Override
     public String getTemporaryDirectory() {
         String defaultPath = RemoteUtilities.getDefaultPath();
         String temp = defaultPath + "/temp";
-         IFileSystem fs = getHDFSAccessor();
+        IFileSystem fs = getHDFSAccessor();
         fs.guaranteeDirectory(temp);
         return temp;
     }

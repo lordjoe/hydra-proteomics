@@ -353,16 +353,36 @@ public class HadoopJob implements IHadoopJob {
 
     }
 
+    /**
+     * build command string to make all files in directoru public
+     * as this is not the default
+     * @return
+     */
+    @Override
+    public String buildChmodCommandString() {
+        makeJarAsNeeded();
+        StringBuilder sb = new StringBuilder();
+        sb.append(getHadoopCommend());
+          sb.append(" fs -chmod -R 777 " );
+
+        String s = sb.toString();
+        return s;
+    }
 
     @Override
     public String buildCommandString() {
         makeJarAsNeeded();
         StringBuilder sb = new StringBuilder();
         sb.append(getHadoopCommend());
+
+
         String jarFile = getJarFile();
         jarFile = jarFile.replace("res://", ""); // might be a resource
         sb.append(" jar " + jarFile);
         sb.append("  " + getMainClass());
+
+        // add a dummy argument
+        sb.append(" -D org.systemsbiology.status=foobar ");
 
         String[] others = getAllArgs();
         if (others != null) {
@@ -370,8 +390,10 @@ public class HadoopJob implements IHadoopJob {
                 sb.append(" " + others[i]);
             }
         }
+               // todo replace this Hack
 
-        String s = sb.toString();
+
+         String s = sb.toString();
         return s;
     }
 }

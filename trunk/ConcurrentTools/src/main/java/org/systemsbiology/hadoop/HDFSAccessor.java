@@ -4,14 +4,9 @@ import com.lordjoe.utilities.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.*;
-import org.apache.hadoop.fs.permission.*;
-import org.apache.hadoop.security.*;
-import org.systemsbiology.common.*;
 import org.systemsbiology.remotecontrol.*;
-import org.systemsbiology.remotecontrol.LocalFileSystem;
 
 import java.io.*;
-import java.security.*;
 import java.util.*;
 
 /**
@@ -25,9 +20,24 @@ public class HDFSAccessor implements IHDFSFileSystem {
     public static HDFSAccessor[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = HDFSAccessor.class;
 
+    /**
+     * Note the use of reflection will cause things work even under 0.2 when  HDFSAsUserAccessor
+     * will not compile
+     * @return
+     */
     public static IHDFSFileSystem getFileSystem() {
-        if (HDFSAccessor.isHDFSHasSecurity()) {
-            return new HDFWithNameAccessor();
+        if (HadoopMajorVersion.CURRENT_VERSION != HadoopMajorVersion.Version0 && HDFSAccessor.isHDFSHasSecurity()) {
+            try {
+                Class<? extends IHDFSFileSystem> cls = (Class<? extends IHDFSFileSystem>) Class.forName("org.systemsbiology.hadoop.HDFSAsUserAccessor");
+                IHDFSFileSystem ret = cls.newInstance();
+                return ret;
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         } else {
             return new HDFSAccessor();
         }
@@ -35,28 +45,23 @@ public class HDFSAccessor implements IHDFSFileSystem {
 
     public static IHDFSFileSystem getFileSystem(Configuration config) {
         if (HDFSAccessor.isHDFSHasSecurity()) {
-            if (true) {
-                throw new UnsupportedOperationException("Fix This"); // ToDo
-            }
+            return new HDFSAccessor(config);
+//            if (true) {
+//                throw new UnsupportedOperationException("Fix This"); // ToDo
+//            }
 //                return new HDFSAsUserAccessor(config);
         } else {
             return new HDFSAccessor(config);
         }
 
-        throw new UnsupportedOperationException("Fix This"); // ToDo
     }
 
     public static IHDFSFileSystem getFileSystem(final String host, final int port) {
         if (HDFSAccessor.isHDFSHasSecurity()) {
-            if (true) {
-                throw new UnsupportedOperationException("Fix This"); // ToDo
-            }
-            //     return new HDFSAsUserAccessor(host, port);
+            return new HDFWithNameAccessor(host, port);
         } else {
             return new HDFSAccessor(host, port);
         }
-
-        throw new UnsupportedOperationException("Fix This"); // ToDo
     }
 
     public static IHDFSFileSystem getFileSystem(final String host, final int port, String user) {
@@ -82,7 +87,10 @@ public class HDFSAccessor implements IHDFSFileSystem {
         g_SharedConfiguration = sharedConfiguration;
     }
 
-    private static boolean g_HDFSHasSecurity;
+    /**
+     * all versions beyond 02 have security at EBI
+     */
+    private static boolean g_HDFSHasSecurity = HadoopMajorVersion.CURRENT_VERSION != HadoopMajorVersion.Version0;
 
     public static boolean isHDFSHasSecurity() {
         return g_HDFSHasSecurity;
@@ -124,6 +132,17 @@ public class HDFSAccessor implements IHDFSFileSystem {
     }
 
 
+    /**
+     * shut down all running sessions   on local file systems
+     * this may be a noop but for remote systems shut all connections
+     */
+    @Override
+    public void disconnect() {
+        //  noop
+
+    }
+
+
 //    public HDFSAccessor( String host) {
 //          this(host,RemoteUtilities.getPort());
 //      }
@@ -162,6 +181,10 @@ public class HDFSAccessor implements IHDFSFileSystem {
 
     public FileSystem getDFS() {
         return m_DFS;
+    }
+
+    protected void setDFS(FileSystem DFS) {
+        m_DFS = DFS;
     }
 
     @Override

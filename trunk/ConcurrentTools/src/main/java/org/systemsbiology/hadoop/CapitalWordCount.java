@@ -19,12 +19,27 @@ import java.util.*;
  */
 public class CapitalWordCount  extends ConfiguredJobRunner implements IJobRunner {
 
+    public static final  String TEST_PROPERTY = "org.systemsbiology.status";
  
     public static class TokenizerMapper
             extends Mapper<Object, Text, Text, IntWritable> {
 
         private final static IntWritable one = new IntWritable(1);
         private Text word = new Text();
+
+        /**
+         * Called once at the beginning of the task.
+         */
+        @Override
+        protected void setup(Context context) throws IOException, InterruptedException {
+            super.setup(context);
+            Configuration conf  = context.getConfiguration();
+
+            String isBar = conf.get(TEST_PROPERTY);
+            Counter counter = context.getCounter("test", "bar");
+            if("foobar".equals(isBar))
+                counter.increment(1);
+        }
 
         public void map(Object key, Text value, Context context
         ) throws IOException, InterruptedException {
@@ -136,11 +151,21 @@ public class CapitalWordCount  extends ConfiguredJobRunner implements IJobRunner
 
 
     public  int runJob(Configuration conf,String[] args) throws Exception {
+
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            System.err.println(arg);
+        }
            String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 //        if (otherArgs.length != 2) {
 //            System.err.println("Usage: wordcount <in> <out>");
 //            System.exit(2);
 //        }
+
+        String isBar = conf.get(TEST_PROPERTY);
+        System.err.println("Bar is " + isBar);
+
+
         Job job = new Job(conf, "word count");
         conf = job.getConfiguration(); // NOTE JOB Copies the configuraton
         job.setJarByClass(CapitalWordCount.class);
@@ -177,6 +202,8 @@ public class CapitalWordCount  extends ConfiguredJobRunner implements IJobRunner
         expunge(outputDir,fileSystem);    // make sure thia does not exist
         FileOutputFormat.setOutputPath(job, outputDir);
 
+        isBar = conf.get(TEST_PROPERTY);
+        System.err.println("Bar is " + isBar);
 
         boolean ans = job.waitForCompletion(true);
         int ret = ans ? 0 : 1;
