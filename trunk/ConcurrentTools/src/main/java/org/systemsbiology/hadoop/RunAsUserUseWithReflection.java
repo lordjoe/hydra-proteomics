@@ -8,6 +8,11 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.security.*;
 
+//===================================================
+//  NOTE - This class will but builf with Hadoop 0.2
+//  exclude it from colmilation with those libraries
+//  it will never ba loaded
+// ===================================================
 /**
  * org.systemsbiology.hadoop.RunAsUser
  *
