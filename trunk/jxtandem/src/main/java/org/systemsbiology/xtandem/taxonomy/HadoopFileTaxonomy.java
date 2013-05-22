@@ -176,7 +176,7 @@ public class HadoopFileTaxonomy implements ITaxonomy {
         return ret;
     }
 
-    public static IPolypeptide buildPeptideFromDatabaseString(final String pItem) {
+    public  IPolypeptide buildPeptideFromDatabaseString(final String pItem ) {
         String item = pItem;
         String[] values = item.split(",");
         String sequence = values[0];
@@ -185,7 +185,7 @@ public class HadoopFileTaxonomy implements ITaxonomy {
 
         Polypeptide pp = (Polypeptide) Polypeptide.fromString(sequence);
         int missedCleavages = getDigester().probableNumberMissedCleavages(pp);
-        pp.setMissedCleavages(missedCleavages);
+         pp.setMissedCleavages(missedCleavages);
         double mass = Double.parseDouble(values[1]);
         pp.setMatchingMass(mass);
         String[] proteinIds = values[3].split(";");
@@ -235,7 +235,7 @@ public class HadoopFileTaxonomy implements ITaxonomy {
         }
     }
 
-    public static IPolypeptide[] buildReadPeptides(final LineNumberReader pReader, final MassPeptideInterval pInterval, final boolean pSemi) {
+    public  IPolypeptide[] buildReadPeptides(final LineNumberReader pReader, final MassPeptideInterval pInterval,  final boolean pSemi) {
         List<IPolypeptide> holder = new ArrayList<IPolypeptide>();
         int numberLines = -1;
         try {
@@ -259,7 +259,7 @@ public class HadoopFileTaxonomy implements ITaxonomy {
                     done = true;
                     break;
                 }
-                holder.add(buildPeptideFromDatabaseString(line));
+                holder.add(buildPeptideFromDatabaseString(line ));
             }
             // at end of file
             if (line == null)

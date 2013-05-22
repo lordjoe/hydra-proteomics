@@ -176,12 +176,13 @@ public class JXTantemConsolidator extends ConfiguredJobRunner implements IJobRun
      */
     @Override
     public int run(final String[] args) throws Exception {
-        Configuration conf = new Configuration();
+        Configuration conf = getConf();
+         if(conf == null)
+             conf = HDFSAccessor.getSharedConfiguration();
         return runJob(conf, args);
     }
 
     public static void main(String[] args) throws Exception {
-        int res = ToolRunner.run(new Configuration(), new JXTantemConsolidator(), args);
-        //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
-    }
+        ToolRunner.run(new JXTantemConsolidator(), args);
+     }
 }

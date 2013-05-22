@@ -37,6 +37,19 @@ public abstract class AbstractTandemMapper<T> extends Mapper<T, Text, Text, Text
         m_Context = context;
         // read configuration lines
         Configuration conf = context.getConfiguration();
+
+         // debugging code to show my keys
+        Iterator<Map.Entry<String, String>> iterator = conf.iterator();
+        while(iterator.hasNext())   {
+            Map.Entry<String, String> next = iterator.next();
+            String key = next.getKey();
+         //   if(key.startsWith("org.systemsbiology")) {
+                System.err.println(key + "=" + next.getValue());
+         //`   }
+        }
+        System.err.println("Done showing my keys");
+
+
         String defaultPath = conf.get(XTandemHadoopUtilities.PATH_KEY);
         XTandemHadoopUtilities.setDefaultPath(defaultPath);
         String forcePathPrefix = conf.get(XTandemHadoopUtilities.FORCE_PATH_PREFIX_KEY);
