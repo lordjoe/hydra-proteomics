@@ -5,7 +5,7 @@ import java.util.*;
 
 
 /**
- * org.systemsbiology.xtandem.fdr.FDRUtilities
+ * org.systemsbiology.xtandem.fdr.FDRParser
  *
  * @author attilacsordas
  * @date 09/05/13
@@ -16,7 +16,9 @@ public class FDRParser {
 
     private final File m_File;
     private final IDiscoveryDataHolder m_Handler;
-    private final int m_MaxHits;
+    private final IDiscoveryDataHolder m_ModifiedHandler;
+    private final IDiscoveryDataHolder m_UnModifiedHandler;
+     private final int m_MaxHits;
 
 
     public FDRParser(String filename) {
@@ -31,6 +33,12 @@ public class FDRParser {
         else
             m_Handler = FDRUtilities.getDiscoveryDataHolder("Default Algorighm", true);   // better us high
 
+
+        m_ModifiedHandler = FDRUtilities.getDiscoveryDataHolder("Default Algorighm", true);   // better us high
+
+        m_UnModifiedHandler = FDRUtilities.getDiscoveryDataHolder("Default Algorighm", true);   // better us high
+
+
         readFileAndGenerateFDR();    // read file populate the  IDiscoveryDataHolder
 
     }
@@ -41,6 +49,14 @@ public class FDRParser {
 
     public IDiscoveryDataHolder getHandler() {
         return m_Handler;
+    }
+
+    public IDiscoveryDataHolder getModifiedHandler() {
+        return m_ModifiedHandler;
+    }
+
+    public IDiscoveryDataHolder getUnModifiedHandler() {
+        return m_UnModifiedHandler;
     }
 
     /**
@@ -95,12 +111,18 @@ public class FDRParser {
         String line = lines[index++];   // handle first line
         boolean trueHit = !line.contains("protein=\"DECOY_");
         boolean processSpectrum = parseHitValue(line) <= m_MaxHits;
+        boolean isModified =  false;
 
         for (; index < lines.length; index++) {
             line = lines[index];
 
             if (line.contains("</search_hit"))
                 break;         // we are done
+
+            if (line.contains(" modified_peptide="))
+                isModified =  true;
+
+
             if (line.contains("<search_score name=\"hyperscore\" value=\"")) {
                 hyperScoreValue = parseValue(line);
             }
@@ -125,10 +147,19 @@ public class FDRParser {
             else
                 score = hyperScoreValue;
 
-            if (trueHit)
+            if (trueHit) {
                 hd.addTrueDiscovery(score);
-            else
+                if(isModified)
+                    m_ModifiedHandler.addTrueDiscovery(score);
+                else
+                    m_UnModifiedHandler.addTrueDiscovery(score);
+            } else {
                 hd.addFalseDiscovery(score);
+                if(isModified)
+                    m_ModifiedHandler.addFalseDiscovery(score);
+                else
+                    m_UnModifiedHandler.addFalseDiscovery(score);
+            }
 
         }
 
@@ -140,6 +171,13 @@ public class FDRParser {
         if (s.length() == 0)
             return 0;
         return Double.parseDouble(s);
+    }
+
+    public static boolean parseIsModifiedValue(String line) {
+        String s = parseQuotedValue(line, "peptide");
+        if (s.length() == 0)
+            return false;
+        return s.contains("[");    // modification string
     }
 
     public static int parseHitValue(String line) {
@@ -178,6 +216,12 @@ public class FDRParser {
             //final String s = FDRUtilities.listFDRAndCount(handler);
             final String s = FDRUtilities.listFDRAndRates(handler);
             System.out.println(s);
+            System.out.println("====================================");
+             final String smod = FDRUtilities.listFDRAndRates(fdrParser.getModifiedHandler());
+            System.out.println(smod);
+            System.out.println("====================================");
+            final String sunmod = FDRUtilities.listFDRAndRates(fdrParser.getUnModifiedHandler());
+            System.out.println(sunmod);
         }
 
     }
