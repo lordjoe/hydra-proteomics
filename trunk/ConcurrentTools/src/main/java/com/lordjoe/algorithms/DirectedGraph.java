@@ -177,6 +177,8 @@ public class DirectedGraph {
                 holder.add(new ConsistencySet(set));
             }
         }
+        Arrays.sort(ends);
+
         ConsistencySet[] answer = new ConsistencySet[holder.size()];
         holder.toArray(answer);
         Arrays.sort(answer);

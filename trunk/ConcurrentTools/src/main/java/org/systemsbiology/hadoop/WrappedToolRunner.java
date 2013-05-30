@@ -7,6 +7,7 @@ import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.input.*;
 import org.apache.hadoop.mapreduce.lib.output.*;
 import org.apache.hadoop.util.*;
+import org.systemsbiology.remotecontrol.*;
 
 import java.io.*;
 
@@ -33,8 +34,14 @@ public class WrappedToolRunner extends ConfiguredJobRunner implements IJobRunner
     @Override
     public int runJob(Configuration conf, String[] args) throws Exception {
         Tool tool = getTool();
+        String oldFs = conf.get("fs.defaultFS");
+        String host = RemoteUtilities.getHost();
+        int port = RemoteUtilities.getPort();
+         final String userDir = "/user/" + RemoteUtilities.getUser();
+        conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
+
         tool.setConf(conf);
-          return run(args);
+         return run(args);
     }
 
     @Override

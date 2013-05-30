@@ -48,9 +48,10 @@ public class HDFWithNameAccessor extends HDFSAccessor {
 
     public static UserGroupInformation getCurrentUserGroup() {
         if (g_CurrentUserGroup == null) {
-            String user = RemoteUtilities.getUser();
-            //     user = "hdfs";
-            g_CurrentUserGroup = UserGroupInformation.createRemoteUser(user);
+            throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            String user = RemoteUtilities.getUser();
+//            //     user = "hdfs";
+//            g_CurrentUserGroup = UserGroupInformation.createRemoteUser(user);
 
         }
         return g_CurrentUserGroup;
@@ -71,58 +72,59 @@ public class HDFWithNameAccessor extends HDFSAccessor {
 
         try {
             UserGroupInformation ugi = getCurrentUserGroup();
-            ugi.doAs(new PrivilegedExceptionAction<Void>() {
-
-                public Void run() throws Exception {
-
-                    Configuration conf = new Configuration();
-                    conf.set("fs.default.name", "hdfs://" + host + ":" + port);
-                    conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
-                    //       conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
-                    //              conf.set("hadoop.job.ugi", user);
-                    conf.set("hadoop.job.ugi", user);
-                    //             conf.set("hadoop.job.ugi", "hdfs");
-
-                    FileSystem fs = FileSystem.get(conf);
-
-
-                    Path udir = new Path(userDir);
-
-                    FileStatus fileStatus = fs.getFileStatus(udir);
-                    FsPermission permission = fileStatus.getPermission();
-
-                    //           fs.setPermission(udir, ALL_ACCESS);
-
-                    fileStatus = fs.getFileStatus(udir);
-                    permission = fileStatus.getPermission();
-
-                    //         fs.mkdirs(new Path(userDir + "/ebi/" ),IHDFSFileSystem.FULL_ACCESS);
-                    //         fs.mkdirs(new Path(userDir + "/ebi/Sample2/" ),IHDFSFileSystem.FULL_ACCESS);
-
-                    FileStatus[] fileStatuses = fs.listStatus(udir);
-                    for (int i = 0; i < fileStatuses.length; i++) {
-                        FileStatus fileStatuse = fileStatuses[i];
-                        System.err.println(fileStatuse.getPath());
-                    }
-
-
-//                    fs.createNewFile(new Path(userDir + "/test"));
+            throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            ugi.doAs(new PrivilegedExceptionAction<Void>() {
 //
-//                    FileStatus[] status = fs.listStatus(new Path("/user/" + user));
-//                    for (int i = 0; i < status.length; i++) {
-//                        System.out.println(status[i].getPath());
+//                public Void run() throws Exception {
+//
+//                    Configuration conf = new Configuration();
+//                    conf.set("fs.default.name", "hdfs://" + host + ":" + port);
+//                    conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
+//                    //       conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
+//                    //              conf.set("hadoop.job.ugi", user);
+//                    conf.set("hadoop.job.ugi", user);
+//                    //             conf.set("hadoop.job.ugi", "hdfs");
+//
+//                    FileSystem fs = FileSystem.get(conf);
+//
+//
+//                    Path udir = new Path(userDir);
+//
+//                    FileStatus fileStatus = fs.getFileStatus(udir);
+//                    FsPermission permission = fileStatus.getPermission();
+//
+//                    //           fs.setPermission(udir, ALL_ACCESS);
+//
+//                    fileStatus = fs.getFileStatus(udir);
+//                    permission = fileStatus.getPermission();
+//
+//                    //         fs.mkdirs(new Path(userDir + "/ebi/" ),IHDFSFileSystem.FULL_ACCESS);
+//                    //         fs.mkdirs(new Path(userDir + "/ebi/Sample2/" ),IHDFSFileSystem.FULL_ACCESS);
+//
+//                    FileStatus[] fileStatuses = fs.listStatus(udir);
+//                    for (int i = 0; i < fileStatuses.length; i++) {
+//                        FileStatus fileStatuse = fileStatuses[i];
+//                        System.err.println(fileStatuse.getPath());
 //                    }
-                    return null;
-
-                }
-            });
-        } catch (Exception e) {
+//
+//
+////                    fs.createNewFile(new Path(userDir + "/test"));
+////
+////                    FileStatus[] status = fs.listStatus(new Path("/user/" + user));
+////                    for (int i = 0; i < status.length; i++) {
+////                        System.out.println(status[i].getPath());
+////                    }
+//                    return null;
+//
+//                }
+//            });
+         } catch (Exception e) {
             return false;
         }
 
-        if (true)
-            return true;
-        return true;
+//        if (true)
+//            return true;
+//        return true;
 
     }
 
@@ -156,14 +158,16 @@ public class HDFWithNameAccessor extends HDFSAccessor {
 
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
-
-                public Void run() throws Exception {
-                    getDFS();
-                    return null;
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//
+//            uig.doAs(new PrivilegedExceptionAction<Void>() {
+//
+//                public Void run() throws Exception {
+//                    getDFS();
+//                    return null;
+//
+//                }
+//            });
         } catch (Exception e) {
             throw new RuntimeException("Failed to connect on " + connectString + " because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
@@ -207,25 +211,26 @@ public class HDFWithNameAccessor extends HDFSAccessor {
 
         try {
             UserGroupInformation ugi = getCurrentUserGroup();
-            ugi.doAs(new PrivilegedExceptionAction<Void>() {
-
-                public Void run() throws Exception {
-
-                    Configuration conf = new Configuration();
-                    conf.set("fs.default.name", "hdfs://" + host + ":" + port);
-                    conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
-                    //       conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
-                    //              conf.set("hadoop.job.ugi", user);
-                    conf.set("hadoop.job.ugi", user);
-                    //             conf.set("hadoop.job.ugi", "hdfs");
-
-                    returned[0] = FileSystem.get(conf);
-
-
-                    return null;
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            ugi.doAs(new PrivilegedExceptionAction<Void>() {
+//
+//                public Void run() throws Exception {
+//
+//                    Configuration conf = new Configuration();
+//                    conf.set("fs.default.name", "hdfs://" + host + ":" + port);
+//                    conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
+//                    //       conf.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
+//                    //              conf.set("hadoop.job.ugi", user);
+//                    conf.set("hadoop.job.ugi", user);
+//                    //             conf.set("hadoop.job.ugi", "hdfs");
+//
+//                    returned[0] = FileSystem.get(conf);
+//
+//
+//                    return null;
+//
+//                }
+//            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -254,13 +259,15 @@ public class HDFWithNameAccessor extends HDFSAccessor {
     public boolean isRunningAsUser() {
         Configuration cong = new Configuration();
         try {
-            UserGroupInformation uig = UserGroupInformation.getCurrentUser();
-            String userName = uig.getShortUserName();
-            String user = RemoteUtilities.getUser();
-            return user.equals(userName);
-        } catch (IOException e) {
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            UserGroupInformation uig = UserGroupInformation.getCurrentUser();
+//            String userName = uig.getShortUserName();
+//            String user = RemoteUtilities.getUser();
+//            return user.equals(userName);
+        } catch ( Exception e) {
             throw new RuntimeException(e);
         }
+        return false;
     }
 
 
@@ -302,20 +309,21 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         }
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
-
-                public Void run() throws Exception {
-                    FileSystem fileSystem = getDFS();
-
-                    Path src = new Path(hdfsPath);
-
-                    Path dst = new Path(localPath.getAbsolutePath());
-
-                    fileSystem.copyToLocalFile(src, dst);
-                    return null;
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            uig.doAs(new PrivilegedExceptionAction<Void>() {
+//
+//                public Void run() throws Exception {
+//                    FileSystem fileSystem = getDFS();
+//
+//                    Path src = new Path(hdfsPath);
+//
+//                    Path dst = new Path(localPath.getAbsolutePath());
+//
+//                    fileSystem.copyToLocalFile(src, dst);
+//                    return null;
+//
+//                }
+//            });
         } catch (Exception e) {
             throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
@@ -333,22 +341,23 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         }
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
-
-                public Void run() throws Exception {
-                    FileSystem fileSystem = getDFS();
-
-                    Path dst = new Path(hdfsPath);
-
-                    Path src = new Path(localPath.getAbsolutePath());
-
-                    fileSystem.copyFromLocalFile(src, dst);
-                    return null;
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            uig.doAs(new PrivilegedExceptionAction<Void>() {
+//
+//                public Void run() throws Exception {
+//                    FileSystem fileSystem = getDFS();
+//
+//                    Path dst = new Path(hdfsPath);
+//
+//                    Path src = new Path(localPath.getAbsolutePath());
+//
+//                    fileSystem.copyFromLocalFile(src, dst);
+//                    return null;
+//
+//                }
+//            });
         } catch (Exception e) {
-            throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
+            throw new RuntimeException("Failed to writeToFileSystem because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
 
@@ -379,22 +388,24 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         }
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            return uig.doAs(new PrivilegedExceptionAction<Boolean>() {
-
-                public Boolean run() throws Exception {
-                    FileSystem fileSystem = getDFS();
-
-                    Path dst = new Path(hdfsPath);
-
-                    boolean directory = fileSystem.isDirectory(dst);
-                    return directory;
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            return uig.doAs(new PrivilegedExceptionAction<Boolean>() {
+//
+//                public Boolean run() throws Exception {
+//                    FileSystem fileSystem = getDFS();
+//
+//                    Path dst = new Path(hdfsPath);
+//
+//                    boolean directory = fileSystem.isDirectory(dst);
+//                    return directory;
+//
+//                }
+//            });
         } catch (Exception e) {
-            throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
+            throw new RuntimeException("Failed to isDirectory because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
+        return false;
     }
 
     /**
@@ -410,21 +421,23 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         }
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            return uig.doAs(new PrivilegedExceptionAction<Boolean>() {
-
-                public Boolean run() throws Exception {
-                    FileSystem fileSystem = getDFS();
-
-                    Path dst = new Path(hdfsPath);
-
-                    return fileSystem.isFile(dst);
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            return uig.doAs(new PrivilegedExceptionAction<Boolean>() {
+//
+//                public Boolean run() throws Exception {
+//                    FileSystem fileSystem = getDFS();
+//
+//                    Path dst = new Path(hdfsPath);
+//
+//                    return fileSystem.isFile(dst);
+//
+//                }
+//            });
         } catch (Exception e) {
-            throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
+            throw new RuntimeException("Failed to isFile because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
+        return false;
 
     }
 
@@ -452,38 +465,40 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         }
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            return uig.doAs(new PrivilegedExceptionAction<Boolean>() {
-
-                public Boolean run() throws Exception {
-                    FileSystem fs = getDFS();
-
-                    Path src = new Path(hdfsPath);
-
-                    boolean ret = true;
-                    if (!fs.exists(src)) {
-                        return ret;
-                    }
-                    // break these out
-                    if (fs.getFileStatus(src).isDir()) {
-                        boolean doneOK = fs.delete(src, true);
-                        doneOK = !fs.exists(src);
-                        ret = doneOK;
-                        return ret;
-                    }
-                    if (fs.isFile(src)) {
-                        boolean doneOK = fs.delete(src, false);
-                        ret = doneOK;
-                        return ret;
-                    }
-                    throw new IllegalStateException("should be file of directory if it exists");
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            return uig.doAs(new PrivilegedExceptionAction<Boolean>() {
+//
+//                public Boolean run() throws Exception {
+//                    FileSystem fs = getDFS();
+//
+//                    Path src = new Path(hdfsPath);
+//
+//                    boolean ret = true;
+//                    if (!fs.exists(src)) {
+//                        return ret;
+//                    }
+//                    // break these out
+//                    if (fs.getFileStatus(src).isDir()) {
+//                        boolean doneOK = fs.delete(src, true);
+//                        doneOK = !fs.exists(src);
+//                        ret = doneOK;
+//                        return ret;
+//                    }
+//                    if (fs.isFile(src)) {
+//                        boolean doneOK = fs.delete(src, false);
+//                        ret = doneOK;
+//                        return ret;
+//                    }
+//                    throw new IllegalStateException("should be file of directory if it exists");
+//
+//                }
+//            });
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to expunge because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
+        return false;
     }
 
     /**
@@ -499,22 +514,24 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         }
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            return uig.doAs(new PrivilegedExceptionAction<Boolean>() {
-
-                public Boolean run() throws Exception {
-                    FileSystem fileSystem = getDFS();
-
-                    Path dst = new Path(hdfsPath);
-
-                    boolean directory = fileSystem.exists(dst);
-                    return directory;
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            return uig.doAs(new PrivilegedExceptionAction<Boolean>() {
+//
+//                public Boolean run() throws Exception {
+//                    FileSystem fileSystem = getDFS();
+//
+//                    Path dst = new Path(hdfsPath);
+//
+//                    boolean directory = fileSystem.exists(dst);
+//                    return directory;
+//
+//                }
+//            });
         } catch (Exception e) {
             throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
+        return false;
     }
 
     /**
@@ -530,26 +547,27 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         }
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            return uig.doAs(new PrivilegedExceptionAction<Long>() {
-
-                public Long run() throws Exception {
-                    FileSystem fs = getDFS();
-
-                    if (!exists(hdfsPath))
-                        return null;
-                    Path src = new Path(hdfsPath);
-                    ContentSummary contentSummary = fs.getContentSummary(src);
-                    if (contentSummary == null)
-                        return null;
-                    return contentSummary.getLength();
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            return uig.doAs(new PrivilegedExceptionAction<Long>() {
+//
+//                public Long run() throws Exception {
+//                    FileSystem fs = getDFS();
+//
+//                    if (!exists(hdfsPath))
+//                        return null;
+//                    Path src = new Path(hdfsPath);
+//                    ContentSummary contentSummary = fs.getContentSummary(src);
+//                    if (contentSummary == null)
+//                        return null;
+//                    return contentSummary.getLength();
+//
+//                }
+//            });
         } catch (Exception e) {
-            throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
+            throw new RuntimeException("Failed to get fileLength because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
-
+        return 0;
     }
 
     /**
@@ -621,26 +639,27 @@ public class HDFWithNameAccessor extends HDFSAccessor {
     private void guaranteeDirectory(final Path src) {
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
-
-                public Void run() throws Exception {
-                    FileSystem fs = getDFS();
-
-                    if (fs.exists(src))
-                        return null;
-                    if (!fs.isFile(src)) {
-                        return null;
-                    } else {
-                        fs.delete(src, false);   // drop a file we want a directory
-                    }
-                    fs.setPermission(src, FULL_ACCESS);
-                    fs.mkdirs(src, FULL_ACCESS);
-                    return null;
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            uig.doAs(new PrivilegedExceptionAction<Void>() {
+//
+//                public Void run() throws Exception {
+//                    FileSystem fs = getDFS();
+//
+//                    if (fs.exists(src))
+//                        return null;
+//                    if (!fs.isFile(src)) {
+//                        return null;
+//                    } else {
+//                        fs.delete(src, false);   // drop a file we want a directory
+//                    }
+//                    fs.setPermission(src, FULL_ACCESS);
+//                    fs.mkdirs(src, FULL_ACCESS);
+//                    return null;
+//
+//                }
+//            });
         } catch (Exception e) {
-            throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
+            throw new RuntimeException("Failed to guaranteeDirectory because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
 
@@ -688,21 +707,23 @@ public class HDFWithNameAccessor extends HDFSAccessor {
     public FsPermission getPermissions(final Path src) {
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            return uig.doAs(new PrivilegedExceptionAction<FsPermission>() {
-                public FsPermission run() throws Exception {
-                    FileSystem fs = getDFS();
-                    if (fs.exists(src)) {
-                        FileStatus fileStatus = fs.getFileStatus(src);
-                        return fileStatus.getPermission();
-                    }
-                    return null;
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            return uig.doAs(new PrivilegedExceptionAction<FsPermission>() {
+//                public FsPermission run() throws Exception {
+//                    FileSystem fs = getDFS();
+//                    if (fs.exists(src)) {
+//                        FileStatus fileStatus = fs.getFileStatus(src);
+//                        return fileStatus.getPermission();
+//                    }
+//                    return null;
+//
+//                }
+//            });
         } catch (Exception e) {
-            throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
+            throw new RuntimeException("Failed to getPermissions because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
+        return FsPermission.getDefault();
     }
 
 
@@ -716,17 +737,18 @@ public class HDFWithNameAccessor extends HDFSAccessor {
     public void setPermissions(final Path src, final FsPermission p) {
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
-                public Void run() throws Exception {
-                    FileSystem fs = getDFS();
-                    if (fs.exists(src))
-                        fs.setPermission(src, p);
-                    return null;
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            uig.doAs(new PrivilegedExceptionAction<Void>() {
+//                public Void run() throws Exception {
+//                    FileSystem fs = getDFS();
+//                    if (fs.exists(src))
+//                        fs.setPermission(src, p);
+//                    return null;
+//
+//                }
+//            });
         } catch (Exception e) {
-            throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
+            throw new RuntimeException("Failed to setPermissions because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
     }
@@ -830,21 +852,22 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         }
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            uig.doAs(new PrivilegedExceptionAction<Void>() {
-
-                public Void run() throws Exception {
-                    FileSystem fs = getDFS();
-                    Path src = new Path(hdfsPath);
-                    Path parent = src.getParent();
-                    guaranteeDirectory(parent);
-                    OutputStream os = FileSystem.create(fs, src, FULL_FILE_ACCESS);
-                    FileUtilities.writeFile(os, content);
-                    return null;
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            uig.doAs(new PrivilegedExceptionAction<Void>() {
+//
+//                public Void run() throws Exception {
+//                    FileSystem fs = getDFS();
+//                    Path src = new Path(hdfsPath);
+//                    Path parent = src.getParent();
+//                    guaranteeDirectory(parent);
+//                    OutputStream os = FileSystem.create(fs, src, FULL_FILE_ACCESS);
+//                    FileUtilities.writeFile(os, content);
+//                    return null;
+//
+//                }
+//            });
         } catch (Exception e) {
-            throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
+            throw new RuntimeException("Failed to writeToFileSystem because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
     }
@@ -862,22 +885,23 @@ public class HDFWithNameAccessor extends HDFSAccessor {
         }
         UserGroupInformation uig = getCurrentUserGroup();
         try {
-            return uig.doAs(new PrivilegedExceptionAction<String>() {
-
-                public String run() throws Exception {
-                    FileSystem fs = getDFS();
-                    Path src = new Path(hdfsPath);
-                    InputStream is = fs.open(src);
-                    String ret = FileUtilities.readInFile(is);
-                    return ret;
-
-                }
-            });
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            return uig.doAs(new PrivilegedExceptionAction<String>() {
+//
+//                public String run() throws Exception {
+//                    FileSystem fs = getDFS();
+//                    Path src = new Path(hdfsPath);
+//                    InputStream is = fs.open(src);
+//                    String ret = FileUtilities.readInFile(is);
+//                    return ret;
+//
+//                }
+//            });
         } catch (Exception e) {
-            throw new RuntimeException("Failed to copyFromFileSystem because " + e.getMessage() +
+            throw new RuntimeException("Failed to readFromFileSystem because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);
         }
-
+        return null;
     }
 
 

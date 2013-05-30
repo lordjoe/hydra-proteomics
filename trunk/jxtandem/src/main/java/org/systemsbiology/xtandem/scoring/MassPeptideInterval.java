@@ -25,7 +25,7 @@ public class MassPeptideInterval
     public MassPeptideInterval(String s) {
         String[] items = s.split(":");
         m_Mass = Integer.parseInt(items[0]);
-        if(items.length > 1)
+        if(items.length > 1)  // there is a colon
               m_Start = Integer.parseInt(items[1]);
           else
               m_Start = 0;

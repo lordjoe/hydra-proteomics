@@ -40,19 +40,18 @@ public class RemoteHadoopController implements IHadoopController {
 
 
     /**
-      * shut down all running sessions
-      */
-     @Override
-     public void disconnect()
-     {
-         if (m_FTPAccessor != null) {
-             m_FTPAccessor.disconnect();
-           }
-         if (m_HDFSAccessor != null) {
-             m_HDFSAccessor.disconnect();
-           }
+     * shut down all running sessions
+     */
+    @Override
+    public void disconnect() {
+        if (m_FTPAccessor != null) {
+            m_FTPAccessor.disconnect();
+        }
+        if (m_HDFSAccessor != null) {
+            m_HDFSAccessor.disconnect();
+        }
 
-     }
+    }
 
 
     public RemoteSession getSession() {
@@ -66,7 +65,6 @@ public class RemoteHadoopController implements IHadoopController {
     public IFileSystem getFTPAccessor() {
         return m_FTPAccessor;
     }
-
 
 
     public String getDefaultDirectory() {
@@ -115,7 +113,11 @@ public class RemoteHadoopController implements IHadoopController {
         if (!jar.exists())
             throw new IllegalStateException("Jar file " + jar + " does not exist");
 
-        guaranteeFileOnHost(jar, jarFile);
+        // in higher versions we need to run on a server
+        boolean runningVersion0 = HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version0;
+        if (!runningVersion0)
+            guaranteeFileOnHost(jar, jarFile);
+
         //      guaranteeFiles(inputs, job.getFilesDirectory());
         Configuration conf = buildConfiguration(jarFile);
         //    conf.set("mapred.job.reuse.jvm.num.tasks", "1");
@@ -134,21 +136,18 @@ public class RemoteHadoopController implements IHadoopController {
         job.setOutputDirectory(emptyOutputDirectory);
         hdfsAccessor.expunge(emptyOutputDirectory);
 
-        String command = job.buildCommandString();
-        String chmodCommand = job.buildChmodCommandString();
-        System.out.println(command);
-
-        if (true) {
+        runningVersion0 = true; // todo take out
+        if (!runningVersion0) {
+            String command = job.buildCommandString();
+            String chmodCommand = job.buildChmodCommandString();
+            System.out.println(command);
             String out = executeCommand(command);
             executeCommand(chmodCommand);  // make files public
             return true;
-        } else {
+        } else {    // Version 0.2 way
             return executeFromLocalMachine(job, conf, emptyOutputDirectory);
 
         }
-
-
-
 
 
         // get the output
@@ -184,12 +183,12 @@ public class RemoteHadoopController implements IHadoopController {
                 return result == 0;
             } else {
                 if (Tool.class.isAssignableFrom(mainCls)) {
-                    Tool realMain = (Tool) mainCls.newInstance();
-                    String[] args = buildArgsFromConf(emptyOutputDirectory, conf, allArgs);
-                    WrappedToolRunner tr = new WrappedToolRunner(realMain);
-                    int result = tr.runJob(conf, allArgs);
-                    ((HadoopJob) job).setJob(tr.getJob());
-                    return result == 0;
+            Tool realMain = (Tool) mainCls.newInstance();
+            String[] args = buildArgsFromConf(emptyOutputDirectory, conf, allArgs);
+            WrappedToolRunner tr = new WrappedToolRunner(realMain);
+            int result = tr.runJob(conf, args);
+            ((HadoopJob) job).setJob(tr.getJob());
+            return result == 0;
                 } else {
                     throw new UnsupportedOperationException("Fix This"); // ToDo
 
@@ -222,15 +221,20 @@ public class RemoteHadoopController implements IHadoopController {
 
         // set twice max memory
         String value = Long.toString((Integer.parseInt(maxMamory) * 2048) + 200 * 1024);
-        holder.add("-Dmapred.child.ulimit=" + value);  // in kb
-        // DO NOT - DO NOT SET   -xx:-UseGCOverheadLimit   leads to error - Error reading task outputhttp://glad
         String childOptsString = "Xmx" + maxMamory + "m";
-        // DO NOT - DO NOT SET   childOptsString = " -xx:-UseGCOverheadLimit";   leads to error - Error reading task outputhttp://glad
-        childOptsString += " -XX:+UseConcMarkSweepGC";   // use a different garbage collector - might help with  : FAILED Error: GC overhead limit exceeded
-        holder.add("-Dmapred.child.java.opts=" + childOptsString);
-        holder.add("-Djava.net.preferIPv4Stack=true");
-        System.err.println("Max memory " + maxMamory);
-        System.err.println("mapred.child.ulimit " + value);
+        holder.add("-D");
+        holder.add("mapred.child.ulimit=" + value);
+        holder.add("-D");
+        holder.add("mapred.child.java.opts=" + childOptsString);
+
+//        holder.add("-Dmapred.child.ulimit=" + value);  // in kb
+//        // DO NOT - DO NOT SET   -xx:-UseGCOverheadLimit   leads to error - Error reading task outputhttp://glad
+//         // DO NOT - DO NOT SET   childOptsString = " -xx:-UseGCOverheadLimit";   leads to error - Error reading task outputhttp://glad
+//        childOptsString += " -XX:+UseConcMarkSweepGC";   // use a different garbage collector - might help with  : FAILED Error: GC overhead limit exceeded
+//        holder.add("-Dmapred.child.java.opts=" + childOptsString);
+//        holder.add("-Djava.net.preferIPv4Stack=true");
+//        System.err.println("Max memory " + maxMamory);
+//        System.err.println("mapred.child.ulimit " + value);
 
         for (int i = 0; i < allArgs.length; i++) {
             String allArg = allArgs[i];

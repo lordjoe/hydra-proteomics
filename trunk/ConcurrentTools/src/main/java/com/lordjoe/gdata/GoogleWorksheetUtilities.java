@@ -2,7 +2,7 @@ package com.lordjoe.gdata;
 
 import com.google.gdata.data.spreadsheet.*;
 
-import java.util.*;
+
 
 /**
  * com.lordjoe.gdata.GoogleWorksheetUtilities

@@ -218,6 +218,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         return ret;
     }
 
+
     public static IModifiedPeptide[] buildModifications(IPolypeptide peptide,
                                                         PeptideModification[] allmods) {
 

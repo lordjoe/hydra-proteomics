@@ -63,10 +63,7 @@ public class Inversions {
      */
     public static int[] buildCopy(int[] values) {
         int[] ret = new int[values.length];
-        for (int i = 0; i < ret.length; i++) {
-            ret[i] = values[i];
-
-        }
+        System.arraycopy(values, 0, ret, 0, ret.length);
         return ret;
 
     }
@@ -181,9 +178,7 @@ public class Inversions {
         private void merge(int low, int middle, int high) {
 
             // Copy both parts into the helper array
-            for (int i = low; i <= high; i++) {
-                helper[i] = numbers[i];
-            }
+            System.arraycopy(numbers, low, helper, low, high + 1 - low);
 
             int i = low;
             int j = middle + 1;

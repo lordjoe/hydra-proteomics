@@ -57,7 +57,7 @@ public class ClassAnalysis {
     }
 
     public ClassProperty[] getPropertiesList() {
-        synchronized (m_PropertiesList) {
+        synchronized (this) {
             ClassProperty[] ret = new ClassProperty[m_PropertiesList.length];
             System.arraycopy(m_PropertiesList, 0, ret, 0, ret.length);
             return ret;
@@ -65,7 +65,7 @@ public class ClassAnalysis {
     }
 
     public ClassCollection[] getCollectionsList() {
-        synchronized (m_CollectionsList) {
+        synchronized (this) {
             ClassCollection[] ret = new ClassCollection[m_CollectionsList.length];
             System.arraycopy(m_CollectionsList, 0, ret, 0, ret.length);
             return ret;
@@ -85,7 +85,7 @@ public class ClassAnalysis {
     protected synchronized void buildCollectionsList() {
         if (m_CollectionsList != null)
             return;
-        Set items = new HashSet();
+        Set<ClassCollection> items = new HashSet<ClassCollection>();
         Iterator<ClassCollection> e = m_Collections.values().iterator();
         while (e.hasNext()) {
             items.add(e.next());
@@ -98,8 +98,8 @@ public class ClassAnalysis {
     protected synchronized void buildPropertiesList() {
         if (m_PropertiesList != null)
             return;
-        Set items = new HashSet();
-        Iterator e = m_Properties.values().iterator();
+        Set<ClassProperty> items = new HashSet<ClassProperty>();
+        Iterator<ClassProperty> e = m_Properties.values().iterator();
         while (e.hasNext()) {
             items.add(e.next());
         }

@@ -669,6 +669,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         //  XTandemUtilities.outputLine("Temporarily reusing data directory");
         if (buildDatabase) {
 
+            clearAllParams(application);  // make sure we get a new params file
+
             statistics.startJob("Build Database");
             statistics.startJob("SequenceFinder");
             job = buildJobSequenceFinder();
@@ -828,7 +830,18 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         File spectrumFile = new File(spectrumPath);
         // maybe we need to copy to the remote system or maybe it iw already there
         if (spectrumFile.exists()) {
-            guaranteeRemoteFilePath(spectrumFile, pRbase);
+            if (spectrumFile.isDirectory()) {
+                File[] files = spectrumFile.listFiles();
+                if (files == null)
+                    throw new IllegalStateException("Spectrum path is a directory and is empty");
+                // copy all files in directory
+                for (int i = 0; i < files.length; i++) {
+                    File file = files[i];
+                    guaranteeRemoteFilePath(file, pRbase + "/" + spectrumFile.getName());
+                }
+            } else {
+                guaranteeRemoteFilePath(spectrumFile, pRbase);
+            }
         } else {
             guaranteExistanceofRemoteFile(spectrumFile, pRbase, "the Spectrum file designated by \"spectrum, path\" ");
         }
@@ -907,13 +920,58 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         File f = new File(paramsPath);
         String remotepath = pRbase + "/" + f.getName();
 
-        pAccessor.writeToFileSystem(remotepath, f);
+        String newParams = buildNewParamsFile(f);
+
+
+        pAccessor.writeToFileSystem(remotepath, newParams);
 
 //        StringWriter sw = new StringWriter();
 //        PrintWriter out = new PrintWriter(sw);
 //        writeAdjustedParameters(out);
 //
 //        pAccessor.writeToFileSystem(remotepath, sw.toString());
+    }
+
+    public static final String[] EXCLUDED_PROPERTIES = {
+            "io.sort.mb", "java.net.preferIPv4Stack","io.sort.factor",
+    };
+
+    public static final Set<String> EXCLUDED_PROPERTY_SET = new HashSet<String>(Arrays.asList(EXCLUDED_PROPERTIES)) ;
+    /**
+     * add params from Launcher properties into the version of tandem.xml which is uploaded
+     *
+     * @param f !null file with tamdem.xml
+     * @return String with new content
+     */
+    protected String buildNewParamsFile(File f) {
+        String[] paramLines = FileUtilities.readInAllLines(f);
+
+        String lastLine = "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < paramLines.length; i++) {
+            String paramLine = paramLines[i].trim();
+            if (paramLine.length() == 0)
+                continue; // iognore blank lines
+            if (paramLine.contains("</bioml>")) {
+                lastLine = paramLine;
+                break;
+            }
+            sb.append(paramLine);
+            sb.append("\n");
+
+        }
+        Properties addedProps = XTandemHadoopUtilities.getHadoopProperties();
+        for (String key : addedProps.stringPropertyNames()) {
+            if(EXCLUDED_PROPERTY_SET.contains(key))
+                continue;
+            String paramLine = "<note type=\"input\" label=\"" + key + "\">" + addedProps.getProperty(key) + "</note>";
+            sb.append(paramLine);
+            sb.append("\n");
+         }
+
+        sb.append(lastLine);
+        sb.append("\n");
+        return sb.toString();
     }
 
 
@@ -997,17 +1055,22 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
 
     public void guaranteeRemoteFiles() {
+        boolean isRemote = !isTaskLocal();
+        // if running locally files need to be there
+        if (isRemote) {
+            String host = RemoteUtilities.getHost(); // "192.168.244.128"; // "hadoop1";
+            int port = RemoteUtilities.getPort();
+            IFileSystem accessor = HDFSAccessor.getFileSystem(host, port);
+            setAccessor(accessor);
 
-        //    String host = RemoteUtilities.getHost(); // "192.168.244.128"; // "hadoop1";
-        //    int port = RemoteUtilities.getPort();
-        IFileSystem accessor = getAccessor(); //new HDFSAccessor(host, port);
-        String rbase = getRemoteBaseDirectory();
+            String rbase = getRemoteBaseDirectory();
 
-        String udir = System.getProperty("user.dir");
-        // running on local
-        if (new File(udir).equals(new File(rbase)))
-            return;
-        guaranteeAccessibleFiles(rbase);
+            String udir = System.getProperty("user.dir");
+            // running on local
+            if (new File(udir).equals(new File(rbase)))
+                return;
+            guaranteeAccessibleFiles(rbase);
+        }
     }
 
 
@@ -1046,6 +1109,17 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         return sb.toString();
     }
 
+
+    protected void clearAllParams(HadoopTandemMain application) {
+        String databaseName = application.getDatabaseName();
+        String paramsFile = databaseName + ".params";
+        Path dd = XTandemHadoopUtilities.getRelativePath(paramsFile);
+        IFileSystem fs = getAccessor();
+        String hdfsPath = dd.toString();
+        if (fs.exists(hdfsPath))
+            fs.deleteFile(hdfsPath);
+
+    }
 
     /**
      * read any cached database parameters
@@ -1598,10 +1672,10 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             return;
         }
         if (HADOOP02_PORT.equals(pProperty)) {
-             HadoopUtilities.setProperty(HADOOP02_PORT, pValue);
-             return;
-         }
-         if (HADOOP02_JOBTRACKER.equals(pProperty)) {
+            HadoopUtilities.setProperty(HADOOP02_PORT, pValue);
+            return;
+        }
+        if (HADOOP02_JOBTRACKER.equals(pProperty)) {
             HadoopUtilities.setProperty(HADOOP02_JOBTRACKER, pValue);
             return;
         }
@@ -1614,9 +1688,9 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             return;
         }
         if (HADOOP10_JOBTRACKER.equals(pProperty)) {
-             HadoopUtilities.setProperty(HADOOP10_JOBTRACKER, pValue);
-             return;
-         }
+            HadoopUtilities.setProperty(HADOOP10_JOBTRACKER, pValue);
+            return;
+        }
 
         if (DELETE_OUTPUT_DIRECTORIES_PROPERTY.equals(pProperty)) {
             HadoopUtilities.setProperty(DELETE_OUTPUT_DIRECTORIES_PROPERTY, pValue);
@@ -1635,8 +1709,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         if (application.getBooleanParameter(JXTandemLauncher.DO_NOT_COPY_FILES_PROPERTY, false))
             return;
         String[] outputFiles = null;
-        String muliple = application.getParameter(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY);
-        boolean multipleFiles = "yes".equals(muliple);
+        boolean multipleFiles = application.getBooleanParameter(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY, false);
         String outFile = outFileName;
 
 
@@ -1832,6 +1905,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
             }
 
+
             String paramsFile = getParamsFile();
             InputStream is = buildInputStream(paramsFile);
             if (is == null) {
@@ -1840,6 +1914,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 return;
             }
             JXTandemLauncher main = new JXTandemLauncher(is, paramsFile, cfg);
+
 
             if (getPassedJarFile() != null) {   // start with a jar file
                 main.setJarFile(getPassedJarFile());
@@ -1883,6 +1958,23 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
             main.setParamsPath(paramsFile);
 
+            // Temporary fix take oput
+//            String hdfsPath1 = XTandemHadoopUtilities.getDefaultPath().toString();
+//            String[] files = accessor.ls(hdfsPath1);
+//            for (int i = 0; i < files.length; i++) {
+//                String file = files[i];
+//                if (file.startsWith("yeast_orfs_all_REV.20060126.short.task_")) {
+//                    Path dx = XTandemHadoopUtilities.getRelativePath(file);
+//                    accessor.deleteFile(dx.toString());
+//                }
+//
+//            }
+
+
+            boolean multipleFiles = main.getApplication().getBooleanParameter(JXTandemLauncher.MULTIPLE_OUTPUT_FILES_PROPERTY, false);
+            if (multipleFiles)
+                throw new UnsupportedOperationException("Multiple output files not supported " +
+                        " please set org.systemsbiology.xtandem.MultipleOutputFiles to no"); //
 
             main.loadTaxonomy();
             main.setPassNumber(1);
@@ -1947,12 +2039,26 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             return;
         }
 
-        HadoopMajorVersion.CURRENT_VERSION = HadoopMajorVersion.Version0; // force version 0.2
+        boolean isVersion1 = HadoopMajorVersion.CURRENT_VERSION != HadoopMajorVersion.Version0;
+        HDFSAccessor.setHDFSHasSecurity(isVersion1);
 
-        if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version0) {
+        String defaultPath = RemoteUtilities.getDefaultPath();
+        if (isVersion1) {
+            RemoteUtilities.setPort(8020); // todo make better
+            RemoteUtilities.setHost("hadoop-master-01.ebi.ac.uk");   // todo make not hard coded
+            RemoteUtilities.setJobTracker("hadoop-master-02.ebi.ac.uk:9000");
+//             RemoteUtilities.setUser("acsordas");
+//             String user = RemoteUtilities.getUser();
+//             RemoteUtilities.setDefaultPath("/user/" + user + "/foobar" );
+        }
+
+
+//        HadoopMajorVersion.CURRENT_VERSION = HadoopMajorVersion.Version0; // force version 0.2
+
+        if (!isVersion1) {
             workingMain(args);
         } else {
-            if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version0)
+            if (!isVersion1)
                 throw new IllegalStateException("This Code will not work under Version 0.2");
 
             // by using reflection the class is never loaded when running
