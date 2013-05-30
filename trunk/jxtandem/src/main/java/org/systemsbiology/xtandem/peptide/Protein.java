@@ -1,5 +1,7 @@
 package org.systemsbiology.xtandem.peptide;
 
+import org.systemsbiology.xtandem.hadoop.*;
+
 import java.util.*;
 
 /**
@@ -229,6 +231,11 @@ public class Protein extends Polypeptide implements IProtein {
      */
     @Override
     public boolean isDecoy() {
+
+        if (getId().startsWith(XTandemHadoopUtilities.DEFAULT_DECOY_PREFIX)) {
+            return true;
+        }
+
         return false;
     }
 
