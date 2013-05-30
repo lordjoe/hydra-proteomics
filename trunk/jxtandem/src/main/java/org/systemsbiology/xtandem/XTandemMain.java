@@ -262,7 +262,8 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
      */
     @Override
     public String getDatabaseName() {
-        String ret = getParameter("protein, taxon");
+        String ret = m_TaxonomyName; //getParameter("protein, taxon");
+        System.err.println("database name = "  + m_TaxonomyName);
         return conditionDatabaseName(ret);
     }
 
@@ -295,6 +296,13 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
      */
     public void handleInputs(final InputStream is, String url) {
         Map<String, String> notes = XTandemUtilities.readNotes(is, url);
+
+        for(String key : notes.keySet())  
+        {
+            String value = notes.get(key);
+            setParameter(key, value);
+            System.err.println(key + " = " + value);
+        }
         m_DefaultParameters = notes.get(
                 "list path, default parameters"); //, "default_input.xml");
         m_TaxonomyInfo = notes.get(
