@@ -2,7 +2,6 @@ package org.systemsbiology.xtandem.hadoop;
 
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
-import org.systemsbiology.common.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.scoring.*;
@@ -93,7 +92,7 @@ public class FastaHadoopLoader {
             }
         }
         // if true we better have decoys in the database
-        boolean hasDecoys = m_Application.getBooleanParameter(XTandemUtilities.CREATE_DECOY_PEPTIDES_PROPERTY,Boolean.FALSE);
+        boolean hasDecoys = m_Application.getBooleanParameter(XTandemUtilities.CREATE_DECOY_PEPTIDES_PROPERTY, Boolean.FALSE);
         ret.setHasDecoys(hasDecoys);
 
         return ret;
@@ -143,24 +142,40 @@ public class FastaHadoopLoader {
         if (containsInterestingSequence(sequence))
             XTandemUtilities.breakHere();
 
-        IProtein prot = Protein.getProtein( annotation, annotation, sequence, null);
+        IProtein prot = Protein.getProtein(annotation, annotation, sequence, null);
+
+        // do a boolean for a peptide belonging to a decoy protein, but use the public isDecoy boolean/method in Protein class
+
+        boolean isDecoy = prot.isDecoy();
+
         IPolypeptide[] pps = digester.digest(prot);
         PeptideModification[] modifications1 = getModifications();
         for (int i = 0; i < pps.length; i++) {
             IPolypeptide pp = pps[i];
 
             if (isInterestingSequence(pp))
-               XTandemUtilities.breakHere();
+                XTandemUtilities.breakHere();
 
             if (!pp.isValid())
                 continue;
-            writePeptide(pp, context);
-            IModifiedPeptide[] modifications = ModifiedPolypeptide.buildModifications(pp, modifications1);
-            for (int m = 0; m < modifications.length; m++) {
-                IModifiedPeptide modification = modifications[m];
-                writePeptide(modification, context);
 
+            // hadoop write intermediate seq finder
+            writePeptide(pp, context);
+
+         //   if(isDecoy)
+         //       continue; // skip the rest of the loop
+
+            // if it is decoy, don't add modifications to it
+            if (!isDecoy) {
+                //  generate modified peptides and add to the output
+                IModifiedPeptide[] modifications = ModifiedPolypeptide.buildModifications(pp, modifications1);
+                for (int m = 0; m < modifications.length; m++) {
+                    IModifiedPeptide modification = modifications[m];
+                    writePeptide(modification, context);
+
+                }
             }
+
         }
 
         boolean semiTryptic = digester.isSemiTryptic();
