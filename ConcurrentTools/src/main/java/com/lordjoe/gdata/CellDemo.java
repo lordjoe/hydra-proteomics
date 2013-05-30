@@ -450,7 +450,9 @@ public class CellDemo {
         e.printStackTrace();
       }
 
+        int count = 0;
       while (executeCommand(reader)) {
+          count++; // so while i snot empty
       }
     }
 

@@ -16,7 +16,7 @@ import java.util.*;
  * Date: 9/12/11
  */
 public abstract class AbstractTandemMapper<T> extends Mapper<T, Text, Text, Text> {
-    public static final AbstractTandemMapper[] EMPTY_ARRAY = {};
+    public static final boolean WRITING_PARAMETERS = true;
 
     private HadoopTandemMain m_Application;
     private final Text m_OnlyKey = new Text();
@@ -39,15 +39,18 @@ public abstract class AbstractTandemMapper<T> extends Mapper<T, Text, Text, Text
         Configuration conf = context.getConfiguration();
 
          // debugging code to show my keys
-        Iterator<Map.Entry<String, String>> iterator = conf.iterator();
-        while(iterator.hasNext())   {
-            Map.Entry<String, String> next = iterator.next();
-            String key = next.getKey();
-         //   if(key.startsWith("org.systemsbiology")) {
-                System.err.println(key + "=" + next.getValue());
-         //`   }
+        if(false)  {
+            Iterator<Map.Entry<String, String>> iterator = conf.iterator();
+            while(iterator.hasNext())   {
+                Map.Entry<String, String> next = iterator.next();
+                String key = next.getKey();
+             //   if(key.startsWith("org.systemsbiology")) {
+                    System.err.println(key + "=" + next.getValue());
+             //`   }
+            }
+            System.err.println("Done showing my keys");
+
         }
-        System.err.println("Done showing my keys");
 
 
         String defaultPath = conf.get(XTandemHadoopUtilities.PATH_KEY);
@@ -79,6 +82,21 @@ public abstract class AbstractTandemMapper<T> extends Mapper<T, Text, Text, Text
          String parameter = m_Application.getParameter(JXTandemLauncher.ALGORITHMS_PROPERTY);
         if (parameter != null)
             addAlternateParameters(parameter, m_Application);
+
+
+        if (WRITING_PARAMETERS) {
+              HadoopTandemMain application = getApplication();
+
+
+              String[] keys = application.getParameterKeys();
+              for (String key : keys) {
+                  if (key.startsWith("org.")) {
+                      System.err.println(key + " = " + application.getParameter(key));
+                  }
+              }
+          }
+
+        System.err.println("Default path is " + defaultPath);
     }
 
     protected void addAlternateParameters(final String pParameter, IMainData params) {

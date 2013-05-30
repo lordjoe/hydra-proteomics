@@ -5,6 +5,7 @@ import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.*;
 import org.systemsbiology.remotecontrol.*;
+import org.systemsbiology.remotecontrol.LocalFileSystem;
 
 import java.io.*;
 import java.lang.reflect.*;
@@ -51,7 +52,7 @@ public class HDFSAccessor implements IHDFSFileSystem {
                  Class<? extends IHDFSFileSystem> cls = (Class<? extends IHDFSFileSystem>) Class.forName("org.systemsbiology.hadoop.HDFWithNameAccessor");
 
                  Class[] argType = {Configuration.class };
-                 Constructor<? extends IHDFSFileSystem> constructor = cls.getConstructor(argType);
+                 Constructor<? extends IHDFSFileSystem> constructor = cls.getDeclaredConstructor(argType);
                  IHDFSFileSystem ret = constructor.newInstance(config);
                  return ret;
              } catch (Exception e) {
@@ -70,7 +71,7 @@ public class HDFSAccessor implements IHDFSFileSystem {
                 Class<? extends IHDFSFileSystem> cls = (Class<? extends IHDFSFileSystem>) Class.forName("org.systemsbiology.hadoop.HDFWithNameAccessor");
 
                 Class[] argType = {String.class, int.class};
-                Constructor<? extends IHDFSFileSystem> constructor = cls.getConstructor(argType);
+                   Constructor<? extends IHDFSFileSystem> constructor = cls.getDeclaredConstructor(argType);
                 IHDFSFileSystem ret = constructor.newInstance(host, new Integer(port));
                 return ret;
             } catch (Exception e) {
@@ -134,6 +135,9 @@ public class HDFSAccessor implements IHDFSFileSystem {
      */
     @Override
     public boolean isLocal() {
+        if(m_DFS instanceof org.apache.hadoop.fs.LocalFileSystem)
+            return true;
+
         return false;
     }
 
@@ -162,8 +166,11 @@ public class HDFSAccessor implements IHDFSFileSystem {
 
         try {
             Configuration config = new Configuration();
+            config.set("fs.default.name", "hdfs://" + host + ":" + port + userDir);
             config.set("fs.defaultFS", "hdfs://" + host + ":" + port + userDir);
-            m_DFS = FileSystem.get(config);
+              m_DFS = FileSystem.get(config);
+            if(isLocal())
+                throw new IllegalStateException("HDFS should not be local");
         } catch (IOException e) {
             throw new RuntimeException("Failed to connect on " + connectString + " because " + e.getMessage() +
                     " exception of class " + e.getClass(), e);

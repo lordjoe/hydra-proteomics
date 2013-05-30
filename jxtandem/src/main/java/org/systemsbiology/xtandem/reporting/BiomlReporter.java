@@ -72,7 +72,7 @@ public class BiomlReporter {
             return name;
         }
 
-        System.err.println("No File name forced building file name");
+      //  System.err.println("No File name forced building file name");
         if ("yes".equals(pParameters.getParameter("output, path hashing"))) {
             final int index = name.lastIndexOf(".");
             String extension = name.substring(index);

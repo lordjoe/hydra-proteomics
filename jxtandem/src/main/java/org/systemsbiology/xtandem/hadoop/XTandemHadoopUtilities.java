@@ -306,6 +306,10 @@ public class XTandemHadoopUtilities {
             gDefaultPath = new Path(s);
     }
 
+    public static Path getDefaultPath() {
+        return gDefaultPath;
+    }
+
     public static Path getRelativePath(String s) {
         if (gDefaultPath == null)
             return new Path(s);
@@ -522,6 +526,7 @@ public class XTandemHadoopUtilities {
         Map<Integer, Integer> ret;
         try {
             ret = XTandemHadoopUtilities.readDatabaseSizes(pApplication);
+            System.err.println("Read Database Sizes");
             if (ret != null && ret.size() > 0)
                 return ret;
         } catch (Exception e) {
@@ -531,7 +536,7 @@ public class XTandemHadoopUtilities {
     }
 
     protected static Map<Integer, Integer> buildDatabaseSizes(final HadoopTandemMain pApplication) {
-        System.out.println("Rebuilding Size database");
+        System.err.println("Rebuilding Size database");
         ElapsedTimer et = new ElapsedTimer();
 
         Map<Integer, Integer> dbSizes = XTandemHadoopUtilities.buildFileSystemDatabaseSizes(pApplication);
@@ -1090,9 +1095,12 @@ public class XTandemHadoopUtilities {
         // note we are reading from hdsf
         safeWrite(context, "Output File", paramsFile);
         HDFSAccessor accesor = opener.getAccesor();
+        // use a counter to see what we do
+        context.getCounter("outputfile",paramsFile).increment(1);
         Path path = new Path(paramsFile);
         OutputStream os = accesor.openFileForWrite(path);
 
+        context.getCounter("outputfile","total_files").increment(1);
         return os;
     }
 

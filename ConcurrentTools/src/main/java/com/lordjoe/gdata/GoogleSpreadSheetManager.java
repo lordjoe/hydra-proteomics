@@ -117,7 +117,7 @@ public class GoogleSpreadSheetManager {
 
     public GoogleSpreadSheet[] getSpreadSheets() {
         guaranteeSpreadSheets();
-        GoogleSpreadSheet[] googleSpreadSheets = m_Sheets.values().toArray(GoogleSpreadSheet.EMPTY_ARRAY);
+        GoogleSpreadSheet[] googleSpreadSheets = m_Sheets.values().toArray(new GoogleSpreadSheet[ m_Sheets.values().size()]);
         Arrays.sort(googleSpreadSheets);
         return googleSpreadSheets;
     }

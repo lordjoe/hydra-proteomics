@@ -229,7 +229,7 @@ public class AdjacencyProblem {
          */
         public  long getValue()
         {
-            return (int)getN1().getNumber() + ((long)getN2().getNumber() << 32);
+            return  getN1().getNumber() + ((long)getN2().getNumber() << 32);
         }
 
         /**
@@ -374,7 +374,7 @@ public class AdjacencyProblem {
                 holder.add(s);
                 s = r.readLine();
             }
-            String[] ret = holder.toArray(new String[0]);
+            String[] ret = holder.toArray(new String[holder.size()]);
             r.close();
             return (ret);
         }

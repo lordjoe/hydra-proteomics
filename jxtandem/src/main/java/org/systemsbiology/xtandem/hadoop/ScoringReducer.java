@@ -241,11 +241,10 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
         try {
             IPolypeptide[] pps = getPeptidesOfExactMass(interval);
 
-            if(!interval.isUnlimited())
-                System.err.println("Number peptides = " + pps.length );
 
             pps = filterPeptides(pps); // drop non-complient peptides
 
+            System.err.println("Number peptides = " + pps.length );
 
             if(isCreateDecoyPeptides())   {
                 pps = addDecoyPeptides(pps);

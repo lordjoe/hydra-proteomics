@@ -30,22 +30,21 @@ public class RunAsUserUseWithReflection implements RunAsUser {
     public  void runAsUser(  final String user, final Object[] args) {
         try {
             UserGroupInformation ugi = HDFWithNameAccessor.getCurrentUserGroup();
-            UserGroupInformation current = UserGroupInformation.getCurrentUser();
-
-            final String[] realArgs = (String[])args[0];
-
-            ugi.doAs(new PrivilegedExceptionAction<Void>() {
-
-                public Void run() throws Exception {
-                    UserGroupInformation current = UserGroupInformation.getCurrentUser();
-                    JXTandemLauncher.workingMain(realArgs);
-                    return null;
-
-                }
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+            if(true)    throw new UnsupportedOperationException("Uncomment when using version 1.0.*");
+//            UserGroupInformation current = UserGroupInformation.getCurrentUser();
+//
+//            final String[] realArgs = (String[])args[0];
+//
+//            ugi.doAs(new PrivilegedExceptionAction<Void>() {
+//
+//                public Void run() throws Exception {
+//                    UserGroupInformation current = UserGroupInformation.getCurrentUser();
+//                    JXTandemLauncher.workingMain(realArgs);
+//                    return null;
+//
+//                }
+//            });
+        } catch ( Exception e) {
             throw new RuntimeException(e);
         }
     }

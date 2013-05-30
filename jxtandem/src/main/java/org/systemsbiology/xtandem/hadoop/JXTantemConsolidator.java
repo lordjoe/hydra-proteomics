@@ -45,8 +45,12 @@ public class JXTantemConsolidator extends ConfiguredJobRunner implements IJobRun
 
     public int runJob(Configuration conf, final String[] args) throws Exception {
         try {
-            String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
-            // GenericOptionsParser stops after the first non-argument
+            GenericOptionsParser gp = new GenericOptionsParser(conf, args);
+
+             String[] otherArgs = gp.getRemainingArgs();
+             // GenericOptionsParser  stops at the first non-define
+             otherArgs = XTandemHadoopUtilities.internalProcessArguments(conf, args);
+              // GenericOptionsParser stops after the first non-argument
             otherArgs = XTandemHadoopUtilities.handleGenericInputs(conf, otherArgs);
             Job job = new Job(conf, "JXTandemConsolidator");
             setJob(job);
@@ -55,9 +59,11 @@ public class JXTantemConsolidator extends ConfiguredJobRunner implements IJobRun
             XTandemHadoopUtilities.setDefaultConfigurationArguments(conf);
             long original = 0;
 
-            conf = job.getConfiguration(); // maybe we make a copy
-            String childOpts = conf.get("mapred.child.java.opts");
+              String childOpts = conf.get("mapred.child.java.opts");
 
+            String params = conf.get(XTandemHadoopUtilities.PARAMS_KEY);
+            if (params == null)
+                     conf.set(XTandemHadoopUtilities.PARAMS_KEY, otherArgs[0]);
 
             if (JXTandemLauncher.isSequenceFilesUsed()) {
                 job.setInputFormatClass(SequenceFileInputFormat.class);

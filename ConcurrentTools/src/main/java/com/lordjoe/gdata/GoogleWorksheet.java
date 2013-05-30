@@ -55,12 +55,10 @@ public class GoogleWorksheet implements Comparable<GoogleWorksheet> {
                 m_ColumnsByIndex.put(colnum, col);
 
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new GoogleDataException(e);
 
-        }
-        catch (ServiceException e) {
+        } catch (ServiceException e) {
             throw new GoogleDataException(e);
 
         }
@@ -71,7 +69,7 @@ public class GoogleWorksheet implements Comparable<GoogleWorksheet> {
     }
 
     public GoogleColumn[] getColumns() {
-        GoogleColumn[] cols = m_ColumnsByName.values().toArray(GoogleColumn.EMPTY_ARRAY);
+        GoogleColumn[] cols = m_ColumnsByName.values().toArray(new GoogleColumn[m_ColumnsByName.values().size()]);
         Arrays.sort(cols);
         return cols;
     }
@@ -104,19 +102,17 @@ public class GoogleWorksheet implements Comparable<GoogleWorksheet> {
                 int row = GoogleWorksheetUtilities.getCellRow(entry);
                 int colnum = GoogleWorksheetUtilities.getCellColumn(entry);
                 String value = cell.getValue();
-                if(value != null && value.length() > 0) {
+                if (value != null && value.length() > 0) {
                     GoogleColumn col = getColumn(colnum);
-                      ret.put(col, value);
+                    ret.put(col, value);
 
                 }
-             }
+            }
             return ret;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new GoogleDataException(e);
 
-        }
-        catch (ServiceException e) {
+        } catch (ServiceException e) {
             throw new GoogleDataException(e);
 
         }
@@ -128,18 +124,17 @@ public class GoogleWorksheet implements Comparable<GoogleWorksheet> {
             CellFeed feed = getService().getFeed(getCellUrl(), CellFeed.class);
             List<CellEntry> holder = new ArrayList<CellEntry>();
 
-            CellEntry[] ret = new CellEntry[holder.size()];
-            holder.toArray(ret);
             for (CellEntry entry : feed.getEntries()) {
                 showCell(entry);
+                holder.add(entry);
             }
+            CellEntry[] ret = new CellEntry[holder.size()];
+            holder.toArray(ret);
             return ret;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new GoogleDataException(e);
 
-        }
-        catch (ServiceException e) {
+        } catch (ServiceException e) {
             throw new GoogleDataException(e);
 
         }
@@ -177,7 +172,7 @@ public class GoogleWorksheet implements Comparable<GoogleWorksheet> {
 
     }
 
-    public int showRows( ) {
+    public int showRows() {
         return showRows(System.out);
     }
 
@@ -193,18 +188,18 @@ public class GoogleWorksheet implements Comparable<GoogleWorksheet> {
         int lastFiledRow = 1;
         int rows = getRowCount();
         for (int i = 0; i < rows; i++) {
-             Map<GoogleColumn, String> data = getRow(i);
-            if(data == null || data.size() == 0)
+            Map<GoogleColumn, String> data = getRow(i);
+            if (data == null || data.size() == 0)
                 continue;
-            lastFiledRow = i ;
+            lastFiledRow = i;
             for (GoogleColumn col : columns) {
                 if (col == null)
                     continue;
                 String value = data.get(col);
-                if(value != null)
-                    out.print(value );
-                out.print( "\t");
-             }
+                if (value != null)
+                    out.print(value);
+                out.print("\t");
+            }
             out.println();
         }
         return lastFiledRow;
@@ -246,20 +241,18 @@ public class GoogleWorksheet implements Comparable<GoogleWorksheet> {
             for (CellEntry entry : feed.getEntries()) {
                 String id = entry.getId();
                 Cell cell = entry.getCell();
-                 String value = cell.getValue();
-                 return value;
-                }
+                String value = cell.getValue();
+                return value;
+            }
             return null; // or maybe this is am exception
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
+            throw new GoogleDataException(e);
+
+        } catch (ServiceException e) {
             throw new GoogleDataException(e);
 
         }
-        catch (ServiceException e) {
-            throw new GoogleDataException(e);
-
-        }
-      }
+    }
 
     /**
      * Sets the particular cell at row, col to the specified formula or value.
@@ -281,22 +274,19 @@ public class GoogleWorksheet implements Comparable<GoogleWorksheet> {
         SpreadsheetService service = getService();
         try {
             service.insert(getCellUrl(), newEntry);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new GoogleDataException(e);
 
-        }
-        catch (ServiceException e) {
+        } catch (ServiceException e) {
             throw new GoogleDataException(e);
 
         }
     }
 
-    public void setHeaders(String[] values)
-    {
+    public void setHeaders(String[] values) {
         for (int i = 0; i < values.length; i++) {
             String value = values[i];
-            setCell(1, i + 1,value);
+            setCell(1, i + 1, value);
         }
     }
 
@@ -326,7 +316,7 @@ public class GoogleWorksheet implements Comparable<GoogleWorksheet> {
     /**
      * testcode for below
      */
-    public   void addRandomRow() {
+    public void addRandomRow() {
         Map<GoogleColumn, String> added = new HashMap<GoogleColumn, String>();
         for (GoogleColumn column : getColumns()) {
             added.put(column, Integer.toString(RND.nextInt(100)));
@@ -337,7 +327,7 @@ public class GoogleWorksheet implements Comparable<GoogleWorksheet> {
     /**
      * testcode for below
      */
-    public   void addIncrementingRow() {
+    public void addIncrementingRow() {
         Map<GoogleColumn, String> added = new HashMap<GoogleColumn, String>();
         int value = 10;
         for (GoogleColumn column : getColumns()) {
@@ -347,12 +337,10 @@ public class GoogleWorksheet implements Comparable<GoogleWorksheet> {
     }
 
     /**
-     *
      * @param added
      * @throws GoogleDataException
      */
-    public void addRow(Map<GoogleColumn, String> added)  throws GoogleDataException
-    {
+    public void addRow(Map<GoogleColumn, String> added) throws GoogleDataException {
 
         // Instantiate a SpreadsheetQuery object to retrieve spreadsheets.
         URL listFeed = getListUrl();
@@ -371,12 +359,10 @@ public class GoogleWorksheet implements Comparable<GoogleWorksheet> {
         try {
             SpreadsheetService service = getService();
             service.insert(listFeed, newEntry);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new GoogleDataException(e);
 
-        }
-        catch (ServiceException e) {
+        } catch (ServiceException e) {
             throw new GoogleDataException(e);
 
         }

@@ -15,7 +15,7 @@ import com.lordjoe.utilities.*;
  */
 public class ClassMapper  implements  ITagHandler {
 	public static final String TAG_TO_FILE_NAME = "TagToFile.xml";
-	protected static Map	   gNameToMapper;
+	protected static Map<String,ClassMapper>	   gNameToMapper;
 	private Map				   m_KeyToValue;
 	private Map				   m_ValueToKey;
 	private String			   m_Name;
@@ -29,7 +29,7 @@ public class ClassMapper  implements  ITagHandler {
 		String TestName = in.toUpperCase();
                 initMapper();
 
-		ClassMapper ret = (ClassMapper) gNameToMapper.get(TestName);
+		ClassMapper ret =  gNameToMapper.get(TestName);
 
 		if (ret != null) {
 			return (ret);
@@ -65,7 +65,7 @@ public class ClassMapper  implements  ITagHandler {
 	 * @return non-null string
 	 */
 	public static String tagToFile(String TestTag) {
-		ClassMapper TagsToFiles = (ClassMapper) gNameToMapper.get("TagToFile");
+		ClassMapper TagsToFiles =  gNameToMapper.get("TagToFile");
 
 		if (TagsToFiles == null) {
 			TagsToFiles = buildTagsToFiles();
@@ -186,7 +186,7 @@ public class ClassMapper  implements  ITagHandler {
 	public void addKeyValue(Object Key, Object Value) {
 		Object OldValue = m_KeyToValue.get(Key);
 
-		m_KeyToValue.put(Key, Value);
+		m_KeyToValue.put((String)Key, Value);
 
 		if (OldValue != null) {
 			m_ValueToKey.remove(OldValue);

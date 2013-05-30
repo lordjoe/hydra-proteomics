@@ -85,7 +85,7 @@ public class QuickSort {
         }
         int pivot = a[start];
         int greaterThan = end;
-        boolean swapLessThan = false;
+        boolean swapLessThan ;
         boolean swapGreaterThan = false;
         int lastLessThan = start + 1;
         for (; lastLessThan < greaterThan; lastLessThan++) {
@@ -159,8 +159,7 @@ public class QuickSort {
      * @param pEnd
      */
     private void chooseAndPositionPivot(final int[] pA, final int pStart, final int pEnd) {
-        return; // choose first
-    }
+       }
 
     /**
      * test aht algorithm on a arndonly generatesd array

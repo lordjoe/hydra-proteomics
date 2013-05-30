@@ -63,7 +63,7 @@ public class HDFS1_0_ONLYTests {
             permissions = access.getPermissions(src);
 
 
-            access.writeToFileSystem(filePath, TEST_CONTENT);
+            access.writeToFileSystem(filePath, HDFSTests.TEST_CONTENT);
             access.setPermissions(src, IHDFSFileSystem.FULL_ACCESS);
             access.setPermissions(new Path(filePath), IHDFSFileSystem.FULL_ACCESS);
 

@@ -96,6 +96,7 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
 
     /**
      * test for a sequence I care about
+     *
      * @param sequence
      * @return
      */
@@ -223,15 +224,32 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
         protected void writeParseParameters(final Context context) throws IOException {
             Configuration cfg = context.getConfiguration();
             HadoopTandemMain application = getApplication();
-            String paramsFile = application.getDatabaseName() + ".params";
+            TaskAttemptID tid = context.getTaskAttemptID();
+            String taskStr = tid.getTaskID().toString();
+            String paramsFile = application.getDatabaseName() +  ".params";
             Path dd = XTandemHadoopUtilities.getRelativePath(paramsFile);
+
             FileSystem fs = FileSystem.get(cfg);
-            FSDataOutputStream fsout = fs.create(dd);
-            PrintWriter out = new PrintWriter(fsout);
-            FastaHadoopLoader ldr = new FastaHadoopLoader(application);
-            String x = ldr.asXMLString();
-            out.println(x);
-            out.close();
+
+            if (!fs.exists(dd)) {
+                try {
+                    FastaHadoopLoader ldr = new FastaHadoopLoader(application);
+                    String x = ldr.asXMLString();
+                    FSDataOutputStream fsout = fs.create(dd);
+                    PrintWriter out = new PrintWriter(fsout);
+                    out.println(x);
+                    out.close();
+                } catch (IOException e) {
+                    try {
+                        fs.delete(dd);
+                    } catch (IOException e1) {
+                        throw new RuntimeException(e1);
+                    }
+                    throw new RuntimeException(e);
+                }
+
+            }
+
         }
 
         protected PrintWriter getOutputWriter(final Context context, final int pMass) throws IOException {
@@ -353,9 +371,9 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
     @Override
     public int run(final String[] args) throws Exception {
         Configuration conf = getConf();
-         if(conf == null)
-             conf = HDFSAccessor.getSharedConfiguration();
-         return runJob(conf, args);
+        if (conf == null)
+            conf = HDFSAccessor.getSharedConfiguration();
+        return runJob(conf, args);
     }
 
     public static void main(String[] args) throws Exception {

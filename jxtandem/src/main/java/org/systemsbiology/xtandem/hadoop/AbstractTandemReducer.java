@@ -15,8 +15,9 @@ import java.util.*;
  * User: steven
  * Date: 9/12/11
  */
-public abstract class AbstractTandemReducer  extends Reducer<Text, Text, Text, Text> {
-    public static final AbstractTandemReducer[] EMPTY_ARRAY = {};
+public abstract class AbstractTandemReducer extends Reducer<Text, Text, Text, Text> {
+
+    public static final boolean WRITING_PARAMETERS = true;
 
     private HadoopTandemMain m_Application;
     private final Text m_OnlyKey = new Text();
@@ -33,7 +34,6 @@ public abstract class AbstractTandemReducer  extends Reducer<Text, Text, Text, T
     public void setAllSpecialKeysHandled(final boolean pAllSpecialKeysHandled) {
         m_AllSpecialKeysHandled = pAllSpecialKeysHandled;
     }
-
 
 
     public ElapsedTimer getElapsed() {
@@ -63,12 +63,11 @@ public abstract class AbstractTandemReducer  extends Reducer<Text, Text, Text, T
     protected void setup(final Context context) throws IOException, InterruptedException {
         super.setup(context);
         m_Context = context;
-          // read configuration lines
+        // read configuration lines
         Configuration conf = context.getConfiguration();
 
         IAnalysisParameters ap = AnalysisParameters.getInstance();
         ap.setJobName(context.getJobName());
-
 
 
         String defaultPath = conf.get(XTandemHadoopUtilities.PATH_KEY);
@@ -77,36 +76,47 @@ public abstract class AbstractTandemReducer  extends Reducer<Text, Text, Text, T
 
         // sneaky trick to extract the version
         String version = VersionInfo.getVersion();
-        context.getCounter("Performance",  "Version-" + version ).increment(1);
+        context.getCounter("Performance", "Version-" + version).increment(1);
         // sneaky trick to extract the user
         String uname = System.getProperty("user.name");
-        context.getCounter("Performance",  "User-" + uname ).increment(1);
+        context.getCounter("Performance", "User-" + uname).increment(1);
 
 
-        if(defaultPath.startsWith("s3n://"))  {
+        if (defaultPath.startsWith("s3n://")) {
             try {
                 Class cls = Class.forName("org.systemsbiology.aws.AWSUtilities");
-                IConfigureFileSystem cfg = (IConfigureFileSystem)cls.getField("AWS_CONFIGURE_FILE_SYSTEM").get(null);
-                cfg.configureFileSystem(conf,defaultPath);
-            }
-            catch ( Exception e) {
+                IConfigureFileSystem cfg = (IConfigureFileSystem) cls.getField("AWS_CONFIGURE_FILE_SYSTEM").get(null);
+                cfg.configureFileSystem(conf, defaultPath);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
 
             }
-           }
+        }
 
         // sometimes we need to add a prefix to a file
         String forcePathPrefix = conf.get(XTandemHadoopUtilities.FORCE_PATH_PREFIX_KEY);
-         XTandemMain.setRequiredPathPrefix(forcePathPrefix);
+        XTandemMain.setRequiredPathPrefix(forcePathPrefix);
         // m_Factory.setValidationStringency(SAMFileReader.ValidationStringency.LENIENT)
 
         m_Application = XTandemHadoopUtilities.loadFromContext(context);
 
+        if (WRITING_PARAMETERS) {
+            HadoopTandemMain application = getApplication();
+
+
+            String[] keys = application.getParameterKeys();
+            for (String key : keys) {
+                if (key.startsWith("org.")) {
+                    System.err.println(key + " = " + application.getParameter(key));
+                }
+            }
+        }
+
+
         m_Application.loadTaxonomy();
         m_Application.loadScoring();
 
-       }
-
+    }
 
 
     public final HadoopTandemMain getApplication() {
@@ -122,7 +132,7 @@ public abstract class AbstractTandemReducer  extends Reducer<Text, Text, Text, T
     }
 
 
-    protected boolean isKeySpecial(String s)  {
+    protected boolean isKeySpecial(String s) {
         return s.startsWith("#");
     }
 
@@ -132,12 +142,12 @@ public abstract class AbstractTandemReducer  extends Reducer<Text, Text, Text, T
         // keys starting with # come BEFORE ALL other keys
         String sequence = key.toString();
         // these are special and will ALL behandled FIRST
-        if(sequence.startsWith("#"))
-             reduceSpecial(  key, values, context);
+        if (sequence.startsWith("#"))
+            reduceSpecial(key, values, context);
         else {
             // we will get NO MORE special keys
             setAllSpecialKeysHandled(true);
-            reduceNormal(  key, values, context);
+            reduceNormal(key, values, context);
         }
     }
 
@@ -146,15 +156,14 @@ public abstract class AbstractTandemReducer  extends Reducer<Text, Text, Text, T
      */
     @Override
     protected void cleanup(final Context context) throws IOException, InterruptedException {
-         super.cleanup(context);
-     }
+        super.cleanup(context);
+    }
 
     protected abstract void reduceNormal(Text key, Iterable<Text> values,
-                       Context context) throws IOException, InterruptedException;
+                                         Context context) throws IOException, InterruptedException;
 
     protected void reduceSpecial(Text key, Iterable<Text> values,
-                       Context context) throws IOException, InterruptedException
-    {
-         // Handle special early keys
+                                 Context context) throws IOException, InterruptedException {
+        // Handle special early keys
     }
 }

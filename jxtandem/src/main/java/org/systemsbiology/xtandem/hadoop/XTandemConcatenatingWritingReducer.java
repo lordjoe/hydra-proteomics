@@ -131,13 +131,15 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
         // read configuration lines
         Configuration conf = context.getConfiguration();
 
+        HadoopTandemMain application = getApplication();
+
+
 
         IAnalysisParameters ap = AnalysisParameters.getInstance();
         ap.setJobName(context.getJobName());
 
 
-        HadoopTandemMain application = getApplication();
-        if ( application.getBooleanParameter(JXTandemLauncher.TURN_ON_SCAN_OUTPUT_PROPERTY,false))
+          if ( application.getBooleanParameter(JXTandemLauncher.TURN_ON_SCAN_OUTPUT_PROPERTY,false))
             setWriteScans(true);
 
 
@@ -181,6 +183,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
             System.err.println("Writing output to file " + paramsFile);
         }
 
+        System.err.println("Setup Consolidator");
         if (!isUseMultipleOutputFiles())
             setWriters(context, application, fileName);
 
@@ -188,6 +191,8 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
 
 
     protected void setWriters(Context context, HadoopTandemMain application, String inputFileNamex) {
+
+        System.err.println("Setting up writers");
         String s = inputFileNamex;
         if (isUseMultipleOutputFiles()) {
             s = XTandemHadoopUtilities.dropExtension(inputFileNamex);
@@ -214,7 +219,9 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
 
         m_Reporter.writeHeader(getWriter(), 0);
 
-        if ( application.getBooleanParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY,Boolean.FALSE)) {
+        Boolean isWritePepXML = application.getBooleanParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY, Boolean.FALSE);
+        if (isWritePepXML) {
+            System.err.println("Setting up pep xml writers");
             setWritePepXML(true);
             ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
             m_pepXMLWriter = new PepXMLWriter[algorithms.length];
@@ -287,7 +294,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
         try {
 // Debug stuff
             id = keyStr; // key includes charge
-            String usedFileName = null;
+            String usedFileName;
             int index = keyStr.indexOf("|");
             if (index > -1) {
                 //               System.err.println("key " + keyStr + " index " + index + " m_OutputFiles.length " + m_OutputFiles.length);

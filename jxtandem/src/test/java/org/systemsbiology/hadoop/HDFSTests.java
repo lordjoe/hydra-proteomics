@@ -16,9 +16,9 @@ import java.lang.annotation.*;
 public class HDFSTests {
     public static final HDFSTests[] EMPTY_ARRAY = {};
 
-    public static final String NAME_NODE = RemoteUtilities.getHost();
-    public static final int HDFS_PORT = RemoteUtilities.getPort();
-      public static final String BASE_DIRECTORY = RemoteUtilities.getDefaultPath() + "/test/";
+//    public static final String NAME_NODE = RemoteUtilities.getHost();
+ //   public static final int HDFS_PORT = RemoteUtilities.getPort();
+    //  public static final String BASE_DIRECTORY = RemoteUtilities.getDefaultPath() + "/test/";
     public static final String FILE_NAME = "little_lamb2.txt";
     public static final String FILE_NAME2 = "little_lamb_stays2.txt";
 
@@ -105,17 +105,32 @@ public class HDFSTests {
     public void HDFSReadTest()
     {
 
+
        // We can tell from the code - hard wired to use security over 0.2
-      //  HDFSAccessor.setHDFSHasSecurity(true);
+        boolean isVersion1 = HadoopMajorVersion.CURRENT_VERSION != HadoopMajorVersion.Version0;
+        HDFSAccessor.setHDFSHasSecurity(isVersion1);
 
+        if(isVersion1) {
+            RemoteUtilities.setPort(8020); // todo make better
+            RemoteUtilities.setHost("hadoop-master-01.ebi.ac.uk");   // todo make not hard coded
+            RemoteUtilities.setUser("slewis");
+            String user = RemoteUtilities.getUser();
+            RemoteUtilities.setDefaultPath("/user/" + user + "/foobar" );
+              String defaultPath = RemoteUtilities.getDefaultPath();
+          }
 
-
-        if( isHDFSAccessible())  {
+        if(!isHDFSAccessible())  {
             System.out.println("Not running HDFS tests");
             return;
         }
         try {
+            String NAME_NODE = RemoteUtilities.getHost();
+            int HDFS_PORT = RemoteUtilities.getPort();
+
             IHDFSFileSystem access = HDFSAccessor.getFileSystem(NAME_NODE,HDFS_PORT);
+
+            Assert.assertTrue(!access.isLocal());
+            String BASE_DIRECTORY = RemoteUtilities.getDefaultPath() + "/test/";
             access.guaranteeDirectory(BASE_DIRECTORY);
 
             String filePath = BASE_DIRECTORY + FILE_NAME;
