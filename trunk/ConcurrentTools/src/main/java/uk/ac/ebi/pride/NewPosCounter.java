@@ -251,9 +251,8 @@ public class NewPosCounter extends    ConfiguredJobRunner implements IJobRunner 
             rs.setConnected(true);
             launcher = new RemoteHadoopController(rs);
         }
-        launcher.runJob(job);
-
-
+        boolean success = launcher.runJob(job);
+        System.exit(success ? 0 : 1);// threads are launched which need to be killed
         // RemoteHadoopController
     }
 
