@@ -1,11 +1,11 @@
 package uk.ac.ebi.pride;
 
 import org.apache.hadoop.conf.*;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.util.*;
-import org.systemsbiology.common.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.remotecontrol.*;
 
@@ -15,12 +15,14 @@ import java.util.*;
 
 /**
  * uk.ac.ebi.pride.NewPosCounter
+ * for attla test
  *
  * @author Steve Lewis
  * @date 31/05/13
  */
-public class NewPosCounter extends    ConfiguredJobRunner implements IJobRunner  { //Configured implements Tool {
+public class NewPosCounter extends ConfiguredJobRunner implements IJobRunner { //Configured implements Tool {
 
+    public static final boolean RUNNING_REMOTE = false;
 
     @SuppressWarnings("deprecation")
     public static class MyMap extends Mapper<LongWritable, Text, Text, IntWritable> {
@@ -44,6 +46,7 @@ public class NewPosCounter extends    ConfiguredJobRunner implements IJobRunner 
                     //System.out.println(result);
 
                     String s = new StringBuilder().append(line.charAt(i)).append('_').append(i + 1).append("_").append(roundTwoDecimals(result)).toString();
+                //    System.out.println(s);
                     onlyText.set(s);
                     context.write(onlyText, one);
                 }
@@ -143,6 +146,12 @@ public class NewPosCounter extends    ConfiguredJobRunner implements IJobRunner 
 
         job.setJarByClass(NewPosCounter.class);
 
+        // comment out this ling to read input
+        // leave in and input is hard coded
+        //     if(!RUNNING_REMOTE)
+        //         job.setInputFormatClass(HardCodedInputFormat.class);
+
+
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(IntWritable.class);
         job.setOutputKeyClass(Text.class);
@@ -157,7 +166,7 @@ public class NewPosCounter extends    ConfiguredJobRunner implements IJobRunner 
             /*job.setInputFormatClass(TextInputFormat.class);
             job.setOutputFormatClass(TextOutputFormat.class);
     */
-        job.setNumReduceTasks(new Integer(10));
+        job.setNumReduceTasks(10);
 
     /*
             job.setInputFormatClass(LineTextInputFormat.class);
@@ -213,6 +222,18 @@ public class NewPosCounter extends    ConfiguredJobRunner implements IJobRunner 
         System.out.println("usage inputfile1 <inputfile2> <inputfile3> ... outputdirectory");
     }
 
+
+    public static final String TEST_CONTENT =
+            "Mary had a little lamb,\n" +
+                    "little lamb, little lamb,\n" +
+                    "Mary had a little lamb,\n" +
+                    "whose fleece was white as snow.\n" +
+                    "And everywhere that Mary went,\n" +
+                    "Mary went, Mary went,\n" +
+                    "and everywhere that Mary went,\n" +
+                    "the lamb was sure to go.";
+
+
     /**
      * Sample of use
      * args might be /user/slewis/hadoop/test/books/pg135.txt /user/slewis/hadoop/test/output1
@@ -226,12 +247,17 @@ public class NewPosCounter extends    ConfiguredJobRunner implements IJobRunner 
             return;
         }
 
+
         IHadoopController launcher = new LocalHadoopController();
-        boolean runRemotely = true;
+
+        if (!RUNNING_REMOTE) {
+            HardCodedInputFormat.setTextToSend(TEST_CONTENT);
+
+        }
 
         String inputlocation = args[0];
         String outputLocation = args[1];
-        HadoopJob.setJarRequired(runRemotely);
+        HadoopJob.setJarRequired(RUNNING_REMOTE);
 
         IHadoopJob job = HadoopJob.buildJob(
                 NewPosCounter.class,
@@ -242,10 +268,10 @@ public class NewPosCounter extends    ConfiguredJobRunner implements IJobRunner 
         job.makeJarAsNeeded();
 
 
-        if (runRemotely) {
+        if (RUNNING_REMOTE) {
             String host = RemoteUtilities.getHost();
             int port = RemoteUtilities.getPort();
-             String user = RemoteUtilities.getUser(); // "slewis";  //
+            String user = RemoteUtilities.getUser(); // "slewis";  //
             String password = RemoteUtilities.getPassword(); // "training";  //
             RemoteSession rs = new RemoteSession(host, user, password);
             rs.setConnected(true);
