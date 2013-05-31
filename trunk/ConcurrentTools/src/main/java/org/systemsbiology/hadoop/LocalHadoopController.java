@@ -2,6 +2,7 @@ package org.systemsbiology.hadoop;
 
 import com.lordjoe.utilities.*;
 import org.apache.hadoop.conf.*;
+import org.apache.hadoop.util.*;
 import org.systemsbiology.common.*;
 
 import org.systemsbiology.remotecontrol.*;
@@ -99,12 +100,15 @@ public class LocalHadoopController implements IHadoopController {
         String[] allArgs = job.getAllArgs();
 
         try {
-            Class<? extends IJobRunner> mClass = (Class<? extends IJobRunner>) Class.forName(mainClass);
-            IJobRunner realMain = mClass.newInstance();
+            Class<? extends Tool> mClass = (Class<? extends Tool>) Class.forName(mainClass);
+            Tool realMain = mClass.newInstance();
 
-            int result = realMain.runJob(conf, allArgs);
+            Configured cfg = (Configured)realMain;
+            cfg.setConf(conf);
+            int result = realMain.run(allArgs);
 
-            ((HadoopJob) job).setJob(realMain.getJob());
+            if(realMain instanceof IJobRunner)
+                ((HadoopJob) job).setJob(((IJobRunner)realMain).getJob());
             return result == 0;
 //            if (result.contains("Job Failed"))
 //                throw new IllegalStateException(result);
