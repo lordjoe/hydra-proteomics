@@ -179,16 +179,19 @@ public class RemoteHadoopController implements IHadoopController {
                 IJobRunner realMain = mClass.newInstance();
 
                 int result = realMain.runJob(conf, allArgs);
-                ((HadoopJob) job).setJob(realMain.getJob());
+                 job.setJob(realMain.getJob());
                 return result == 0;
             } else {
                 if (Tool.class.isAssignableFrom(mainCls)) {
-            Tool realMain = (Tool) mainCls.newInstance();
-            String[] args = buildArgsFromConf(emptyOutputDirectory, conf, allArgs);
-            WrappedToolRunner tr = new WrappedToolRunner(realMain);
-            int result = tr.runJob(conf, args);
-            ((HadoopJob) job).setJob(tr.getJob());
-            return result == 0;
+                    Tool realMain = (Tool) mainCls.newInstance();
+                    String[] args = buildArgsFromConf(emptyOutputDirectory, conf, allArgs);
+                    realMain.setConf(conf);
+                    int result = ToolRunner.run(conf,realMain,args);
+
+                 //   WrappedToolRunner tr = new WrappedToolRunner(realMain);
+                 //   int result = tr.runJob(conf, args);
+                 //   ((HadoopJob) job).setJob(tr.getJob());
+                    return result == 0;
                 } else {
                     throw new UnsupportedOperationException("Fix This"); // ToDo
 
