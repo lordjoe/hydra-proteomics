@@ -89,6 +89,10 @@ compressIntermediateFiles=true
 maxClusterMemory=3600
 
 #
+# This parameter gives a task longer to repost
+# before returning  default value is 60000
+DEFINE_mapred.task.timeout=330000
+#
 # override specific Hadoop prepoerties - save writing specific code
 DEFINE_io.sort.factor=100
 DEFINE_io.sort.mb=400
