@@ -318,6 +318,9 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 
     }
 
+
+
+
     /**
      * Execute the command with the given arguments.
      *
@@ -358,7 +361,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             job.setReducerClass(ProteinReducer.class);
             // try to reduce duplicates in a combiner
             // is the combiner a bad idea???
-            //job.setCombinerClass(FragmentCombiner.class);
+            // job.setCombinerClass(FragmentCombiner.class);
 
             job.setMapOutputKeyClass(Text.class);
             job.setMapOutputValueClass(Text.class);

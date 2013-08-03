@@ -32,7 +32,7 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
     // todo run off a parameter
     // setting this small forces many mappers
     public static final int SPLIT_BLOCK_SIZE = 10 * 1024 * 1024;
-    public static final int MIN_BLOCK_SIZE = 128 * 1024;
+    public static final int MIN_BLOCK_SIZE = 10 * 1024;
 
 
     private static final double SPLIT_SLOP = 1.1;   // 10% slop

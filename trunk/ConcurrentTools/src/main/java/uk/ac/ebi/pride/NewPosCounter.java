@@ -22,7 +22,7 @@ import java.util.*;
  */
 public class NewPosCounter extends ConfiguredJobRunner implements IJobRunner { //Configured implements Tool {
 
-    public static final boolean RUNNING_REMOTE = false;
+    public static final boolean RUNNING_REMOTE = true;
 
     @SuppressWarnings("deprecation")
     public static class MyMap extends Mapper<LongWritable, Text, Text, IntWritable> {
