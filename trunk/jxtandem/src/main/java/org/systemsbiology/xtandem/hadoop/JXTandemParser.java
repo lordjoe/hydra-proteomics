@@ -30,11 +30,19 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
         private int m_Proteins;
         private int m_ProteinsReported;
         private boolean m_GenerateDecoys;
+        private boolean m_ShowProteins;
 
         public FastaHadoopLoader getLoader() {
             return m_Loader;
         }
 
+        public boolean isShowProteins() {
+            return m_ShowProteins;
+        }
+
+        public void setShowProteins(boolean showProteins) {
+            m_ShowProteins = showProteins;
+        }
 
         public boolean isGenerateDecoys() {
             return m_GenerateDecoys;
@@ -98,6 +106,10 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
 
             setGenerateDecoys(application.getBooleanParameter(XTandemUtilities.CREATE_DECOY_PEPTIDES_PROPERTY, Boolean.FALSE));
             long freemem = setMinimalFree();
+            Configuration configuration = context.getConfiguration();
+
+            setShowProteins(application.getBooleanParameter("org.systemsbiology.useSingleFastaItemSplit",false));
+
             XTandemUtilities.outputLine("Free Memory " + String.format("%7.2fmb", freemem / 1000000.0) +
                     " minimum " + String.format("%7.2fmb", getMinimumFreeMemory() / 1000000.0));
         }
@@ -110,6 +122,12 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             boolean isDecoy = false;
             label = XTandemUtilities.conditionProteinLabel(label);
             String sequence = value.toString();
+
+            // to deal with problems we need to show the protein handled
+            if(isShowProteins())   {
+                System.err.println("Label:" + label);
+                System.err.println("Sequence:" + sequence);
+            }
             // drop terminating *
             if (sequence.endsWith("*"))
                 sequence = sequence.substring(0, sequence.length() - 1);

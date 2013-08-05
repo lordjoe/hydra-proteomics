@@ -277,7 +277,7 @@ public abstract class ClassAnalyzer
         if (ret != null)
             return (ret);
         // try caseless get
-        ret = (ClassCollection) anal.getCaselessCollections().get(name.toUpperCase());
+        ret =   anal.getCaselessCollections().get(name.toUpperCase());
         return (ret);
     }
 
@@ -485,7 +485,8 @@ public abstract class ClassAnalyzer
     {
         String PropName = null;
         Object PropValue = null;
-        String[] items = (String[])Values.keySet().toArray(Util.EMPTY_STRING_ARRAY);
+        Set set = Values.keySet();
+        String[] items = (String[]) set.toArray(new String[set.size()]);
         try {
             for (int i = 0; i < items.length; i++) {
                 PropName = items[i];
@@ -545,7 +546,6 @@ public abstract class ClassAnalyzer
             if (TheMethod == null) {
 
                 // repeat to debug
-                StringBuffer error = new StringBuffer(256);
                 throw new IllegalArgumentException(
                         "No non-overloaded method " + methodName + " not found in class '" +
                                 TheTarget.getClass().getName());
@@ -567,7 +567,7 @@ public abstract class ClassAnalyzer
         catch (InvocationTargetException ex) {
             //throw new RuntimeException(ex.getTargetException());
             Throwable innerEx = ex.getTargetException();
-            StringBuffer sb = new StringBuffer(64);
+            StringBuilder sb = new StringBuilder(64);
             sb.append("ClassAnalyzer encountered an ");
             sb.append(innerEx.getClass().getName());
             sb.append(" attempting to invoke the '");
@@ -604,13 +604,14 @@ public abstract class ClassAnalyzer
      */
     public static void setSingleProperty(Object TheTarget, String name, Object value)
     {
+        //noinspection UnusedDeclaration
         Class TestArgs = null;
         if (value != null)
             TestArgs = value.getClass();
         Method TheMethod = findSetMethod(TheTarget.getClass(), name, false);
         if (TheMethod == null) {
             // repeat to debug
-            StringBuffer error = new StringBuffer(256);
+            StringBuilder error = new StringBuilder(256);
             String sep = System.getProperty("line.separator");
             error.append("Property setter for ").append(name).append(" in class ");
             error.append(TheTarget.getClass().getName()).append(" not found");
@@ -620,6 +621,7 @@ public abstract class ClassAnalyzer
                 error.append(sep).append("  ").append(Properties[i]);
            // Assertion.logError(error.toString());
 
+            //noinspection UnusedAssignment
             TheMethod = findSetMethod(TheTarget.getClass(), name, false);
             throw new IllegalArgumentException(
                     "Property setter for " + name + " not found in class '" +
@@ -694,7 +696,7 @@ public abstract class ClassAnalyzer
         while (keys.hasNext())
             holder.add(keys.next());
 
-        String[] ret = (String[])holder.toArray(new String[0]);
+        String[] ret = (String[])holder.toArray(new String[holder.size()]);
         return (ret);
     }
 
@@ -1301,9 +1303,9 @@ public abstract class ClassAnalyzer
         if (RequiredClass == Byte.TYPE)
             return (new Byte((byte) 0));
         if (RequiredClass == Float.TYPE)
-            return (new Float(0));
+            return ((float) 0);
         if (RequiredClass == Short.TYPE)
-            return (new Short((short) 0));
+            return ((short) 0);
         return (null);
     }
 
@@ -1326,13 +1328,13 @@ public abstract class ClassAnalyzer
                 return (new Integer(RealValue.intValue()));
             }
             if (RequiredClass == Double.class) {
-                return (new Double(RealValue.doubleValue()));
+                return (RealValue.doubleValue());
             }
             if (RequiredClass == Short.class) {
                 return (new Short((short) RealValue.intValue()));
             }
             if (RequiredClass == Long.class) {
-                return (new Long(RealValue.longValue()));
+                return (RealValue.longValue());
             }
         }
         return (handleBadConversion(RequiredClass, avalue)); // cannot handle this case
@@ -1356,7 +1358,7 @@ public abstract class ClassAnalyzer
         if (RequiredClass == Double.TYPE) {
             if (ValueClass == Double.class) return (value);
             if (ValueClass == Integer.class)
-                return (new Double((double) ((Integer) value).intValue()));
+                return ((double) ((Integer) value).intValue());
         }
         if (RequiredClass == Short.TYPE) {
             if (ValueClass == Short.class) return (value);
@@ -1411,6 +1413,7 @@ public abstract class ClassAnalyzer
             if (TestName.equals(XMLUtil.TAG_HANDLED)) {
                 continue;
             }
+            //noinspection ConstantConditions
             if (TestName != null && TestName.length() > 0)
                 setProperty(item, attributes[i].m_Name, attributes[i].m_Value);
         }
