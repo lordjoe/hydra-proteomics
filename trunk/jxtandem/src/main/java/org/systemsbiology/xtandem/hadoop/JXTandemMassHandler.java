@@ -22,6 +22,7 @@ import java.util.*;
  */
 public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunner {
 
+    @SuppressWarnings("UnusedDeclaration")
     public static final int MAX_TEST_PROTEINS = 2000;
     public static final int REPORT_INTERVAL_PROTEINS = 10000;
 
@@ -85,6 +86,7 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
     }
 
     // purely for debuggomg to walk through interesting sequences
+    @SuppressWarnings("UnusedDeclaration")
     public static final String[] INTERESTING_SEQUENCES = {
             "DLKFPLPHR",
             "TAEARAK",
@@ -100,6 +102,7 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
      * @param sequence
      * @return
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static boolean isInterestingSequence(String sequence) {
         // debugging code  to see why some sequewnces are not scored
         if (!INTERESTING_SEQUENCE_SET.isEmpty()) {
@@ -117,8 +120,10 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
     public static class MassReducer extends AbstractTandemReducer {
 
         private long m_NumberUniquePeptides;
+        @SuppressWarnings("UnusedDeclaration")
         private long m_NumberModifiedPeptides;
 
+        @SuppressWarnings("UnusedDeclaration")
         private long m_ParsingTime;
         private int m_Proteins;
 
@@ -138,8 +143,7 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
             String fileName = XTandemHadoopUtilities.buildFileNameFromMass(mass);
 
             try {
-                StringBuilder sb = new StringBuilder();
-                for (Text val : values) {
+                   for (Text val : values) {
                     String valStr = val.toString();
                     if (valStr == null || valStr.length() == 0)
                         continue;
@@ -150,8 +154,10 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
                     //     if(isInterestingSequence(   sequence))
                     //          XTandemUtilities.breakHere();
 
+                    //noinspection UnusedDeclaration
                     IPolypeptide pp = Polypeptide.fromString(sequence);
-                    double pep_mass = Double.parseDouble(items[1]);
+                       //noinspection UnusedDeclaration
+                       double pep_mass = Double.parseDouble(items[1]);
                     // be lazy
                     if (out == null)
                         out = getOutputWriter(context, mass);
@@ -169,8 +175,6 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
                 if (out != null)
                     out.close();
 
-            } catch (RuntimeException e) {
-                throw e;
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -225,6 +229,7 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
             Configuration cfg = context.getConfiguration();
             HadoopTandemMain application = getApplication();
             TaskAttemptID tid = context.getTaskAttemptID();
+            //noinspection UnusedDeclaration
             String taskStr = tid.getTaskID().toString();
             String paramsFile = application.getDatabaseName() +  ".params";
             Path dd = XTandemHadoopUtilities.getRelativePath(paramsFile);
@@ -241,7 +246,7 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
                     out.close();
                 } catch (IOException e) {
                     try {
-                        fs.delete(dd);
+                        fs.delete(dd,false);
                     } catch (IOException e1) {
                         throw new RuntimeException(e1);
                     }
@@ -321,7 +326,7 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
 
             // you must pass the output directory as the last argument
             String athString = otherArgs[otherArgs.length - 1];
-            File out = new File(athString);
+ //           File out = new File(athString);
 //        if (out.exists()) {
 //            FileUtilities.expungeDirectory(out);
 //            out.delete();

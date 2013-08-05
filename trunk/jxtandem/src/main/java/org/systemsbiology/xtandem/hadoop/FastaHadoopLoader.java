@@ -110,7 +110,8 @@ public class FastaHadoopLoader {
     public void setModifications(final PeptideModification[] pModifications) {
         m_Modifications = pModifications;
     }
-//
+
+    //
 //    public static PrintWriter buildRemoteWriter(IFileSystem fs, String remoteDirectory, File localFile) {
 //        String name = remoteDirectory + "/" + localFile.getName();
 //        OutputStream os = fs.openFileForWrite(name);
@@ -162,8 +163,8 @@ public class FastaHadoopLoader {
             // hadoop write intermediate seq finder
             writePeptide(pp, context);
 
-         //   if(isDecoy)
-         //       continue; // skip the rest of the loop
+            //   if(isDecoy)
+            //       continue; // skip the rest of the loop
 
             // if it is decoy, don't add modifications to it
             if (!isDecoy) {
