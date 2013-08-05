@@ -356,7 +356,15 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             if (params == null)
                 conf.set(XTandemHadoopUtilities.PARAMS_KEY, otherArgs[0]);
             job.setJarByClass(JXTandemParser.class);
-            job.setInputFormatClass(FastaInputFormat.class);
+
+            String anotherString = conf.get("org.systemsbiology.useSingleFastaItemSplit", "");
+               if("yes".equalsIgnoreCase(anotherString))  {
+                  job.setInputFormatClass(SingleFastaInputFormat.class);   // force one split per protein - use for complex files
+                 }
+              else {
+                  job.setInputFormatClass(FastaInputFormat.class);
+
+              }
             job.setMapperClass(ProteinMapper.class);
             job.setReducerClass(ProteinReducer.class);
             // try to reduce duplicates in a combiner

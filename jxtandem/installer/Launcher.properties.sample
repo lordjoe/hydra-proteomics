@@ -121,6 +121,11 @@ DEFINE_org.systemsbiology.algorithm=org.systemsbiology.xtandem.TandemKScoringAlg
 #number matches that are remembered
 #DEFINE_org.systemsbiology.numberRememberedMatches=4
 
+
+# define thios is yes for large numbers of miodifications
+# it causes each protein to be a different map job
+#DEFINE_org.systemsbiology.useSingleFastaItemSplit=yes
+
 #DEFINE_org.systemsbiology.algorithm=org.systemsbiology.xtandem.comet.CometScoringAlgorithm
 # create decoy peptides by reversing the amino acids
 DEFINE_org.systemsbiology.xtandem.CreateDecoyPeptides=yes
