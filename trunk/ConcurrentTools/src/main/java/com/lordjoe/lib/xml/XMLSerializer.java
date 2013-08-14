@@ -1,20 +1,13 @@
 
 package com.lordjoe.lib.xml;
 
+import com.lordjoe.utilities.*;
 import org.xml.sax.*;
 
-import java.awt.*;
-import java.util.Vector;
-import java.util.*;
-import java.util.List;
-import java.lang.reflect.*;
-import java.io.*;
-import java.sql.Date;
-import java.net.*;
-
-import com.lordjoe.utilities.*;
-
 import javax.xml.parsers.*;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * Class to introspect objects and determine their DOM/XML transport.
@@ -26,7 +19,7 @@ import javax.xml.parsers.*;
  * @since 3 January 2000
  */
 
-@SuppressWarnings(value = "deprecated")
+@SuppressWarnings({"Deprecated", "deprecation"})
 public class XMLSerializer extends HandlerBase
 {
     private static ILogger gLogger = null; // StreamLogger.getConsole();
@@ -35,6 +28,7 @@ public class XMLSerializer extends HandlerBase
         return(gLogger);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static void setLogger(ILogger in)
     {
         gLogger = in;
@@ -50,7 +44,7 @@ public class XMLSerializer extends HandlerBase
     /**
      * The string representing a "is" mode.
      */
-    public static final String IS_STRING = "is";
+    public static final String IS_STRING;
 
     /**
      * The String representing a "set" mode.
@@ -65,9 +59,10 @@ public class XMLSerializer extends HandlerBase
 
     }
 
-   // Should always work SLewis
+    // Should always work SLewis
     static {
         registerDefaultTags();
+        IS_STRING = "is";
     }
 
     private Object m_ActiveObject;
@@ -96,6 +91,7 @@ public class XMLSerializer extends HandlerBase
     public static boolean getDebugMode()
     {
         ILogger logger = getLogger();
+        //noinspection SimplifiableIfStatement
         if(logger == null)
             return false;
         return logger.isDebugEnabled();
@@ -106,6 +102,7 @@ public class XMLSerializer extends HandlerBase
     {
         if(gTagToClass == null)
             gTagToClass = new Hashtable();
+        //noinspection unchecked
         gTagToClass.put(TagName,AssociatedClass);
         // also support caseless lookups
         gTagToClass.put(TagName.toUpperCase(),AssociatedClass);
@@ -242,6 +239,7 @@ public class XMLSerializer extends HandlerBase
 
     public static Object parseResouceObject(Class ResourceClass,String ResourceName,ITagHandler Handler)
     {
+        //noinspection RedundantStringToString
         String TestXML = FileUtilities.readInResource(ResourceClass,ResourceName).toString();
         if(TestXML == null)
             return(null);
@@ -640,6 +638,7 @@ public class XMLSerializer extends HandlerBase
 
     protected static Object convertStringToDesiredType(Class dataType,String sValue)
     {
+        //noinspection UnusedAssignment
         Object value = null;
 /*		if(OIDBAccessor.class.isAssignableFrom(dataType)) {
 		    try {
@@ -769,6 +768,7 @@ public class XMLSerializer extends HandlerBase
             //DBG.msg(this, "Interface: " + allInterfaces[i].getUrl());
             if(null != interfaceFilter) {
                 if(allInterfaces[i].getName().startsWith(interfaceFilter)) {
+                    //noinspection unchecked
                     interfaces.addElement(allInterfaces[i]);
                 }
             } else {
@@ -788,6 +788,7 @@ public class XMLSerializer extends HandlerBase
      * @return Vector of interfaces that match our interface filter.
      */
 
+    @SuppressWarnings("UnusedDeclaration")
     protected Vector findMatchingInterfaces(Object obj, String interfaceFilter) {
         return findMatchingInterfaces(obj.getClass(), interfaceFilter);
     }
@@ -842,10 +843,10 @@ public class XMLSerializer extends HandlerBase
 //	    registerTag("ICCC",com.onvia.lib.xml.ICCC.class);
 //	    registerTag("Schema",com.onvia.metadata.OCMetaData.class);
         try {
+            //noinspection UnusedDeclaration
             Object test = parseFile(args[0]);
             System.out.println("Done"); // test
-            test = null;
-        }
+         }
         catch(Exception ex) {
             ex.printStackTrace();
         }
