@@ -33,7 +33,7 @@ public class WordCountDriver {
 	   * For each line of input, break the line into words and emit them as
 	   * (<b>word</b>, <b>1</b>).
 	   */
-      @SuppressWarnings(value = "deprecated")
+
      public static class MapClass extends MapReduceBase
 	    implements Mapper<LongWritable, Text, Text, IntWritable> {
 

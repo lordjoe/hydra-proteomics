@@ -29,6 +29,7 @@ public class AverageWordLength
     public static AverageWordLength[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = AverageWordLength.class;
 
+    @SuppressWarnings("deprecation")
     public static class MapClass extends MapReduceBase implements
             Mapper<LongWritable, Text, Text, IntWritable>
     {
@@ -51,6 +52,7 @@ public class AverageWordLength
         }
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static class WordLenValue implements Writable
     {
         private int m_Leangth;
@@ -71,6 +73,7 @@ public class AverageWordLength
             m_Leangth = v;
         }
 
+        @SuppressWarnings("UnusedDeclaration")
         public void setCount(int v)
         {
             m_Count = v;
@@ -92,6 +95,7 @@ public class AverageWordLength
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static class Reduce extends MapReduceBase implements
             Reducer<Text, IntWritable, Text, FloatWritable>
     {
@@ -124,6 +128,7 @@ public class AverageWordLength
         String inputPath = args[0];
         String outputPath = args[1];
 
+        //noinspection deprecation
         JobConf conf = new JobConf(AverageWordLength.class);
         conf.setJobName("AverageWordLength");
 
@@ -136,6 +141,7 @@ public class AverageWordLength
         conf.setReducerClass(Reduce.class);
         conf.setCombinerClass(Reduce.class);
 
+        //noinspection deprecation
         FileInputFormat.setInputPaths(conf, new Path(inputPath));
         FileOutputFormat.setOutputPath(conf, new Path(outputPath));
 
