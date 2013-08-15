@@ -2,17 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.systemsbiology.mapreduce</groupId>
-    <artifactId>mapreduce</artifactId>
-    <packaging>pom</packaging>
+    <groupId>uk.ac.ebi.pride.hydra</groupId>
+    <artifactId>hydra-proteomics</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <url>http://apps.systemsbiology.org/systemsbiology.concurrent</url>
+    <packaging>pom</packaging>
+
     <licenses>
         <license>
             <url>http://informatics.systemsbiology.net/informatics/license</url>
         </license>
     </licenses>
-    <name>mapreduce</name>
+
+    <name>hydra-proteomics</name>
+
     <description>
         Hadoop Project
     </description>
@@ -23,9 +25,8 @@
         <module>JXTandem</module>
         <module>proteos</module>
         <module>models3d</module>
-     </modules>
+    </modules>
 
-   
 
     <developers>
         <developer>
@@ -41,24 +42,6 @@
         </developer>
     </developers>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.3</version>
-            </plugin>
-        </plugins>
-    </build>
-
 
     <dependencies>
         <dependency>
@@ -73,7 +56,7 @@
             <version>2.5.4</version>
             <scope>test</scope>
         </dependency>
-  
+
 
         <!-- Logging -->
         <dependency>
@@ -87,55 +70,122 @@
             <version>1.2.9</version>
         </dependency>
         <dependency>
-        	<groupId>org.mortbay.jetty</groupId>
-        	<artifactId>jetty</artifactId>
-        	<version>6.1.14</version>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty</artifactId>
+            <version>6.1.14</version>
         </dependency>
 
     </dependencies>
 
-    <properties>
-        <jdkName>${java.version}</jdkName>
-    </properties>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <!-- comment exclusion section out if want to run batch dbtest -->
+                    <excludes>
+                        <exclude>**/test</exclude>
+                        <exclude>**/test/*.class</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <!-- Repository Conventions -->
     <repositories>
         <repository>
-             <id>central</id>
-             <name>Maven Repository Switchboard</name>
-             <layout>default</layout>
-             <url>http://repo1.maven.org/maven2</url>
-           </repository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <layout>default</layout>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+
         <repository>
             <id>biojava-maven-repo</id>
             <name>BioJava repository</name>
             <url>http://www.biojava.org/download/maven/</url>
         </repository>
-          <repository>
+
+        <repository>
             <id>informatics-svcs.systemsbiology.net</id>
             <name>informatics-svcs maven repository</name>
             <url>http://informatics-svcs.systemsbiology.net/maven_repository</url>
         </repository>
-        <repository>
-      			<id>ebi-repo</id>
-      			<name>The EBI internal repository</name>
-      			<url>http://www.ebi.ac.uk/~maven/m2repo</url>
-      			<releases>
-      				<enabled>true</enabled>
-      			</releases>
-      			<snapshots>
-      				<enabled>false</enabled>
-      			</snapshots>
-      		</repository>
-      </repositories>
-    <distributionManagement>
-         <!--
-        <repository>
-            <id>informatics-svcs.systemsbiology.net</id>
-            <name>informatics-svcs maven repository</name>
-            <url>scp://informatics-svcs.systemsbiology.net:/local/www/html/maven_repository</url>
+
+        <repository> <!-- EBI repo -->
+            <id>nexus-ebi-repo</id>
+            <name>The EBI internal repository</name>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/</url>
+            <releases>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
-        -->
+
+        <repository> <!-- EBI SNAPSHOT repo -->
+            <id>nexus-ebi-snapshot-repo</id>
+            <name>The EBI internal snapshot repository</name>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <!-- EBI repo -->
+        <repository>
+            <id>nexus-ebi-repo</id>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo</url>
+        </repository>
+        <!-- EBI SNAPSHOT repo -->
+        <snapshotRepository>
+            <id>nexus-ebi-repo-snapshots</id>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo-snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
 
 </project>
