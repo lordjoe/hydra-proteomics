@@ -3,43 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <groupId>org.systemsbiology.mapreduce</groupId>
-        <artifactId>mapreduce</artifactId>
+        <groupId>uk.ac.ebi.pride.hydra</groupId>
+        <artifactId>hydra-proteomics</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+
     <artifactId>concurrenttools</artifactId>
     <packaging>jar</packaging>
-    <name>SystemsBiology Concurrent</name>
-    <description>
-        Hadoop Project
-    </description>
+    <name>Concurrent Tools</name>
 
-    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>apache.snapshots</id>
-            <url>http://repository.apache.org/snapshots/</url>
-        </repository>
-        <repository>
-            <id>informatics.systemsbiology.net</id>
-            <name>informatics</name>
-            <url>http://informatics.systemsbiology.net/artifactory/releases</url>
-        </repository>
-        <repository>
-            <id>mandubian-mvn</id>
-            <url>http://mandubian-mvn.googlecode.com/svn/trunk/mandubian-mvn/repository</url>
-        </repository>
-        <!--
-        <repository>
-            <id>informatics-svcs.systemsbiology.net</id>
-            <name>informatics-svcs maven repository</name>
-            <url>http://informatics-svcs.systemsbiology.net/maven_repository</url>
-        </repository>
-        -->
-    </repositories>
     <dependencies>
          <dependency>
             <groupId>com.jcraft</groupId>
@@ -158,5 +132,6 @@
         </dependency>
          -->
     </dependencies>
+
 
 </project>

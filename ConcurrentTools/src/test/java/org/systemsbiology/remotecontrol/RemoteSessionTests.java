@@ -13,7 +13,7 @@ import org.systemsbiology.hadoopgenerated.*;
 public class RemoteSessionTests {
 
 
-    @Test
+//    @Test
     public void testConnectionException() {
         RemoteSession rs = getRemoteSession();
         if (rs == null)   // not available
@@ -42,7 +42,7 @@ public class RemoteSessionTests {
         }
     }
 
-    @Test
+//    @Test
     public void testController() throws Exception {
         RemoteSession rs = getRemoteSession();
         if (rs == null)   // not available
