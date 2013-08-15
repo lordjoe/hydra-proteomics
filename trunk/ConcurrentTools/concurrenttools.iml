@@ -12,6 +12,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-test:2.5.4" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-log4j12:1.4.3" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.4.3" level="project" />
+    <orderEntry type="library" name="Maven: log4j:log4j:1.2.9" level="project" />
     <orderEntry type="library" name="Maven: com.jcraft:jsch:0.1.44-1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.hadoop:hadoop-core:0.20.2" level="project" />
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.2" level="project" />
