@@ -5,10 +5,6 @@ import java.util.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
-import org.apache.hadoop.mapred.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
  import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -27,7 +23,7 @@ import org.apache.hadoop.util.*;
 
 public class GeneratedMapper
 {
-    private static final Log LOG = LogFactory.getLog("GeneratedMapper");
+
 
     public static class Map extends Mapper<LongWritable,LongWritable,LongWritable, LongWritable>
     {

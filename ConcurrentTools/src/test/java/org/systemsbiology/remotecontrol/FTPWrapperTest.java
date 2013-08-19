@@ -1,5 +1,6 @@
 package org.systemsbiology.remotecontrol;
 
+
 import org.junit.*;
 import org.systemsbiology.common.*;
 import org.systemsbiology.hadoop.*;
@@ -25,7 +26,7 @@ public class FTPWrapperTest {
                     "the lamb was sure to go.";
 
 
-    @Test
+ //   @Test
     public void testLS() {
         if(!RemoteTestConfiguration.isHDFSAccessible())
             return;
@@ -38,7 +39,7 @@ public class FTPWrapperTest {
         ((FTPWrapper) wrapper).exit();
     }
 
-    @Test
+ //   @Test
     public void testGuaranteeDirectory() {
         if(!RemoteTestConfiguration.isHDFSAccessible())
             return;
@@ -67,7 +68,7 @@ public class FTPWrapperTest {
         ((FTPWrapper) fs).exit();
     }
 
-    @Test
+  //  @Test
     public void testFileReadWrite() {
         if(!RemoteTestConfiguration.isHDFSAccessible())
             return;
@@ -90,7 +91,7 @@ public class FTPWrapperTest {
         ((FTPWrapper) fs).exit();
     }
 
-        @Test
+ //       @Test
     public void testHDFSLS() {
             if(!RemoteTestConfiguration.isHDFSAccessible())
                 return;
@@ -102,7 +103,7 @@ public class FTPWrapperTest {
 
      }
 
-    @Test
+//   @Test
     public void testHDFSGuaranteeDirectory() {
         if(!RemoteTestConfiguration.isHDFSAccessible())
             return;
@@ -129,7 +130,7 @@ public class FTPWrapperTest {
 
      }
 
-    @Test
+//    @Test
     public void testHDFSFileReadWrite() {
         if(!RemoteTestConfiguration.isHDFSAccessible())
             return;

@@ -5,7 +5,7 @@ package org.systemsbiology.hadoop;
  * Date: 3/7/11
  */
 
-import org.apache.commons.logging.*;
+
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.fs.FileSystem;
@@ -24,9 +24,7 @@ import java.util.*;
  * The value is the concatinated string without breaks
  */
 public class FastaInputFormat extends FileInputFormat<Text, Text> {
-    public static final FastaInputFormat[] EMPTY_ARRAY = {};
 
-    protected static final Log LOG = LogFactory.getLog(FastaInputFormat.class);
 
     public static final boolean FORCE_ONE_MAPPER = false;
     // todo run off a parameter
@@ -69,6 +67,7 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
             return true;
         if (extension != null && path.endsWith(extension.toLowerCase() + ".gz"))
             return true;
+        //noinspection RedundantIfStatement
         if (extension == null)
             return true;
         return false;
@@ -89,6 +88,7 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
         if (fname.endsWith(".gz"))
             return false;
 
+        //noinspection RedundantIfStatement
         if (FORCE_ONE_MAPPER)
             return false;
         return true;
@@ -154,7 +154,7 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
                 splits.add(new FileSplit(path, 0, length, new String[0]));
             }
         }
-        LOG.debug("Total # of splits: " + splits.size());
+     //   LOG.debug("Total # of splits: " + splits.size());
         return splits;
     }
 
@@ -291,7 +291,7 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
 
         protected String readNextLine() throws IOException {
             int newSize = m_Input.readLine(m_Line, m_MaxLineLength,
-                    Math.max((int) Math.min(Integer.MAX_VALUE, (int) (m_End - m_Current)),
+                    Math.max(  Math.min(Integer.MAX_VALUE, (int) (m_End - m_Current)),
                             m_MaxLineLength));
             m_Current += newSize;
             if (newSize == 0)
