@@ -5,7 +5,7 @@ package org.systemsbiology.hadoop;
  * Date: 3/7/11
  */
 
-import org.apache.commons.logging.*;
+
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.fs.FileSystem;
@@ -29,7 +29,6 @@ import java.util.*;
 public class SingleFastaInputFormat extends FileInputFormat<Text, Text> {
     public static final SingleFastaInputFormat[] EMPTY_ARRAY = {};
 
-    protected static final Log LOG = LogFactory.getLog(SingleFastaInputFormat.class);
 
     public static final boolean FORCE_ONE_MAPPER = false;
     // todo run off a parameter
@@ -196,7 +195,7 @@ public class SingleFastaInputFormat extends FileInputFormat<Text, Text> {
                 splits.addAll(fileSplits);
             }
         }
-        LOG.debug("Total # of splits: " + splits.size());
+   //     LOG.debug("Total # of splits: " + splits.size());
         return splits;
     }
 

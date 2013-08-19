@@ -5,7 +5,6 @@ package org.systemsbiology.hadoop;
  * Date: 3/7/11
  */
 
-import org.apache.commons.logging.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.fs.FileSystem;
@@ -25,7 +24,6 @@ import java.util.*;
 public class XMLTagInputFormat extends FileInputFormat<Text, Text> {
     public static final XMLTagInputFormat[] EMPTY_ARRAY = {};
 
-    protected static final Log LOG = LogFactory.getLog(XMLTagInputFormat.class);
 
     private static final double SPLIT_SLOP = 1.1;   // 10% slop
 
@@ -69,6 +67,7 @@ public class XMLTagInputFormat extends FileInputFormat<Text, Text> {
             return true;
         if (extension != null && path.endsWith(extension.toLowerCase() + ".gz"))
             return true;
+        //noinspection SimplifiableIfStatement,RedundantIfStatement
         if (extension == null)
             return true;
         return false;
@@ -98,6 +97,7 @@ public class XMLTagInputFormat extends FileInputFormat<Text, Text> {
     @Override
     protected boolean isSplitable(JobContext context, Path file) {
         String fname = file.getName().toLowerCase();
+        //noinspection SimplifiableIfStatementf,RedundantIfStatement
         if (fname.endsWith(".gz"))
             return false;
         return true;
@@ -155,10 +155,8 @@ public class XMLTagInputFormat extends FileInputFormat<Text, Text> {
             else {
                 for (FileStatus globStat : matches) {
                     if (globStat.isDir()) {
-                        for (FileStatus stat : fs.listStatus(globStat.getPath(),
-                                inputFilter)) {
-                            result.add(stat);
-                        }
+                        Collections.addAll(result, fs.listStatus(globStat.getPath(),
+                                inputFilter));
                     }
                     else {
                         result.add(globStat);
@@ -170,7 +168,7 @@ public class XMLTagInputFormat extends FileInputFormat<Text, Text> {
         if (!errors.isEmpty()) {
             throw new InvalidInputException(errors);
         }
-        LOG.info("Total input paths to process : " + result.size());
+  //      LOG.info("Total input paths to process : " + result.size());
         return result;
     }
 
@@ -247,7 +245,7 @@ public class XMLTagInputFormat extends FileInputFormat<Text, Text> {
                 splits.add(new FileSplit(path, 0, length, new String[0]));
             }
         }
-        LOG.debug("Total # of splits: " + splits.size());
+   //     LOG.debug("Total # of splits: " + splits.size());
         return splits;
     }
 
@@ -283,6 +281,7 @@ public class XMLTagInputFormat extends FileInputFormat<Text, Text> {
             // open the file and seek to the m_Start of the split
             FileSystem fs = file.getFileSystem(job);
             //  getFileStatus fileStatus = fs.getFileStatus(split.getPath());
+            //noinspection deprecation
             @SuppressWarnings(value = "deprecated")
              long length = fs.getLength(file);
             FSDataInputStream fileIn = fs.open(split.getPath());

@@ -36,6 +36,7 @@ import java.util.List;
  * useful functions
  * }
  */
+@SuppressWarnings({"UnusedDeclaration", "AccessStaticViaInstance", "UnnecessaryLocalVariable", "unchecked", "ForLoopReplaceableByForEach", "RedundantIfStatement"})
 public abstract class Util {
     public static final String APP_NAME_PROPERTY = "application.name"; //
     public static final String UNKNOWN_APP_NAME = "Unknown Application"; //
@@ -75,7 +76,7 @@ public abstract class Util {
 
     private static String[] gIndentStrings;
     private static String gLocalIPAddress;
-    private static Map gEmptyArrays = new HashMap();
+    private static final Map gEmptyArrays = new HashMap();
 
     public static final Random gRandomizer = new Random(System.currentTimeMillis());
     public static final Date gStartTime = new Date();
@@ -189,7 +190,7 @@ public abstract class Util {
         int max = 0;
         int[] temp = new int[maxValue + 1];
         for (int i = 0; i < values.length; i++) {
-            int val = Math.min((int) maxValue, (int) values[i]);
+            int val = Math.min( maxValue, (int) values[i]);
             max = Math.max(val, max);
             if (val < 0)
                 throw new IllegalStateException("statistics are fpr positive numbers only ");
@@ -522,10 +523,10 @@ public abstract class Util {
      * @return collection of 0 or more substrings
      *         }
      * @name parseTabDelimited
-     * @function break a StringBuffer containing 0 or more tabe into
+     * @function break a StringBuilder containing 0 or more tabe into
      * substrings separated by tabs - the tabs are dropped
      */
-    public static String[] parseTabDelimited(StringBuffer in) {
+    public static String[] parseTabDelimited(StringBuilder in) {
         return (parseTabDelimited(new String(in)));
     }
 
@@ -606,7 +607,7 @@ public abstract class Util {
         else {
             List holder = new ArrayList();
             int n = s.length();
-            StringBuffer sb = new StringBuffer(n);
+            StringBuilder sb = new StringBuilder(n);
             for (int i = 0; i < n; i++) {
                 char c = s.charAt(i);
                 if (c == '\\') {
@@ -653,7 +654,7 @@ public abstract class Util {
         String[] ret;
         Vector tokens = new Vector();
         int SLength = s.length();
-        StringBuffer accum = new StringBuffer(SLength);
+        StringBuilder accum = new StringBuilder(SLength);
 
         for (int i = 0; i < SLength; i++) {
             char c = s.charAt(i);
@@ -699,6 +700,7 @@ public abstract class Util {
     }
 
     private static boolean isTokenJavaVariable(String s) {
+        //noinspection SimplifiableIfStatement
         if (s == null || s.length() == 0)
             return false;
         return Character.isJavaIdentifierStart(s.charAt(0));
@@ -721,7 +723,7 @@ public abstract class Util {
         String[] ret;
         List tokens = new ArrayList();
         int SLength = s.length();
-        StringBuffer accum = new StringBuffer(SLength);
+        StringBuilder accum = new StringBuilder(SLength);
         int accumType = NOT_ACCUMULATING;
 
         for (int i = 0; i < SLength; i++) {
@@ -783,7 +785,7 @@ public abstract class Util {
         return (ret);
     }
 
-    private static boolean isCompatablePunctuation(StringBuffer accumType, char c) {
+    private static boolean isCompatablePunctuation(StringBuilder accumType, char c) {
         if (Character.isDigit(c) || Character.isWhitespace(c) || Character.isJavaIdentifierPart(c))
             return false;
         String s = accumType.toString();
@@ -793,7 +795,7 @@ public abstract class Util {
 
     }
 
-    private static void saveaccumulatedToken(StringBuffer pAccum, List pTokens) {
+    private static void saveaccumulatedToken(StringBuilder pAccum, List pTokens) {
         if (pAccum.length() > 0) {
             pTokens.add(pAccum.toString());
             pAccum.setLength(0);
@@ -869,12 +871,12 @@ public abstract class Util {
      * @return the collection of lines
      *         }
      * @name parseLinesWithBlanks
-     * @function break a StringBuffer to a collection of lines
+     * @function break a StringBuilder to a collection of lines
      * i.e. separate on \n
      */
     public static String[] parseLinesWithBlanks(String s) {
         List TheLines = new ArrayList();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int index = 0;
         while (index < s.length()) {
             char c = s.charAt(index++);
@@ -902,7 +904,7 @@ public abstract class Util {
      * @return the collection of lines
      *         }
      * @name parseLines
-     * @function break a StringBuffer to a collection of lines
+     * @function break a StringBuilder to a collection of lines
      * i.e. separate on \n
      */
     public static String[] parseLines(String s) {
@@ -924,10 +926,10 @@ public abstract class Util {
      * @return the collection of lines
      *         }
      * @name parseLines
-     * @function break a StringBuffer to a collection of lines
+     * @function break a StringBuilder to a collection of lines
      * i.e. separate on \n
      */
-    public static String[] parseLines(StringBuffer s) {
+    public static String[] parseLines(StringBuilder s) {
         return (parseLines(s.toString()));
     }
 
@@ -942,7 +944,7 @@ public abstract class Util {
      * @name getLine
      * @function retrieve text till \n
      */
-    protected static String getLine(StringBuffer s, IntegerRef StartPoint, StringBuffer buffer) {
+    protected static String getLine(StringBuilder s, IntegerRef StartPoint, StringBuilder buffer) {
         int start = StartPoint.value;
         buffer.setLength(0);
         while (start < s.length()) {
@@ -956,6 +958,7 @@ public abstract class Util {
             if (c >= ' ' || c == '\t') {
                 buffer.append(c);
             }
+            //noinspection UnusedAssignment
             n = 0;
         }
         StartPoint.value = start;
@@ -1064,7 +1067,8 @@ public abstract class Util {
             }
         }
         catch (ArrayStoreException ex) {
-            if (true) throw new RuntimeException(ex);
+            //noinspection SimplifiableIfStatement
+            // if (true) throw new RuntimeException(ex);
         }
         return (out);
     }
@@ -1177,8 +1181,7 @@ public abstract class Util {
      */
     public static Set arrayToSet(Object[] in) {
         Set ret = new HashSet();
-        for (int i = 0; i < in.length; i++)
-            ret.add(in[i]);
+        Collections.addAll(ret, in);
         return (ret);
     }
 
@@ -1245,7 +1248,7 @@ public abstract class Util {
      * @function concat strings separated by \n
      */
     public static String concatSeparated(String[] in, String separator) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < in.length; i++) {
             sb.append(in[i]);
             if (i < in.length - 1)
@@ -1397,6 +1400,7 @@ public abstract class Util {
     public static String[] uniqueSort(String[] base) {
         if (base.length == 0)
             return (EMPTY_STRING_ARRAY);
+        //noinspection SimplifiableIfStatement,ConstantIfStatement
         if (true)
             throw new UnsupportedOperationException("Fix This"); // todo
         String[] BaseClone = null; // Clone.clone(base);
@@ -1443,8 +1447,10 @@ public abstract class Util {
         catch (InvocationTargetException ex) {
             throw new IllegalArgumentException("InvokationTargetException getter for " + PropName + " not found");
         }
+        //noinspection UnusedAssignment
         int[] order = getSortOrder(testData);
 
+        //noinspection SimplifiableIfStatement,ConstantIfStatement
         if (true)
             throw new UnsupportedOperationException("Fix This"); // todo
         Object[] ret = null; // Clone.clone(data);
@@ -1544,6 +1550,7 @@ public abstract class Util {
     }
 
     public static Object[] vectorToClassArray(Vector holder, Class ArrayClass) {
+        //noinspection SimplifiableIfStatement,ConstantIfStatement
         if (true)
             throw new UnsupportedOperationException("Fix This"); // todo
         return (null);
@@ -1663,7 +1670,7 @@ public abstract class Util {
      * @name readBytes
      * @function copy bytes from one String buffer into another at the end
      */
-    public static void readBytes(StringBuffer src, StringBuffer dst, int size, IntegerRef Current) {
+    public static void readBytes(StringBuilder src, StringBuilder dst, int size, IntegerRef Current) {
         dst.setLength(0);
         // clear dst
         for (int i = 0; i < size; i++) {
@@ -1680,9 +1687,9 @@ public abstract class Util {
      * @param Current holds start byte at end holds last copied + 1
      *                }
      * @name readBytes
-     * @function copy bytes from one String into a StringBuffer at the end
+     * @function copy bytes from one String into a StringBuilder at the end
      */
-    public static void readBytes(String src, StringBuffer dst, int size, IntegerRef Current) {
+    public static void readBytes(String src, StringBuilder dst, int size, IntegerRef Current) {
         dst.setLength(0);
         // clear dst
         for (int i = 0; i < size; i++) {
@@ -1699,10 +1706,10 @@ public abstract class Util {
      * @return the string extracted
      *         }
      * @name readString
-     * @function copy bytes from one StringBuffer a String - triming the result
+     * @function copy bytes from one StringBuilder a String - triming the result
      */
-    public static String readString(StringBuffer s, int size, IntegerRef Current) {
-        StringBuffer dst = new StringBuffer();
+    public static String readString(StringBuilder s, int size, IntegerRef Current) {
+        StringBuilder dst = new StringBuilder();
         readBytes(s, dst, size, Current);
         return (dst.toString().trim());
     }
@@ -1716,10 +1723,10 @@ public abstract class Util {
      * @return the string extracted
      *         }
      * @name readStringNoTrim
-     * @function copy bytes from one StringBuffer into a String - not triming the result
+     * @function copy bytes from one StringBuilder into a String - not triming the result
      */
-    public static String readStringNoTrim(StringBuffer s, int size, IntegerRef Current) {
-        StringBuffer dst = new StringBuffer();
+    public static String readStringNoTrim(StringBuilder s, int size, IntegerRef Current) {
+        StringBuilder dst = new StringBuilder();
         readBytes(s, dst, size, Current);
         return (dst.toString());
     }
@@ -1733,10 +1740,10 @@ public abstract class Util {
      * @return the int extracted
      *         }
      * @name readInt
-     * @function copy bytes from one StringBuffer into an int - the buffer is assumed to hold digits
+     * @function copy bytes from one StringBuilder into an int - the buffer is assumed to hold digits
      */
-    public static int readInt(StringBuffer s, int size, IntegerRef Current) {
-        StringBuffer dst = new StringBuffer();
+    public static int readInt(StringBuilder s, int size, IntegerRef Current) {
+        StringBuilder dst = new StringBuilder();
         readBytes(s, dst, size, Current);
         String temp = dst.toString();
         return (Integer.parseInt(temp));
@@ -1754,7 +1761,7 @@ public abstract class Util {
      * @function copy bytes a String into an int - the buffer is assumed to hold digits
      */
     public static int readInt(String s, int size, IntegerRef Current) {
-        StringBuffer dst = new StringBuffer();
+        StringBuilder dst = new StringBuilder();
         readBytes(s, dst, size, Current);
         String temp = dst.toString().trim();
         if (temp.length() > 0) {
@@ -1774,10 +1781,10 @@ public abstract class Util {
      * @return the int extracted
      *         }
      * @name readHex
-     * @function copy bytes from one StringBuffer into an int - the buffer is assumed to hold hex digits
+     * @function copy bytes from one StringBuilder into an int - the buffer is assumed to hold hex digits
      */
-    public static int readHex(StringBuffer s, int size, IntegerRef Current) {
-        StringBuffer dst = new StringBuffer();
+    public static int readHex(StringBuilder s, int size, IntegerRef Current) {
+        StringBuilder dst = new StringBuilder();
         readBytes(s, dst, size, Current);
         String temp = dst.toString();
         return (Integer.parseInt(temp, 16));
@@ -1795,7 +1802,7 @@ public abstract class Util {
      * @function copy bytes from a String into an int - the buffer is assumed to hold hex digits
      */
     public static int readHex(String s, int size, IntegerRef Current) {
-        StringBuffer dst = new StringBuffer();
+        StringBuilder dst = new StringBuilder();
         readBytes(s, dst, size, Current);
         String temp = dst.toString().trim();
         if (temp.length() > 0) {
@@ -1812,13 +1819,13 @@ public abstract class Util {
      * @param s       source buffer
      * @param Current holds start byte at end holds last copied + 1
      * @param size    number bytes to copy
-     * @return a StringBuffer holding the extracted characters
+     * @return a StringBuilder holding the extracted characters
      *         }
      * @name readChars
-     * @function copy bytes from one StringBuffer into a StringBuffer -
+     * @function copy bytes from one StringBuilder into a StringBuilder -
      */
-    public static StringBuffer readChars(StringBuffer s, int size, IntegerRef Current) {
-        StringBuffer dst = new StringBuffer();
+    public static StringBuilder readChars(StringBuilder s, int size, IntegerRef Current) {
+        StringBuilder dst = new StringBuilder();
         char c;
         while (Current.value < s.length()) {
             c = s.charAt(Current.value++);
@@ -1836,13 +1843,13 @@ public abstract class Util {
      * @param s       source buffer
      * @param Current holds start byte at end holds last copied + 1
      * @param size    number bytes to copy
-     * @return a StringBuffer holding the extracted characters
+     * @return a StringBuilder holding the extracted characters
      *         }
      * @name readChars
-     * @function copy bytes from a String into a StringBuffer -
+     * @function copy bytes from a String into a StringBuilder -
      */
-    public static StringBuffer readChars(String s, int size, IntegerRef Current) {
-        StringBuffer dst = new StringBuffer();
+    public static StringBuilder readChars(String s, int size, IntegerRef Current) {
+        StringBuilder dst = new StringBuilder();
         char c;
         while (Current.value < s.length()) {
             c = s.charAt(Current.value++);
@@ -1863,10 +1870,10 @@ public abstract class Util {
      * @return a String holding the extracted characters - trimmed
      *         }
      * @name readString
-     * @function copy bytes from one StringBuffer into an int - the buffer is assumed to hold hex digits
+     * @function copy bytes from one StringBuilder into an int - the buffer is assumed to hold hex digits
      */
     public static String readString(String s, int size, IntegerRef Current) {
-        StringBuffer dst = new StringBuffer();
+        StringBuilder dst = new StringBuilder();
         readBytes(s, dst, size, Current);
         return (dst.toString().trim());
     }
@@ -1880,10 +1887,10 @@ public abstract class Util {
      * @return a String holding the extracted characters - not trimmed
      *         }
      * @name readStringNoTrim
-     * @function copy bytes from one StringBuffer into an int - the buffer is assumed to hold hex digits
+     * @function copy bytes from one StringBuilder into an int - the buffer is assumed to hold hex digits
      */
     public static String readStringNoTrim(String s, int size, IntegerRef Current) {
-        StringBuffer dst = new StringBuffer();
+        StringBuilder dst = new StringBuilder();
         readBytes(s, dst, size, Current);
         return (dst.toString());
     }
@@ -1891,14 +1898,10 @@ public abstract class Util {
     public static String[] mergeNoDuplicates(String[] in1, String[] in2) {
         Set holder = new HashSet();
         if (in1 != null) {
-            for (int i = 0; i < in1.length; i++) {
-                holder.add(in1[i]);
-            }
+            Collections.addAll(holder, in1);
         }
         if (in2 != null) {
-            for (int i = 0; i < in2.length; i++) {
-                holder.add(in2[i]);
-            }
+            Collections.addAll(holder, in2);
         }
         return (collectionToStringArray(holder));
     }
@@ -1937,7 +1940,7 @@ public abstract class Util {
      * @function convert a char to a string
      */
     public static String toString(char c) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append(c);
         return (s.toString());
     }
@@ -1984,7 +1987,7 @@ public abstract class Util {
      */
     public static String padStringWithLeadingBlanks(String s, int n) {
         int added = n - s.length();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < added; i++)
             sb.append(' ');
         if (added >= 0)
@@ -2005,7 +2008,7 @@ public abstract class Util {
      * @function add blanks to a String until it is of length N
      */
     public static String padStringWithBlanks(String s, int n) {
-        StringBuffer sb = new StringBuffer(s);
+        StringBuilder sb = new StringBuilder(s);
         if (sb.length() > n) {
             sb.setLength(n);
         }
@@ -2042,7 +2045,7 @@ public abstract class Util {
      * @function Make a string without control characters
      */
     public static String filterControlCharacters(String in) {
-        StringBuffer sb = new StringBuffer(in.length());
+        StringBuilder sb = new StringBuilder(in.length());
         for (int i = 0; i < in.length(); i++) {
             char c = in.charAt(i);
             if (c >= ' ' && c < 127) {
@@ -2315,8 +2318,7 @@ public abstract class Util {
         int l, j, ir, i;
         String rra;
         String[] ra = new String[s.length + 1];
-        for (int ix = 0; ix < s.length; ix++)
-            ra[ix + 1] = s[ix];
+        System.arraycopy(s, 0, ra, 1, s.length);
         // now run the heap	sort
         l = (s.length >> 1) + 1;
         ir = s.length;
@@ -2348,8 +2350,7 @@ public abstract class Util {
             }
             ra[i] = rra;
         }
-        for (int ix = 0; ix < s.length; ix++)
-            s[ix] = ra[ix + 1];
+        System.arraycopy(ra, 1, s, 0, s.length);
     }
 
     /**
@@ -2368,8 +2369,7 @@ public abstract class Util {
         int l, j, ir, i;
         Object rra;
         Object[] ra = new Object[s.length + 1];
-        for (int ix = 0; ix < s.length; ix++)
-            ra[ix + 1] = s[ix];
+        System.arraycopy(s, 0, ra, 1, s.length);
         // now run the heap	sort
         l = (s.length >> 1) + 1;
         ir = s.length;
@@ -2401,8 +2401,7 @@ public abstract class Util {
             }
             ra[i] = rra;
         }
-        for (int ix = 0; ix < s.length; ix++)
-            s[ix] = ra[ix + 1];
+        System.arraycopy(ra, 1, s, 0, s.length);
     }
 
     /**
@@ -2433,8 +2432,7 @@ public abstract class Util {
         int l, j, ir, i;
         Comparable rra;
         Comparable[] ra = new Comparable[s.length + 1];
-        for (int ix = 0; ix < s.length; ix++)
-            ra[ix + 1] = s[ix];
+        System.arraycopy(s, 0, ra, 1, s.length);
         // now run the heap	sort
         l = (s.length >> 1) + 1;
         ir = s.length;
@@ -2466,8 +2464,7 @@ public abstract class Util {
             }
             ra[i] = rra;
         }
-        for (int ix = 0; ix < s.length; ix++)
-            s[ix] = ra[ix + 1];
+        System.arraycopy(ra, 1, s, 0, s.length);
     }
 
     /**
@@ -2495,7 +2492,7 @@ public abstract class Util {
      * @function return a string containing n copies of the character c
      */
     public static String stringOfChar(int n, char c) {
-        StringBuffer ret = new StringBuffer(n);
+        StringBuilder ret = new StringBuilder(n);
         for (int i = 0; i < n; i++)
             ret.append(c);
         return (ret.toString());
@@ -2586,7 +2583,7 @@ public abstract class Util {
         int nchars = in.length();
         boolean PrevIsCapitalized = false;
         boolean PrevIsSpace = false;
-        StringBuffer s = new StringBuffer(nchars);
+        StringBuilder s = new StringBuilder(nchars);
         for (int i = 0; i < nchars; i++) {
             char c = in.charAt(i);
             if (c == '_') {
@@ -2634,8 +2631,8 @@ public abstract class Util {
         int nchars = in.length();
         boolean PrevIsCapitalized = false;
         boolean PrevIsSpace = false;
-        boolean IsCapitalized = false;
-        StringBuffer s = new StringBuffer(nchars);
+        boolean IsCapitalized;
+        StringBuilder s = new StringBuilder(nchars);
         for (int i = 0; i < nchars; i++) {
             char c = in.charAt(i);
             IsCapitalized = Character.isUpperCase(c);
@@ -2645,6 +2642,7 @@ public abstract class Util {
                     // add leading _
                     s.append('_');
                     // remember to space
+                    //noinspection UnusedAssignment
                     PrevIsSpace = true;
                 }
                 s.append(Character.toUpperCase(c));
@@ -2652,6 +2650,7 @@ public abstract class Util {
             else {
                 // always capitalize the first char
                 s.append(Character.toUpperCase(c));
+                //noinspection UnusedAssignment
                 PrevIsSpace = false;
             }
             // remember if last is upper case so we do not
@@ -2727,7 +2726,7 @@ public abstract class Util {
             return ("");
         boolean PrevIsCapitalized = false;
         boolean PrevIsSpace = false;
-        StringBuffer sb = new StringBuffer(nchars);
+        StringBuilder sb = new StringBuilder(nchars);
         char c = 0;
         int i = 0;
         for (; i < nchars; i++) {
@@ -2855,8 +2854,8 @@ public abstract class Util {
      * @UnusedParam> - i the character
      */
     public static String makeCharString(char i) {
-        StringBuffer s = new StringBuffer(2);
-        s.append((char) i);
+        StringBuilder s = new StringBuilder(2);
+        s.append( i);
         return (s.toString());
     }
 
@@ -2919,7 +2918,7 @@ public abstract class Util {
         if (l < 0) {
             return ("");
         }
-        StringBuffer sb = new StringBuffer(l + 1);
+        StringBuilder sb = new StringBuilder(l + 1);
         // now accumulate filtering out non-printing characters
         for (int i = 0; i <= l; i++) {
             char c = s.charAt(i);
@@ -3212,6 +3211,7 @@ public abstract class Util {
             item = randomInt(size);
         List<T> TheList = new ArrayList<T>(in);
         T ret = TheList.get(item);
+        //noinspection UnusedAssignment
         TheList = null;
         return (ret);
     }
@@ -3364,7 +3364,7 @@ public abstract class Util {
      */
     public static String randomString(int in) {
         in = Math.max(1, Math.min(in, 256));
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < in; i++) {
             char c = (char) ('A' + randomInt(26));
             sb.append(c);
@@ -3383,7 +3383,7 @@ public abstract class Util {
      */
     public static String randomNumberString(int in) {
         in = Math.max(1, Math.min(in, 256));
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < in; i++) {
             char c = (char) Math.min('9', ('0' + randomInt(10)));
             sb.append(c);
@@ -3425,10 +3425,10 @@ public abstract class Util {
      * @return - one variable
      */
     public static double randomNormalGaussian() {
-        double r = 0;
-        double f = 0;
-        double v1 = 0;
-        double v2 = 0;
+        double r ;
+        double f  ;
+        double v1 ;
+        double v2 ;
         do {
             v1 = gRandomizer.nextDouble();
             v2 = gRandomizer.nextDouble();
@@ -3590,6 +3590,7 @@ public abstract class Util {
      * @param afterEnd    !null string
      * @return possibly null string - null says nothing is there
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static String textBetween(String in, String beforeStart, String afterEnd) {
         int start = in.indexOf(beforeStart);
         if (start == -1)
@@ -3615,11 +3616,12 @@ public abstract class Util {
      * @function - convert FieFieFoe to Fie Fie Foe
      * NOTE Seqiences i.e. XML will be concatinated
      */
-    public static String nerdCapsToWords(String in) {
+ @SuppressWarnings("UnusedDeclaration")
+ public static String nerdCapsToWords(String in) {
         in = in.trim();
         if (in.length() == 0)
             return ("");
-        StringBuffer s = new StringBuffer(in.length() + 10);
+        StringBuilder s = new StringBuilder(in.length() + 10);
         int i = 0;
         char c = in.charAt(i++);
         boolean LastWasCap = true;
@@ -3648,9 +3650,10 @@ public abstract class Util {
      * @function - convert  Fie Fie Foe to FieFieFoe
      * NOTE Seqiences i.e. XML will be concatinated
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static String wordsToNerdCaps(String in) {
         in = in.trim();
-        StringBuffer s = new StringBuffer(in.length() + 10);
+        StringBuilder s = new StringBuilder(in.length() + 10);
         boolean LastWasSpace = false;
         for (int i = 0; i < in.length(); i++) {
             char c = in.charAt(i);
@@ -3677,8 +3680,9 @@ public abstract class Util {
      * @param delimiter non-null separater string
      * @return the string non-null
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static String buildDelimitedString(String[] items, String delimiter) {
-        StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
         if (items != null) {
             for (int i = 0; i < items.length; i++) {
                 if (i > 0)
@@ -3697,8 +3701,9 @@ public abstract class Util {
      * @param delimiter non-null separater string
      * @return the string non-null
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static String buildDelimitedString(String[] items, char delimiter) {
-        StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
         if (items != null) {
             for (int i = 0; i < items.length; i++) {
                 if (i > 0)
@@ -3722,7 +3727,7 @@ public abstract class Util {
         if (index == -1)
             return (in);
         int n = in.length();
-        StringBuffer sb = new StringBuffer(n + 4);
+        StringBuilder sb = new StringBuilder(n + 4);
         for (int i = 0; i < n; i++) {
             char c = in.charAt(i);
             if (c == '\\') {
@@ -3745,12 +3750,13 @@ public abstract class Util {
      */
 
     /**
-     * add indent to a StringBuffer
+     * add indent to a StringBuilder
      *
-     * @param sb     non-null  StringBuffer
+     * @param sb     non-null  StringBuilder
      * @param indent non-negative indent
      */
-    public static void indentStringBuffer(StringBuffer sb, int indent) {
+    @SuppressWarnings("UnusedDeclaration")
+    public static void indentStringBuilder(StringBuilder sb, int indent) {
         sb.append(indentString(indent));
 
     }
@@ -3758,7 +3764,7 @@ public abstract class Util {
     /**
      * add indent to a Appendable
      *
-     * @param sb     non-null  StringBuffer
+     * @param sb     non-null  StringBuilder
      * @param indent non-negative indent
      */
     public static void indent(Appendable sb, int indent) throws IOException {
@@ -3767,9 +3773,9 @@ public abstract class Util {
     }
 
     /**
-     * add indent to a StringBuffer
+     * add indent to a StringBuilder
      *
-     * @param sb     non-null  StringBuffer
+     * @param sb     non-null  StringBuilder
      * @param indent non-negative indent
      */
     public static void indent(StringBuilder sb, int indent) {
@@ -3777,16 +3783,6 @@ public abstract class Util {
 
     }
 
-    /**
-     * add indent to a StringBuffer
-     *
-     * @param sb     non-null  StringBuffer
-     * @param indent non-negative indent
-     */
-    public static void indent(StringBuffer sb, int indent) {
-        sb.append(indentString(indent));
-
-    }
 
     /**
      * build indent String
@@ -3801,7 +3797,7 @@ public abstract class Util {
         if (indent < gIndentStrings.length)
             return (gIndentStrings[indent]);
         // too long so build
-        StringBuffer sb = new StringBuffer(4 * indent);
+        StringBuilder sb = new StringBuilder(4 * indent);
         for (int i = 0; i < indent; i++)
             sb.append("    ");
         return (sb.toString());
@@ -3832,9 +3828,10 @@ public abstract class Util {
      * @param out   non-null PrintStream
      * @param level non-negative every level indents 4 spaces
      * @return string with indented CR
-     */
+     */              
+    @SuppressWarnings("UnusedDeclaration")
     public static String indentTransform(String in, int indent) {
-        StringBuffer sb = new StringBuffer(in.length() + 64 * indent);
+        StringBuilder sb = new StringBuilder(in.length() + 64 * indent);
         String IndentString = indentString(indent);
         for (int i = 0; i < in.length(); i++) {
             char c = in.charAt(i);
@@ -3906,7 +3903,9 @@ public abstract class Util {
     /**
      * Sleep forever or until interrupted
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static void sleepForever() {
+        //noinspection InfiniteLoopStatement
         while (true) {
             try {
                 Thread.sleep(2000);
@@ -3924,6 +3923,7 @@ public abstract class Util {
      * @param t2 number to compare
      * @return 0 if t1 == t2 1 if t1 > t2 else -1
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static int makeComparison(int t1, int t2) {
         if (t1 == t2)
             return (0);
@@ -3940,6 +3940,7 @@ public abstract class Util {
      * @param t2 number to compare
      * @return 0 if t1 == t2 1 if t1 > t2 else -1
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static int makeComparison(double t1, double t2) {
         if (t1 == t2)
             return (0);
@@ -3956,6 +3957,7 @@ public abstract class Util {
      * @param t2 number to compare
      * @return 0 if t1 == t2 1 if t1 > t2 else -1
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static int makeComparison(long t1, long t2) {
         if (t1 == t2)
             return (0);
@@ -3972,6 +3974,7 @@ public abstract class Util {
      * @param token token to break - if null use \n
      * @return non-null
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static String[] parseString(String in, String token) {
         if (token == null)
             token = "\n";
@@ -3990,6 +3993,7 @@ public abstract class Util {
      * @param t2 - possibly null test object
      * @return true if t1 == t2 == null || t1.equals(t2)
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static boolean objectEqual(Object t1, Object t2) {
         if (t1 == null) {
             return (t2 == null);
@@ -4008,6 +4012,7 @@ public abstract class Util {
      * @param t1 - possibly null test object
      * @return hash code or 0 if t1 == null
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static int objectHash(Object t1) {
         if (t1 == null) {
             return (0);
@@ -4039,7 +4044,7 @@ public abstract class Util {
      * @return next multiple of del >= in
      */
     public static int roundUpTo(int in, int del) {
-        int n = (int) (in / del);
+        int n =   (in / del);
         int ret = n * del;
         if (ret == in)
             return (ret);
@@ -4083,7 +4088,7 @@ public abstract class Util {
         if (tokenCount == 1)
             return ("\"" + in + "\"");
         int index = 1;
-        StringBuffer holder = new StringBuffer(in.length() + 10);
+        StringBuilder holder = new StringBuilder(in.length() + 10);
         while (st.hasMoreTokens()) {
             if (NotFirstLine) {
                 holder.append("\n");
@@ -4111,7 +4116,7 @@ public abstract class Util {
      */
     public static String filterNonPrinting(String in) {
         int n = in.length();
-        StringBuffer sb = new StringBuffer(n);
+        StringBuilder sb = new StringBuilder(n);
         for (int i = 0; i < n; i++) {
             char c = in.charAt(i);
             if (Character.isISOControl(c))
@@ -4129,7 +4134,7 @@ public abstract class Util {
      */
     public static String filterNonNumber(String in) {
         int n = in.length();
-        StringBuffer sb = new StringBuffer(n);
+        StringBuilder sb = new StringBuilder(n);
         for (int i = 0; i < n; i++) {
             char c = in.charAt(i);
             if (!Character.isDigit(c))
@@ -4147,7 +4152,7 @@ public abstract class Util {
      */
     public static String filterNonAlpha(String in) {
         int n = in.length();
-        StringBuffer sb = new StringBuffer(n);
+        StringBuilder sb = new StringBuilder(n);
         for (int i = 0; i < n; i++) {
             char c = in.charAt(i);
             if (!Character.isLetterOrDigit(c))
@@ -4165,7 +4170,7 @@ public abstract class Util {
      */
     public static String filterPunctuation(String in) {
         int n = in.length();
-        StringBuffer sb = new StringBuffer(n);
+        StringBuilder sb = new StringBuilder(n);
         for (int i = 0; i < n; i++) {
             char c = in.charAt(i);
             if (!Character.isLetterOrDigit(c) && c != '_')
@@ -4208,12 +4213,14 @@ public abstract class Util {
      * @param in - non-null array of unknown type
      * @return - non-null copy array of input type
      */
+    @SuppressWarnings("SuspiciousSystemArraycopy")
     public static Object duplicateArray(Object in) {
         Class inClass = in.getClass();
         if (!inClass.isArray())
             throw new IllegalArgumentException("must pass array");
         int InSize = Array.getLength(in); // size of input array
         Object ret = Array.newInstance(inClass.getComponentType(), InSize);
+        //noinspection SuspiciousSystemArraycopy
         System.arraycopy(in, 0, ret, 0, InSize);
         //   validateArrayNonNull(ret);
         return (ret);
@@ -4244,16 +4251,20 @@ public abstract class Util {
 
         Object ret = Array.newInstance(inClass.getComponentType(), InSize - 1);
         if (index == 0) {
+            //noinspection SuspiciousSystemArraycopy
             System.arraycopy(in, 1, ret, 0, InSize - 1);
             //      validateArrayNonNull(ret);
             return (ret);
         }
         if (index == InSize - 1) {
+            //noinspection SuspiciousSystemArraycopy
             System.arraycopy(in, 0, ret, 0, InSize - 1);
             //    validateArrayNonNull(ret);
             return (ret);
         }
+        //noinspection SuspiciousSystemArraycopy
         System.arraycopy(in, 0, ret, 0, index);
+        //noinspection SuspiciousSystemArraycopy
         System.arraycopy(in, index + 1, ret, index, InSize - 1 - index);
         //   validateArrayNonNull(ret);
         return (ret);
@@ -4454,6 +4465,7 @@ public abstract class Util {
         int InSize = Array.getLength(in); // size of input array
         Object ret = Array.newInstance(inClass.getComponentType(),
                 2 * InSize);
+        //noinspection SuspiciousSystemArraycopy
         System.arraycopy(in, 0, ret, 0, InSize);
         return (ret);
     }
@@ -4467,6 +4479,7 @@ public abstract class Util {
      */
     public static Object[] collectionToArray(Collection in,
                                              Class type) {
+        //noinspection CaughtExceptionImmediatelyRethrown,CaughtExceptionImmediatelyRethrown
         try {
             Object[] ret = (Object[]) Array.newInstance(
                     type, in.size());
@@ -4538,6 +4551,7 @@ public abstract class Util {
             return (ret);
         }
         catch (IOException ex) {
+            //noinspection SimplifiableIfStatement,ConstantIfStatement
             if (true) throw new RuntimeException(ex);
             return (null);
         }
@@ -4664,7 +4678,7 @@ public abstract class Util {
         int hour = del % 24;
         del /= 24;
         int days = del;
-        StringBuffer holder = new StringBuffer();
+        StringBuilder holder = new StringBuilder();
 
         if (days != 0) {
             holder.append(Integer.toString(days));
@@ -4704,7 +4718,7 @@ public abstract class Util {
         TheCalendar.setTime(in);
         int hour = TheCalendar.get(Calendar.HOUR_OF_DAY);
         int minute = TheCalendar.get(Calendar.MINUTE);
-        StringBuffer holder = new StringBuffer();
+        StringBuilder holder = new StringBuilder();
         holder.append(Integer.toString(hour));
         holder.append(":");
         holder.append(d02(minute));
@@ -4742,7 +4756,7 @@ public abstract class Util {
         int hour = TheCalendar.get(Calendar.HOUR_OF_DAY);
         int minute = TheCalendar.get(Calendar.MINUTE);
         int seconds = TheCalendar.get(Calendar.SECOND);
-        StringBuffer holder = new StringBuffer();
+        StringBuilder holder = new StringBuilder();
         holder.append(Integer.toString(hour));
         holder.append(":");
         holder.append(d02(minute));
@@ -4817,7 +4831,7 @@ public abstract class Util {
      * @return non-null string as above
      */
     public static String stringWithoutWhite(String s1) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s1.length(); i++) {
             char c = s1.charAt(i);
             if (c > ' ') {
@@ -4834,7 +4848,7 @@ public abstract class Util {
      * @return non-null string as above
      */
     public static String stringLetterOrDigit(String s1) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s1.length(); i++) {
             char c = s1.charAt(i);
             if (Character.isLetterOrDigit(c)) {
@@ -4911,7 +4925,7 @@ public abstract class Util {
         int ReplaceLength = ReplaceText.length();
         if (index == -1)
             return (s1.substring(start));
-        StringBuffer sb = new StringBuffer(s1.length());
+        StringBuilder sb = new StringBuilder(s1.length());
         if (s1.length() == index + ReplaceLength || isWordTerminator(s1.charAt(index + ReplaceLength))) { // match is word
             sb.append(s1.substring(start, index));
             sb.append(NewText);
@@ -4948,7 +4962,7 @@ public abstract class Util {
         int index = s1.indexOf(ReplaceText, start);
         if (index == -1)
             return (s1.substring(start));
-        StringBuffer sb = new StringBuffer(s1.length());
+        StringBuilder sb = new StringBuilder(s1.length());
         sb.append(s1.substring(start, index));
         sb.append(NewText);
         sb.append(replaceInString(s1, ReplaceText, NewText, index + ReplaceText.length()));
@@ -4985,7 +4999,7 @@ public abstract class Util {
         int index = s1.indexOf(ReplaceText);
         if (index == -1) // not found
             return (s1);
-        StringBuffer sb = new StringBuffer(s1.length());
+        StringBuilder sb = new StringBuilder(s1.length());
         if (index > 0)
             sb.append(s1.substring(0, index));
         sb.append(NewText);
@@ -5006,7 +5020,7 @@ public abstract class Util {
         int count = 0;
         int index = s1.indexOf(SubString);
         int sublength = SubString.length();
-        int start = 0;
+        int start  ;
         while (index > -1) {
             count++;
             start = index + sublength;
@@ -5123,7 +5137,7 @@ public abstract class Util {
      * @parem itemsPerLine positive number of items per line
      */
     public static String buildListString(Object[] items, int indent, int itemsPerLine) {
-        StringBuffer Holder = new StringBuffer();
+        StringBuilder Holder = new StringBuilder();
         for (int i = 0; i < items.length; i++) {
             if ((i % itemsPerLine) == 0) {
                 Holder.append("\n");
@@ -5145,7 +5159,7 @@ public abstract class Util {
      * @return string with ",',\ escaped
      */
     public static String buildEscapedString(String in) {
-        StringBuffer sb = new StringBuffer(in.length() + 20);
+        StringBuilder sb = new StringBuilder(in.length() + 20);
         for (int i = 0; i < in.length(); i++) {
             char c = in.charAt(i);
             switch (c) {
@@ -5225,8 +5239,7 @@ public abstract class Util {
      */
     public static Set makeSet(Object[] items) {
         Set ret = new HashSet(Math.max(items.length, 1));
-        for (int i = 0; i < items.length; i++)
-            ret.add(items[i]);
+        Collections.addAll(ret, items);
         return (ret);
     }
 
@@ -5478,9 +5491,10 @@ public abstract class Util {
      * @return
      */
     public static Color randomDarkColor() {
-        return new Color(0 + RND.nextInt(128),
-                0 + RND.nextInt(128),
-                0 + RND.nextInt(128));
+        int del = 0;
+        return new Color(del + RND.nextInt(128),
+                del + RND.nextInt(128),
+                del + RND.nextInt(128));
     }
 
 
@@ -5560,6 +5574,7 @@ public abstract class Util {
     protected static int compareNonNull(Object o1, Object o2) {
         if (o1 instanceof java.lang.Comparable)
             return (((java.lang.Comparable) o1).compareTo(o2));
+        //noinspection SimplifiableIfStatement,ConstantIfStatement
         if (o1 instanceof Date) {
             long t1 = ((Date) o1).getTime();
             if (!(o2 instanceof Date))
@@ -5606,6 +5621,7 @@ public abstract class Util {
      * @return 1, 0,-1 as on compareTo
      * @see compare
      */
+    @SuppressWarnings("ConstantConditions")
     protected static int compareArrays(Object o1, Object o2) {
         if (o1 instanceof Object[] && o2 instanceof Object[])
             return (compareObjectArrays((Object[]) o1, (Object[]) o2));
@@ -5730,6 +5746,7 @@ public abstract class Util {
      */
     protected static int compareCharArrays(char[] o1, char[] o2) {
         int n = Math.min(o1.length, o2.length);
+        //noinspection UnusedDeclaration
         int ret = 0;
         for (int i = 0; i < n; i++) {
             if (o1[i] != o2[i])
@@ -5829,11 +5846,11 @@ public abstract class Util {
         }
 
         public int compare(String o1, String o2) {
-            return (((String) o1).compareTo((String) o2));
+            return ((  o1).compareTo(  o2));
         }
 
         public boolean equals(Object o1, Object o2) {
-            return (((String) o1).equals(o2));
+            return (( o1).equals(o2));
         }
     }
 
@@ -5845,6 +5862,7 @@ public abstract class Util {
         }
 
         public int compare(String o1, String o2) {
+            //noinspection StringEquality
             if (o1 == o2)
                 return 0;
             long l1 = Long.parseLong(o1);
@@ -5866,6 +5884,7 @@ public abstract class Util {
         }
 
         public int compare(String o1, String o2) {
+              //noinspection StringEquality
             if (o1 == o2)
                 return 0;
             long l1 = Long.parseLong(o1);
@@ -5885,7 +5904,7 @@ public abstract class Util {
         }
 
         public boolean equals(Object o1, Object o2) {
-            return (((Double) o1).equals(o2));
+            return (o1.equals(o2));
         }
     }
 
@@ -5895,7 +5914,7 @@ public abstract class Util {
         }
 
         public boolean equals(Object o1, Object o2) {
-            return (((Integer) o1).equals(o2));
+            return ((  o1).equals(o2));
         }
     }
 
@@ -5905,7 +5924,7 @@ public abstract class Util {
         }
 
         public boolean equals(Object o1, Object o2) {
-            return (((Date) o1).equals(o2));
+            return (o1.equals(o2));
         }
     }
 
@@ -5937,7 +5956,7 @@ public abstract class Util {
             if (Util.isStringNumber(in)) {
                 double realVal = Double.parseDouble(in);
                 realText = Util.formatDouble(realVal, 2);
-                if (realText.indexOf(".") == -1)
+                if (!realText.contains("."))
                     realText += ".";
                 while (realText.indexOf(".") > (realText.length() - 3))
                     realText += "0";
@@ -5962,7 +5981,7 @@ public abstract class Util {
     public static String describeMap(Map Values) {
         SortedSet keys = new TreeSet(Values.keySet());
         Iterator it = keys.iterator();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int lineLength = 0;
         while (it.hasNext()) {
             Object key = it.next();
@@ -6179,6 +6198,7 @@ public abstract class Util {
     public static boolean nullSafeEquals(Object o1, Object o2) {
         if (o1 == null)
             return o2 == null;
+        //noinspection SimplifiableIfStatement
         if (o2 == null)
             return false;
         return o1.equals(o2);
@@ -6252,7 +6272,7 @@ public abstract class Util {
      * @param d2 non-null date
      * @return as above
      */
-    @SuppressWarnings(value = "deprecated")
+    @SuppressWarnings(  "deprecation" )
     public static boolean sameDay(Date d1, Date d2) {
         if (d1.getYear() != d2.getYear())
             return false;
@@ -6522,6 +6542,7 @@ public abstract class Util {
             return 0;
         if (values.length == 1)
             return values[0];
+        //noinspection MismatchedReadAndWriteOfArray,MismatchedReadAndWriteOfArray
         int[] copy = new int[values.length];
         System.arraycopy(values, 0, copy, 0, values.length);
         Arrays.sort(values);
@@ -6565,8 +6586,8 @@ public abstract class Util {
             return "";
         if (s.length() < lineLength)
             return s;
-        StringBuffer sb = new StringBuffer();
-        StringBuffer wordBuf = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
+        StringBuilder wordBuf = new StringBuilder();
         int wordEnd = getWord(s, wordBuf, 0);
         String word = wordBuf.toString();
         wordBuf.setLength(0);
@@ -6592,7 +6613,7 @@ public abstract class Util {
         return sb.toString();
     }
 
-    public static int getWord(String s, StringBuffer sb, int start) {
+    public static int getWord(String s, StringBuilder sb, int start) {
         for (int i = start; i < s.length(); i++) {
             char c = s.charAt(i);
             sb.append(c);
@@ -6898,7 +6919,7 @@ public abstract class Util {
     public static String capitalize(String in) {
         if (in.length() == 0)
             return ("");
-        StringBuffer s = new StringBuffer(in.length());
+        StringBuilder s = new StringBuilder(in.length());
         int i = 0;
         char c = in.charAt(i++);
         while (c <= ' ') {
@@ -6934,8 +6955,7 @@ public abstract class Util {
      * @throws RuntimeException on error
      */
     public static String captureExecOutput(String command) throws RuntimeException {
-        Process p =
-                null;
+        Process p;
         try {
             p = Runtime.getRuntime().exec(command);
             String buf;
@@ -6970,7 +6990,7 @@ public abstract class Util {
         }
         boolean anyCharactersProtected = false;
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < originalUnprotectedString.length(); i++) {
             char ch = originalUnprotectedString.charAt(i);
 
@@ -6979,6 +6999,7 @@ public abstract class Util {
             boolean characterWithSpecialMeaningInXML = ch == '<' || ch == '&' || ch == '>';
 
             if (unicodeButNotAscii || controlCharacter) {
+                //noinspection StringConcatenationInsideStringBufferAppend
                 sb.append("&#" + (int) ch + ";");
                 anyCharactersProtected = true;
             }
@@ -7007,6 +7028,113 @@ public abstract class Util {
         }
 
         return sb.toString();
+    }
+
+
+    public static final int INTEGER_SIZE = 4; // bytes per integer
+    public static final int FLOAT_SIZE = 4; // bytes per float
+    public static final int FLOAT64_SIZE = 8; // bytes per float 64
+
+
+    public static final String[] RIGHT_OF_DECIMAL_FORMATS = {
+            "###################",
+            "##################.#",
+            "#################.##",
+            "################.###",
+            "###############.####",
+            "##############.#####",
+            "#############.######",
+            "############.#######",
+            "###########.########",
+            "##########.#########",
+            "#########.##########",
+    };
+
+    public static final String[] SCIENTIFIC_FORMATS = {
+            "0E+000",
+            "0.0E000",
+            "0.00E000",
+            "0.000E000",
+            "0.0000E+000",
+            "0.00000E+000",
+            "0.000000E+000",
+            "0.0000000E+000",
+            "0.00000000E+000",
+            "0.00000000E+000",
+            "0.000000000E+000",
+    };
+
+    protected static DecimalFormat getRightOfDecimal(int rightOfDecimal) {
+        if (rightOfDecimal < 0 || rightOfDecimal >= RIGHT_OF_DECIMAL_FORMATS.length)
+            throw new IllegalArgumentException(
+                    "0 .. " + RIGHT_OF_DECIMAL_FORMATS.length + " are supported");
+        return new DecimalFormat(RIGHT_OF_DECIMAL_FORMATS[rightOfDecimal]);
+    }
+
+
+    protected static DecimalFormat getScientific(int rightOfDecimal) {
+        if (rightOfDecimal < 0 || rightOfDecimal >= SCIENTIFIC_FORMATS.length)
+            throw new IllegalArgumentException(
+                    "0 .. " + SCIENTIFIC_FORMATS.length + " are supported");
+        return new DecimalFormat(SCIENTIFIC_FORMATS[rightOfDecimal]);
+    }
+
+
+    public static String formatScientific(double f, int rightOfDecimal) {
+        return getScientific(rightOfDecimal).format(f);
+    }
+
+
+    public static String formatFloat(float f, int rightOfDecimal) {
+        return getRightOfDecimal(rightOfDecimal).format(f);
+    }
+
+
+    public static <K, T> void insertIntoArrayMap(Map<K, T[]> map, K key, T value) {
+        T[] item = map.get(key);
+        if (item == null) {
+            T[] newValue = (T[]) Array.newInstance(value.getClass(), 1);
+            newValue[0] = value;
+            map.put(key, newValue);
+        }
+        else {  // something is there
+            T[] newValue = (T[]) Array.newInstance(value.getClass(), item.length + 1);
+            System.arraycopy(item, 0, newValue, 0, item.length);
+            newValue[item.length] = value;
+            map.put(key, newValue);
+
+        }
+    }
+
+
+
+    public static double[] convertToValueType(Double[] inp) {
+        double[] ret = new double[inp.length];
+        for (int i = 0; i < inp.length; i++) {
+            ret[i] = inp[i];
+
+        }
+        return ret;
+    }
+
+
+    public static int[] convertToValueType(Integer[] inp) {
+        int[] ret = new int[inp.length];
+        for (int i = 0; i < inp.length; i++) {
+            ret[i] = inp[i];
+
+        }
+        return ret;
+    }
+
+
+    public static float[] convertToValueType(Float[] inp) {
+        float[] ret = new float[inp.length];
+        for (int i = 0; i < inp.length; i++) {
+            ret[i] = inp[i];
+
+        }
+        return ret;
     }
 
 

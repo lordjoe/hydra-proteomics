@@ -33,21 +33,6 @@ Critical changes look like
 
 package org.apache.hadoop.fs;
 
-import java.io.*;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.permission.FsAction;
-import org.apache.hadoop.fs.permission.FsPermission;
-import org.apache.hadoop.io.IOUtils;
-import org.apache.hadoop.util.StringUtils;
-import org.apache.hadoop.util.Shell;
-import org.apache.hadoop.util.Shell.ShellCommandExecutor;
-
 /**  ====================================================================
  *     NOTE - We need this - a slightly modified copy of the
  *     Hadoop version to run on Windows correctly under 1.0.3
