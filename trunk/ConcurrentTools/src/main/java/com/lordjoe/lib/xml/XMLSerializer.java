@@ -33,9 +33,11 @@ public class XMLSerializer extends HandlerBase
     {
         gLogger = in;
     }
-
+    @SuppressWarnings("UnusedDeclaration")
     public static final Class[] NULL_CLASSES = new Class[0];
+    @SuppressWarnings("UnusedDeclaration")
     public static final Class[] INT_CLASSEARRAY =  { Integer.TYPE };
+    @SuppressWarnings("UnusedDeclaration")
     public static final Object[] NULL_OBJECTS = new Object[0];
     /**
      * The string representing a "get" mode.
@@ -69,15 +71,15 @@ public class XMLSerializer extends HandlerBase
 
     private Object m_DefaultHandler;
 
-    private List m_EntityStack;
-    private List m_TagStack;
+    private List<EntityItem> m_EntityStack;
+    private List<String> m_TagStack;
 
 
 
     public XMLSerializer()
     {
-        m_EntityStack = new ArrayList();
-        m_TagStack = new ArrayList();
+        m_EntityStack = new ArrayList<EntityItem>();
+        m_TagStack = new ArrayList<String>();
         TransportMapping.initTables();
     }
 
@@ -105,6 +107,7 @@ public class XMLSerializer extends HandlerBase
         //noinspection unchecked
         gTagToClass.put(TagName,AssociatedClass);
         // also support caseless lookups
+        //noinspection unchecked
         gTagToClass.put(TagName.toUpperCase(),AssociatedClass);
     }
 
@@ -113,7 +116,7 @@ public class XMLSerializer extends HandlerBase
         return(m_DefaultHandler);
     }
 
-    protected void setDefaultHandler(Object o)
+    public void setDefaultHandler(Object o)
     {
         m_DefaultHandler = o;
     }
@@ -141,6 +144,7 @@ public class XMLSerializer extends HandlerBase
         return internalParseStream(Handler, TheObj, ins);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static Object parseXMLStream(InputStream stream)
     {
         return(parseXMLStream(stream,null));
@@ -155,7 +159,7 @@ public class XMLSerializer extends HandlerBase
     protected static Object internalParseStream(ITagHandler Handler, XMLSerializer theObj, InputStream ins)
     {
         if(Handler != null) {
-        	if ( 0 <= Handler.getClass().getName().indexOf( "Specimen" ) ) {
+        	if (Handler.getClass().getName().contains("Specimen")) {
         		Util.breakHere();
         	}
             theObj.setDefaultHandler(Handler);
@@ -173,7 +177,11 @@ public class XMLSerializer extends HandlerBase
         catch(SAXException ex) {
             Exception ex1 = ex.getException();
             if(ex1 == null)
+                //noinspection UnusedDeclaration
+            {
+                //noinspection UnusedAssignment
                 ex1 = ex;
+            }
         // Unwrap a SAX exception, we need more detail - MWR
             //throw new XMLSerializerException(ex,TheObj.m_TagStack,TheObj.m_EntityStack);
             Exception cause = ex.getException();
@@ -231,16 +239,19 @@ public class XMLSerializer extends HandlerBase
     }
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public static Object parseResouceObject(Class ResourceClass,String ResourceName)
     {
-        String TestXML = FileUtilities.readInResource(ResourceClass,ResourceName).toString();
+        String TestXML = FileUtilities.readInResource(ResourceClass, ResourceName) ;
         return(parseXMLString(TestXML));
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static Object parseResouceObject(Class ResourceClass,String ResourceName,ITagHandler Handler)
     {
         //noinspection RedundantStringToString
         String TestXML = FileUtilities.readInResource(ResourceClass,ResourceName).toString();
+        //noinspection ConstantConditions
         if(TestXML == null)
             return(null);
         return(parseXMLString(TestXML,Handler));
@@ -253,7 +264,7 @@ public class XMLSerializer extends HandlerBase
      * @throws IOException
      * @throws SAXException
      */
-    @SuppressWarnings(value = "deprecated")
+      @SuppressWarnings("UnusedDeclaration")
     public Object parseStream(InputStream in) throws IOException,SAXException
     {
         Parser TheParser = XMLUtil.getXMLParser();
@@ -345,10 +356,12 @@ public class XMLSerializer extends HandlerBase
       }
       catch (Exception ex) {
           ex.printStackTrace();
-        if(!(ex instanceof SAXException)) {
+          //noinspection ConstantConditions
+          if(!(ex instanceof SAXException)) {
             throw new SAXException(ex.toString(),ex);
         }
         else {
+            //noinspection UnnecessaryLocalVariable
             SAXException saxex = (SAXException)ex;
             throw saxex;
         }
@@ -476,21 +489,21 @@ public class XMLSerializer extends HandlerBase
     public StringBuffer getAccumulator()
     {
         if(m_EntityStack.size() > 0)
-           return(((EntityItem)m_EntityStack.get(m_EntityStack.size() - 1)).m_Text);
+           return((m_EntityStack.get(m_EntityStack.size() - 1)).m_Text);
         return(null);
     }
 
     public String getTopName()
     {
         if(m_EntityStack.size() > 0)
-            return(((EntityItem)m_EntityStack.get(m_EntityStack.size() - 1)).m_Name);
+            return((m_EntityStack.get(m_EntityStack.size() - 1)).m_Name);
         return(null);
    }
 
     public Object getTopObject()
     {
         if(m_EntityStack.size() > 0)
-             return(((EntityItem)m_EntityStack.get(m_EntityStack.size() - 1)).m_Object);
+             return((m_EntityStack.get(m_EntityStack.size() - 1)).m_Object);
         return(null);
     }
 
@@ -498,7 +511,7 @@ public class XMLSerializer extends HandlerBase
     public Object getSecondObject()
     {
         if(m_EntityStack.size() > 1)
-             return(((EntityItem)m_EntityStack.get(m_EntityStack.size() - 2)).m_Object);
+             return((m_EntityStack.get(m_EntityStack.size() - 2)).m_Object);
         return(null);
     }
 
@@ -594,10 +607,11 @@ public class XMLSerializer extends HandlerBase
      * @param tagName The name who's set method we are looking for.
      * @return Name of the set method for this tag.
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected String adjustName(String tagName) {
         if(!tagName.equals(tagName.toUpperCase()))
             return(tagName);
-        StringBuffer sb = new StringBuffer(tagName.length());
+        StringBuilder sb = new StringBuilder(tagName.length());
         sb.append(tagName.charAt(0));
         for(int i = 1; i < tagName.length(); i++) {
             char c = tagName.charAt(i);
@@ -635,7 +649,7 @@ public class XMLSerializer extends HandlerBase
         return(ret);
     }
 
-
+     @SuppressWarnings("UnusedDeclaration")
     protected static Object convertStringToDesiredType(Class dataType,String sValue)
     {
         //noinspection UnusedAssignment
@@ -706,6 +720,7 @@ public class XMLSerializer extends HandlerBase
 
 
 
+    @SuppressWarnings("UnusedDeclaration")
     protected void invokeTransportSet(Object obj,Method setMeth,Object[] setValues) throws XMLException
     {
         try {
@@ -734,6 +749,8 @@ public class XMLSerializer extends HandlerBase
      * @return The name of the Element.
      * This is also the name of the Java property.
      */
+    @SuppressWarnings("UnusedDeclaration")
+
     protected String methodTagName(Method meth,boolean mode) throws XMLException
     {
         String startString;
@@ -760,10 +777,11 @@ public class XMLSerializer extends HandlerBase
      * @return Vector of interfaces that match our interface filter.
      */
 
-    protected Vector findMatchingInterfaces(Class objClass, String interfaceFilter) {
+    protected Vector<Class> findMatchingInterfaces(Class objClass, String interfaceFilter) {
         // find the matching interfaces
         Class []allInterfaces = objClass.getInterfaces();
-        Vector interfaces = new Vector();
+        Vector<Class> interfaces = new Vector<Class>();
+        //noinspection ForLoopReplaceableByForEach
         for(int i = 0; i < allInterfaces.length; ++i) {
             //DBG.msg(this, "Interface: " + allInterfaces[i].getUrl());
             if(null != interfaceFilter) {
@@ -789,7 +807,7 @@ public class XMLSerializer extends HandlerBase
      */
 
     @SuppressWarnings("UnusedDeclaration")
-    protected Vector findMatchingInterfaces(Object obj, String interfaceFilter) {
+    protected Vector<Class> findMatchingInterfaces(Object obj, String interfaceFilter) {
         return findMatchingInterfaces(obj.getClass(), interfaceFilter);
     }
 
@@ -799,7 +817,7 @@ public class XMLSerializer extends HandlerBase
     /**
     * Holds the state of the Current Entity being processed
     */
-    protected static class EntityItem implements ITagHandler
+    public static class EntityItem implements ITagHandler
     {
         public Object m_Object; // controling Objecrt
         public String m_Name; // name of the entity

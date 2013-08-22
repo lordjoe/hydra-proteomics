@@ -1,11 +1,13 @@
 package com.lordjoe.credentials;
 
+
 /**
  * com.lordjoe.credentials.CredentialType
  * User: Steve
  * Date: 4/5/12
  */
 public enum CredentialType {
+    MYSQL_USER("MySQL User",false), SecretKey("MySQL User",true) ,
     AWS_Key("Amazon Key",false),AWS_SecretKey("Amazon Secret Key",true) ,
     GoogleDataUser("Google User",false),GoogleDataPassword("Google Password",true),
     HadoopClusterUser("Hadoop Cluster User",false),HadoopClusterPassword("Hadoop Password",true),
@@ -13,7 +15,6 @@ public enum CredentialType {
     AWSKey("Amazon EC2 Key",false),AWSSecretKey("Amazon EC2 Key",true),
 
     ;
-    public static final CredentialType[] EMPTY_ARRAY = {};
 
     private final String m_Name;
     private final boolean m_Secret;

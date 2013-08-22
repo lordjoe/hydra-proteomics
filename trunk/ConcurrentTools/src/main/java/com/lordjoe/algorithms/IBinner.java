@@ -2,13 +2,11 @@ package com.lordjoe.algorithms;
 
 /**
  * com.lordjoe.algorithms.IBinner
- *    Interface describign a class that divides doubles into bins
+ *    Interface describing  a class that divides doubles into bins
  * @author Steve Lewis
  * @date 11/05/13
  */
 public interface IBinner {
-    public static IBinner[] EMPTY_ARRAY = {};
-    public static Class THIS_CLASS = IBinner.class;
 
     /**
      * place the value into a bin between getMinBin()   and getMaxBin()

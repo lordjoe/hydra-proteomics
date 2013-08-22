@@ -14,6 +14,7 @@ public class RemoteSessionTests {
 
 
 //    @Test
+    @SuppressWarnings("UnusedDeclaration")
     public void testConnectionException() {
         RemoteSession rs = getRemoteSession();
         if (rs == null)   // not available
@@ -43,6 +44,7 @@ public class RemoteSessionTests {
     }
 
 //    @Test
+    @SuppressWarnings("UnusedDeclaration")
     public void testController() throws Exception {
         RemoteSession rs = getRemoteSession();
         if (rs == null)   // not available
@@ -94,10 +96,11 @@ public class RemoteSessionTests {
                     "res://NShot.jar"
 
             );
-           boolean ret = hc.runJob(job);
+            //noinspection UnusedDeclaration
+            boolean ret = hc.runJob(job);
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+           // throw new RuntimeException(e);  // todo run the test
 
         }
     }

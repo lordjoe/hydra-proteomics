@@ -3,7 +3,6 @@ package org.systemsbiology.remotecontrol;
 import org.systemsbiology.hadoop.*;
 
 import java.io.*;
-import java.util.*;
 
 /**
  * org.systemsbiology.remotecontrol.IHadoopController
@@ -14,8 +13,10 @@ public interface IHadoopController {
     public static final IHadoopController[] EMPTY_ARRAY = {};
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public String getDefaultDirectory();
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setDefaultDirectory(final String pDefaultDirectory);
 
     /**
@@ -25,15 +26,19 @@ public interface IHadoopController {
      */
     public boolean runJob(IHadoopJob job);
 
+    @SuppressWarnings("UnusedDeclaration")
     public boolean runJobs(final IHadoopJob[] jobs);
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public void guaranteeFilesOnHDFS(File srcDir, String dest, String hdfsdest);
 
+    @SuppressWarnings("UnusedDeclaration")
     public void copyToHDFS(File localFile, String hdfsdest);
  
     public void copyDirectoryToHDFS(String src, String hdfsdest);
 
+    @SuppressWarnings("UnusedDeclaration")
     public void copyFileToHDFS(String src, String hdfsdest);
 
     public void guaranteeFiles(File srcDir, String dest);
@@ -42,22 +47,27 @@ public interface IHadoopController {
 
     public boolean hasFile(File pJar, String dest);
 
+    @SuppressWarnings("UnusedDeclaration")
     public HDFSFile[] getFiles(String directory);
 
     public String getTemporaryDirectory();
 
+    @SuppressWarnings("UnusedDeclaration")
     public boolean isHDFSDirectory(String dst);
 
     public void guaranteeHDFSDirectory(String dst);
 
+    @SuppressWarnings("UnusedDeclaration")
     public void uploadFileToHDFS(String fname, String dst);
 
+    @SuppressWarnings("UnusedDeclaration")
     public void uploadFile(InputStream fname, String dst);
 
     public void uploadFile(String fname, String dst);
 
    public  void uploadFile(File fname, String dst);
 
+    @SuppressWarnings("UnusedDeclaration")
     public boolean isSingleCore();
 
     /**

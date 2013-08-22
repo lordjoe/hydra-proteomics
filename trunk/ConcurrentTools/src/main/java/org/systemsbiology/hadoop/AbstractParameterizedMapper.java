@@ -24,6 +24,7 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
     private final ElapsedTimer m_Elapsed = new ElapsedTimer();
      private Mapper.Context m_Context;
 
+    @SuppressWarnings("UnusedDeclaration")
     public final Mapper.Context getContext() {
         return m_Context;
     }
@@ -38,8 +39,10 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
         Configuration conf = context.getConfiguration();
 
          // debugging code to show my keys
+        //noinspection SimplifiableIfStatement,ConstantIfStatement
         if(false)  {
             Iterator<Map.Entry<String, String>> iterator = conf.iterator();
+            //noinspection WhileLoopReplaceableByForEach
             while(iterator.hasNext())   {
                 Map.Entry<String, String> next = iterator.next();
                 String key = next.getKey();
@@ -82,7 +85,7 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
 
       }
 
-
+    @SuppressWarnings("UnusedDeclaration")
     protected long setMinimalFree() {
         long freemem = Runtime.getRuntime().freeMemory();
         setMinimumFreeMemory(Math.min(freemem, getMinimumFreeMemory()));
