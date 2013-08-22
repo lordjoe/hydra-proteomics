@@ -13,8 +13,7 @@ import java.util.Random;
  * @date 07/05/13
  */
 public class DoubleMapTest {
-    public static DoubleMapTest[] EMPTY_ARRAY = {};
-    public static Class THIS_CLASS = DoubleMapTest.class;
+
 
     public static final Random RND = new Random();
     public static final int DEFAULT_MAP_SIZE = 1000;
@@ -35,7 +34,7 @@ public class DoubleMapTest {
     /**
      * this seems to work - not sure why
      */
-//    @Test
+    @Test
     public void testMapFormat()
     {
         Map<Double,Double> mp = buildMap( );
@@ -49,7 +48,8 @@ public class DoubleMapTest {
     /**
      * this is expected to fail
      */
-//    @Test
+  // @Test
+    @SuppressWarnings("UnusedDeclaration")
     public void testMathFormat()
     {
         Map<Double,Double> mp = buildMap( );

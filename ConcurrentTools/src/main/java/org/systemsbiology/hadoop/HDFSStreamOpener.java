@@ -16,8 +16,9 @@ public class HDFSStreamOpener implements IStreamOpener {
 
 
     private final HDFSAccessor m_Accesor;
-    private final String m_BaseDirectory;
+    private  String m_BaseDirectory;
 
+    @SuppressWarnings("UnusedDeclaration")
     public HDFSStreamOpener(final HDFSAccessor pAccesor, final String pBaseDirectory) {
         m_Accesor = pAccesor;
         m_BaseDirectory = pBaseDirectory;
@@ -39,7 +40,8 @@ public class HDFSStreamOpener implements IStreamOpener {
 //            }
             m_BaseDirectory = config.get(DefaultParameterHolder.PATH_KEY);
             if(m_BaseDirectory == null)
-                throw new IllegalStateException(DefaultParameterHolder.PATH_KEY + "not defined");
+              //  m_BaseDirectory = ".";
+               throw new IllegalStateException(DefaultParameterHolder.PATH_KEY + "not defined");
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -79,7 +81,8 @@ public class HDFSStreamOpener implements IStreamOpener {
      * @param otherData any other required data
      * @return possibly null stream
      */
- 
+
+       @SuppressWarnings("UnusedDeclaration")
     public OutputStream openForWrite(final String fileName, final Object... otherData) {
          String hdsfPath = buildFilePath(fileName);
          Path path = new Path(hdsfPath);

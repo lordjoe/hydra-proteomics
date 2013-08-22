@@ -16,9 +16,13 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
 
     public static final String PARAMS_KEY = "org.systemsbiology.xtandem.params";
     public static final String PATH_KEY = "org.systemsbiology.xtandem.hdfs.basepath";
+    @SuppressWarnings("UnusedDeclaration")
     public static final String FORCE_PATH_PREFIX_KEY = "org.systemsbiology.xtandem.hdfs.forcePathPrefix";
-    public static final String HOST_KEY = "org.systemsbiology.xtandem.hdfs.host";
+    @SuppressWarnings("UnusedDeclaration")
+     public static final String HOST_KEY = "org.systemsbiology.xtandem.hdfs.host";
+    @SuppressWarnings("UnusedDeclaration")
     public static final String HOST_PORT_KEY = "org.systemsbiology.xtandem.hdfs.port";
+    @SuppressWarnings("UnusedDeclaration")
     public static final String HOST_PREFIX_KEY = "org.systemsbiology.xtandem.hostprefix";
 
     private static final List<IStreamOpener> gPreLoadOpeners =
@@ -59,6 +63,7 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
     }
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public static DefaultParameterHolder loadFromContext(final TaskInputOutputContext context) {
         final Configuration configuration = context.getConfiguration();
 
@@ -71,7 +76,7 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
             return ret;
 
         // note we are reading from hdsf
-        IStreamOpener opener = null;
+        IStreamOpener opener;
         try {
             opener = new HDFSStreamOpener(pConfiguration);
             addPreLoadOpener(opener);
@@ -87,6 +92,7 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
             //   opener = new FileStreamOpener();
         }
 
+        //noinspection UnusedDeclaration
         final String basedir = pConfiguration.get(PATH_KEY);
         final String paramsFile = pConfiguration.get(PARAMS_KEY);
         if (context != null) {
@@ -113,7 +119,7 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
         return ret;
     }
 
-     private final Map<String, String> m_PerformanceParameters = new HashMap<String, String>();
+    private final Map<String, String> m_PerformanceParameters = new HashMap<String, String>();
     private final Map<String, String> m_Parameters = new HashMap<String, String>();
     private final DelegatingFileStreamOpener m_Openers = new DelegatingFileStreamOpener();
 
@@ -129,9 +135,15 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
 //        m_Context = ctx;
 //      }
 
+    @SuppressWarnings("UnusedParameters")
     private DefaultParameterHolder(InputStream is, String url, Configuration ctx) {
         handleInputs(is);
-        }
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public DefaultParameterHolder() {
+
+    }
 
 
     public void handleInputs(final InputStream is) {
@@ -139,8 +151,8 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
             Properties props = new Properties();
             props.load(new InputStreamReader(is));
             //noinspection unchecked
-            for(String key : props.stringPropertyNames())   {
-                m_Parameters.put(key,(String)props.get(key));
+            for (String key : props.stringPropertyNames()) {
+                m_Parameters.put(key, (String) props.get(key));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -148,14 +160,13 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
     }
 
 
-
-
-
+    @SuppressWarnings("UnusedDeclaration")
     private void setPredefinedParameter(String key, String value) {
         setParameter(key, value);
     }
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setPerformanceParameter(String key, String value) {
         m_PerformanceParameters.put(key, value);
     }
@@ -166,10 +177,12 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
      * @param key !null key
      * @return possibly null parameter
      */
+    @SuppressWarnings("UnusedDeclaration")
     public String getPerformanceParameter(String key) {
         return m_PerformanceParameters.get(key);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public String[] getPerformanceKeys() {
         Set<String> stx = m_PerformanceParameters.keySet();
         String[] ret = stx.toArray(new String[stx.size()]);
@@ -180,6 +193,7 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
     /**
      * add new ways to open files
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected void initOpeners() {
         addOpener(new FileStreamOpener());
         addOpener(new StreamOpeners.ResourceStreamOpener(DefaultParameterHolder.class));
@@ -225,10 +239,10 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
      */
     @Override
     public String getParameter(String key, String defaultValue) {
-         if(m_Parameters.containsKey(key))
-             return m_Parameters.get(key);
+        if (m_Parameters.containsKey(key))
+            return m_Parameters.get(key);
         else
-             return defaultValue;
+            return defaultValue;
     }
 
     @Override
@@ -241,6 +255,7 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
 
     @Override
     public String[] getUnusedKeys() {
+        //noinspection ConstantIfStatement
         if (true) throw new UnsupportedOperationException("Fix This");
         return new String[0];
     }
@@ -265,6 +280,7 @@ public class DefaultParameterHolder implements ISetableParameterHolder {
      */
     @Override
     public String[] getIndexedParameters(String key) {
+        //noinspection ConstantIfStatement
         if (true) throw new UnsupportedOperationException("Fix This");
         return new String[0];
     }

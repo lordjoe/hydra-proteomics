@@ -26,6 +26,7 @@ public class RemoteHadoopController implements IHadoopController {
     private final IFileSystem m_HDFSAccessor;
     private final IFileSystem m_FTPAccessor;
     private String m_DefaultDirectory;
+    @SuppressWarnings("UnusedDeclaration")
     private Set<String> m_ExistingDirectories = new HashSet<String>();
 
     public static final String HADOOP_COMMAND = "/usr/bin/hadoop "; //"hadoop "; // "/home/www/hadoop/bin/hadoop ";  //     "hadoop ";
@@ -80,8 +81,10 @@ public class RemoteHadoopController implements IHadoopController {
         if (jobs == null)
             return true; // nothing to do
         boolean ret = true;
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < jobs.length; i++) {
             IHadoopJob job = jobs[i];
+            //noinspection UnusedDeclaration,ConstantConditions
             ret &= runJob(job);
             if (!ret)
                 return ret;
@@ -93,13 +96,14 @@ public class RemoteHadoopController implements IHadoopController {
     @Override
     public boolean runJob(IHadoopJob job) {
         String jarFile = job.getJarFile();
-        InputStream is = null;
+        InputStream is;
 
         // who do we want to run as
         RemoteSession session = getSession();
+        //noinspection UnusedDeclaration
         String user = session.getUser();
 
-        File jar = null;
+        File jar;
         if (jarFile != null && jarFile.startsWith("res://")) {
             String substring = jarFile.substring("res://".length());
             is = getClass().getResourceAsStream(substring);
@@ -137,10 +141,12 @@ public class RemoteHadoopController implements IHadoopController {
         hdfsAccessor.expunge(emptyOutputDirectory);
 
         runningVersion0 = true; // todo take out
+        //noinspection ConstantConditions
         if (!runningVersion0) {
             String command = job.buildCommandString();
             String chmodCommand = job.buildChmodCommandString();
             System.out.println(command);
+            //noinspection UnusedDeclaration
             String out = executeCommand(command);
             executeCommand(chmodCommand);  // make files public
             return true;
@@ -175,6 +181,7 @@ public class RemoteHadoopController implements IHadoopController {
         try {
             Class<?> mainCls = Class.forName(mainClass);
             if (IJobRunner.class.isAssignableFrom(mainCls)) {
+                //noinspection unchecked
                 Class<? extends IJobRunner> mClass = (Class<? extends IJobRunner>) mainCls;
                 IJobRunner realMain = mClass.newInstance();
 
@@ -215,6 +222,7 @@ public class RemoteHadoopController implements IHadoopController {
         }
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     private String[] buildArgsFromConf(String emptyOutputDirectory, Configuration conf, String[] allArgs) {
 
         String maxMamory = HadoopUtilities.getProperty("maxClusterMemory");
@@ -238,11 +246,8 @@ public class RemoteHadoopController implements IHadoopController {
 //        holder.add("-Djava.net.preferIPv4Stack=true");
 //        System.err.println("Max memory " + maxMamory);
 //        System.err.println("mapred.child.ulimit " + value);
-
-        for (int i = 0; i < allArgs.length; i++) {
-            String allArg = allArgs[i];
-            holder.add(allArg);
-        }
+        //noinspection ForLoopReplaceableByForEach
+        Collections.addAll(holder, allArgs);
 
         String[] ret = new String[holder.size()];
         holder.toArray(ret);
@@ -276,7 +281,7 @@ public class RemoteHadoopController implements IHadoopController {
         return conf;
     }
 
-
+     @SuppressWarnings("UnusedDeclaration")
     private void guaranteeEmptyDirectory(String dir) {
         IFileSystem accessor = getHDFSAccessor();
         accessor.expunge(dir);
@@ -288,6 +293,8 @@ public class RemoteHadoopController implements IHadoopController {
         copyDirectoryToHDFS(dest, hdfsdest);
 
     }
+
+
 
     @Override
     public void copyToHDFS(File localFile, String hdfsdest) {
@@ -319,15 +326,18 @@ public class RemoteHadoopController implements IHadoopController {
         ExecChannel ech = new ExecChannel(session);
         System.out.println(command);
 
+        //noinspection UnnecessaryLocalVariable
         String result = ech.execCommand(command, listeners);
         return result;
 
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public String executeMain(String className, Configuration conf, String[] args) {
         try {
             Class cls = Class.forName(className);
             Class[] types = {Configuration.class, String[].class};
+            //noinspection unchecked
             Method met = cls.getMethod("runJob", types);
             met.invoke(null, conf, args);
             return "";
@@ -372,6 +382,7 @@ public class RemoteHadoopController implements IHadoopController {
             throw new IllegalArgumentException("File " + srcDir.getAbsolutePath() + " is not directory");
         File[] files = srcDir.listFiles();
         if (files != null) {
+            //noinspection ForLoopReplaceableByForEach
             for (int i = 0; i < files.length; i++) {
                 File file = files[i];
                 String fileDest = dest + "/" + file.getName();
@@ -399,6 +410,7 @@ public class RemoteHadoopController implements IHadoopController {
 
     @Override
     public boolean hasFile(final File pJar, String dest) {
+        //noinspection UnusedDeclaration
         RemoteSession remoteSession = getSession();
         IFileSystem fs = getHDFSAccessor();
         return fs.exists(dest);
@@ -412,6 +424,7 @@ public class RemoteHadoopController implements IHadoopController {
         for (int i = 1; i < items.length; i++) {
             String item = items[i];
             if (item.length() > MIN__FILE_LENGTH) {
+                //noinspection EmptyCatchBlock
                 try {
                     holder.add(new HDFSFile(item));
                 } catch (Exception e) {
@@ -438,6 +451,7 @@ public class RemoteHadoopController implements IHadoopController {
     @Override
     public boolean isHDFSDirectory(String dst) {
         String result = executeCommand(HADOOP_COMMAND + "fs -stat " + dst);
+        //noinspection SimplifiableIfStatement,RedundantIfStatement
         if (result.contains("No such file or directory"))
             return false;
         return true;
@@ -446,6 +460,7 @@ public class RemoteHadoopController implements IHadoopController {
 
     @Override
     public void guaranteeHDFSDirectory(String dst) {
+            //noinspection UnusedDeclaration
         String result = executeCommand(HADOOP_COMMAND + "fs -mkdir " + dst);
     }
 
@@ -455,7 +470,9 @@ public class RemoteHadoopController implements IHadoopController {
         String dst1 = getTemporaryDirectory();
         uploadFile(fname, dst1);
         guaranteeHDFSDirectory(dst);
+        //noinspection UnusedDeclaration
         ExecChannel ech = new ExecChannel(getSession());
+       //noinspection UnusedDeclaration
         String result = executeCommand(HADOOP_COMMAND + "fs -copyFromLocal " + dst1 + "/" + file.getName() + " " + dst);
     }
 

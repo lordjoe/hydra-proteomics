@@ -17,7 +17,8 @@ import java.util.*;
 /**
  *  org.systemsbiology.hadoop.CapitalWordCount
  */
-public class CapitalWordCount  extends ConfiguredJobRunner implements IJobRunner {
+public class CapitalWordCount  extends Configured implements Tool // ConfiguredJobRunner implements IJobRunner
+{
 
     public static final  String TEST_PROPERTY = "org.systemsbiology.status";
  
@@ -133,11 +134,13 @@ public class CapitalWordCount  extends ConfiguredJobRunner implements IJobRunner
                   return true;
               // break these out
               if (fs.getFileStatus(src).isDir()) {
+                  //noinspection UnusedAssignment
                   boolean doneOK = fs.delete(src, true);
                   doneOK = !fs.exists(src);
                   return doneOK;
               }
               if (fs.isFile(src)) {
+                  //noinspection UnusedDeclaration,UnnecessaryLocalVariable
                   boolean doneOK = fs.delete(src, false);
                   return doneOK;
               }
@@ -152,6 +155,7 @@ public class CapitalWordCount  extends ConfiguredJobRunner implements IJobRunner
 
     public  int runJob(Configuration conf,String[] args) throws Exception {
 
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             System.err.println(arg);
@@ -169,6 +173,7 @@ public class CapitalWordCount  extends ConfiguredJobRunner implements IJobRunner
         Job job = new Job(conf, "word count");
         conf = job.getConfiguration(); // NOTE JOB Copies the configuraton
         job.setJarByClass(CapitalWordCount.class);
+
         job.setMapperClass(TokenizerMapper.class);
          job.setCombinerClass(IntSumReducer.class);
         job.setReducerClass(IntSumReducer.class);
@@ -190,6 +195,7 @@ public class CapitalWordCount  extends ConfiguredJobRunner implements IJobRunner
 
         // you must pass the output directory as the last argument
         String athString = otherArgs[otherArgs.length - 1];
+        //noinspection UnusedDeclaration
         File out = new File(athString);
 //        if (out.exists()) {
 //            FileUtilities.expungeDirectory(out);
@@ -206,6 +212,7 @@ public class CapitalWordCount  extends ConfiguredJobRunner implements IJobRunner
         System.err.println("Bar is " + isBar);
 
         boolean ans = job.waitForCompletion(true);
+        //noinspection UnnecessaryLocalVariable
         int ret = ans ? 0 : 1;
         return ret;
     }

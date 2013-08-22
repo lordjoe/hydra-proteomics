@@ -7,6 +7,7 @@ package com.lordjoe.algorithms;
  * @author Steve Lewis
  * @date 11/05/13
  */
+@SuppressWarnings("UnusedDeclaration")
 public class LogBinner implements IBinner {
     public static LogBinner[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = LogBinner.class;
@@ -18,14 +19,17 @@ public class LogBinner implements IBinner {
     private final int m_NumberBins;
     private final boolean m_OverFlowBinned;
     private final double m_MinValueLog;
+    @SuppressWarnings("FieldCanBeLocal")
     private final double m_MaxValueLog;
     private final double m_DelValueLog;
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public LogBinner(double maxValue, double minValue, int binSize) {
         this(maxValue, minValue, binSize, true, 0);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public LogBinner(double maxValue, double minValue, int binSize, boolean overFlowBinned) {
         this(maxValue, minValue, binSize, overFlowBinned, 0);
     }
@@ -85,6 +89,7 @@ public class LogBinner implements IBinner {
         }
         double scoreLog = Math.log10(value);
         scoreLog -= m_MinValueLog;
+        //noinspection UnusedDeclaration,UnnecessaryLocalVariable
         int ret = (int) (scoreLog / m_DelValueLog);
         return ret;
     }
@@ -93,6 +98,7 @@ public class LogBinner implements IBinner {
 
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public double getBinSize() {
         return m_BinSize;
     }
@@ -104,17 +110,16 @@ public class LogBinner implements IBinner {
      */
     @Override
     public double fromBin(int bin) throws IllegalArgumentException {
-        if (true) throw new UnsupportedOperationException("Fix This");
-        if (bin < -1)
-            throw new IllegalArgumentException("Illecab bin " + bin);
+         if (bin < -1)
+            throw new IllegalArgumentException("Illegal bin " + bin);
         if (bin == -1) {
             if (!isOverflowBinned())
                 return getMinValue() - 1;
             else
-                throw new IllegalArgumentException("Illecab bin " + bin);
+                throw new IllegalArgumentException("Illegal bin " + bin);
         }
         if (bin < getMaxBin() || bin >= getMaxBin())
-            throw new IllegalArgumentException("Illecab bin " + bin);
+            throw new IllegalArgumentException("Illegal bin " + bin);
         // return the bin midpoint
         return getMinValue() * Math.pow(10, m_DelValueLog * bin);
 

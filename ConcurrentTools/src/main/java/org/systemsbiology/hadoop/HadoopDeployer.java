@@ -55,11 +55,11 @@ public class HadoopDeployer {
             "google",
             "jfreechart",
             "core",
-             "gdata",
+            "gdata",
             "netty",
             "guava",
             "protobuf",
-             "jaxb",
+            "jaxb",
             "jettison",
             "jsr305",
             "velocity",
@@ -132,17 +132,22 @@ public class HadoopDeployer {
             "gragent.jar"
     };
 
+    @SuppressWarnings("unchecked")
     public static final Set<String> EXCLUDED_JARS = new HashSet(Arrays.asList(EXCLUDED_JARS_LIST));
 
+    @SuppressWarnings("UnusedDeclaration")
     public static void addExcludedLibrary(String lib) {
         EXCLUDED_JARS.add(lib);
     }
 
     public static final String HADOOP_HOME = "E:\\ThirdParty\\hadoop-0.21.0";
 
+    @SuppressWarnings("UnusedDeclaration")
     private int gJarNumber = 0;
+    @SuppressWarnings("UnusedDeclaration")
     private static boolean isQuiet;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private static Properties gExcludedProperty;
 
     public static File[] filterClassPath(String[] pathItems, String javaHome) {
@@ -150,6 +155,7 @@ public class HadoopDeployer {
 
         List<File> holder = new ArrayList<File>();
         List<String> pathholder = new ArrayList<String>();
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < pathItems.length; i++) {
             String item = pathItems[i];
             String jarName = new File(item).getName();
@@ -159,7 +165,7 @@ public class HadoopDeployer {
                 continue;
             if (EXCLUDED_JARS.contains(jarName))
                 continue;
-            if (item.indexOf(javaHome) > -1)
+            if (item.contains(javaHome))
                 continue;
             File itemFile = new File(item);
             if (!itemFile.exists())
@@ -170,8 +176,9 @@ public class HadoopDeployer {
             //   pathholder.add(item);
         }
 
-        pathItems = pathholder.toArray(new String[0]);
+        pathItems = pathholder.toArray(new String[pathholder.size()]);
 
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < pathItems.length; i++) {
             String item = pathItems[i];
             File itemFile = new File(item);
@@ -180,12 +187,12 @@ public class HadoopDeployer {
                 continue;
             if (inExcludedJars(jarName))
                 continue;
-            if (item.indexOf(javaHome) > -1)
+            if (item.contains(javaHome))
                 continue;
             if (jarName.startsWith("hadoop"))
                 jarName = itemFile.getName();
 
-            if (HADOOP_HOME.indexOf(javaHome) > -1)
+            if (HADOOP_HOME.contains(javaHome))
                 continue;
 
             if (applyRulesToExclude(item, jarName))
@@ -198,6 +205,7 @@ public class HadoopDeployer {
                 continue;
             }
             if (itemFile.isDirectory()) {
+                //noinspection UnnecessaryContinue
                 continue;
             }
 
@@ -219,6 +227,7 @@ public class HadoopDeployer {
             return true;  // exclude
         if (EXCLUDED_JARS.contains(jarName))
             return true;  // exclude
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < EXCLUDED_JARS_PREFIXES.length; i++) {
             String testPrefix = EXCLUDED_JARS_PREFIXES[i];
             if (item.startsWith(testPrefix))
@@ -238,10 +247,8 @@ public class HadoopDeployer {
                 gExcludedProperty.load(resourceAsStream);
                 String prop = gExcludedProperty.getProperty("ExcludedLibraries");
                 String[] props = prop.split(",");
-                for (int i = 0; i < props.length; i++) {
-                    String s = props[i];
-                    EXCLUDED_JARS.add(s);
-                }
+                //noinspection ForLoopReplaceableByForEach
+                Collections.addAll(EXCLUDED_JARS, props);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -251,7 +258,8 @@ public class HadoopDeployer {
     public static final String GLOBAL_DIR = "E:\\ThirdParty";
 
     public static File[] filterClassPathDirectories(String[] pathItems, String javaHome) {
-        List holder = new ArrayList();
+        List<File> holder = new ArrayList<File> ();
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < pathItems.length; i++) {
             String item = pathItems[i];
             if (".".equals(item))
@@ -260,7 +268,7 @@ public class HadoopDeployer {
                 continue;
             if (EXCLUDED_JARS.contains(item))
                 continue;
-            if (item.indexOf(javaHome) > -1)
+            if (item.contains(javaHome))
                 continue;
             File itemFile = new File(item);
             if (!itemFile.exists())
@@ -279,6 +287,7 @@ public class HadoopDeployer {
     }
 
     protected static boolean inExcludedJars(String s) {
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < EXCLUDED_JARS_LIST.length; i++) {
             String test = EXCLUDED_JARS_LIST[i];
             if (s.endsWith(test))
@@ -295,6 +304,7 @@ public class HadoopDeployer {
         return test + ".jar";
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static File makeJar(File libDir, File itemFile) {
         String jarName = pathToJarName(itemFile);
         File jarFile = new File(libDir, jarName);
@@ -309,6 +319,7 @@ public class HadoopDeployer {
     }
 
     public static void copyLibraries(ZipOutputStream out, File[] libs) throws IOException {
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < libs.length; i++) {
             File lib = libs[i];
             final String name = "lib/" + lib.getName();
@@ -345,7 +356,7 @@ public class HadoopDeployer {
             }
             // failure - no data
 
-            int bytesRead = 0;
+            int bytesRead;
             byte[] buffer = new byte[bufsize];
             while ((bytesRead = srcFile.read(buffer, 0, bufsize)) != -1) {
                 dst.write(buffer, 0, bytesRead);
@@ -368,9 +379,11 @@ public class HadoopDeployer {
      * @name writeFile
      * @function write the string data to the file Filename
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static boolean writeFile(File TheFile, String data) {
         try {
             PrintWriter out = new PrintWriter(new FileWriter(TheFile));
+            //noinspection ConstantConditions
             if (out != null) {
                 out.print(data);
                 out.close();
@@ -390,19 +403,22 @@ public class HadoopDeployer {
         try {
             File parentFile = deployDir.getParentFile();
             if (parentFile != null)
+                //noinspection ResultOfMethodCallIgnored
                 parentFile.mkdirs();
 
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(deployDir));
+            Set<String> existing = new HashSet<String>();
 
             String javaHome = System.getProperty("java.home");
             String classpath = System.getProperty("java.class.path");
-            String[] pathItems = null;
+            String[] pathItems;
             if (classpath.contains(";")) {
                 pathItems = classpath.split(";");
             } else {
                 if (classpath.contains(":")) {
                     pathItems = classpath.split(":");   // Linux stlye
                 } else {
+                    //noinspection UnnecessaryLocalVariable
                     String[] items = {classpath};
                     pathItems = items; // only 1 I guess
                 }
@@ -410,9 +426,10 @@ public class HadoopDeployer {
             File[] pathLibs = filterClassPath(pathItems, javaHome);
             copyLibraries(out, pathLibs);
             File[] pathDirectories = filterClassPathDirectories(pathItems, javaHome);
+            //noinspection ForLoopReplaceableByForEach
             for (int i = 0; i < pathDirectories.length; i++) {
                 File pathDirectory = pathDirectories[i];
-                copyLibraryDirectory("", pathDirectory, out);
+                copyLibraryDirectory("", pathDirectory, out,existing);
             }
             out.flush();
             out.close();
@@ -427,34 +444,38 @@ public class HadoopDeployer {
         try {
             File parentFile = deployDir.getParentFile();
             if (parentFile != null)
+                //noinspection ResultOfMethodCallIgnored
                 parentFile.mkdirs();
 
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(deployDir));
 
             String javaHome = System.getProperty("java.home");
             String classpath = System.getProperty("java.class.path");
-            String[] pathItems = null;
+            String[] pathItems;
             if (classpath.contains(";")) {
                 pathItems = classpath.split(";");
             } else {
                 if (classpath.contains(":")) {
                     pathItems = classpath.split(":");   // Linux stlye
                 } else {
+                    //noinspection UnnecessaryLocalVariable
                     String[] items = {classpath};
                     pathItems = items; // only 1 I guess
                 }
             }
+            //noinspection UnusedDeclaration,MismatchedReadAndWriteOfArray
             File[] pathLibs = filterClassPath(pathItems, javaHome);
             Set<String> holder = new HashSet<String>();
+            //noinspection ForLoopReplaceableByForEach
             for (int i = 0; i < loadedPackages.length; i++) {
                 String replace = loadedPackages[i].replace(".", "/");
                 holder.add(replace);
-
-            }
+          }
 
             //           ignore libraries
 //            copyLibraries(out, pathLibs);
             File[] pathDirectories = filterClassPathDirectories(pathItems, javaHome);
+            //noinspection ForLoopReplaceableByForEach
             for (int i = 0; i < pathDirectories.length; i++) {
                 File pathDirectory = pathDirectories[i];
                 copySpecifiesLibraryDirectory("", pathDirectory, out, holder);
@@ -474,20 +495,25 @@ public class HadoopDeployer {
         return s + "/" + name;
     }
 
-    private static void copyLibraryDirectory(final String s, final File dir, final ZipOutputStream pOut) throws IOException {
+    private static void copyLibraryDirectory(final String s, final File dir, final ZipOutputStream pOut,Set<String> existing) throws IOException {
         File[] list = dir.listFiles();
         if (list == null) return;
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < list.length; i++) {
             File file = list[i];
             if (file.isDirectory()) {
                 final String np = nextPath(s, file.getName());
-                copyLibraryDirectory(np, file, pOut);
+                copyLibraryDirectory(np, file, pOut,existing);
             } else {
                 final String np = nextPath(s, file.getName());
-                ZipEntry ze = new ZipEntry(np);
-                pOut.putNextEntry(ze);
-                copyFile(file, pOut);
-                pOut.closeEntry();
+                // prevent duplicates
+                if (!existing.contains(np)) {
+                    ZipEntry ze = new ZipEntry(np);
+                    pOut.putNextEntry(ze);
+                    copyFile(file, pOut);
+                    pOut.closeEntry();
+                    existing.add(np);
+                }
             }
         }
     }
@@ -496,6 +522,7 @@ public class HadoopDeployer {
     private static void copySpecifiesLibraryDirectory(final String s, final File dir, final ZipOutputStream pOut, Set<String> paths) throws IOException {
         File[] list = dir.listFiles();
         if (list == null) return;
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < list.length; i++) {
             File file = list[i];
             if (file.isDirectory()) {
