@@ -21,6 +21,7 @@ public class HadoopJob implements IHadoopJob {
         return gHadoopCommand;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static void setHadoopCommend(String pHadoopCommend) {
         gHadoopCommand = pHadoopCommend;
     }
@@ -31,6 +32,7 @@ public class HadoopJob implements IHadoopJob {
         return gDefaultJarName;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static void setDefaultJarName(final String pDefaultJarName) {
         gDefaultJarName = pDefaultJarName;
         setJarRequired(pDefaultJarName == null);
@@ -55,7 +57,7 @@ public class HadoopJob implements IHadoopJob {
     }
 
     public static HadoopJob buildJob(Class mainClass, String inputDirectory, String jobDirectory, String outDir, String... added) {
-        return buildJob2(mainClass, inputDirectory, jobDirectory, outDir, (String[]) added);
+        return buildJob2(mainClass, inputDirectory, jobDirectory, outDir,   added);
     }
 
     public static HadoopJob buildJob2(Class mainClass, String inputDirectory, String jobDirectory, String outDir, String[] added) {
@@ -130,14 +132,17 @@ public class HadoopJob implements IHadoopJob {
         return m_UID;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setUID(final UUID pUID) {
         m_UID = pUID;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static String getHadoopCommand() {
         return gHadoopCommand;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static void setHadoopCommand(final String pHadoopCommand) {
         gHadoopCommand = pHadoopCommand;
     }
@@ -150,6 +155,7 @@ public class HadoopJob implements IHadoopJob {
         return m_AllCounterValues;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setAllCounterValues(final Map<String, Long> pAllCounterValues) {
         m_AllCounterValues = pAllCounterValues;
     }
@@ -161,9 +167,11 @@ public class HadoopJob implements IHadoopJob {
             if(job != null) {
                 Counters counters = job.getCounters();
                 Iterator<CounterGroup> iterator = counters.iterator();
+                //noinspection WhileLoopReplaceableByForEach
                 while (iterator.hasNext()) {
                     CounterGroup cg = iterator.next();
                     Iterator<Counter> iterator1 = cg.iterator();
+                    //noinspection WhileLoopReplaceableByForEach
                     while (iterator1.hasNext()) {
                         Counter counter = iterator1.next();
                         m_AllCounterValues.put(counter.getDisplayName(), counter.getValue());
@@ -186,6 +194,7 @@ public class HadoopJob implements IHadoopJob {
      * @param group group name
      * @return
      */
+    @SuppressWarnings("UnusedDeclaration")
       public Counter[] getAllCountersInGroup(String group) {
         List<Counter> holder = new ArrayList<Counter>();
 
@@ -193,10 +202,12 @@ public class HadoopJob implements IHadoopJob {
             Job job = getJob();
             Counters counters = job.getCounters();
             Iterator<CounterGroup> iterator = counters.iterator();
+            //noinspection WhileLoopReplaceableByForEach
             while (iterator.hasNext()) {
                 CounterGroup cg = iterator.next();
                 if (group.equals(cg.getName())) {
                     Iterator<Counter> iterator1 = cg.iterator();
+                    //noinspection WhileLoopReplaceableByForEach
                     while (iterator1.hasNext()) {
                         Counter counter = iterator1.next();
                         holder.add(counter);
@@ -220,10 +231,12 @@ public class HadoopJob implements IHadoopJob {
         m_Job = pJob;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public String getDefaultDirectory() {
         return m_DefaultDirectory;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setDefaultDirectory(final String pDefaultDirectory) {
         m_DefaultDirectory = pDefaultDirectory;
     }
@@ -365,6 +378,7 @@ public class HadoopJob implements IHadoopJob {
         sb.append(getHadoopCommend());
           sb.append(" fs -chmod -R 777 " );
 
+        //noinspection UnnecessaryLocalVariable
         String s = sb.toString();
         return s;
     }
@@ -378,7 +392,9 @@ public class HadoopJob implements IHadoopJob {
 
         String jarFile = getJarFile();
         jarFile = jarFile.replace("res://", ""); // might be a resource
+        //noinspection StringConcatenationInsideStringBufferAppend
         sb.append(" jar " + jarFile);
+        //noinspection StringConcatenationInsideStringBufferAppend
         sb.append("  " + getMainClass());
 
         // add a dummy argument
@@ -386,13 +402,14 @@ public class HadoopJob implements IHadoopJob {
 
         String[] others = getAllArgs();
         if (others != null) {
+            //noinspection ForLoopReplaceableByForEach
             for (int i = 0; i < others.length; i++) {
                 sb.append(" " + others[i]);
             }
         }
                // todo replace this Hack
 
-
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
          String s = sb.toString();
         return s;
     }

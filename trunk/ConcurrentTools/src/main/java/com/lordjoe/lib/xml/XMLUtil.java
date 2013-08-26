@@ -54,7 +54,7 @@ public abstract class XMLUtil {
     public static DocumentBuilder getDocumentBuilder()
     {
         DocumentBuilderFactory TheFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder ret = null;
+        DocumentBuilder ret;
         try {
             ret = TheFactory.newDocumentBuilder();
         }
@@ -65,6 +65,7 @@ public abstract class XMLUtil {
     }
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public static float extractFloatValue(String attr, String pStr) {
         String s = extractStringValue(attr, pStr);
         if(s.contains(","))
@@ -72,6 +73,7 @@ public abstract class XMLUtil {
         return Float.parseFloat(s);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static double extractDoubleValue(String attr, String pStr) {
         String s = extractStringValue(attr, pStr);
         if(s.contains(","))
@@ -80,6 +82,7 @@ public abstract class XMLUtil {
     }
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public static int extractIntegerValue(String attr, String pStr) {
         String s = extractStringValue(attr, pStr);
         if(s.contains(","))
@@ -88,6 +91,7 @@ public abstract class XMLUtil {
     }
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public static boolean extracBooleanValue(String attr, String pStr) {
         String s = extractStringValue(attr, pStr);
         return "TRUE".equalsIgnoreCase(s);
@@ -168,6 +172,7 @@ public abstract class XMLUtil {
      }
 
     
+    @SuppressWarnings("UnusedDeclaration")
     public static Document buildDOM(String FileName) throws SAXException
     {
         try {
@@ -250,6 +255,7 @@ public abstract class XMLUtil {
         * @param attributes non-null array of attributes
         * @return resultant int
         */
+    @SuppressWarnings("UnusedDeclaration")
        public static boolean handleRequiredNameValueBoolean(String Name,NameValue[] attributes)
        {
            String s = handleRequiredNameValueString( Name,attributes);
@@ -278,6 +284,7 @@ public abstract class XMLUtil {
             * @param attributes non-null array of attributes
             * @return resultant int
             */
+    @SuppressWarnings("UnusedDeclaration")
            public static double handleRequiredNameValueDouble(String Name,NameValue[] attributes)
            {
                String s = handleRequiredNameValueString( Name,attributes);
@@ -302,7 +309,8 @@ public abstract class XMLUtil {
          * @param attributes non-null array of attributes
          * @return resultant int
          */
-        public static int[] handleRequiredNameValueIntArray(String Name,NameValue[] attributes)
+      @SuppressWarnings("UnusedDeclaration")
+         public static int[] handleRequiredNameValueIntArray(String Name,NameValue[] attributes)
         {
             String s = handleRequiredNameValueString( Name,attributes);
             String[] tokens = s.split(",");
@@ -452,7 +460,7 @@ public abstract class XMLUtil {
      */
     public static String generateXML(Document base) {
         Element Start = base.getDocumentElement(); 
-        StringBuffer sb = new StringBuffer(1024);
+        StringBuilder sb = new StringBuilder(1024);
         generateXML(Start,sb,0);
         return(sb.toString());
         
@@ -464,7 +472,7 @@ public abstract class XMLUtil {
      * @param xml Text of the XML page to format.
      * @return Formated XML String.
      */
-    protected static void generateXML(Element base,StringBuffer sb,int indent)
+    protected static void generateXML(Element base,StringBuilder sb,int indent)
     {
         int Start = sb.length();
         doIndent(sb,indent);
@@ -476,7 +484,7 @@ public abstract class XMLUtil {
         sb.append("</" + name + ">\n");
     }
     
-    protected static void handleNodeAttributes(Element base,StringBuffer sb,int indent,int LineChars)
+    protected static void handleNodeAttributes(Element base,StringBuilder sb,int indent,int LineChars)
     {
         NamedNodeMap items = base.getAttributes();
         int Start = sb.length();
@@ -487,7 +495,7 @@ public abstract class XMLUtil {
         sb.append(">\n");
     }
     
-    protected static int handleNodeAttribute(Attr base,StringBuffer sb,int indent,int LineChars)
+    protected static int handleNodeAttribute(Attr base,StringBuilder sb,int indent,int LineChars)
     {
         int Start = sb.length();
         String name = base.getNodeName();
@@ -513,7 +521,7 @@ public abstract class XMLUtil {
 	*/
 	public static String fromURLString(String in)
 	{
-		StringBuffer ret = new StringBuffer(in.length() + 20);
+		StringBuilder ret = new StringBuilder(in.length() + 20);
 		for(int i = 0; i < in.length(); i++) {
 		    char c = in.charAt(i);
 		    switch(c) {
@@ -529,7 +537,7 @@ public abstract class XMLUtil {
 
     public static String makeURLString(String in)
 	{
-		StringBuffer ret = new StringBuffer(in.length() + 20);
+		StringBuilder ret = new StringBuilder(in.length() + 20);
 		for(int i = 0; i < in.length(); i++) {
 			char c = in.charAt(i);
 			if( c > ' ' && c < 127 )
@@ -561,7 +569,7 @@ public abstract class XMLUtil {
 	*/
 	public static String fromXMLString(String in) 
 	{
-		StringBuffer ret = new StringBuffer(in.length() + 20);
+		StringBuilder ret = new StringBuilder(in.length() + 20);
 		for(int i = 0; i < in.length(); i++) {
 		    char c = in.charAt(i);
 		    switch(c) {
@@ -578,7 +586,7 @@ public abstract class XMLUtil {
 		return(ret.toString());
 	}
 	
-	public static int decodeHexChar(StringBuffer sb,String in,int index)
+	public static int decodeHexChar(StringBuilder sb,String in,int index)
 	{
 	    int end = in.indexOf(';',index);
         char added = 0;
@@ -597,7 +605,7 @@ public abstract class XMLUtil {
 	    return(end + 1);
 	}
 	
-	public static int decodeAmpChar(StringBuffer sb,String in,int index)
+	public static int decodeAmpChar(StringBuilder sb,String in,int index)
 	{
 	    int end = in.indexOf(';',index);
 	    
@@ -621,7 +629,7 @@ public abstract class XMLUtil {
 	{
         if(in == null)
             return "null";
-        StringBuffer ret = new StringBuffer(in.length() + 20);
+        StringBuilder ret = new StringBuilder(in.length() + 20);
 		for(int i = 0; i < in.length(); i++) {
 			char c = in.charAt(i);
 			if( c >= ' ' && c < 255 ) 
@@ -659,7 +667,7 @@ public abstract class XMLUtil {
 	
     
     
-    protected static void handleElements(Element base,StringBuffer sb,int indent)
+    protected static void handleElements(Element base,StringBuilder sb,int indent)
     {
         NodeList items = base.getChildNodes();
         for(int i = 0; i < items.getLength(); i++) {
@@ -708,7 +716,7 @@ public abstract class XMLUtil {
         table.put(Name,Value);
     }
    
-    protected static int doIndent(StringBuffer sb,int indent)
+    protected static int doIndent(StringBuilder sb,int indent)
     {
         for(int i = 0; i < indent; i++)
             sb.append("\t");
@@ -770,7 +778,7 @@ public abstract class XMLUtil {
     
     public static String exceptionToXML(Exception ex)
     {
-        StringBuffer ret = new StringBuffer(2048);
+        StringBuilder ret = new StringBuilder(2048);
         ret.append("<Error>\n");
         ret.append("    <Exception ");
         ret.append("  Class=\"");
@@ -1210,7 +1218,7 @@ public abstract class XMLUtil {
     }
     public static String adjustURLString(String in)
     {
-        StringBuffer sb = new StringBuffer(in.length());
+        StringBuilder sb = new StringBuilder(in.length());
         int index = 0;
         while(index < in.length()) {
             char c = in.charAt(index++);
@@ -1234,7 +1242,7 @@ public abstract class XMLUtil {
     public static boolean testTagParse(String XMLText)
     {
 	    DocumentBuilder   parser = getDocumentBuilder();
-        StringBufferInputStream in = new StringBufferInputStream(XMLText);
+         InputStream in = new StringBufferInputStream(XMLText);
         return(getStreamDOM( in,parser) != null);
     }
     
@@ -1248,8 +1256,8 @@ public abstract class XMLUtil {
     public static String buildTagPage(String XMLText,String TagName)
     {
         String[] Tags = captureTagsWithName( XMLText, TagName);
-        StringBuffer sb = new StringBuffer();
-        StringBuffer sb2 = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
         // dummy tag
         sb.append("<head>\n");
         // add all tags
@@ -1302,7 +1310,7 @@ public abstract class XMLUtil {
     public static String readStream(InputStream in)
     {
         BufferedInputStream TheStream = null;
-        StringBuffer s = new StringBuffer(2048);
+        StringBuilder s = new StringBuilder(2048);
         try {
             TheStream = new BufferedInputStream(in,2048);
             int c = TheStream.read();
@@ -1341,7 +1349,7 @@ public abstract class XMLUtil {
     * convert a string to a DOM
     * @param id 
     */
-    @SuppressWarnings(value = "deprecated")
+    @SuppressWarnings("UnusedDeclaration")
     public static Document getStringDOM(String id,Parser parser)
     {
         InputStream in = null;
@@ -1390,7 +1398,7 @@ public abstract class XMLUtil {
     */
     public static Integer extractIndex(String text,int index)
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for(int i = index; i < text.length(); i++) {
             char c = text.charAt(i);
             if(!Character.isDigit(c))
@@ -1491,7 +1499,7 @@ public abstract class XMLUtil {
     public static String toXMLString(String in)
     {
         
-	    StringBuffer sb = new StringBuffer(in.length() + 100);
+	    StringBuilder sb = new StringBuilder(in.length() + 100);
 	//    boolean inQuote = false;
 	    for(int i = 0; i < in.length(); i++)
 	    {
@@ -1561,12 +1569,12 @@ public abstract class XMLUtil {
     */
     public static String getNodeText(Node in)
     {
-        StringBuffer text = new StringBuffer();
+        StringBuilder text = new StringBuilder();
         accumulateNodeText(in,text);
         return(text.toString());
     }
     
-    protected static void accumulateNodeText(Node in,StringBuffer text)
+    protected static void accumulateNodeText(Node in,StringBuilder text)
     {
         NodeList items = in.getChildNodes();
         int count = items.getLength();
@@ -1593,7 +1601,7 @@ public abstract class XMLUtil {
     */
     public static String escapeParamString(String in) 
     {
-        StringBuffer sb = new StringBuffer(in.length() + 20);
+        StringBuilder sb = new StringBuilder(in.length() + 20);
         for(int i = 0; i < in.length(); i++) {
             char c = in.charAt(i);
             if(Character.isJavaIdentifierPart(c)) 
@@ -1624,7 +1632,7 @@ public abstract class XMLUtil {
     */
     public static String decodeParamString(String in) 
     {
-        StringBuffer sb = new StringBuffer(in + 20);
+        StringBuilder sb = new StringBuilder(in + 20);
         for(int i = 0; i < in.length(); i++) {
             char c = in.charAt(i);
             switch(c) {
@@ -1637,7 +1645,7 @@ public abstract class XMLUtil {
                 i++;
                 char c1 = in.charAt(i++);   
                 char c2 = in.charAt(i); 
-                StringBuffer decode = new StringBuffer(2);
+                StringBuilder decode = new StringBuilder(2);
                 decode.append(c1);
                 decode.append(c2);
                 int n = Integer.parseInt(decode.toString(), 16);
@@ -1733,7 +1741,7 @@ public abstract class XMLUtil {
     
     public static String formatXMLDate(Date date)
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         addXMLHeader(sb);
         sb.append("<Date>");
         sb.append(Long.toString(date.getTime()));
@@ -1743,7 +1751,7 @@ public abstract class XMLUtil {
 
     public static String formatXMLDate(Date date,String pattern)
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         addXMLHeader(sb);
         sb.append("<Date pattern=\"");
         sb.append(pattern);
@@ -1754,14 +1762,14 @@ public abstract class XMLUtil {
         return(sb.toString());
     }
 
-    public static void addXMLHeader(StringBuffer sb)
+    public static void addXMLHeader(StringBuilder sb)
     {
         sb.append("<?xml version=\"1.0\"?>\n");
     }
     
     public static String buildArgumentText(String in)
     {
-        StringBuffer sb = new StringBuffer((int)(in.length() * 1.1));
+        StringBuilder sb = new StringBuilder((int)(in.length() * 1.1));
         int n = in.length();
         for(int i = 0; i < n; i++) {
             char c = in.charAt(i);
@@ -1805,7 +1813,7 @@ public abstract class XMLUtil {
     {
         if(item == null)
             return "";
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(Util.indentString(indent));
         sb.append("<");
         sb.append(tagName);

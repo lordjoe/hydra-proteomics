@@ -34,6 +34,7 @@ public class NewPosCounter extends ConfiguredJobRunner implements IJobRunner { /
 
 
             String line = value.toString();
+             //noinspection UnnecessaryLocalVariable,UnusedDeclaration
             StringTokenizer tokenizer = new StringTokenizer(line);
 
             if (line.length() > 0) {
@@ -45,6 +46,7 @@ public class NewPosCounter extends ConfiguredJobRunner implements IJobRunner { /
 
                     //System.out.println(result);
 
+                    //noinspection StringBufferReplaceableByString
                     String s = new StringBuilder().append(line.charAt(i)).append('_').append(i + 1).append("_").append(roundTwoDecimals(result)).toString();
                 //    System.out.println(s);
                     onlyText.set(s);
@@ -114,11 +116,13 @@ public class NewPosCounter extends ConfiguredJobRunner implements IJobRunner { /
                 return true;
             // break these out
             if (fs.getFileStatus(src).isDir()) {
+                //noinspection UnusedAssignment
                 boolean doneOK = fs.delete(src, true);
                 doneOK = !fs.exists(src);
                 return doneOK;
             }
             if (fs.isFile(src)) {
+                //noinspection UnnecessaryLocalVariable
                 boolean doneOK = fs.delete(src, false);
                 return doneOK;
             }
@@ -129,10 +133,11 @@ public class NewPosCounter extends ConfiguredJobRunner implements IJobRunner { /
 
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static final String USER_DIRECTORY = "/user/acsordas/newposcounter";
 
     public int runJob(Configuration conf, String[] args) throws Exception {
-
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             System.err.println(arg);
@@ -180,6 +185,7 @@ public class NewPosCounter extends ConfiguredJobRunner implements IJobRunner { /
 
         // you must pass the output directory as the last argument
         String athString = otherArgs[otherArgs.length - 1];
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration
         File out = new File(athString);
         //        if (out.exists()) {
         //            FileUtilities.expungeDirectory(out);
@@ -194,6 +200,7 @@ public class NewPosCounter extends ConfiguredJobRunner implements IJobRunner { /
 
 
         boolean ans = job.waitForCompletion(true);
+        //noinspection UnnecessaryLocalVariable
         int ret = ans ? 0 : 1;
         return ret;
     }
@@ -215,7 +222,9 @@ public class NewPosCounter extends ConfiguredJobRunner implements IJobRunner { /
     }
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public static final String HADOOP_MACHINE = "hadoop-master-03.ebi.ac.uk";
+    @SuppressWarnings("UnusedDeclaration")
     public static final int HADOOP_PORT = 54310;
 
     private static void usage() {
@@ -247,9 +256,10 @@ public class NewPosCounter extends ConfiguredJobRunner implements IJobRunner { /
             return;
         }
 
-
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         IHadoopController launcher = new LocalHadoopController();
 
+        //noinspection SimplifiableIfStatement,PointlessBooleanExpression,ConstantConditions
         if (!RUNNING_REMOTE) {
             HardCodedInputFormat.setTextToSend(TEST_CONTENT);
 
@@ -270,6 +280,7 @@ public class NewPosCounter extends ConfiguredJobRunner implements IJobRunner { /
 
         if (RUNNING_REMOTE) {
             String host = RemoteUtilities.getHost();
+            //noinspection UnnecessaryLocalVariable,UnusedDeclaration
             int port = RemoteUtilities.getPort();
             String user = RemoteUtilities.getUser(); // "slewis";  //
             String password = RemoteUtilities.getPassword(); // "training";  //

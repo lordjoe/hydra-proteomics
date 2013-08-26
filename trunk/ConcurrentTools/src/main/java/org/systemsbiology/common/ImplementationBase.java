@@ -11,6 +11,7 @@ import java.util.*;
  * written by Steve Lewis
  * on Apr 23, 2010
  */
+@SuppressWarnings("UnusedDeclaration")
 public abstract class ImplementationBase implements ITagHandler, IXMLWriter
 {
     public static final ImplementationBase[] EMPTY_ARRAY = {};
@@ -63,6 +64,7 @@ public abstract class ImplementationBase implements ITagHandler, IXMLWriter
     }
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public void writeXML() {
         String xml = getXMLString();
         String FileName = ClassUtilities.shortClassName(this);
@@ -81,7 +83,7 @@ public abstract class ImplementationBase implements ITagHandler, IXMLWriter
     public String getXMLString(boolean expandFixed) {
         try {
             XMLPropertySet props = new XMLPropertySet();
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             appendXML(props, sb, 0, expandFixed);
             String xml = sb.toString();
             return (xml);
@@ -100,6 +102,7 @@ public abstract class ImplementationBase implements ITagHandler, IXMLWriter
         String className = buildStartTag(props, sb, indent);
         appendProperties(props, sb, indent);
         sb.append(Util.indentString(indent));
+        //noinspection StringConcatenationInsideStringBufferAppend
         sb.append("</" + className + ">\n");
     }
 
@@ -146,6 +149,7 @@ public abstract class ImplementationBase implements ITagHandler, IXMLWriter
         if (!props.isHandled(name)) {
             Object prop = ClassAnalyzer.getProperty(target, name);
             if (prop != null) {
+                //noinspection StringConcatenationInsideStringBufferAppend
                 sb.append(" " + name + "=\"");
                 String str = ImplementationUtilities.convertToString(prop);
                 sb.append(str);
@@ -172,6 +176,7 @@ public abstract class ImplementationBase implements ITagHandler, IXMLWriter
 
     protected void appendReflectiveProperties(XMLPropertySet props, Appendable sb, int indent) throws IOException {
         String[] reflexiveProps = getReflectiveProperties();
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < reflexiveProps.length; i++) {
             String reflexiveProp = reflexiveProps[i];
             appendReflectiveProperty(props, sb, indent, reflexiveProp);
@@ -192,7 +197,7 @@ public abstract class ImplementationBase implements ITagHandler, IXMLWriter
      * @return
      */
     public final String testValidation() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         validateState(sb);
         if (sb.length() > 0)
             return (sb.toString()); // problem
@@ -205,6 +210,7 @@ public abstract class ImplementationBase implements ITagHandler, IXMLWriter
      * @param sb
      */
     protected void validateState(Appendable sb) {
+        //noinspection UnnecessaryReturnStatement
         return;
     }
 
@@ -264,6 +270,7 @@ public abstract class ImplementationBase implements ITagHandler, IXMLWriter
 
 
     public boolean hasRequiredProperties(String[] props) {
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < props.length; i++) {
             String prop = props[i];
             if (!hasRequiredProperty(prop))
@@ -290,7 +297,7 @@ public abstract class ImplementationBase implements ITagHandler, IXMLWriter
             return (!Util.isEmptyString((String) test));
         }
         if (test instanceof Integer) {
-            return (((Integer) test).intValue() != Integer.MIN_VALUE);
+            return ((Integer) test != Integer.MIN_VALUE);
         }
         if (test instanceof Date) {
             return (((Date) test).getTime() != 0);

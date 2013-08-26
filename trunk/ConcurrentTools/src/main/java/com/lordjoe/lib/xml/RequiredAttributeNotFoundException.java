@@ -1,7 +1,6 @@
 
 package com.lordjoe.lib.xml;
 
-import com.lordjoe.utilities.*;
 
 
 /**
@@ -16,12 +15,15 @@ public class RequiredAttributeNotFoundException extends RuntimeException
     
     protected static String buildMessage(String needed,NameValue[] attributes)
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
+        //noinspection StringConcatenationInsideStringBufferAppend
         sb.append("The required attribute \'" + needed + "\' was not found \n" +
                 "Found attributes are: ");
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < attributes.length; i++)
         {
             NameValue attribute = attributes[i];
+            //noinspection StringConcatenationInsideStringBufferAppend
             sb.append(attribute.getName() + "='" + attribute.getValue() + "', ");
         }
         return sb.toString();

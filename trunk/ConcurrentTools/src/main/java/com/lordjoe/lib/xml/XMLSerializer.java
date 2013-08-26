@@ -486,7 +486,7 @@ public class XMLSerializer extends HandlerBase
         return(ret);
     }
 
-    public StringBuffer getAccumulator()
+    public StringBuilder getAccumulator()
     {
         if(m_EntityStack.size() > 0)
            return((m_EntityStack.get(m_EntityStack.size() - 1)).m_Text);
@@ -560,7 +560,7 @@ public class XMLSerializer extends HandlerBase
     public void characters (char ch[], int start, int length)
         throws SAXException
     {
-        StringBuffer sb = getAccumulator();
+        StringBuilder sb = getAccumulator();
         for(int i = start; i < start + length; i++) {
             if(!Character.isWhitespace(ch[i]) || sb.length() > 0)
                 sb.append(ch[i]);
@@ -821,12 +821,12 @@ public class XMLSerializer extends HandlerBase
     {
         public Object m_Object; // controling Objecrt
         public String m_Name; // name of the entity
-        public StringBuffer m_Text; // AccumulatedText
+        public StringBuilder m_Text; // AccumulatedText
 
         protected EntityItem(Object o,String Name) {
             m_Object = o;
             m_Name = Name;
-           m_Text = new StringBuffer();
+           m_Text = new StringBuilder();
         }
 
         /**
