@@ -18,7 +18,7 @@ public class FDRParser {
     private final IDiscoveryDataHolder m_Handler;
     private final IDiscoveryDataHolder m_ModifiedHandler;
     private final IDiscoveryDataHolder m_UnModifiedHandler;
-     private final int m_MaxHits;
+    private final int m_MaxHits;
 
 
     public FDRParser(String filename) {
@@ -29,17 +29,15 @@ public class FDRParser {
         m_File = new File(filename);
         m_MaxHits = maxhits;
         if (USE_EXPECTED)
-            m_Handler = FDRUtilities.getDiscoveryDataHolder("Default Algorighm", false);      // better us low
+            m_Handler = FDRUtilities.getDiscoveryDataHolder("Default algorithm", false);      // better us low
         else
-            m_Handler = FDRUtilities.getDiscoveryDataHolder("Default Algorighm", true);   // better us high
+            m_Handler = FDRUtilities.getDiscoveryDataHolder("Default algorithm", true);   // better us high
 
 
-        m_ModifiedHandler = FDRUtilities.getDiscoveryDataHolder("Default Algorighm", true);   // better us high
+        m_ModifiedHandler = FDRUtilities.getDiscoveryDataHolder("Default algorithm", true);   // better us high
 
-        m_UnModifiedHandler = FDRUtilities.getDiscoveryDataHolder("Default Algorighm", true);   // better us high
+        m_UnModifiedHandler = FDRUtilities.getDiscoveryDataHolder("Default algorithm", true);   // better us high
 
-
-        readFileAndGenerateFDR();    // read file populate the  IDiscoveryDataHolder
 
     }
 
@@ -62,7 +60,9 @@ public class FDRParser {
     /**
      *
      */
-    private void readFileAndGenerateFDR() {
+    public void readFileAndGenerateFDR(ISpectrumDataFilter... filters) {
+        int numberProcessed = 0;
+        int numberUnProcessed = 0;
         try {
             LineNumberReader rdr = new LineNumberReader(new FileReader(m_File));
             String line = rdr.readLine();
@@ -70,18 +70,25 @@ public class FDRParser {
                 if (line.contains("<search_hit")) {
                     String[] searchHitLines = readSearchHitLines(line, rdr);
                     //              System.out.println(line);
-                    handleSearchHit(searchHitLines);
-                 }
+                    boolean processed = handleSearchHit(searchHitLines, filters);
+                    if (processed)
+                        numberProcessed++;
+                    else
+                        numberUnProcessed++;
+                }
                 line = rdr.readLine();
 
             }
+
+            //noinspection UnnecessaryReturnStatement
+            return;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    protected String[] readSearchHitLines(String line, LineNumberReader rdr) {
+    protected String[] readSearchHitLines(String line, LineNumberReader rdr, ISpectrumDataFilter... filters) {
         List<String> holder = new ArrayList<String>();
 
         try {
@@ -103,7 +110,7 @@ public class FDRParser {
     }
 
 
-    protected void handleSearchHit(String[] lines) {
+    protected boolean handleSearchHit(String[] lines, ISpectrumDataFilter... filters) {
 
         Double expectedValue = null;
         Double hyperScoreValue = null;
@@ -111,7 +118,7 @@ public class FDRParser {
         String line = lines[index++];   // handle first line
         boolean trueHit = !line.contains("protein=\"DECOY_");
         boolean processSpectrum = parseHitValue(line) <= m_MaxHits;
-        boolean isModified =  false;
+        boolean isModified = false;
 
         for (; index < lines.length; index++) {
             line = lines[index];
@@ -120,7 +127,7 @@ public class FDRParser {
                 break;         // we are done
 
             if (line.contains(" modified_peptide="))
-                isModified =  true;
+                isModified = true;
 
 
             if (line.contains("<search_score name=\"hyperscore\" value=\"")) {
@@ -141,29 +148,46 @@ public class FDRParser {
 
         if (processSpectrum) {
             final IDiscoveryDataHolder hd = getHandler();
-            double score;
-            if (USE_EXPECTED)
-                score = expectedValue;
-            else
-                score = hyperScoreValue;
-
-            if (trueHit) {
-                hd.addTrueDiscovery(score);
-                if(isModified)
-                    m_ModifiedHandler.addTrueDiscovery(score);
-                else
-                    m_UnModifiedHandler.addTrueDiscovery(score);
-            } else {
-                hd.addFalseDiscovery(score);
-                if(isModified)
-                    m_ModifiedHandler.addFalseDiscovery(score);
-                else
-                    m_UnModifiedHandler.addFalseDiscovery(score);
+            boolean processData = true;
+            // apply any filters
+            //noinspection ConstantConditions
+            SpectrumData spectrum = new SpectrumData(expectedValue, hyperScoreValue, trueHit, isModified);
+            for (int i = 0; i < filters.length; i++) {
+                ISpectrumDataFilter s = filters[i];
+                processData &= s.isSpectrumKept(spectrum);
+            }
+            if (processData) {
+                processSpectrum(spectrum, hd);
+                return true; // processed
             }
 
         }
+        return false; // unprocessed
 
 
+    }
+
+    protected void processSpectrum(SpectrumData spectrum, IDiscoveryDataHolder hd) {
+        double score;
+        if (USE_EXPECTED)
+            score = spectrum.getExpectedValue();
+        else
+            //noinspection ConstantConditions
+            score = spectrum.getHyperScoreValue();
+
+        if (spectrum.isTrueHit()) {
+            hd.addTrueDiscovery(score);
+            if (spectrum.isModified())
+                m_ModifiedHandler.addTrueDiscovery(score);
+            else
+                m_UnModifiedHandler.addTrueDiscovery(score);
+        } else {
+            hd.addFalseDiscovery(score);
+            if (spectrum.isModified())
+                m_ModifiedHandler.addFalseDiscovery(score);
+            else
+                m_UnModifiedHandler.addFalseDiscovery(score);
+        }
     }
 
     public static double parseValue(String line) {
@@ -175,6 +199,7 @@ public class FDRParser {
 
     public static boolean parseIsModifiedValue(String line) {
         String s = parseQuotedValue(line, "peptide");
+        //noinspection SimplifiableIfStatement
         if (s.length() == 0)
             return false;
         return s.contains("[");    // modification string
@@ -206,22 +231,32 @@ public class FDRParser {
         return line.substring(index, endIndex);
     }
 
+    public void appendFDRRates(Appendable out) {
+        try {
+            final IDiscoveryDataHolder handler = getHandler();
+            //final String s = FDRUtilities.listFDRAndCount(handler);
+            final String s = FDRUtilities.listFDRAndRates(handler);
+            out.append(s);
+            System.out.println("====================================\n");
+            final String smod = FDRUtilities.listFDRAndRates(getModifiedHandler());
+            out.append(smod);
+            out.append("====================================\n");
+            final String sunmod = FDRUtilities.listFDRAndRates(getUnModifiedHandler());
+            out.append(sunmod);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 
     public static void main(String[] args) {
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             FDRParser fdrParser = new FDRParser(arg);
-            final IDiscoveryDataHolder handler = fdrParser.getHandler();
-            //final String s = FDRUtilities.listFDRAndCount(handler);
-            final String s = FDRUtilities.listFDRAndRates(handler);
-            System.out.println(s);
-            System.out.println("====================================");
-             final String smod = FDRUtilities.listFDRAndRates(fdrParser.getModifiedHandler());
-            System.out.println(smod);
-            System.out.println("====================================");
-            final String sunmod = FDRUtilities.listFDRAndRates(fdrParser.getUnModifiedHandler());
-            System.out.println(sunmod);
+            fdrParser.readFileAndGenerateFDR();
+            fdrParser.appendFDRRates(System.out);
         }
 
     }
