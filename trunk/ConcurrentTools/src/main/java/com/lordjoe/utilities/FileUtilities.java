@@ -587,7 +587,7 @@ public abstract class FileUtilities {
      * @throws IllegalStateException if a required file is not present
      */
     public static void verifyRequiredFiles() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
 
         synchronized (gRequiredFiles) {
@@ -1792,7 +1792,7 @@ public abstract class FileUtilities {
             return (null);
         String[] items = Util.parseLinesWithBlanks(Text);
         ArrayList holder = new ArrayList();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < items.length; i++) {
             String Text1 = items[i];
             if (Text1.length() == 0) {
@@ -1955,7 +1955,7 @@ public abstract class FileUtilities {
 
     public static String buildString
             (String[] lines) {
-        StringBuffer sb = new StringBuffer(2048);
+        StringBuilder sb = new StringBuilder(2048);
         for (int i = 0; i < lines.length; i++) {
             sb.append(lines[i]);
             sb.append("\n");
@@ -1990,10 +1990,10 @@ public abstract class FileUtilities {
      * { method
      *
      * @param FileName the file name
-     * @return StringBuffer holding file bytes
+     * @return StringBuilder holding file bytes
      *         }
      * @name readInFile
-     * @function reads all the data in a file into a StringBuffer
+     * @function reads all the data in a file into a StringBuilder
      */
     public static String readInFile
     (String
@@ -2010,7 +2010,7 @@ public abstract class FileUtilities {
      * @return String holding file bytes
      *         }
      * @name readInFile
-     * @function reads all the data in a file into a StringBuffer
+     * @function reads all the data in a file into a StringBuilder
      */
     public static String readInFile(File TestFile) {
         if (!TestFile.exists())
@@ -2042,10 +2042,10 @@ public abstract class FileUtilities {
      *
      * @param Source - class for resource
      * @param name   the file name
-     * @return StringBuffer holding file bytes - null if resource not found
+     * @return StringBuilder holding file bytes - null if resource not found
      *         }
      * @name readInResource
-     * @function reads all the data in a resource into a StringBuffer
+     * @function reads all the data in a resource into a StringBuilder
      */
     public static String readInResource(Class Source, String name) {
         InputStream in = Source.getResourceAsStream(name);
@@ -2058,10 +2058,10 @@ public abstract class FileUtilities {
      * { method
      *
      * @param TheFile the file stream
-     * @return StringBuffer holding file bytes
+     * @return StringBuilder holding file bytes
      *         }
      * @name readInFile
-     * @function reads all the data in a file into a StringBuffer
+     * @function reads all the data in a file into a StringBuilder
      */
     public static String readInFile(Reader TheFile) {
         return (readInFile(TheFile, 4096, 1).toString());
@@ -2072,17 +2072,17 @@ public abstract class FileUtilities {
      *
      * @param TheFile the file stream
      * @param len     the file length or a good guess
-     * @return StringBuffer holding file bytes
+     * @return StringBuilder holding file bytes
      *         }
      * @name readInFile
-     * @function reads all the data in a file into a StringBuffer
+     * @function reads all the data in a file into a StringBuilder
      */
-    public static StringBuffer readInFile
+    public static StringBuilder readInFile
     (Reader
              TheFile, int len,
      int chunk) {
         BufferedReader TheStream = null;
-        StringBuffer s = new StringBuffer(len);
+        StringBuilder s = new StringBuilder(len);
         char[] buffer = new char[chunk];
         int NRead = 0;
         try {
@@ -2105,10 +2105,10 @@ public abstract class FileUtilities {
      * { method
      *
      * @param TheFile the file stream
-     * @return StringBuffer holding file bytes
+     * @return StringBuilder holding file bytes
      *         }
      * @name readInFile
-     * @function reads all the data in a file into a StringBuffer
+     * @function reads all the data in a file into a StringBuilder
      */
     public static String readInFile
     (URL
@@ -2127,10 +2127,10 @@ public abstract class FileUtilities {
      * { method
      *
      * @param TheFile the file stream
-     * @return StringBuffer holding file bytes
+     * @return StringBuilder holding file bytes
      *         }
      * @name readInFile
-     * @function reads all the data in a file into a StringBuffer
+     * @function reads all the data in a file into a StringBuilder
      */
     public static String readInFile
     (InputStream
@@ -2143,14 +2143,14 @@ public abstract class FileUtilities {
      *
      * @param TheFile the file stream
      * @param len     the file length or a good guess
-     * @return StringBuffer holding file bytes
+     * @return StringBuilder holding file bytes
      *         }
      * @name readInFile
-     * @function reads all the data in a file into a StringBuffer
+     * @function reads all the data in a file into a StringBuilder
      */
-    public static StringBuffer readInFile(InputStream TheFile, int len, int chunk) {
+    public static StringBuilder readInFile(InputStream TheFile, int len, int chunk) {
         BufferedReader TheStream = null;
-        StringBuffer s = new StringBuffer(len);
+        StringBuilder s = new StringBuilder(len);
         char[] buffer = new char[chunk];
         int NRead = 0;
         try {
