@@ -4,7 +4,6 @@ import org.systemsbiology.remotecontrol.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.jar.*;
 
 /**
  * com.lordjoe.utilities.Deployer
@@ -14,9 +13,11 @@ import java.util.jar.*;
  */
 public class Deployer {
     public Deployer[] EMPTY_ARRAY = {};
-    public Class THIS_CLASS = Deployer.class;
+    public Class<Deployer> THIS_CLASS = Deployer.class;
 
+    @SuppressWarnings("UnusedDeclaration")
     public final String WINDOWS_DIRECTORY_SEPARATOR = "\\";
+    @SuppressWarnings("UnusedDeclaration")
     public final String LINUX_DIRECTORY_SEPARATOR = "/";
     public final String WINDOWS_PATH_SEPARATOR = ";";
     public final String LINUX_PATH_SEPARATOR = ":";
@@ -87,9 +88,10 @@ public class Deployer {
     };
 
 
-    public final Set<String> EXCLUDED_JARS = new HashSet(Arrays.asList(EEXCLUDED_JARS_LIST));
+    public final Set<String> EXCLUDED_JARS = new HashSet<String>(Arrays.asList(EEXCLUDED_JARS_LIST));
 
-    private final Set<String> m_TaskExcludeJar = new HashSet();
+    @SuppressWarnings("unchecked")
+    private final Set<String> m_TaskExcludeJar = new HashSet<String>();
 
     public Deployer() {
     }
@@ -116,15 +118,16 @@ public class Deployer {
 
     public File[] filterClassPath(String[] pathItems, String javaHome, File libDir) {
 
-        List holder = new ArrayList();
-        List<File> directoryHolder = new ArrayList();
+        List<File> holder = new ArrayList<File>();
+        Set<File> directoryHolder = new HashSet<File> ();
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < pathItems.length; i++) {
             String item = pathItems[i];
             if (".".equals(item))
                 continue;
             if (EXCLUDED_JARS.contains(item))
                 continue;
-            if (item.indexOf(javaHome) > -1)
+            if (item.contains(javaHome))
                 continue;
             File itemFile = new File(item);
 
@@ -144,8 +147,10 @@ public class Deployer {
         }
 
         String test = "a,ffff,ggg";
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         String[] items = test.split(",");
 
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < pathItems.length; i++) {
             String item = pathItems[i];
             if (".".equals(item))
@@ -178,6 +183,7 @@ public class Deployer {
     }
 
     protected boolean inExcludedJars(String s) {
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < EEXCLUDED_JARS_LIST.length; i++) {
             String test = EEXCLUDED_JARS_LIST[i];
             if (s.endsWith(test))
@@ -210,11 +216,13 @@ public class Deployer {
 //          return jarFile;
 //      }
 
-    protected void makeJars(File libDir, List<File> jarDirectories, List<File> holder) {
+    protected void makeJars(File libDir, Collection<File> jarDirectories, Collection<File> holder) {
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
+        Set<String>  usedClassName = new HashSet<String>();
         for (File jarDirectory : jarDirectories) {
             String name = jarDirectory.getName();
       //      File jar = new File(name + ".jar");
-            File added = makeJar(libDir,jarDirectory, name + ".jar");
+            File added = makeJar(libDir,jarDirectory , name + ".jar");
             holder.add(added);
         }
     }
@@ -227,15 +235,15 @@ public class Deployer {
      * @param holder
      * @param jarFile        file to create
      */
-    protected void makeOneJar(List<File> jarDirectories, List<File> holder, File jarFile) {
+    protected void makeOneJar(List<File> jarDirectories, List<File> holder, File jarFile ) {
         JarUtilities jarUtilities = new JarUtilities(jarFile);
-        jarUtilities.jarDirectories(jarFile, jarDirectories.toArray(new File[0]));
+        jarUtilities.jarDirectories(jarFile , jarDirectories.toArray(new File[jarDirectories.size()]));
 
 
         holder.add(jarFile);
     }
 
-    public File makeJar(File libDir, File itemFile,String jarName) {
+    public final File makeJar(File libDir, File itemFile ,String jarName) {
           File jarFile = new File(libDir, jarName);
         String cmd = "jar -cvf " + jarFile.getAbsolutePath() + " -C " + itemFile.getAbsolutePath() + " .";
         System.out.println(cmd);
@@ -329,7 +337,7 @@ public class Deployer {
     public File[] deployLibraries(File deployDir) {
         String javaHome = System.getProperty("java.home");
         String classpath = System.getProperty("java.class.path");
-        String[] pathItems = null;
+        String[] pathItems;
         if (classpath.contains(";")) {
             pathItems = classpath.split(";");
         } else {
@@ -342,18 +350,20 @@ public class Deployer {
         }
         File libDir = new File(deployDir, "lib");
         File[] pathLibs = filterClassPath(pathItems, javaHome, libDir);
+        //noinspection ResultOfMethodCallIgnored
         libDir.mkdirs();
         copyLibraries(libDir, pathLibs);
         return pathLibs;
     }
 
     public String buildBatchFile(File[] pathLibs, File deployDir, final Class mainClass, String[] args) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("ECHO OFF\n");
         sb.append("set JAR_PATH=%HYDRA_HOME%/lib\n");
         sb.append("set q4path=%JAR_PATH%/" + pathLibs[0].getName() + "\n");
         for (int i = 1; i < pathLibs.length; i++) {
             File athLib = pathLibs[i];
+            //noinspection StringConcatenationInsideStringBuilderAppend
             sb.append("set q4path=%q4path%" + WINDOWS_PATH_SEPARATOR + "%JAR_PATH%/" + athLib.getName() + "\n");
         }
         sb.append("ECHO ON\n");
@@ -362,14 +372,17 @@ public class Deployer {
 
     }
 
-    protected void buildCommandLine(final Class mainClass, final String[] args, final StringBuffer pSb) {
+    protected void buildCommandLine(final Class mainClass, final String[] args, final StringBuilder pSb) {
         if (isQuiet()) {
             pSb.append(/* "jre" + WINDOWS_DIRECTORY_SEPARATOR + "bin" + WINDOWS_DIRECTORY_SEPARATOR + */ "javaw ");
         } else {
             pSb.append(/* "jre\\bin\\" + */ "java ");
         }
+        //noinspection StringConcatenationInsideStringBuilderAppend
         pSb.append(" -Xmx1024m -Xms128m -cp %q4path% " + mainClass.getName() + " ");
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 2; i < args.length; i++) {
+            //noinspection StringConcatenationInsideStringBuilderAppend
             pSb.append(" " + args[i]);
         }
         pSb.append(" params=%1 %2 %3 %4 \n");
@@ -397,7 +410,7 @@ public class Deployer {
 
     public String buildShellFile(File[] pathLibs, File deployDir, final Class mainClass, String[] args) {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(SHELL_FILE_HEADER);
 
@@ -405,6 +418,7 @@ public class Deployer {
         sb.append("q4path=$JAR_PATH/" + pathLibs[0].getName() + "\n");
         for (int i = 1; i < pathLibs.length; i++) {
             File athLib = pathLibs[i];
+            //noinspection StringConcatenationInsideStringBuilderAppend
             sb.append("q4path=$q4path" + LINUX_PATH_SEPARATOR + "$JAR_PATH/" + athLib.getName() + "\n");
         }
         sb.append(SHELL_FILE_HEADER);
@@ -424,6 +438,7 @@ public class Deployer {
         pSb.append(" -Xmx400m -Xms64m ");
         pSb.append(" -cp $q4path " + mainClass.getName() + " ");
         for (int i = 2; i < args.length; i++) {
+            //noinspection StringConcatenationInsideStringBuilderAppend
             pSb.append(" " + args[i].replace('%', '$'));
         }
         pSb.append(" $1 $2 $3 $4 $5 $6 $7 $8\n");
@@ -448,6 +463,7 @@ public class Deployer {
 
     public void deploy(final File pDeployDir, final Class mainClass, final String[] pRightArgs) {
         String deployPath = pDeployDir.getAbsolutePath();
+        //noinspection ResultOfMethodCallIgnored
         pDeployDir.mkdirs();
         File[] pathLibs = deployLibraries(pDeployDir);
         makeRunners(pathLibs, pDeployDir, mainClass, "hydra", pRightArgs);
