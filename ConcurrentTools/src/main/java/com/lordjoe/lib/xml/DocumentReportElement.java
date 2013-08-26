@@ -3,18 +3,10 @@ package com.lordjoe.lib.xml;
 //import org.xml.sax.*;
 //import org.w3c.dom.*;
 
-import java.net.URL;
-import java.util.*;
-import java.lang.reflect.*;
-import javax.xml.parsers.*;
-import java.io.*;
-
 import com.lordjoe.utilities.*;
 import org.w3c.dom.*;
-import org.xml.sax.*;
-import org.xml.sax.helpers.*;
 
-import java.text.*;
+import java.util.*;
 
 /*
  * com.lordjoe.lib.xml.DocumentReportElement
@@ -22,9 +14,10 @@ import java.text.*;
  * Date: Jan 16, 2003
  */
 
+@SuppressWarnings("UnusedDeclaration")
 public class DocumentReportElement
 {
-    public static final Class THIS_CLASS = DocumentReportElement.class;
+    public static final Class<DocumentReportElement> THIS_CLASS = DocumentReportElement.class;
     public static final DocumentReportElement[] EMPTY_ARRAY = {};
 
     public static final int MAX_DISPLAYED_ITEMS = 15;
@@ -32,13 +25,13 @@ public class DocumentReportElement
     private boolean m_Leaf;
     private boolean m_Attribute;
     private String m_Name;
-    private Set m_Values;
-    private Map m_SubElements;
+    private Set<String> m_Values;
+    private Map<String, DocumentReportElement> m_SubElements;
 
     public DocumentReportElement()
     {
-        m_Values = new HashSet();
-        m_SubElements = new HashMap();
+        m_Values = new HashSet<String>();
+        m_SubElements = new HashMap<String, DocumentReportElement>();
 
     }
 
@@ -74,6 +67,7 @@ public class DocumentReportElement
                     addCorrespondingElement(realElement); // move to sub items
                 else
                     addSubElement(realElement);
+                //noinspection UnnecessaryContinue
                 continue;
             }
         }
@@ -131,14 +125,14 @@ public class DocumentReportElement
         return (ret);
     }
 
-    public void setSubElements(Map subElements)
+    public void setSubElements(Map<String, DocumentReportElement> subElements)
     {
         m_SubElements = subElements;
     }
 
     public DocumentReportElement getSubElement(String name)
     {
-        return ((DocumentReportElement) m_SubElements.get(name));
+        return (m_SubElements.get(name));
     }
 
     protected void handleElements(Element base)
@@ -182,6 +176,7 @@ public class DocumentReportElement
                     addAttribute(test);
                     break;
                 default :
+                    //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
                     test = null;
             }
         }
@@ -221,15 +216,16 @@ public class DocumentReportElement
 
     public String generateXML()
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         generateXML(sb, 0);
         return (sb.toString());
     }
 
-    public void generateXML(StringBuffer sb, int indent)
+    public void generateXML(StringBuilder sb, int indent)
     {
         System.out.println("Generating XML for " + getName());
         sb.append(Util.indentString(indent));
+        //noinspection StringConcatenationInsideStringBufferAppend
         sb.append("<Item name=\"" + getName() + "\" >\n");
 
         handleValues(sb, indent + 1);
@@ -239,7 +235,7 @@ public class DocumentReportElement
         sb.append("</Item>\n");
     }
 
-    public void handleValues(StringBuffer sb, int indent)
+    public void handleValues(StringBuilder sb, int indent)
     {
         String[] vals = getValues();
         if (vals.length == 0)
@@ -248,6 +244,7 @@ public class DocumentReportElement
         sb.append("<values>");
         if (vals.length > MAX_DISPLAYED_ITEMS)
         {
+            //noinspection StringConcatenationInsideStringBufferAppend
             sb.append("total of " + vals.length + " values");
         }
         else
@@ -263,13 +260,14 @@ public class DocumentReportElement
         sb.append("</values>\n");
     }
 
-    public void handleSubElements(StringBuffer sb, int indent)
+    public void handleSubElements(StringBuilder sb, int indent)
     {
         DocumentReportElement[] items = getSubElements();
         if (items.length == 0)
             return;
         sb.append(Util.indentString(indent));
         sb.append("<subElements>\n");
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < items.length; i++)
         {
             DocumentReportElement val = items[i];

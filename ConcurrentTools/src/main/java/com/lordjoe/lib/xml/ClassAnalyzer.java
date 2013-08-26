@@ -24,6 +24,7 @@ public abstract class ClassAnalyzer
         return gLogger;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static void setLogger(ILogger pLogger) {
         gLogger = pLogger;
     }
@@ -31,6 +32,7 @@ public abstract class ClassAnalyzer
     protected static final Map<Class, IObjectConverter> gConverters =
             new HashMap<Class, IObjectConverter>();
 
+    @SuppressWarnings("UnusedDeclaration")
     public static void registerConverter(Class cls, IObjectConverter conv)
      {
          gConverters.put(cls,conv);
@@ -46,6 +48,7 @@ public abstract class ClassAnalyzer
 
     protected static IObjectConverter gConverter;
 
+    @SuppressWarnings("UnusedDeclaration")
     public static void setObjectConverter(IObjectConverter aConverter)
     {
         gConverter = aConverter;
@@ -54,6 +57,7 @@ public abstract class ClassAnalyzer
     private static final Map<String, IAttributeBuilder> gAttributeBuilders =
             new HashMap<String, IAttributeBuilder>();
 
+    @SuppressWarnings("UnusedDeclaration")
     public static void registerBuilder(String s, IAttributeBuilder b)
     {
         gAttributeBuilders.put(s, b);
@@ -67,16 +71,19 @@ public abstract class ClassAnalyzer
         return gMemberVariablePrefix;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static void setMemberVariablePrefix(String pMemberVariablePrefix)
     {
         gMemberVariablePrefix = pMemberVariablePrefix;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static String getStaticMemberVariablePrefix()
     {
         return gStaticMemberVariablePrefix;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static void setStaticMemberVariablePrefix(String pStaticMemberVariablePrefix)
     {
         gStaticMemberVariablePrefix = pStaticMemberVariablePrefix;
@@ -150,6 +157,7 @@ public abstract class ClassAnalyzer
     public static final Object[] EMPTY_CALL = new Object[0];
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public static Object getStaticField(String name, Class cls)
     {
         try {
@@ -185,6 +193,7 @@ public abstract class ClassAnalyzer
      * @param PropName non-null property name
      * @return - non-null properties collection
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static boolean isPropertyReadable(Class TheClass, String PropName)
     {
         ClassProperty prop = getClassProperty(TheClass, PropName);
@@ -238,6 +247,7 @@ public abstract class ClassAnalyzer
      * @param TheClass non-null target class
      * @return - non-null properties collection
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static String[] getPropertyNames(Class TheClass)
     {
         ClassProperty[] props = getProperties(TheClass);
@@ -253,6 +263,7 @@ public abstract class ClassAnalyzer
      * @param TheClass non-null target class
      * @return - non-null properties collection
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static ClassCollection[] getCollections(Class TheClass)
     {
         ClassAnalysis anal = getAnalysis(TheClass);
@@ -300,6 +311,7 @@ public abstract class ClassAnalyzer
      * @param name   non-null collection name
      * @param added  non-null item to add - must be acceptable type
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static void addCollectionItem(Object TheTarget, String name, Object added)
     {
         ClassCollection col = getCollection(TheTarget, name);
@@ -328,6 +340,7 @@ public abstract class ClassAnalyzer
      * @param name   non-null collection name
      * @param added  non-null item to add - must be acceptable type
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static Enumeration getCollectionItems(Object TheTarget, String name)
     {
         ClassCollection col = getCollection(TheTarget, name);
@@ -481,6 +494,7 @@ public abstract class ClassAnalyzer
      *               any one might be called
      * @throws IllegalArgumentException if elements of the chain are null
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static void setProperties(Object TheTarget, Map Values)
     {
         String PropName = null;
@@ -508,6 +522,7 @@ public abstract class ClassAnalyzer
      *               any one might be called
      * @throws IllegalArgumentException if elements of the chain are null
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static void setProperties(Object TheTarget, Map Values, ILogger log)
     {
         Collection keys = Values.keySet();
@@ -534,6 +549,7 @@ public abstract class ClassAnalyzer
      * @param args       argumewnts
      * @return whatever is returned
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static Object invokeNonOverloadedMethod(Object TheTarget, String methodName,
                                                    Object... args)
     {
@@ -650,7 +666,7 @@ public abstract class ClassAnalyzer
         catch (InvocationTargetException ex) {
             //throw new RuntimeException(ex.getTargetException());
             Throwable innerEx = ex.getTargetException();
-            StringBuffer sb = new StringBuffer(64);
+            StringBuilder sb = new StringBuilder(64);
             sb.append("ClassAnalyzer encountered an ");
             sb.append(innerEx.getClass().getName());
             sb.append(" attempting to invoke the '");
@@ -824,7 +840,7 @@ public abstract class ClassAnalyzer
             return (prop.getSetMethod());
         if (nullOK)
             return (null);
-        StringBuffer error = new StringBuffer(256);
+        StringBuilder error = new StringBuilder(256);
         String sep = System.getProperty("line.separator");
         error.append("Cannot find method to set '").append(name).append("' property in ").append(
                 TheClass.getName());

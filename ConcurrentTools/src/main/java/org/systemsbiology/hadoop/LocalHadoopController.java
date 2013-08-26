@@ -4,9 +4,7 @@ import com.lordjoe.utilities.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.util.*;
 import org.systemsbiology.common.*;
-
 import org.systemsbiology.remotecontrol.*;
-
 
 import java.io.*;
 import java.util.*;
@@ -58,8 +56,10 @@ public class LocalHadoopController implements IHadoopController {
         if(jobs == null)
             return true; // nothing to do
         boolean ret = true;
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < jobs.length; i++) {
             IHadoopJob job = jobs[i];
+            //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment,ConstantConditions
             ret &= runJob( job);
             if(!ret)
                 return ret;
@@ -87,9 +87,7 @@ public class LocalHadoopController implements IHadoopController {
         holder.add(e);
         String[] others = job.getOtherArgs();
         if (others != null) {
-            for (int i = 0; i < others.length; i++) {
-                holder.add(others[i]);
-            }
+            Collections.addAll(holder, others);
         }
 
         String[] args = new String[holder.size()];
@@ -100,6 +98,7 @@ public class LocalHadoopController implements IHadoopController {
         String[] allArgs = job.getAllArgs();
 
         try {
+            //noinspection unchecked
             Class<? extends Tool> mClass = (Class<? extends Tool>) Class.forName(mainClass);
             Tool realMain = mClass.newInstance();
 
@@ -108,7 +107,7 @@ public class LocalHadoopController implements IHadoopController {
             int result = realMain.run(allArgs);
 
             if(realMain instanceof IJobRunner)
-                ((HadoopJob) job).setJob(((IJobRunner)realMain).getJob());
+                  job.setJob(((IJobRunner)realMain).getJob());
             return result == 0;
 //            if (result.contains("Job Failed"))
 //                throw new IllegalStateException(result);
@@ -178,6 +177,7 @@ public class LocalHadoopController implements IHadoopController {
      * @param conf
      * @param holder
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected void handleFileSystem(Configuration conf, List<String> holder) {
 
     }
@@ -313,11 +313,13 @@ public class LocalHadoopController implements IHadoopController {
 
     */
 
-
+       @SuppressWarnings("UnusedDeclaration")
     private static boolean runWholeFileTest(final String[] args) {
         Class<WholeFileTest> mainClass = WholeFileTest.class;
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         String jobName = mainClass.getSimpleName();
         if (args.length > 0)
+            //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
             jobName = args[0];
         LocalHadoopController launcher = new LocalHadoopController();
 
@@ -331,11 +333,13 @@ public class LocalHadoopController implements IHadoopController {
         return launcher.runJob(job);
     }
 
-
+    @SuppressWarnings("UnusedDeclaration")
     private static boolean runHelloTest(final String[] args) {
         Class<RunExecutableTest> mainClass = RunExecutableTest.class;
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         String jobName = mainClass.getSimpleName();
         if (args.length > 0)
+            //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
             jobName = args[0];
         LocalHadoopController launcher = new LocalHadoopController();
 
@@ -353,8 +357,10 @@ public class LocalHadoopController implements IHadoopController {
 
     private static boolean runWordCount(final String[] args) {
         Class<CapitalWordCount> mainClass = CapitalWordCount.class;
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         String jobName = mainClass.getSimpleName();
         if (args.length > 0)
+            //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
             jobName = args[0];
         LocalHadoopController launcher = new LocalHadoopController();
 

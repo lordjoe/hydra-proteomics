@@ -33,6 +33,7 @@ public class ExecChannel extends AbstractChannel {
     }
 
     public String execCommand(String command, List<IOutputListener> listeners) {
+        //noinspection UnusedDeclaration
         FileInputStream fis = null;
         try {
             ChannelExec channel = getExecChannel();
@@ -50,6 +51,7 @@ public class ExecChannel extends AbstractChannel {
 
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void sendFile(File sent, String dst) {
         FileInputStream fis = null;
         String lfile = sent.getName();
@@ -108,7 +110,7 @@ public class ExecChannel extends AbstractChannel {
             try {
                 if (fis != null) fis.close();
             }
-            catch (Exception ee) {
+            catch (Exception ignored) {
             }
         }
     }
@@ -123,7 +125,7 @@ public class ExecChannel extends AbstractChannel {
         if (b == -1) return b;
 
         if (b == 1 || b == 2) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             int c;
             do {
                 c = in.read();

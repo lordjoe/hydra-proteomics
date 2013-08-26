@@ -443,7 +443,8 @@ public class HadoopDeployer {
     public static void deployClassesToJar(File deployDir, String... loadedPackages) {
         try {
             File parentFile = deployDir.getParentFile();
-            if (parentFile != null)
+            //noinspection ConstantConditions
+            if (parentFile != null || !parentFile.exists())
                 //noinspection ResultOfMethodCallIgnored
                 parentFile.mkdirs();
 
@@ -514,6 +515,9 @@ public class HadoopDeployer {
                     pOut.closeEntry();
                     existing.add(np);
                 }
+                else {
+                    System.out.println(np);
+                }
             }
         }
     }
@@ -543,6 +547,13 @@ public class HadoopDeployer {
 
     public static File makeHadoopJar(final String pJarName) {
         File deployDir = new File(pJarName);
+        // I think this is WRONG todo remove
+//        if(!deployDir.exists()) {
+//            deployDir.mkdirs();
+//        } else {
+//            if(!deployDir.isDirectory())
+//                throw new IllegalArgumentException("deploy directory  " + pJarName + " is not a directory");
+ //       }
         deployLibrariesToJar(deployDir);
         return deployDir;
     }

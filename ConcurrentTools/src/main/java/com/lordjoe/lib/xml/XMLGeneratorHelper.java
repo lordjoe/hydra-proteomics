@@ -13,12 +13,13 @@ import java.util.*;
  * Date: Mar 6, 2003
  */
 
+@SuppressWarnings("UnusedDeclaration")
 public class XMLGeneratorHelper 
 {
-    public static final Class THIS_CLASS = XMLGeneratorHelper.class;
+    public static final Class<XMLGeneratorHelper> THIS_CLASS = XMLGeneratorHelper.class;
     public static final XMLGeneratorHelper[] EMPTY_ARRAY = {};
 
-    public static final Set gUniversalExcludedProperties = new HashSet();
+    public static final Set<String> gUniversalExcludedProperties = new HashSet<String>();
     public static final String[] UNIVERSAL_EXCLUDES = { "Class" , "XMLString" };
 
     // Should always work SLewis
@@ -37,7 +38,7 @@ public class XMLGeneratorHelper
     public String getXMLString()
      {
          try {
-             StringBuffer sb = new StringBuffer();
+             StringBuilder sb = new StringBuilder();
              XMLPropertySet props = new XMLPropertySet();
              appendXML(props,sb, 0);
              String xml = sb.toString();
@@ -55,6 +56,7 @@ public class XMLGeneratorHelper
         String className = buildStartTag(sb, indent);
         appendProperties(props,sb, indent);
         sb.append(Util.indentString(indent));
+        //noinspection StringConcatenationInsideStringBufferAppend
         sb.append("</" + className + " >\n");
 
       //  System.out.println("Generating XML for " + className);
@@ -64,6 +66,7 @@ public class XMLGeneratorHelper
     {
         String className = ClassUtilities.shortClassName(m_Client);
         sb.append(Util.indentString(indent));
+        //noinspection StringConcatenationInsideStringBufferAppend
         sb.append("<" + className + " >\n");
         return (className);
     }
@@ -72,6 +75,7 @@ public class XMLGeneratorHelper
     {
         ClassProperty[] properties = ClassAnalyzer.getProperties(m_Client.getClass());
         Arrays.sort(properties,Util.NAME_COMPARATOR);
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < properties.length; i++) {
             ClassProperty theProp = properties[i];
             String propName = theProp.getName();
@@ -124,6 +128,7 @@ public class XMLGeneratorHelper
             IXMLWriter[] value = (IXMLWriter[]) ClassAnalyzer.getProperty(m_Client, propName);
             if (value == null)
                 return;
+            //noinspection ForLoopReplaceableByForEach
             for (int i = 0; i < value.length; i++)
             {
                 IXMLWriter ixmlWriter = value[i];

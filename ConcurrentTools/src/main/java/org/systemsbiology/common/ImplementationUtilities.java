@@ -40,10 +40,13 @@ public abstract class ImplementationUtilities
         return gConverters;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static void addConverter(IStringConverter added)
     {
+        //noinspection SynchronizeOnNonFinalField
         synchronized (gConverters) {
             IStringConverter[] converters = getConverters();
+            //noinspection ForLoopReplaceableByForEach
             for (int i = 0; i < converters.length; i++) {
                 IStringConverter converter = converters[i];
                 if (added.equals(converter))
@@ -59,23 +62,7 @@ public abstract class ImplementationUtilities
         if (item == null)
             return null;
         return buildValueString(item);
-//        Class itemClass = item.getClass();
-//        if (itemClass.isArray()) {
-//            if (itemClass.getComponentType() == Integer.TYPE) {
-//                int[] realItem = (int[]) item;
-//                StringBuffer sb = new StringBuffer();
-//                for (int i = 0; i < realItem.length; i++) {
-//                    int i1 = realItem[i];
-//                    if (sb.length() > 0) {
-//                        sb.append(",");
-//                    }
-//                    sb.append(i1);
-//                }
-//                return sb.toString();
-//            }
-//        }
-//        return item.toString();
-    }
+     }
 
 
     public static String buildValueString(Object value)
@@ -93,12 +80,14 @@ public abstract class ImplementationUtilities
             }
         }
         IStringConverter[] converters = getConverters();
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < converters.length; i++) {
             IStringConverter converter = converters[i];
             if (converter.isApplicable(cls)) {
                 String valueStr = converter.convertToString(value);
-                if (valueStr.indexOf(".") > -1 && !(value instanceof Number))
+                if (valueStr.contains(".") && !(value instanceof Number)) {
                     CommonUtilities.breakHere();
+                }
                 return valueStr;
             }
         }
@@ -122,8 +111,9 @@ public abstract class ImplementationUtilities
 //            if (realValue.charValue() == 0)
 //                value = "null";
 //        }
+        //noinspection SimplifiableIfStatement,PointlessBooleanExpression,ConstantConditions,RedundantIfStatement
         if (value != null) {
-            if (value.getClass().getName().indexOf("Parameter") > -1) {
+            if (value.getClass().getName().contains("Parameter")) {
                 String val = value.toString();
                 val = XMLUtil.makeXMLString(val);
                 return val;
@@ -140,6 +130,7 @@ public abstract class ImplementationUtilities
     protected static String buildValueStringFromArray(int[] value)
     {
         StringBuilder sb = new StringBuilder();
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < value.length; i++) {
             Integer o = value[i];
             String s = ImplementationUtilities.buildValueString(o);
@@ -153,6 +144,7 @@ public abstract class ImplementationUtilities
     protected static String buildValueStringFromArray(Object[] value)
     {
         StringBuilder sb = new StringBuilder();
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < value.length; i++) {
             Object o = value[i];
             String s = ImplementationUtilities.buildValueString(o);
@@ -391,7 +383,7 @@ public abstract class ImplementationUtilities
             if (str == null || "null".equals(str) || str.length() == 0)
                 return null;
             else
-                return new Character(str.charAt(0));
+                return str.charAt(0);
         }
 
         public boolean isApplicable(Class test)
