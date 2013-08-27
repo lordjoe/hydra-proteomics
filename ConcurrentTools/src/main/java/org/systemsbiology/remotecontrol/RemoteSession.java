@@ -140,7 +140,7 @@ public class RemoteSession implements UserInfo {
         IHadoopJob job = HadoopJob.buildJob(
                 CapitalWordCount.class,
                 inputDirectory,     // data on hdfs
-                  "/homes/slewis/jobs",      // jar location
+                "/homes/slewis/jobs",      // jar location
                 RemoteUtilities.getDefaultPath() + "/output"             // output location - will have outputN added
 
         );
@@ -307,7 +307,7 @@ public class RemoteSession implements UserInfo {
         pHc.runJob(job);
     }
 
-//
+
 //    public static void main(String[] args) throws Exception {
 //        final String user = RemoteUtilities.getUser(); // "training";  //
 //        final String password = RemoteUtilities.getPassword(); // "training";  //
@@ -354,5 +354,24 @@ public class RemoteSession implements UserInfo {
 //        System.err.println("Done");
 //
 //    }
+
+    public static void main(String[] args) throws Exception {
+        final String user = RemoteUtilities.getUser(); // "training";  //
+        final String password = RemoteUtilities.getPassword(); // "training";  //
+        final String host = RemoteUtilities.getHost(); // "192.168.244.128"; // "hadoop1";
+
+        if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version0)
+            throw new IllegalStateException("Version 1 is required for this code");
+        final RemoteSession rs = new RemoteSession(host, user, password);
+        rs.setConnected(true);
+
+
+        final RemoteHadoopController hc = new RemoteHadoopController(rs);
+
+        runWordCount(hc);
+        rs.setConnected(false);
+        System.err.println("Done");
+
+    }
 
 }
