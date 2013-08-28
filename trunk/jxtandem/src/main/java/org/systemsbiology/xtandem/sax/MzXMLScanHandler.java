@@ -1,18 +1,20 @@
 package org.systemsbiology.xtandem.sax;
 
+import org.systemsbiology.sax.*;
 import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.bioml.sax.*;
 import org.xml.sax.*;
 
 import java.util.*;
 
 /**
  * org.systemsbiology.xtandem.sax.MzXMLScanHandler
- *  handle data from a raw scan return a RawPeptideScan
+ * handle data from a raw scan return a RawPeptideScan
+ *
  * @author Steve Lewis
  * @date Dec 23, 2010
  */
-public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
-{
+public class MzXMLScanHandler extends AbstractXTandemElementSaxHandler<RawPeptideScan> {
     public static MzXMLScanHandler[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = MzXMLScanHandler.class;
 
@@ -44,34 +46,30 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
     private final List<RawPeptideScan> m_EmbeddedScan = new ArrayList<RawPeptideScan>();
 
 
-            public void addEmbeddedScan(RawPeptideScan added) {
-                m_EmbeddedScan.add(added);
-            }
+    public void addEmbeddedScan(RawPeptideScan added) {
+        m_EmbeddedScan.add(added);
+    }
 
 
-            public void removeEmbeddedScan(RawPeptideScan removed) {
-                m_EmbeddedScan.remove(removed);
-            }
+    public void removeEmbeddedScan(RawPeptideScan removed) {
+        m_EmbeddedScan.remove(removed);
+    }
 
-            public RawPeptideScan[] getEmbeddedScans( ) {
-                return m_EmbeddedScan.toArray(new RawPeptideScan[0]);
-            }
+    public RawPeptideScan[] getEmbeddedScans() {
+        return m_EmbeddedScan.toArray(new RawPeptideScan[0]);
+    }
 
 
-
-    public MzXMLScanHandler(IElementHandler parent)
-    {
+    public MzXMLScanHandler(IElementHandler parent) {
         super(TAG, parent);
     }
 
 
-    public String getId()
-    {
+    public String getId() {
         return m_Id;
     }
 
-    public void setId(final String pId)
-    {
+    public void setId(final String pId) {
         m_Id = pId;
     }
 
@@ -99,150 +97,121 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
         m_FilterLine = pFilterLine;
     }
 
-    public int getScanEvent()
-    {
+    public int getScanEvent() {
         return m_ScanEvent;
     }
 
-    public void setScanEvent(final int pScanEvent)
-    {
+    public void setScanEvent(final int pScanEvent) {
         m_ScanEvent = pScanEvent;
     }
 
-    public ScanTypeEnum getScanType()
-    {
+    public ScanTypeEnum getScanType() {
         return m_ScanType;
     }
 
-    public void setScanType(final ScanTypeEnum pScanType)
-    {
+    public void setScanType(final ScanTypeEnum pScanType) {
         m_ScanType = pScanType;
     }
 
-    public int getPeaksCount()
-    {
+    public int getPeaksCount() {
         return m_PeaksCount;
     }
 
-    public void setPeaksCount(final int pPeaksCount)
-    {
+    public void setPeaksCount(final int pPeaksCount) {
         m_PeaksCount = pPeaksCount;
     }
 
-    public ScanPolarity getPolarity()
-    {
+    public ScanPolarity getPolarity() {
         return m_Polarity;
     }
 
-    public void setPolarity(final ScanPolarity pPolarity)
-    {
+    public void setPolarity(final ScanPolarity pPolarity) {
         m_Polarity = pPolarity;
     }
 
-    public String getRetentionTime()
-    {
+    public String getRetentionTime() {
         return m_RetentionTime;
     }
 
-    public void setRetentionTime(final String pRetentionTime)
-    {
+    public void setRetentionTime(final String pRetentionTime) {
         m_RetentionTime = pRetentionTime;
     }
 
-    public FragmentationMethod getActivationMethod()
-    {
+    public FragmentationMethod getActivationMethod() {
         return m_ActivationMethod;
     }
 
-    public void setActivationMethod(final FragmentationMethod pActivationMethod)
-    {
+    public void setActivationMethod(final FragmentationMethod pActivationMethod) {
         m_ActivationMethod = pActivationMethod;
     }
 
-    public double getLowMz()
-    {
+    public double getLowMz() {
         return m_LowMz;
     }
 
-    public void setLowMz(final double pLowMz)
-    {
+    public void setLowMz(final double pLowMz) {
         m_LowMz = pLowMz;
     }
 
-    public double getHighMz()
-    {
+    public double getHighMz() {
         return m_HighMz;
     }
 
-    public void setHighMz(final double pHighMz)
-    {
+    public void setHighMz(final double pHighMz) {
         m_HighMz = pHighMz;
     }
 
-    public double getBasePeakMz()
-    {
+    public double getBasePeakMz() {
         return m_BasePeakMz;
     }
 
-    public void setBasePeakMz(final double pBasePeakMz)
-    {
+    public void setBasePeakMz(final double pBasePeakMz) {
         m_BasePeakMz = pBasePeakMz;
     }
 
-    public double getBasePeakIntensity()
-    {
+    public double getBasePeakIntensity() {
         return m_BasePeakIntensity;
     }
 
-    public void setBasePeakIntensity(final double pBasePeakIntensity)
-    {
+    public void setBasePeakIntensity(final double pBasePeakIntensity) {
         m_BasePeakIntensity = pBasePeakIntensity;
     }
 
-    public double getTotIonCurrent()
-    {
+    public double getTotIonCurrent() {
         return m_TotIonCurrent;
     }
 
-    public void setTotIonCurrent(final double pTotIonCurrent)
-    {
+    public void setTotIonCurrent(final double pTotIonCurrent) {
         m_TotIonCurrent = pTotIonCurrent;
     }
 
-    public String getInstrumentId()
-    {
+    public String getInstrumentId() {
         return m_InstrumentId;
     }
 
-    public void setInstrumentId(final String pInstrumentId)
-    {
+    public void setInstrumentId(final String pInstrumentId) {
         m_InstrumentId = pInstrumentId;
     }
 
-    public int getMsLevel()
-    {
+    public int getMsLevel() {
         return m_MsLevel;
     }
 
-    public void setMsLevel(final int pMsLevel)
-    {
+    public void setMsLevel(final int pMsLevel) {
         m_MsLevel = pMsLevel;
     }
 
-    public double getCompensationVoltage()
-    {
+    public double getCompensationVoltage() {
         return m_CompensationVoltage;
     }
 
-    public void setCompensationVoltage(final double pCompensationVoltage)
-    {
+    public void setCompensationVoltage(final double pCompensationVoltage) {
         m_CompensationVoltage = pCompensationVoltage;
     }
 
     @Override
     public void handleAttributes(String elx, String localName, String el, Attributes attr)
-            throws SAXException
-    {
+            throws SAXException {
         setId(XTandemSaxUtilities.getRequiredAttribute("num", attr)); // num="1"
         String url = attr.getValue("url");
         setURL(url);
@@ -305,28 +274,27 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
      */
     @Override
     public void startElement(String uri, String localName, String el, Attributes attributes)
-            throws SAXException
-    {
+            throws SAXException {
         if ("nameValue".equals(el)) {
             String value = attributes.getValue("value");
             String name = attributes.getValue("name");
-            if("url".equals(name))    {
+            if ("url".equals(name)) {
                 setURL(value);
                 return;
             }
-            if("original dta name".equals(name))    {
+            if ("original dta name".equals(name)) {
                 setURL(value);
                 return;
             }
             throw new IllegalStateException("canot handle nameValue " + name + " " + value);
-         }
+        }
         if ("precursorMz".equals(el)) {
-             MzXMLPrecursorMzHandler handler = new MzXMLPrecursorMzHandler(this);
-             getHandler().pushCurrentHandler(handler);
-             handler.handleAttributes(uri, localName, el, attributes);
-             return;
-         }
-         if ("peaks".equals(el)) {
+            MzXMLPrecursorMzHandler handler = new MzXMLPrecursorMzHandler(this);
+            getHandler().pushCurrentHandler(handler);
+            handler.handleAttributes(uri, localName, el, attributes);
+            return;
+        }
+        if ("peaks".equals(el)) {
             MzXMLPeaksHandler handler = new MzXMLPeaksHandler(this);
             getHandler().pushCurrentHandler(handler);
             handler.handleAttributes(uri, localName, el, attributes);
@@ -337,42 +305,38 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
     }
 
     @Override
-    public void endElement(String elx, String localName, String el) throws SAXException
-    {
+    public void endElement(String elx, String localName, String el) throws SAXException {
         if ("nameValue".equals(el)) {
-                   return;
-            }
-         if ("peaks".equals(el)) {
-            MzXMLPeaksHandler handler = (MzXMLPeaksHandler) getHandler().popCurrentHandler();
-            setPeaks(handler.getElementObject());
             return;
         }
-        else if ("precursorMz".equals(el)) {
+        if ("peaks".equals(el)) {
+            MzXMLPeaksHandler handler = (MzXMLPeaksHandler) getHandler().popCurrentHandler();
+            ISpectrumPeak[] elementObject = handler.getElementObject();
+            setPeaks(elementObject);
+            return;
+        } else if ("precursorMz".equals(el)) {
             MzXMLPrecursorMzHandler handler = (MzXMLPrecursorMzHandler) getHandler().popCurrentHandler();
-            setPrecursorMz(handler.getElementObject());
+            IScanPrecursorMZ elementObject = handler.getElementObject();
+            setPrecursorMz(elementObject);
             return;
         }
 
         super.endElement(elx, localName, el);
     }
 
-    public ISpectrumPeak[] getPeaks()
-    {
+    public ISpectrumPeak[] getPeaks() {
         return m_Peaks;
     }
 
-    public void setPeaks(final ISpectrumPeak[] pPeaks)
-    {
+    public void setPeaks(final ISpectrumPeak[] pPeaks) {
         m_Peaks = pPeaks;
     }
 
-    public IScanPrecursorMZ getPrecursorMz()
-    {
+    public IScanPrecursorMZ getPrecursorMz() {
         return m_PrecursorMz;
     }
 
-    public void setPrecursorMz(final IScanPrecursorMZ pPrecursorMz)
-    {
+    public void setPrecursorMz(final IScanPrecursorMZ pPrecursorMz) {
         m_PrecursorMz = pPrecursorMz;
     }
 
@@ -381,10 +345,9 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
      * Usually called when the end tag is seen
      */
     @Override
-    public void finishProcessing()
-    {
-        RawPeptideScan scan = new RawPeptideScan(getId(),getDefaultURL());
-        if(getURL() != null)
+    public void finishProcessing() {
+        RawPeptideScan scan = new RawPeptideScan(getId(), getDefaultURL());
+        if (getURL() != null)
             scan.setUrl(getURL());
         scan.setActivationMethod(getActivationMethod());
         scan.setBasePeakIntensity(getBasePeakIntensity());
@@ -405,5 +368,5 @@ public class MzXMLScanHandler extends AbstractElementSaxHandler<RawPeptideScan>
 
 
         setElementObject(scan);
-     }
+    }
 }

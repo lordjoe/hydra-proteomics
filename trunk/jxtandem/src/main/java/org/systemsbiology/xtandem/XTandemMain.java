@@ -1,8 +1,10 @@
 package org.systemsbiology.xtandem;
 
+import com.lordjoe.lib.xml.*;
+import com.lordjoe.utilities.*;
 import org.systemsbiology.hadoop.*;
+import org.systemsbiology.xml.*;
 import org.systemsbiology.xtandem.hadoop.*;
-import org.systemsbiology.xtandem.mzml.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.systemsbiology.xtandem.reporting.*;
 import org.systemsbiology.xtandem.sax.*;
@@ -14,7 +16,6 @@ import org.xml.sax.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.zip.*;
 
 /**
  * org.systemsbiology.xtandem.XTandemMain
@@ -146,6 +147,7 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         return m_PerformanceParameters.get(key);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public String[] getPerformanceKeys() {
         String[] ret = m_PerformanceParameters.keySet().toArray(new String[0]);
         Arrays.sort(ret);
@@ -216,7 +218,7 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
 
     @Override
     public IScoredScan[] getScorings() {
-        return m_Scorings.values().toArray(new IScoredScan[0]);
+        return m_Scorings.values().toArray(new IScoredScan[m_Scorings.size()]);
     }
 
     /**
@@ -647,30 +649,30 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         try {
             final String lcName = spectumFile.toLowerCase();
             Scorer scoreRunner = getScoreRunner();
-            if (lcName.endsWith(".mzml")) {
-                loadMZMLFile(spectumFile);
-                final MassSpecRun[] runs = getRuns();
-                scoreRunner.setScoredScans(this, runs);
-                return;
-            }
-            if (lcName.endsWith(".mzml.gz")) {
-                loadMZMLFile(spectumFile);
-                final MassSpecRun[] runs = getRuns();
-                scoreRunner.setScoredScans(this, runs);
-                return;
-            }
-            if (lcName.endsWith(".mzxml")) {
-                loadMZXMLFile(spectumFile);
-                final MassSpecRun[] runs = getRuns();
-                scoreRunner.setScoredScans(this, runs);
-                return;
-            }
-            if (lcName.endsWith(".mzxml.gz")) {
-                loadGZ_MZXMLFile(spectumFile);
-                final MassSpecRun[] runs = getRuns();
-                scoreRunner.setScoredScans(this, runs);
-                return;
-            }
+//            if (lcName.endsWith(".mzml")) {
+//                loadMZMLFile(spectumFile);
+//                final MassSpecRun[] runs = getRuns();
+//                scoreRunner.setScoredScans(this, runs);
+//                return;
+//            }
+//            if (lcName.endsWith(".mzml.gz")) {
+//                loadMZMLFile(spectumFile);
+//                final MassSpecRun[] runs = getRuns();
+//                scoreRunner.setScoredScans(this, runs);
+//                return;
+//            }
+//            if (lcName.endsWith(".mzxml")) {
+//                loadMZXMLFile(spectumFile);
+//                final MassSpecRun[] runs = getRuns();
+//                scoreRunner.setScoredScans(this, runs);
+//                return;
+//            }
+//            if (lcName.endsWith(".mzxml.gz")) {
+//                loadGZ_MZXMLFile(spectumFile);
+//                final MassSpecRun[] runs = getRuns();
+//                scoreRunner.setScoredScans(this, runs);
+//                return;
+//            }
             if (lcName.endsWith(".mgf")) {
                 loadMGF(spectumFile);
                 final MassSpecRun[] runs = getRuns();
@@ -697,102 +699,102 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         }
     }
 
-    public void loadMZMLFile(String f) {
-
-        InputStream is = null;
-        try {
-            is = open(f);
-            MessagingMzMLReader rdr = new MessagingMzMLReader();
-            rdr.setXMLInputStream(is);
-
-            MassSpecRun[] runs = new MassSpecRun[1];
-            MassSpecRun msr = new MassSpecRun();
-            runs[0] = msr;
-
-
-            ScanGeneratingSpectrumHandler handler2 = new ScanGeneratingSpectrumHandler();
-            MsRunPopulator populator = new MsRunPopulator(msr);
-            handler2.addScanReadListener(populator);
-            rdr.addTagEndListener(handler2);
-
-            rdr.processXMLFile();
-            return;
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    // forgive this
-                }
-            }
-        }
-    }
-
-
-    public static class MsRunPopulator implements ScanReadListener {
-        private final MassSpecRun m_Run;
-
-        public MsRunPopulator(final MassSpecRun pRun) {
-            m_Run = pRun;
-        }
-
-        @Override
-        public void onScanRead(final RawPeptideScan scan) {
-            m_Run.addScan(scan);
-        }
-    }
-
-
-    public void loadMZXMLFile(String f) {
-        MzXMLHandler handler = new MzXMLHandler();
-        InputStream is = null;
-        try {
-            is = open(f);
-            setRuns(XTandemUtilities.parseFile(is, handler, f));
-            return;
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    // forgive this
-                }
-            }
-        }
-    }
-
+//    public void loadMZMLFile(String f) {
+//
+//        InputStream is = null;
+//        try {
+//            is = open(f);
+//            MessagingMzMLReader rdr = new MessagingMzMLReader();
+//            rdr.setXMLInputStream(is);
+//
+//            MassSpecRun[] runs = new MassSpecRun[1];
+//            MassSpecRun msr = new MassSpecRun();
+//            runs[0] = msr;
+//
+//
+//            ScanGeneratingSpectrumHandler handler2 = new ScanGeneratingSpectrumHandler();
+//            MsRunPopulator populator = new MsRunPopulator(msr);
+//            handler2.addScanReadListener(populator);
+//            rdr.addTagEndListener(handler2);
+//
+//            rdr.processXMLFile();
+//            return;
+//        } finally {
+//            if (is != null) {
+//                try {
+//                    is.close();
+//                } catch (IOException e) {
+//                    // forgive this
+//                }
+//            }
+//        }
+//    }
+//
+//
+//    public static class MsRunPopulator implements ScanReadListener {
+//        private final MassSpecRun m_Run;
+//
+//        public MsRunPopulator(final MassSpecRun pRun) {
+//            m_Run = pRun;
+//        }
+//
+//        @Override
+//        public void onScanRead(final RawPeptideScan scan) {
+//            m_Run.addScan(scan);
+//        }
+//    }
+//
+//
+//    public void loadMZXMLFile(String f) {
+//        MzXMLHandler handler = new MzXMLHandler();
+//        InputStream is = null;
+//        try {
+//            is = open(f);
+//            setRuns(XTandemUtilities.parseFile(is, handler, f));
+//            return;
+//        } finally {
+//            if (is != null) {
+//                try {
+//                    is.close();
+//                } catch (IOException e) {
+//                    // forgive this
+//                }
+//            }
+//        }
+//    }
+//
 
     public void loadMGF(String f) {
         setRuns(XTandemUtilities.parseMgfFileString(f));
         return;
     }
-
-
-    public void loadFastaProFile(String f) {
-        MzXMLHandler handler = new MzXMLHandler();
-        InputStream is = open(f);
-        setRuns(XTandemUtilities.parseFile(is, handler, f));
-        return;
-    }
-
-    /**
-     * load a gzippewd file
-     *
-     * @param f the file
-     */
-    public void loadGZ_MZXMLFile(String f) {
-        try {
-            InputStream in = open(f);
-
-            InputStream is = new GZIPInputStream(in);
-            MzXMLHandler handler = new MzXMLHandler();
-            setRuns(XTandemUtilities.parseFile(is, handler, f));
-            return;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+//
+//
+//    public void loadFastaProFile(String f) {
+//        MzXMLHandler handler = new MzXMLHandler();
+//        InputStream is = open(f);
+//        setRuns(XTandemUtilities.parseFile(is, handler, f));
+//        return;
+//    }
+//
+//    /**
+//     * load a gzippewd file
+//     *
+//     * @param f the file
+//     */
+//    public void loadGZ_MZXMLFile(String f) {
+//        try {
+//            InputStream in = open(f);
+//
+//            InputStream is = new GZIPInputStream(in);
+//            MzXMLHandler handler = new MzXMLHandler();
+//            setRuns(XTandemUtilities.parseFile(is, handler, f));
+//            return;
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
     /*
  * modify checks the input parameters for known parameters that are use to modify
  * a protein sequence. these parameters are stored in the m_pScore member object's
@@ -993,7 +995,7 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
                     }
                     paramName = f.getName();
                 } else {
-                    paramName = XTandemUtilities.asLocalFile(m_DefaultParameters);
+                    paramName = XMLUtilities.asLocalFile(m_DefaultParameters);
                     is = open(paramName);
                 }
             }
@@ -1024,7 +1026,7 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
     }
 
     public static void usage() {
-        XTandemUtilities.outputLine("Usage - JXTandem <inputfile>");
+        XMLUtilities.outputLine("Usage - JXTandem <inputfile>");
     }
 
     public static void main(String[] args) {

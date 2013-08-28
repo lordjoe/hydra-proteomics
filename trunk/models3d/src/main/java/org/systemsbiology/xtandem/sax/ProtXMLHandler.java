@@ -1,7 +1,9 @@
 package org.systemsbiology.xtandem.sax;
 
 import org.systemsbiology.jmol.*;
+import org.systemsbiology.sax.*;
 import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.bioml.sax.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.xml.sax.*;
 
@@ -13,7 +15,7 @@ import java.util.*;
  * User: steven
  * Date: 6/22/11
  */
-public class ProtXMLHandler extends AbstractElementSaxHandler<ProteomicExperiment> implements ITopLevelSaxHandler {
+public class ProtXMLHandler extends AbstractXTandemElementSaxHandler<ProteomicExperiment> implements ITopLevelSaxHandler {
     public static final ProtXMLHandler[] EMPTY_ARRAY = {};
 
 

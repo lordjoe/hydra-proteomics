@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem.hadoop;
 
 import org.junit.*;
+import org.systemsbiology.sax.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.sax.*;
 import org.systemsbiology.xtandem.scoring.*;

@@ -2,6 +2,7 @@ package org.systemsbiology.xml;
 
 import com.lordjoe.utilities.*;
 import org.junit.*;
+import org.systemsbiology.sax.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.mzml.*;
 import org.systemsbiology.xtandem.hadoop.*;
@@ -30,7 +31,7 @@ public class StringAccumulatingSaxParserTest {
           StringAccumulatingSaxParser handler = new StringAccumulatingSaxParser("mzXML",(IElementHandler)null);
 
        //   StringAccumulatingSaxParser handler = new StringAccumulatingSaxParser("mzXML",new DelegatingSaxHandler());
-           XTandemHadoopUtilities.parseXMLString(testXML, handler);
+           XMLUtilities.parseXMLString(testXML, handler);
           String result = handler.getElementObject();
           boolean condition = XTandemUtilities.equivalentExceptSpace(result, testXML);
           Assert.assertTrue(condition);

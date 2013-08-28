@@ -1,8 +1,5 @@
 package org.systemsbiology.asa;
 
-import org.systemsbiology.xtandem.*;
-import org.systemsbiology.xtandem.pepxml.*;
-
 import javax.vecmath.*;
 import java.util.*;
 

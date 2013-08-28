@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem.hadoop;
 
 
+import com.lordjoe.utilities.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.fs.FileSystem;
@@ -10,6 +11,7 @@ import org.apache.hadoop.mapreduce.lib.input.*;
 import org.apache.hadoop.mapreduce.lib.output.*;
 import org.apache.hadoop.util.*;
 import org.systemsbiology.hadoop.*;
+import org.systemsbiology.xml.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.peptide.*;
 
@@ -78,7 +80,7 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
             // how much timeis in my code
 
             long freemem = setMinimalFree();
-            XTandemUtilities.outputLine("Free Memory " + String.format("%7.2fmb", freemem / 1000000.0) +
+            XMLUtilities.outputLine("Free Memory " + String.format("%7.2fmb", freemem / 1000000.0) +
                     " minimum " + String.format("%7.2fmb", getMinimumFreeMemory() / 1000000.0));
             elapsed.reset();
         }
@@ -199,7 +201,7 @@ public class JXTandemMassHandler extends ConfiguredJobRunner implements IJobRunn
             // how much timeis in my code
 
             long freemem = setMinimalFree();
-            XTandemUtilities.outputLine("Free Memory " + String.format("%7.2fmb", freemem / 1000000.0) +
+            XMLUtilities.outputLine("Free Memory " + String.format("%7.2fmb", freemem / 1000000.0) +
                     " minimum " + String.format("%7.2fmb", getMinimumFreeMemory() / 1000000.0));
             elapsed.reset();
         }

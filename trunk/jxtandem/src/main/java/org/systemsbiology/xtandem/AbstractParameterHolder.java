@@ -1,5 +1,7 @@
 package org.systemsbiology.xtandem;
 
+import org.systemsbiology.hadoop.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -12,7 +14,7 @@ import java.util.*;
  * @author Steve Lewis
   * Base class for a ParameterHolder -
  */
-public  class AbstractParameterHolder implements ISetableParameterHolder
+public abstract class AbstractParameterHolder implements ISetableParameterHolder
 {
     public static AbstractParameterHolder[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = AbstractParameterHolder.class;
@@ -66,7 +68,7 @@ public  class AbstractParameterHolder implements ISetableParameterHolder
     public String[] getUnusedKeys() {
         Set<String> unusedKeys = new HashSet<String>(m_Parameters.keySet());
         unusedKeys.removeAll(m_UsedKeys);
-        String[] ret = unusedKeys.toArray(new String[0]);
+        String[] ret = unusedKeys.toArray(new String[unusedKeys.size()]);
         Arrays.sort(ret);
         return ret;
     }
@@ -115,7 +117,7 @@ public  class AbstractParameterHolder implements ISetableParameterHolder
     @Override
     public String[] getParameterKeys()
     {
-        final String[] strings = m_Parameters.keySet().toArray(new String[0]);
+        final String[] strings = m_Parameters.keySet().toArray(new String[m_Parameters.size()]);
         Arrays.sort(strings);
         return strings;
     }
@@ -197,12 +199,12 @@ public  class AbstractParameterHolder implements ISetableParameterHolder
      * @return possibly null value - null says parameter does not exist
      */
     @Override
-    public <T extends Enum> T getEnumParameter(String key, Class<T> cls)
+    public <T extends Enum<T>> T getEnumParameter(String key, Class<T> cls)
     {
         String val = getParameter(key);
         if (val == null  || "".equals(val) )
             return null;
-        return (T) Enum.valueOf(cls, val);
+        return Enum.valueOf(cls, val);
     }
 
     /**
@@ -288,12 +290,12 @@ public  class AbstractParameterHolder implements ISetableParameterHolder
      * @return possibly null value - null says parameter does not exist
      */
     @Override
-    public <T extends Enum> T getEnumParameter(String key, Class<T> cls, T defaultValue)
+    public <T extends Enum<T>> T getEnumParameter(String key, Class<T> cls, T defaultValue)
     {
         String val = getParameter(key);
         if (val == null || "".equals(val))
             return defaultValue;
-        return (T) Enum.valueOf(cls, val);
+        return Enum.valueOf(cls, val);
     }
 
 

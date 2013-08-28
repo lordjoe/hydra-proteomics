@@ -1,5 +1,7 @@
 package org.systemsbiology.xtandem.sax;
 
+import org.systemsbiology.sax.*;
+import org.systemsbiology.xtandem.bioml.sax.*;
 import org.systemsbiology.xtandem.peptide.*;
 import org.xml.sax.*;
 
@@ -8,7 +10,7 @@ import org.xml.sax.*;
  * User: steven
  * Date: 6/22/11
  */
-public class ProtXMLProteinHandler extends AbstractElementSaxHandler<ProtXMLDetection> {
+public class ProtXMLProteinHandler extends AbstractXTandemElementSaxHandler<ProtXMLDetection> {
     public static final ProtXMLProteinHandler[] EMPTY_ARRAY = {};
 
 
@@ -109,6 +111,7 @@ public class ProtXMLProteinHandler extends AbstractElementSaxHandler<ProtXMLDete
         if ("indistinguishable_protein".equals(qName)) {     // todo maybe not
             String protein_name = XTandemSaxUtilities.getRequiredAttribute("protein_name", attributes);
             elementObject.addAlternateName(protein_name);
+            //noinspection UnnecessaryReturnStatement
             return; // we handle this
         }
     }

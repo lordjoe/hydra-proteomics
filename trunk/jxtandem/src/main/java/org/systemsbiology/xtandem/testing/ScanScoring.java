@@ -1,5 +1,6 @@
 package org.systemsbiology.xtandem.testing;
 
+import org.systemsbiology.xml.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.scoring.*;
 
@@ -40,17 +41,17 @@ public class ScanScoring implements IScanScoring {
             return false;
         ITheoreticalScoring[] myScores = getScorings();
         ITheoreticalScoring[] theirScores = o.getScorings();
-        XTandemUtilities.outputLine("<scored_id id=\"" + o.getId() + "\"  >");
+        XMLUtilities.outputLine("<scored_id id=\"" + o.getId() + "\"  >");
         for (int i = 0; i < theirScores.length; i++) {
             ITheoreticalScoring myScore = myScores[i];
             ITheoreticalScoring theirScore = theirScores[i];
             if (!myScore.equivalent(theirScore))
                 return false;
             double totalKScore = theirScore.getTotalKScore();
-            XTandemUtilities.outputLine("<scored_fragment seguence=\"" + myScore.getSequence() + "\" score=" + totalKScore + "\" />");
+            XMLUtilities.outputLine("<scored_fragment seguence=\"" + myScore.getSequence() + "\" score=" + totalKScore + "\" />");
 
         }
-        XTandemUtilities.outputLine("</scored_id>");
+        XMLUtilities.outputLine("</scored_id>");
 
         return true;
     }

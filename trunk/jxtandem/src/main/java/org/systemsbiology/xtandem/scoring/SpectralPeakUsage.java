@@ -1,7 +1,8 @@
 package org.systemsbiology.xtandem.scoring;
 
+import com.lordjoe.utilities.*;
+import org.systemsbiology.sax.*;
 import org.systemsbiology.xtandem.*;
-import org.systemsbiology.xtandem.sax.*;
 
 import java.util.*;
 
@@ -119,7 +120,8 @@ public class SpectralPeakUsage implements IEquivalent<SpectralPeakUsage>,IAddabl
     }
 
     protected PeakUsage[] getUsages() {
-        PeakUsage[] peakUsages = m_Usage.values().toArray(new PeakUsage[0]);
+        Collection<PeakUsage> values = m_Usage.values();
+        PeakUsage[] peakUsages = values.toArray(new PeakUsage[values.size()]);
         Arrays.sort(peakUsages);
         return peakUsages;
     }
@@ -134,14 +136,14 @@ public class SpectralPeakUsage implements IEquivalent<SpectralPeakUsage>,IAddabl
             values[2 * i] = (float) peakUsage.getMZ();
             values[2 * i + 1] = (float) peakUsage.getUsed();
         }
-        return Base64.encodeFloatsAsString(values);
+        return Base64Float.encodeFloatsAsString(values);
     }
 
 
     protected void setDataFromBin64(String data) {
         if (data.length() == 0)
             return;
-        float[] fdata = Base64.decodeFloats(data);
+        float[] fdata = Base64Float.decodeFloats(data);
         for (int i = 0; i < fdata.length; i += 2) {
              getAddedAfterUsageCorrection(fdata[i],fdata[i + 1]);
         }
@@ -165,7 +167,7 @@ public class SpectralPeakUsage implements IEquivalent<SpectralPeakUsage>,IAddabl
             data[ 2 * i + 1] = (float)usage.getUsed();
               
         }
-        String name = Base64.encodeFloatsAsString(data);
+        String name = Base64Float.encodeFloatsAsString(data);
         adder.appendText(name);
         adder.closeTag(tag);
     }
@@ -247,6 +249,7 @@ public class SpectralPeakUsage implements IEquivalent<SpectralPeakUsage>,IAddabl
         public boolean equivalent(final PeakUsage o) {
             if (Math.abs(getMZ() - o.getMZ()) > 0.0001)
                 return false;
+            //noinspection SimplifiableIfStatement,PointlessBooleanExpression,ConstantConditions,RedundantIfStatement
             if (Math.abs(getUsed() - o.getUsed()) > 0.0001)
                 return false;
             return true;

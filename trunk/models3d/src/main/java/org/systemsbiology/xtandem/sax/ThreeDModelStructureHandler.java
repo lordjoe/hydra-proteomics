@@ -1,7 +1,9 @@
 package org.systemsbiology.xtandem.sax;
 
 import org.systemsbiology.jmol.*;
+import org.systemsbiology.sax.*;
 import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.bioml.sax.*;
 import org.xml.sax.*;
 
 import java.io.*;
@@ -11,7 +13,7 @@ import java.io.*;
  * User: steven
  * Date: 6/22/11
  */
-public class ThreeDModelStructureHandler extends AbstractElementSaxHandler<ThreeDModelStructure>  {
+public class ThreeDModelStructureHandler extends AbstractXTandemElementSaxHandler<ThreeDModelStructure> {
     public static final ThreeDModelStructureHandler[] EMPTY_ARRAY = {};
 
 

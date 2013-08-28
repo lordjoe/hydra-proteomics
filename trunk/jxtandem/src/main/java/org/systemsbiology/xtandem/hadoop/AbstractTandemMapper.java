@@ -1,11 +1,11 @@
 package org.systemsbiology.xtandem.hadoop;
 
+import com.lordjoe.utilities.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
-import org.systemsbiology.hadoop.*;
 
 import java.io.*;
 import java.util.*;
@@ -23,6 +23,7 @@ public abstract class AbstractTandemMapper<T> extends Mapper<T, Text, Text, Text
     private final Text m_OnlyValue = new Text();
     private long m_MinimumFreeMemory = Long.MAX_VALUE;
     private final ElapsedTimer m_Elapsed = new ElapsedTimer();
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<ITandemScoringAlgorithm> m_Algorithms = new ArrayList<ITandemScoringAlgorithm>();
     private Context m_Context;
 
@@ -54,11 +55,13 @@ public abstract class AbstractTandemMapper<T> extends Mapper<T, Text, Text, Text
 
 
         String defaultPath = conf.get(XTandemHadoopUtilities.PATH_KEY);
-        XTandemHadoopUtilities.setDefaultPath(defaultPath);
+        if(defaultPath != null)
+            XTandemHadoopUtilities.setDefaultPath(defaultPath);
         String forcePathPrefix = conf.get(XTandemHadoopUtilities.FORCE_PATH_PREFIX_KEY);
-        XTandemMain.setRequiredPathPrefix(forcePathPrefix);
+        if(forcePathPrefix != null)
+            XTandemMain.setRequiredPathPrefix(forcePathPrefix);
 
-        if(defaultPath.startsWith("s3n://"))  {
+        if(defaultPath != null && defaultPath.startsWith("s3n://"))  {
             try {
                 Class cls = Class.forName("org.systemsbiology.aws.AWSUtilities");
                 IConfigureFileSystem cfg = (IConfigureFileSystem)cls.getField("AWS_CONFIGURE_FILE_SYSTEM").get(null);

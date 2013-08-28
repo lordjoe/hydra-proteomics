@@ -1,5 +1,6 @@
 package org.systemsbiology.xtandem.comet;
 
+import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.ionization.*;
 import org.systemsbiology.xtandem.peptide.*;
@@ -370,6 +371,7 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
 
         double del = Math.abs(matchingMass - precursorMass);
         double massTolerance = getMassTolerance();
+        //noinspection SimplifiableIfStatement
         if(del < massTolerance)
             return true;
         return false;
@@ -452,6 +454,7 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
     public boolean canScore(IMeasuredSpectrum measured) {
         if (!super.canScore(measured))
             return false;
+        //noinspection SimplifiableIfStatement
         if (measured.getPeaksCount() < getMinimumNumberPeaks())
             return false;
 
@@ -607,6 +610,7 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
         }
 
         normalizePeakRange(myPeaks, 0, myPeaks.length);
+        //noinspection UnnecessaryReturnStatement
         return; // so we can break
     }
 
@@ -711,7 +715,7 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
             Arrays.fill(peaks, 0);
             for (ISpectrumPeak pk : getPeaks()) {
                 int index = (int) pk.getMassChargeRatio();
-                float peak = (float) pk.getPeak();
+                float peak =   pk.getPeak();
                 peaks[index] = peak;
                 peaks[index - 1] = Math.max(peaks[index - 1], peak / 2);
                 peaks[index + 1] = Math.max(peaks[index + 1], peak / 2);

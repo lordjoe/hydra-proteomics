@@ -6,7 +6,6 @@ import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.mgf.*;
 import org.systemsbiology.xtandem.peptide.*;
-import org.systemsbiology.xtandem.pepxml.*;
 import org.systemsbiology.xtandem.reporting.*;
 import org.systemsbiology.xtandem.scoring.*;
 
@@ -32,8 +31,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
     private PrintWriter m_Writer;
     private PrintWriter m_ScansWriter;
     private BiomlReporter m_Reporter;
-    private PepXMLWriter[] m_pepXMLWriter;
-    private MGFWriter[] m_MFGWriters; //
+     private MGFWriter[] m_MFGWriters; //
     private PrintWriter[] m_PepXmlsOutWriter;
     private PrintWriter[] m_MGFOutWriter;
     private String m_OutputFile;
@@ -69,9 +67,6 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
         m_WriteHighScoringMGF = writeHighScoringMGF;
     }
 
-    public PepXMLWriter getPepXMLWriter(int index) {
-        return m_pepXMLWriter[index];
-    }
 
     public MGFWriter getMFGWriter(int index) {
         return m_MFGWriters[index];
@@ -219,31 +214,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
 
         m_Reporter.writeHeader(getWriter(), 0);
 
-        Boolean isWritePepXML = application.getBooleanParameter(XTandemUtilities.WRITING_PEPXML_PROPERTY, Boolean.FALSE);
-        if (isWritePepXML) {
-            System.err.println("Setting up pep xml writers");
-            setWritePepXML(true);
-            ITandemScoringAlgorithm[] algorithms = application.getAlgorithms();
-            m_pepXMLWriter = new PepXMLWriter[algorithms.length];
-            m_PepXmlsOutWriter = new PrintWriter[algorithms.length];
-            for (int i = 0; i < algorithms.length; i++) {
-                ITandemScoringAlgorithm algorithm = algorithms[i];
-                String algo = algorithm.getName();
-                String extension = ".pep.xml";
-                if (!"KScore".equals(algo))
-                    extension = "." + algo + extension;
-                m_PepXmlsOutWriter[i] = XTandemHadoopUtilities.buildPrintWriter(context, s, extension);
-                PepXMLWriter px = new PepXMLWriter(application);
 
-                px.setPath(s);
-                m_pepXMLWriter[i] = px;
-
-                String spectrumPath = application.getParameter("spectrum, path");
-                getPepXMLWriter(i).writePepXMLHeader(spectrumPath, algo, getPepXmlsOutWriter(i));
-
-            }
-
-        }
 
         double limit = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY, 0);
         double limit_ExpectedValue = application.getDoubleParameter(XTandemUtilities.WRITING_MGF_PROPERTY_2,0);
@@ -328,12 +299,7 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
                 MultiScorer multiScorer = XTandemHadoopUtilities.readMultiScoredScan(scanXML, getApplication());
                 IScoredScan[] scoredScans = multiScorer.getScoredScans();
                 // todo support multiple
-                for (int i = 0; i < scoredScans.length; i++) {
-                    IScoredScan scan = scoredScans[i];
-                    getPepXMLWriter(i).writePepXML(scan, getPepXmlsOutWriter(i));
-
-                }
-                ScoredScan scan = (ScoredScan) scoredScans[0];
+                  ScoredScan scan = (ScoredScan) scoredScans[0];
             }
 
             if (isWriteHighScoringMGF()) {
@@ -428,16 +394,6 @@ public class XTandemConcatenatingWritingReducer extends AbstractTandemReducer {
             m_ScansWriter.println("</scans>");
             m_ScansWriter.close();
             m_ScansWriter = null;
-        }
-
-        if (m_PepXmlsOutWriter != null) {
-            for (int i = 0; i < m_PepXmlsOutWriter.length; i++) {
-                PrintWriter pepXmlsOutWriter = getPepXmlsOutWriter(i);
-                getPepXMLWriter(i).writePepXMLFooter(pepXmlsOutWriter);
-                pepXmlsOutWriter.close();
-
-            }
-            m_PepXmlsOutWriter = null;
         }
 
         if (m_MFGWriters != null) {

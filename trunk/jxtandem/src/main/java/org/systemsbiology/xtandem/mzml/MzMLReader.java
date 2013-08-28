@@ -2,6 +2,7 @@ package org.systemsbiology.xtandem.mzml;
 
 import com.lordjoe.utilities.*;
 import org.proteios.io.*;
+import org.systemsbiology.xml.*;
 import org.systemsbiology.xtandem.*;
 
 import java.io.*;
@@ -71,15 +72,15 @@ public class MzMLReader implements TagEndListener<SpectrumInterface> {
         sb.append(spectrumFragment);
         sb.append(FRAGMENT_POSTFIX);
 
-        String id = XTandemUtilities.extractTag("id", spectrumFragment);
-        String mslevel = XTandemUtilities.maybeExtractTag("mslevel", spectrumFragment);
+        String id = XMLUtilities.extractTag("id", spectrumFragment);
+        String mslevel = XMLUtilities.maybeExtractTag("mslevel", spectrumFragment);
         if(mslevel == null) {
             // ok may be
-            mslevel = XTandemUtilities.maybeExtractTag("name=\"ms level\" value=", spectrumFragment);
+            mslevel = XMLUtilities.maybeExtractTag("name=\"ms level\" value=", spectrumFragment);
         }
         int level  = Integer.parseInt(mslevel);
 
-        InputStream inp = XTandemUtilities.stringToInputStream(sb.toString());
+        InputStream inp = XMLUtilities.stringToInputStream(sb.toString());
         MzMLReader rdr = new MzMLReader(inp);
         ExtendedSpectrumImpl  spectrum = (ExtendedSpectrumImpl)rdr.getSpectrumWithId(id);
         spectrum.setMSLevel(level);

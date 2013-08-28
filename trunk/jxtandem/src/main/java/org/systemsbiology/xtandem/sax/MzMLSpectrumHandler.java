@@ -1,6 +1,8 @@
 package org.systemsbiology.xtandem.sax;
 
+import org.systemsbiology.sax.*;
 import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.bioml.sax.*;
 import org.systemsbiology.xtandem.mzml.*;
 import org.xml.sax.*;
 
@@ -11,7 +13,7 @@ import org.xml.sax.*;
  * @author Steve Lewis
  * @date Dec 23, 2010
  */
-public class MzMLSpectrumHandler extends AbstractElementSaxHandler<RawPeptideScan> {
+public class MzMLSpectrumHandler extends AbstractXTandemElementSaxHandler<RawPeptideScan> {
     public static MzMLSpectrumHandler[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = MzMLSpectrumHandler.class;
     
