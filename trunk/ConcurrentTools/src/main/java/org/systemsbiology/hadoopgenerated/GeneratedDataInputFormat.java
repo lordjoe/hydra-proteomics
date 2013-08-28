@@ -89,7 +89,7 @@ public class GeneratedDataInputFormat extends InputFormat<LongWritable, LongWrit
         return new GeneratedDataRecordReader((GeneratedInputSplit)split);
     }
 
-    @SuppressWarnings(value = "deprecated")
+ @SuppressWarnings("UnusedDeclaration")
     public RecordReader<LongWritable, LongWritable> getRecordReader(InputSplit split, JobConf job, Reporter reporter)
     {
         return new GeneratedDataRecordReader((GeneratedInputSplit)split);
