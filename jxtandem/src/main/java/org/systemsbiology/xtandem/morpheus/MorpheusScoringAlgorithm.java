@@ -1,5 +1,6 @@
 package org.systemsbiology.xtandem.morpheus;
 
+import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.ionization.*;
 import org.systemsbiology.xtandem.scoring.*;

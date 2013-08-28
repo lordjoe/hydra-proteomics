@@ -1,6 +1,7 @@
 package org.systemsbiology.hadoop;
 
 import org.junit.*;
+import org.systemsbiology.xml.*;
 import org.systemsbiology.xtandem.*;
 
 import java.sql.*;
@@ -50,9 +51,9 @@ public class HBaseTests {
             String val1 = rs.getString("val1");
             String val2 = rs.getString("val2");
 
-            XTandemUtilities.outputText("val5: " + val5);
-            XTandemUtilities.outputText(", val6: " + val6);
-            XTandemUtilities.outputText(", val1: " + val1);
+            XMLUtilities.outputText("val5: " + val5);
+            XMLUtilities.outputText(", val6: " + val6);
+            XMLUtilities.outputText(", val1: " + val1);
             System.out.println(", val2: " + val2);
         }
 

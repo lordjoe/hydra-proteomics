@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem.sax;
 
 import org.junit.*;
+import org.systemsbiology.sax.*;
 import org.systemsbiology.xml.*;
 import org.systemsbiology.xtandem.*;
 import org.xml.sax.*;
@@ -84,7 +85,7 @@ public class MZXMLFixerTest {
         }
 
         // so fix it
-        LineNumberReader inp = new LineNumberReader(XTandemUtilities.stringToReader(BAD_MZXML));
+        LineNumberReader inp = new LineNumberReader(XMLUtilities.stringToReader(BAD_MZXML));
         ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
         PrintWriter out = new PrintWriter(outBytes);
          XTandemUtilities.fixScanTags(inp, out);
@@ -102,6 +103,6 @@ public class MZXMLFixerTest {
     protected void parseBytes(final byte[] pBuf) {
         InputStream inp2 = new ByteArrayInputStream(pBuf);
         AbstractElementSaxHandler handler  = new DiscardingSaxParser("mzXML",(DelegatingSaxHandler)null);
-        XTandemUtilities.parseFile(inp2, handler, "");
+        XMLUtilities.parseFile(inp2, handler, "");
     }
 }

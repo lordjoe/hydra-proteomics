@@ -1,8 +1,10 @@
 package org.systemsbiology.xtandem.bioml.sax;
 
+import com.lordjoe.lib.xml.*;
+import org.systemsbiology.sax.*;
+import org.systemsbiology.xml.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.bioml.*;
-import org.systemsbiology.xtandem.sax.*;
 import org.systemsbiology.xtandem.scoring.*;
 import org.xml.sax.*;
 
@@ -11,7 +13,7 @@ import org.xml.sax.*;
  * User: steven
  * Date: 8/22/11
  */
-public class BiomlSaxHandler extends AbstractElementSaxHandler<XTandemScoringReport> implements ITopLevelSaxHandler {
+public class BiomlSaxHandler extends AbstractXTandemElementSaxHandler<XTandemScoringReport> implements ITopLevelSaxHandler {
     public static final BiomlSaxHandler[] EMPTY_ARRAY = {};
 
     private int m_NumberGroups;
@@ -48,9 +50,9 @@ public class BiomlSaxHandler extends AbstractElementSaxHandler<XTandemScoringRep
     {
          m_NumberGroups++;
         if(m_NumberGroups %100 == 0)
-            XTandemUtilities.outputText(".");
+            XMLUtilities.outputText(".");
         if(m_NumberGroups % 8000 == 0)
-            XTandemUtilities.outputLine(".");
+            XMLUtilities.outputLine(".");
     }
 
     @Override

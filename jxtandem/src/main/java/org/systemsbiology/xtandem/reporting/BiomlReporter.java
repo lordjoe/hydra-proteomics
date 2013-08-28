@@ -1,5 +1,7 @@
 package org.systemsbiology.xtandem.reporting;
 
+import com.lordjoe.utilities.*;
+import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.hadoop.*;
 import org.systemsbiology.xtandem.ionization.*;
@@ -74,6 +76,7 @@ public class BiomlReporter {
 
       //  System.err.println("No File name forced building file name");
         if ("yes".equals(pParameters.getParameter("output, path hashing"))) {
+            assert name != null;
             final int index = name.lastIndexOf(".");
             String extension = name.substring(index);
             String dataHash = getDateHash();
@@ -656,6 +659,7 @@ public class BiomlReporter {
         indent(out, indent);
         out.print("<note ");
         out.print("label=\"Description\">" + text);
+        //noinspection StatementWithEmptyBody
         if (onTwoLines) {
             out.println();
             indent(out, indent);
@@ -675,7 +679,7 @@ public class BiomlReporter {
         for (int i = 0; i < peaks.length; i++) {
             ISpectrumPeak peak = peaks[i];
             double mass = peak.getMassChargeRatio();
-            Base64.float64ToBytes(mass, ret, index);
+            Base64Float.float64ToBytes(mass, ret, index);
             index += chunkSize;
         }
 
@@ -690,7 +694,7 @@ public class BiomlReporter {
         for (int i = 0; i < peaks.length; i++) {
             ISpectrumPeak peak = peaks[i];
             float intensity = peak.getPeak();
-            Base64.floatToBytes(intensity, ret, index);
+            Base64Float.floatToBytes(intensity, ret, index);
             index += chunkSize;
         }
 

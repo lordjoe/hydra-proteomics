@@ -6,8 +6,8 @@ package org.systemsbiology.uniprot;
  * Date: 3/21/13
  */
 import com.lordjoe.utilities.*;
-import org.springframework.jdbc.core.*;
-import org.systemsbiology.xtandem.*;
+import com.lordjoe.utilities.ElapsedTimer;
+import org.systemsbiology.hadoop.DefaultParameterHolder;
 import org.systemsbiology.xtandem.peptide.*;
 
 import javax.sql.*;
@@ -20,7 +20,7 @@ import org.apache.commons.dbcp.*;
 import org.springframework.jdbc.*;
 import org.springframework.jdbc.core.simple.*;
 import org.systemsbiology.xtandem.taxonomy.*;
-
+import org.systemsbiology.hadoop.*;
 /**
 * org.systemsbiology.xtandem.taxonomy.SpringJDBCUtilities
 * User: Steve
@@ -467,7 +467,7 @@ public class SpringJDBCUtilities {
     }
 
     public static DataSource getRootDataSource(String host) {
-        AbstractParameterHolder holder = new AbstractParameterHolder();
+        DefaultParameterHolder holder = new DefaultParameterHolder();
         holder.setParameter(DATA_HOST_PARAMETER, host);
         holder.setParameter(DATA_USER_PARAMETER, "root");
         // hack to get root privilegse remotely

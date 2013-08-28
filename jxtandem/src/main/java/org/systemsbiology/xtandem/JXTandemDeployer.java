@@ -2,7 +2,6 @@ package org.systemsbiology.xtandem;
 
 import com.lordjoe.utilities.*;
 import org.systemsbiology.hadoop.*;
-import org.systemsbiology.remotecontrol.*;
 import org.systemsbiology.xtandem.hadoop.*;
 
 import java.io.*;
@@ -73,7 +72,7 @@ public class JXTandemDeployer extends Deployer {
     }
 
     @Override
-    protected void buildCommandLine(final Class mainClass, final String[] args, final StringBuffer pSb) {
+    protected void buildCommandLine(final Class mainClass, final String[] args, final StringBuilder pSb) {
         if (isQuiet()) {
             pSb.append(/* "jre" + WINDOWS_DIRECTORY_SEPARATOR + "bin" + WINDOWS_DIRECTORY_SEPARATOR + */ "javaw ");
         } else {
@@ -99,8 +98,9 @@ public class JXTandemDeployer extends Deployer {
      * @param holder
      */
     @Override
-    protected void makeJars(File libDir, List<File> jarDirectories, List<File> holder) {
-        if(jarDirectories.size() != 1)
+    protected void makeJars(File libDir, Collection<File> jarDirectories, Collection<File> holder) {
+        //noinspection SimplifiableIfStatement,PointlessBooleanExpression,ConstantConditions,RedundantIfStatement
+        if(jarDirectories.size() != 1 && false)     // todo put back
             throw new IllegalStateException("all modules need to compile to a single jar!!!");
         super.makeJars(libDir,  jarDirectories,  holder);
     //    File jarFile = new File(libDir, "Target.jar");
@@ -154,6 +154,7 @@ public class JXTandemDeployer extends Deployer {
         if (data == null)
             throw new IllegalStateException("installer must be a subdirectory of user.dir and hold Launcher.properties");
         File datadir = new File(pDeployDir, "data");
+        //noinspection ResultOfMethodCallIgnored
         datadir.mkdirs();
         for (int i = 0; i < data.length; i++) {
             File file = data[i];

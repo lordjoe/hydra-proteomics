@@ -1,8 +1,8 @@
 package org.systemsbiology.xtandem;
 
+import org.systemsbiology.sax.*;
 import org.systemsbiology.xtandem.hadoop.*;
 import org.systemsbiology.xtandem.mzml.*;
-import org.systemsbiology.xtandem.sax.*;
 
 import java.io.*;
 import java.util.*;
@@ -80,7 +80,8 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
     }
 
     public String[] getAddedValues() {
-        return m_AddedValues.values().toArray(new String[0]);
+        Collection<String> values = m_AddedValues.values();
+        return values.toArray(new String[values.size()]);
     }
 
     public String getAddedValue(String key) {
@@ -331,6 +332,7 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         int endIndex = pId.indexOf(" ", index);
         if (endIndex == -1)
             return new String(pId.substring(index));
+        //noinspection RedundantStringConstructorCall
         return new String(pId.substring(index, endIndex));
     }
 
@@ -338,6 +340,7 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
         int index = pId.indexOf("scan=");
         if (index == -1)
             return pId;
+         //noinspection RedundantStringConstructorCall
         return new String(pId.substring(index));
     }
 
@@ -367,6 +370,7 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
             return false;
         double pm1 = getPrecursorMass();
         double pm2 = test.getPrecursorMass();
+        //noinspection RedundantIfStatement
         if (!XTandemUtilities.equivalentDouble(pm1, pm2))
             return false;
         return true;

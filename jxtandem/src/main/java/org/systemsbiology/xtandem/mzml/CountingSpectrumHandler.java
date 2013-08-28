@@ -1,5 +1,6 @@
 package org.systemsbiology.xtandem.mzml;
 
+import org.systemsbiology.xml.*;
 import org.systemsbiology.xtandem.*;
 
 /**
@@ -34,11 +35,11 @@ public class CountingSpectrumHandler implements TagEndListener<ExtendedSpectrumI
        m_Count++;
         // for debugging and development - show progress
         if(m_Count % 1000 == 0)
-            XTandemUtilities.outputText(".");
+            XMLUtilities.outputText(".");
         if(m_Count % 5000 == 0) {
-            XTandemUtilities.outputLine();
+            XMLUtilities.outputLine();
             // make sure we are not leaking memory
-            XTandemUtilities.outputLine("free memory " + Runtime.getRuntime().freeMemory());
+            XMLUtilities.outputLine("free memory " + Runtime.getRuntime().freeMemory());
         }
     }
 }

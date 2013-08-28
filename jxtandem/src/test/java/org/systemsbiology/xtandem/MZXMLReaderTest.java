@@ -1,6 +1,8 @@
 package org.systemsbiology.xtandem;
 
 import org.junit.*;
+import org.systemsbiology.hadoop.*;
+import org.systemsbiology.sax.*;
 import org.systemsbiology.xtandem.sax.*;
 
 import java.io.*;

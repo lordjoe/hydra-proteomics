@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem.comet;
 
 import org.junit.*;
+import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;
 
 import java.util.*;

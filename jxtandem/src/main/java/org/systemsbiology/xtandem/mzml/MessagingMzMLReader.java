@@ -1,6 +1,8 @@
 package org.systemsbiology.xtandem.mzml;
 
+import com.lordjoe.utilities.*;
 import org.proteios.io.*;
+import org.systemsbiology.xml.*;
 import org.systemsbiology.xtandem.*;
 
 import javax.xml.stream.*;
@@ -90,6 +92,7 @@ public class MessagingMzMLReader extends MzMLFileReader {
         if (m_TagEndListeners.isEmpty())
             return;
         for (TagEndListener listener : m_TagEndListeners) {
+            //noinspection unchecked
             listener.onTagEnd(tag, lastGenerated);
         }
     }
@@ -176,7 +179,7 @@ public class MessagingMzMLReader extends MzMLFileReader {
         rdr.processXMLFile();
 
         int numberScans = handler.getCount();
-        XTandemUtilities.outputLine("handled " + numberScans + " scans in " + et.formatElapsed());
+        XMLUtilities.outputLine("handled " + numberScans + " scans in " + et.formatElapsed());
     }
 
 }

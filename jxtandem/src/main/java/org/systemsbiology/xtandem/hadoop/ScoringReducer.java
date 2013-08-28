@@ -1,14 +1,15 @@
 package org.systemsbiology.xtandem.hadoop;
 
+import com.lordjoe.utilities.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
 import org.systemsbiology.common.*;
-import org.systemsbiology.hadoop.*;
+import org.systemsbiology.sax.*;
+import org.systemsbiology.xml.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.ionization.*;
 import org.systemsbiology.xtandem.peptide.*;
-import org.systemsbiology.xtandem.sax.*;
 import org.systemsbiology.xtandem.scoring.*;
 import org.systemsbiology.xtandem.taxonomy.*;
 import org.systemsbiology.xtandem.testing.*;
@@ -127,6 +128,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
 
         // log if running in local mode
         // we need to test performance
+        //noinspection SimplifiableIfStatement,PointlessBooleanExpression,ConstantConditions,RedundantIfStatement
         if (false && XTandemHadoopUtilities.isLocal(conf)) {
             m_Logger = XTandemHadoopUtilities.buildDebugWriter(context, application);
             XTandemDebugging.setDebugging(true, application);
@@ -254,6 +256,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
             numberScoredPeptides = pps.length;
 
             if (numberScoredPeptides == 0) {
+                //noinspection SimplifiableIfStatement,PointlessBooleanExpression,ConstantConditions,RedundantIfStatement
                 if (true || doNotHandleScans(values))
                     return; // todo or is an exception proper
                 appendLine("<mass value=\"" + mass + "\" >");
@@ -335,7 +338,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
                     ms.serializeAsString(appender);
                     //     scoredScan.serializeAsString(appender);
 
-                    String outKey = ((OriginatingScoredScan) scoredScan).getKey();
+                    @SuppressWarnings("ConstantConditions") String outKey = ((OriginatingScoredScan) scoredScan).getKey();
                     while (outKey.length() < 8)
                         outKey = "0" + outKey; // this causes order to be numeric
                     String value = sb.toString();
@@ -365,7 +368,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
                     " at " + XTandemUtilities.nowTimeString()
             );
 
-            XTandemUtilities.outputLine(XTandemUtilities.freeMemoryString());
+            XMLUtilities.outputLine(XMLUtilities.freeMemoryString());
             scorer.clearPeptides();
             scorer.clearSpectra();
             application.clearRetainedData();
@@ -580,7 +583,7 @@ public class ScoringReducer extends AbstractTandemReducer implements SpectrumGen
     protected void cleanup(final Context context) throws IOException, InterruptedException {
         if (m_Logger != null) {
             appendLine("</JXTandem>");
-            ((PrintWriter) m_Logger).close();
+              m_Logger.close();
         }
         //   context.getCounter("Performance", "TotalPeptide").increment(m_TotalPeptidesScored);
 

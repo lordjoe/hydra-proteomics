@@ -1,6 +1,7 @@
 package org.systemsbiology.xtandem.hadoop;
 
 import com.lordjoe.utilities.*;
+import com.lordjoe.utilities.ElapsedTimer;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.fs.FileSystem;
@@ -15,8 +16,9 @@ import org.apache.hadoop.mapreduce.TaskID;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.systemsbiology.hadoop.*;
+import org.systemsbiology.xml.*;
 import org.systemsbiology.xtandem.*;
-import org.systemsbiology.xtandem.mzml.*;
+import org.systemsbiology.xtandem.bioml.sax.*;
 import org.systemsbiology.xtandem.reporting.*;
 import org.systemsbiology.xtandem.sax.*;
 import org.systemsbiology.xtandem.scoring.*;
@@ -101,6 +103,7 @@ public class XTandemHadoopUtilities {
 
                 // standard DECOY_ prefix gets added to label and return that
 
+                //noinspection UnnecessaryLocalVariable
                 String post_label = DEFAULT_DECOY_PREFIX + processed_label;
 
 
@@ -351,11 +354,13 @@ public class XTandemHadoopUtilities {
 
 
     public static void showAllCounters(Map<String, Counter> counters) {
-        String[] keys = counters.keySet().toArray(new String[0]);
+        Set<String> strings = counters.keySet();
+        String[] keys = strings.toArray(new String[strings.size()]);
         Arrays.sort(keys);
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
-            XTandemUtilities.outputLine(key + ":" + counters.get(key).getValue());
+            String text = key + ":" + counters.get(key).getValue();
+            XMLUtilities.outputLine(text);
         }
     }
 
@@ -524,6 +529,7 @@ public class XTandemHadoopUtilities {
 
     public static Map<Integer, Integer> guaranteeDatabaseSizes(final HadoopTandemMain pApplication) {
         Map<Integer, Integer> ret;
+        //noinspection EmptyCatchBlock
         try {
             ret = XTandemHadoopUtilities.readDatabaseSizes(pApplication);
             System.err.println("Read Database Sizes");
@@ -711,14 +717,16 @@ public class XTandemHadoopUtilities {
      * @param <T>     type to return
      * @return !null return
      */
-    public static <T> T parseXMLString(String text, AbstractElementSaxHandler<T> handler) {
+    public static <T> T parseXMLString(String text, AbstractXTandemElementSaxHandler<T> handler) {
         ByteArrayInputStream inp = null;
         byte[] bytes = null;
         try {
+            //noinspection RedundantStringToString
             bytes = text.toString().getBytes();
 
             inp = new ByteArrayInputStream(bytes);
 
+            //noinspection UnnecessaryLocalVariable
             T scan = XTandemUtilities.parseFile(inp, handler, "");
             return scan;
         } catch (Exception e) {
@@ -788,18 +796,24 @@ public class XTandemHadoopUtilities {
                 throw new RuntimeException(e);
 
             }
+            if(rawPeptideScan == null)   {
+                handler = new TopLevelScanHandler();
+                rawPeptideScan = parseXMLString(text, handler);  // repeat
+                return null; // ignore level 1 scans
+
+            }
             if (rawPeptideScan.getMsLevel() < 2)
                 return null; // ignore level 1 scans
             return rawPeptideScan;
         }
-        if (text.startsWith("<spectrum")) {
-            if (text.contains("name=\"ms level\" value=\"1\""))
-                return null;
-            RawPeptideScan rawPeptideScan = MzMLReader.scanFromFragment(text);
-            if (rawPeptideScan.getMsLevel() < 2)
-                return null; // ignore level 1 scans
-            return rawPeptideScan;
-        }
+//        if (text.startsWith("<spectrum")) {
+//            if (text.contains("name=\"ms level\" value=\"1\""))
+//                return null;
+//            RawPeptideScan rawPeptideScan = MzMLReader.scanFromFragment(text);
+//            if (rawPeptideScan.getMsLevel() < 2)
+//                return null; // ignore level 1 scans
+//            return rawPeptideScan;
+//        }
         if (text.startsWith("BEGIN IONS")) {
             Reader inp = new StringReader(text);
             RawPeptideScan rawPeptideScan = XTandemUtilities.readMGFScan(new LineNumberReader(inp), "");
@@ -944,6 +958,7 @@ public class XTandemHadoopUtilities {
 
         } catch (Exception e) {
 
+            //noinspection ConstantConditions
             if (e instanceof RuntimeException) {
                 throw (RuntimeException) e;
             } else {
@@ -1165,6 +1180,7 @@ public class XTandemHadoopUtilities {
     public static void safeWrite(final TaskInputOutputContext context, final String key,
                                  final String value) {
         try {
+            //noinspection unchecked
             context.write(new Text(key), new Text(value));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -1394,7 +1410,8 @@ public class XTandemHadoopUtilities {
         try {
             FSDataOutputStream os = fileSystem.create(p, true); // create with overwrite
             out = new PrintWriter(new OutputStreamWriter(os));
-            String[] items = counters.keySet().toArray(new String[0]);
+            Set<String> stringSet = counters.keySet();
+            String[] items = stringSet.toArray(new String[stringSet.size()]);
             Arrays.sort(items);
             for (String s : items) {
                 out.println(s + "=" + counters.get(s));

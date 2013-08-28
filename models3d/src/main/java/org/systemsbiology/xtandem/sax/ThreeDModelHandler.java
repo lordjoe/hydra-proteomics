@@ -1,7 +1,9 @@
 package org.systemsbiology.xtandem.sax;
 
 import org.systemsbiology.jmol.*;
+import org.systemsbiology.sax.*;
 import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.bioml.sax.*;
 import org.xml.sax.*;
 
 import java.io.*;
@@ -11,7 +13,7 @@ import java.io.*;
  * User: steven
  * Date: 6/22/11
  */
-public class ThreeDModelHandler extends AbstractElementSaxHandler<ThreeDModel> implements ITopLevelSaxHandler {
+public class ThreeDModelHandler extends AbstractXTandemElementSaxHandler<ThreeDModel> implements ITopLevelSaxHandler {
     public static final ThreeDModelHandler[] EMPTY_ARRAY = {};
 
 

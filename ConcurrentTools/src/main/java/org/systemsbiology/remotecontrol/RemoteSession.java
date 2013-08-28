@@ -360,8 +360,8 @@ public class RemoteSession implements UserInfo {
         final String password = RemoteUtilities.getPassword(); // "training";  //
         final String host = RemoteUtilities.getHost(); // "192.168.244.128"; // "hadoop1";
 
-        if (HadoopMajorVersion.CURRENT_VERSION == HadoopMajorVersion.Version0)
-            throw new IllegalStateException("Version 1 is required for this code");
+        if (HadoopMajorVersion.CURRENT_VERSION != HadoopMajorVersion.Version0)
+            throw new IllegalStateException("Version 0 is required for this code");
         final RemoteSession rs = new RemoteSession(host, user, password);
         rs.setConnected(true);
 

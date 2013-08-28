@@ -6,6 +6,5 @@ package org.systemsbiology.xtandem.sax;
  * Date: 3/24/11
  */
 public interface IMainDataHolder {
-    public static final IMainDataHolder[] EMPTY_ARRAY = {};
 
 }
