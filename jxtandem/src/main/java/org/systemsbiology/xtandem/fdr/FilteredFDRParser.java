@@ -31,19 +31,17 @@ public class FilteredFDRParser {
         m_OutputFileName = m_Props.getProperty("output_file");
 
         String minScoreStr = m_Props.getProperty("minimum_kscore");
-        if(minScoreStr != null) {
+        if (minScoreStr != null) {
             double minScore = Double.parseDouble(minScoreStr);
             m_Filters.addFilter(new KScoreSpectrumFilter(minScore));
         }
         m_Parser = new FDRParser(m_InputFileName);
     }
 
-    public void parse()
-    {
+    public void parse() {
         try {
-            m_Parser.readFileAndGenerateFDR(m_Filters);
             PrintWriter pw = new PrintWriter(new FileWriter(m_OutputFileName));
-            m_Parser.appendFDRRates(pw);
+            m_Parser.readFileAndGenerateFDR(pw, m_Filters);
             pw.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -58,24 +56,23 @@ public class FilteredFDRParser {
                     "input_file=A5decoy_v1.2013_08_213_11_35_03.t.xml.pep.xml\n" +
                     "#\n" +
                     "# file to write output\n" +
-                    "output_file=A5decoy_v1.2013_08_213_11_35_03.fdr1\n" +
+                    "output_file=A5decoy_v1.2013_08_213_11_35_03Filtered_300.pep.xml\n" +
                     "#\n" +
                     "# ignore values less than this score\n" +
                     "minimum_kscore=300.0\n";
 
 
-    protected static void usage()
-    {
+    protected static void usage() {
         System.out.println("Usage <property files> ");
         System.out.println("Which look like the following:");
         System.out.println(SAMPLE_PROPERTY_FILE);
     }
 
     public static void main(String[] args) {
-         if(args.length == 0)      {
-             usage();
-             return;
-         }
+        if (args.length == 0) {
+            usage();
+            return;
+        }
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];

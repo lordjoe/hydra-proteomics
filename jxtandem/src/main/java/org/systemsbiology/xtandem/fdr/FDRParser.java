@@ -60,7 +60,7 @@ public class FDRParser {
     /**
      *
      */
-    public void readFileAndGenerateFDR(ISpectrumDataFilter... filters) {
+    public void readFileAndGenerateFDR(PrintWriter out,ISpectrumDataFilter... filters) {
         int numberProcessed = 0;
         int numberUnProcessed = 0;
         try {
@@ -71,10 +71,17 @@ public class FDRParser {
                     String[] searchHitLines = readSearchHitLines(line, rdr);
                     //              System.out.println(line);
                     boolean processed = handleSearchHit(searchHitLines, filters);
-                    if (processed)
+                    if (processed) {
+                        for (int i = 0; i < searchHitLines.length; i++) {
+                            String searchHitLine = searchHitLines[i];
+                            out.println(searchHitLine);
+                        }
                         numberProcessed++;
-                    else
+                    } else
                         numberUnProcessed++;
+                }
+                else {
+                    out.println(line);
                 }
                 line = rdr.readLine();
 
@@ -250,12 +257,13 @@ public class FDRParser {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
+        PrintWriter px  = new PrintWriter(new FileWriter("output.pep.xml"));
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             FDRParser fdrParser = new FDRParser(arg);
-            fdrParser.readFileAndGenerateFDR();
+            fdrParser.readFileAndGenerateFDR(px);
             fdrParser.appendFDRRates(System.out);
         }
 
