@@ -22,7 +22,6 @@ import java.io.*;
  * nice enough to put the begin and end tags on separate lines
  */
 public class MGFInputFormat extends FileInputFormat<Text, Text> {
-    public static final MGFInputFormat[] EMPTY_ARRAY = {};
 
     private String m_Extension = "mgf";
 
