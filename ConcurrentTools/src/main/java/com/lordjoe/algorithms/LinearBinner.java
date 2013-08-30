@@ -73,9 +73,11 @@ public class LinearBinner implements IBinner {
      */
     @Override
     public int asBin(double value) {
-        if (value < getMinValue()) {
+        double minValue = getMinValue();
+        int minBin = getMinBin();
+        if (value < minValue) {
             if (isOverflowBinned())
-                return getMinBin();
+                return minBin;
             else
                 return -1; // out of range
         }
@@ -86,8 +88,10 @@ public class LinearBinner implements IBinner {
             else
                 return -1; // out of range
         }
-        int bin = (int)((value - getMinValue()) / getBinSize());
-        return bin + getMinBin();
+        double binSize = getBinSize();
+        double val = value - minValue;
+        int bin = (int)(val / binSize);
+        return bin + minBin;
     }
 
     public double getBinSize() {
