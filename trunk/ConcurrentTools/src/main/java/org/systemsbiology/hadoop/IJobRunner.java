@@ -1,7 +1,6 @@
 package org.systemsbiology.hadoop;
 
 import org.apache.hadoop.conf.*;
-import org.apache.hadoop.mapred.jobcontrol.*;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.util.*;
 

@@ -1,7 +1,6 @@
 package org.systemsbiology.hadoop;
 
 import org.apache.hadoop.conf.*;
-import org.apache.hadoop.mapred.jobcontrol.*;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.util.*;
 
@@ -22,10 +21,13 @@ public abstract class ConfiguredJobRunner extends Configured implements Tool
      * after the job is run return the Job
      * @return
      */
+
+    @SuppressWarnings("UnusedDeclaration")
     public Job getJob() {
         return m_Job;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setJob(final Job pJob) {
         m_Job = pJob;
     }

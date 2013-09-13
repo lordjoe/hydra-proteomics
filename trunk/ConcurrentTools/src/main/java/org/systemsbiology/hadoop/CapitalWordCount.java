@@ -17,8 +17,7 @@ import java.util.*;
 /**
  *  org.systemsbiology.hadoop.CapitalWordCount
  */
-public class CapitalWordCount  extends Configured implements Tool // ConfiguredJobRunner implements IJobRunner
-{
+public class CapitalWordCount  extends Configured implements Tool {
 
     public static final  String TEST_PROPERTY = "org.systemsbiology.status";
  
@@ -134,13 +133,13 @@ public class CapitalWordCount  extends Configured implements Tool // ConfiguredJ
                   return true;
               // break these out
               if (fs.getFileStatus(src).isDir()) {
-                  //noinspection UnusedAssignment
+                  //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
                   boolean doneOK = fs.delete(src, true);
                   doneOK = !fs.exists(src);
                   return doneOK;
               }
               if (fs.isFile(src)) {
-                  //noinspection UnusedDeclaration,UnnecessaryLocalVariable
+                  //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
                   boolean doneOK = fs.delete(src, false);
                   return doneOK;
               }
@@ -173,7 +172,6 @@ public class CapitalWordCount  extends Configured implements Tool // ConfiguredJ
         Job job = new Job(conf, "word count");
         conf = job.getConfiguration(); // NOTE JOB Copies the configuraton
         job.setJarByClass(CapitalWordCount.class);
-
         job.setMapperClass(TokenizerMapper.class);
          job.setCombinerClass(IntSumReducer.class);
         job.setReducerClass(IntSumReducer.class);
@@ -195,7 +193,7 @@ public class CapitalWordCount  extends Configured implements Tool // ConfiguredJ
 
         // you must pass the output directory as the last argument
         String athString = otherArgs[otherArgs.length - 1];
-        //noinspection UnusedDeclaration
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         File out = new File(athString);
 //        if (out.exists()) {
 //            FileUtilities.expungeDirectory(out);
@@ -212,11 +210,10 @@ public class CapitalWordCount  extends Configured implements Tool // ConfiguredJ
         System.err.println("Bar is " + isBar);
 
         boolean ans = job.waitForCompletion(true);
-        //noinspection UnnecessaryLocalVariable
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         int ret = ans ? 0 : 1;
         return ret;
     }
-
 
     /**
      * Execute the command with the given arguments.
