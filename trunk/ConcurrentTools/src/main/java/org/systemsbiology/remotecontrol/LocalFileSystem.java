@@ -58,6 +58,7 @@ public class LocalFileSystem implements IFileSystem {
         return m_BaseDirectory;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setBaseDirectory(final File pBaseDirectory) {
         m_BaseDirectory = pBaseDirectory;
     }
@@ -135,7 +136,10 @@ public class LocalFileSystem implements IFileSystem {
      */
     @Override
     public String[] ls(final String hdfsPath) {
-        String[] ret = new File(hdfsPath).list();
+        final File file = new File(hdfsPath);
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
+        String psth = file.getAbsolutePath();
+        String[] ret = file.list();
         if (ret == null)
             ret = new String[0];
         return ret;
@@ -182,6 +186,7 @@ public class LocalFileSystem implements IFileSystem {
      */
     @Override
     public void guaranteeFile(final String hdfsPath, final File file) {
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         String realPath = hdfsPath.replace("\\", "/");
         String filePath = file.getAbsolutePath().replace("\\", "/");
         if (hdfsPath.equals(filePath))
@@ -207,6 +212,7 @@ public class LocalFileSystem implements IFileSystem {
      * @param hdfsPath !null path - probably of an existing file
      * @return !null stream
      */
+    @SuppressWarnings("UnusedDeclaration")
      public InputStream openFileForRead(final String hdfsPath) {
         try {
             return new FileInputStream(new File(hdfsPath));

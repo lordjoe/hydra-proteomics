@@ -5,6 +5,7 @@ import org.apache.hadoop.fs.*;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
+import org.apache.log4j.lf5.viewer.*;
 import org.systemsbiology.common.*;
 import org.systemsbiology.hadoop.*;
 
@@ -248,6 +249,28 @@ public class HDFSUtilities {
                 return test;
             }
         }
+    }
+
+
+    /**
+     * return the size of a file or the total size of a directory
+     * @param file  !null file might not exist
+     * @param fs !null file system
+     * @return  size of the file - 0 if it does not exist or total size of files in directory
+     */
+    public static long size(String file, IFileSystem fs) {
+        if(!fs.exists(file))
+             return 0;
+        if(!fs.isDirectory(file))
+             return fs.fileLength(file);
+        final String[] files   = fs.ls(file);
+        long ret = 0;
+        for (int i = 0; i < files.length; i++) {
+            String s = file + "/" + files[i];
+            ret += size(s,fs);
+
+        }
+        return ret;
     }
 
 

@@ -3,7 +3,12 @@
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
     <excludeFromCompile>
+      <file url="file://$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/HDFWithNameAccessor.java" />
+      <file url="file://$PROJECT_DIR$/ConcurrentTools/src/main/java/org/apache/hadoop/fs/FileUtil.java" />
+      <file url="file://$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/HDFSAsUserAccessor.java" />
+      <file url="file://$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/hadoop/RunAsUserUseWithReflection.java" />
       <file url="file://$PROJECT_DIR$/jxtandem/src/test/java/org/systemsbiology/xtandem/JXTandemTestConfiguration.java" />
+      <file url="file://$PROJECT_DIR$/jxtandem/src/test/java/org/systemsbiology/hadoop/HDFS1_0_ONLYTests.java" />
     </excludeFromCompile>
     <resourceExtensions />
     <wildcardResourcePatterns>
@@ -264,7 +269,7 @@
       <module fileurl="file://$PROJECT_DIR$/proteos/proteos.iml" filepath="$PROJECT_DIR$/proteos/proteos.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6 (2)" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6  64 Bit" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
   <component name="SvnBranchConfigurationManager">
@@ -318,48 +323,92 @@
         <root url="jar://$MAVEN_REPOSITORY$/avalon-framework/avalon-framework/4.1.3/avalon-framework-4.1.3-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: com.google.code.findbugs:jsr305:1.3.9">
+    <library name="Maven: com.google.api.client:google-api-data-spreadsheet-v3:1.0.10-alpha">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/api/client/google-api-data-spreadsheet-v3/1.0.10-alpha/google-api-data-spreadsheet-v3-1.0.10-alpha.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/api/client/google-api-data-spreadsheet-v3/1.0.10-alpha/google-api-data-spreadsheet-v3-1.0.10-alpha-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/api/client/google-api-data-spreadsheet-v3/1.0.10-alpha/google-api-data-spreadsheet-v3-1.0.10-alpha-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: com.google.collections:google-collections:1.0-rc1">
+    <library name="Maven: com.google.code.findbugs:jsr305:1.3.7">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/google/collections/google-collections/1.0-rc1/google-collections-1.0-rc1.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/1.3.7/jsr305-1.3.7.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/google/collections/google-collections/1.0-rc1/google-collections-1.0-rc1-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/1.3.7/jsr305-1.3.7-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/google/collections/google-collections/1.0-rc1/google-collections-1.0-rc1-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/1.3.7/jsr305-1.3.7-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: com.google.gdata:gdata-core-1.0:1.41.5">
+    <library name="Maven: com.google.gdata:core:1.47.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/google/gdata/gdata-core-1.0/1.41.5/gdata-core-1.0-1.41.5.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/gdata/core/1.47.1/core-1.47.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/google/gdata/gdata-core-1.0/1.41.5/gdata-core-1.0-1.41.5-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/gdata/core/1.47.1/core-1.47.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/google/gdata/gdata-core-1.0/1.41.5/gdata-core-1.0-1.41.5-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/gdata/core/1.47.1/core-1.47.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: com.google.gdata:gdata-spreadsheet-3.0:1.41.5">
+    <library name="Maven: com.google.guava:guava:13.0.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/google/gdata/gdata-spreadsheet-3.0/1.41.5/gdata-spreadsheet-3.0-1.41.5.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/13.0.1/guava-13.0.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/google/gdata/gdata-spreadsheet-3.0/1.41.5/gdata-spreadsheet-3.0-1.41.5-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/13.0.1/guava-13.0.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/google/gdata/gdata-spreadsheet-3.0/1.41.5/gdata-spreadsheet-3.0-1.41.5-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/13.0.1/guava-13.0.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google.http-client:google-http-client:1.11.0-beta">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/http-client/google-http-client/1.11.0-beta/google-http-client-1.11.0-beta.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/http-client/google-http-client/1.11.0-beta/google-http-client-1.11.0-beta-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/http-client/google-http-client/1.11.0-beta/google-http-client-1.11.0-beta-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google.oauth-client:google-oauth-client-java6:1.11.0-beta">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client-java6/1.11.0-beta/google-oauth-client-java6-1.11.0-beta.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client-java6/1.11.0-beta/google-oauth-client-java6-1.11.0-beta-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client-java6/1.11.0-beta/google-oauth-client-java6-1.11.0-beta-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google.oauth-client:google-oauth-client-jetty:1.11.0-beta">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client-jetty/1.11.0-beta/google-oauth-client-jetty-1.11.0-beta.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client-jetty/1.11.0-beta/google-oauth-client-jetty-1.11.0-beta-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client-jetty/1.11.0-beta/google-oauth-client-jetty-1.11.0-beta-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google.oauth-client:google-oauth-client:1.11.0-beta">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client/1.11.0-beta/google-oauth-client-1.11.0-beta.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client/1.11.0-beta/google-oauth-client-1.11.0-beta-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client/1.11.0-beta/google-oauth-client-1.11.0-beta-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: com.jcraft:jsch:0.1.44-1">
@@ -635,6 +684,28 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-core/0.20.2/hadoop-core-0.20.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.apache.httpcomponents:httpclient:4.0.3">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpclient/4.0.3/httpclient-4.0.3.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpclient/4.0.3/httpclient-4.0.3-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpclient/4.0.3/httpclient-4.0.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.apache.httpcomponents:httpcore:4.0.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.biojava:biojava3-alignment:3.0.4">
@@ -1020,6 +1091,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/xmlenc/xmlenc/0.52/xmlenc-0.52-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: xpp3:xpp3:1.1.4c">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/xpp3/xpp3/1.1.4c/xpp3-1.1.4c.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/xpp3/xpp3/1.1.4c/xpp3-1.1.4c-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/xpp3/xpp3/1.1.4c/xpp3-1.1.4c-sources.jar!/" />
       </SOURCES>
     </library>
   </component>

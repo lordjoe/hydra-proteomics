@@ -65,7 +65,7 @@ public class MzXMLPeaksHandler extends AbstractXTandemElementSaxHandler<ISpectru
     }
 
     public MassResolution getPrecision() {
-        return m_Precision;
+        return m_Precision;                                                          checkReturnValue
     }
 
     public void setPrecision(final MassResolution pPrecision) {
