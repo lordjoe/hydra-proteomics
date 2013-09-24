@@ -182,6 +182,7 @@ public class CapitalWordCount  extends Configured implements Tool {
         job.setOutputValueClass(IntWritable.class);
 
 
+        job.setInputFormatClass(FakeWordInputFormat.class);
         
         // added Slewis
         job.setNumReduceTasks(2); // cheaper on amazon HadoopUtilities.DEFAULT_REDUCE_TASKS);

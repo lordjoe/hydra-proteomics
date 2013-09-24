@@ -7,6 +7,7 @@ import java.util.*;
  * User: steven
  * Date: Jun 1, 2010
  */
+@SuppressWarnings("UnusedDeclaration")
 public class DecryptorFactory {
     public static final DecryptorFactory[] EMPTY_ARRAY = {};
 
