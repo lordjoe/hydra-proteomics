@@ -2,7 +2,6 @@ package org.systemsbiology.data;
 
 import java.io.*;
 import java.util.*;
-import java.util.zip.*;
 
 /**
  * org.systemsbiology.data.FileStreamFactory
@@ -99,12 +98,13 @@ public class FileStreamFactory implements IStreamSource,IStreamSink, IStreamFact
             return new IStreamSource[0];
         List<IStreamSource> holder = new ArrayList<IStreamSource>();
         accumulateSubStreamSourcesOfType( holder,extension);
-        return holder.toArray(FileStreamFactory.EMPTY_ARRAY);
+        return holder.toArray(new IStreamSource[holder.size()]);
 
     }
 
     protected void accumulateSubStreamSourcesOfType(List<IStreamSource> pHolder, String pExtension) {
         IStreamSource[] sources = getSubStreamSources();
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < sources.length; i++) {
             IStreamSource source = sources[i];
             if(source.isPrimarySource()) {
@@ -125,16 +125,17 @@ public class FileStreamFactory implements IStreamSource,IStreamSink, IStreamFact
         if(files == null)
             return new IStreamSource[0];
         List<IStreamSource> holder = new ArrayList<IStreamSource>();
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < files.length; i++) {
             String file = files[i];
             File nf = new File(directory,file);
             holder.add(new FileStreamFactory(nf));
         }
-        return holder.toArray(FileStreamFactory.EMPTY_ARRAY);
+        return holder.toArray(new IStreamSource[holder.size()]);
 
     }
 
     public boolean isPrimarySource() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 }

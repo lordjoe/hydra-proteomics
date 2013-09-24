@@ -29,6 +29,7 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
     public static final boolean FORCE_ONE_MAPPER = false;
     // todo run off a parameter
     // setting this small forces many mappers
+    @SuppressWarnings("UnusedDeclaration")
     public static final int SPLIT_BLOCK_SIZE = 10 * 1024 * 1024;
     public static final int MIN_BLOCK_SIZE = 10 * 1024;
 
@@ -46,6 +47,7 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
         return m_Extension;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setExtension(final String pExtension) {
         m_Extension = pExtension;
     }
@@ -110,6 +112,7 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
         List<InputSplit> splits = new ArrayList<InputSplit>();
 
         Path[] paths = getInputPaths(job);
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < paths.length; i++) {
             Path path = paths[i];
             System.err.println("Input path " + path.toString());
@@ -164,20 +167,20 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
      * Value is the entire file
      * Key is the file name
      */
-    public class FastaFileReader extends RecordReader<Text, Text> {
+    public   class FastaFileReader extends RecordReader<Text, Text> {
 
         private CompressionCodecFactory compressionCodecs = null;
-        private long m_Start;
-        private long m_End;
-        private long m_Current;
-        private LineReader m_Input;
+        private long m_Start;  // start this split
+        private long m_End;   // end this split
+        private long m_Current;  // current position
         private Text m_Key;
-        private Text m_Value = null;
-        private final Text m_Line = new Text();
+        private Text m_Value;
+        private final Text m_Line = new Text(); // use to read current line
         private int m_MaxLineLength;
-        private StringBuilder m_Sb = new StringBuilder();
+        private StringBuilder m_Data = new StringBuilder();
         private String m_CurrentLine;
-        private FSDataInputStream m_FileIn;
+        private FSDataInputStream m_FileIn; // input stream needed for position
+        private LineReader m_Input; // current reader
 
         public void initialize(InputSplit genericSplit,
                                TaskAttemptContext context) throws IOException {
@@ -185,7 +188,7 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
             Configuration job = context.getConfiguration();
             m_MaxLineLength = job.getInt("mapred.linerecordreader.maxlength",
                     Integer.MAX_VALUE);
-            m_Sb.setLength(0);
+            m_Data.setLength(0);
             m_Start = split.getStart();
             m_End = m_Start + split.getLength();
             final Path file = split.getPath();
@@ -224,7 +227,7 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
         }
 
         /**
-         * look for a <scan tag then read until it closes
+         * look for a line starting with > and read until it closes
          *
          * @return true if there is data
          * @throws java.io.IOException
@@ -237,21 +240,19 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
                 return false;
             }
 
-//            // advance to the start - probably done in initialize
-//            while (m_FileIn.getPos() < m_Start) {
-//                m_CurrentLine = m_Input.readLine();
-//            }
+
             // read more data
             if (m_CurrentLine == null) {
                 m_CurrentLine = readNextLine();
-                if (m_CurrentLine == null) {
+                if (m_CurrentLine == null) { // end of file
                     m_Key = null;
                     m_Value = null;
                     return false;
                 }
             }
 
-            while (m_FileIn.getPos() < m_End && m_CurrentLine != null && !m_CurrentLine.startsWith(">")) {
+            // lines starting with > are a new field in FASTA files
+            while (m_FileIn.getPos() < m_End   && !m_CurrentLine.startsWith(">")) {
                 m_CurrentLine = readNextLine();
             }
 
@@ -261,28 +262,29 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
                 return false;
             }
 
-            // label = key
+            // label = key   - drop the >
             String key = m_CurrentLine.substring(1);
             m_Key.set(key);
 
-            m_Sb.setLength(0);
+            m_Data.setLength(0); // clear the buffer
             m_CurrentLine = readNextLine();
+            // keep reading
             while (m_CurrentLine != null && !m_CurrentLine.startsWith(">")) {
-                m_Sb.append(m_CurrentLine);
+                m_Data.append(m_CurrentLine);
                 m_CurrentLine = readNextLine();
 
             }
 
-            if (m_Sb.length() == 0) {  // cannot read
+            if (m_Data.length() == 0) {  // cannot read
                 m_Key = null;
                 m_Value = null;
                 return false;
             }
 
 
-            String value = m_Sb.toString();
+            String value = m_Data.toString();
             m_Value.set(value);
-            m_Sb.setLength(0); // clear the buffer
+            m_Data.setLength(0); // clear the buffer
 
             m_Current = m_FileIn.getPos();
             return true;
@@ -293,9 +295,9 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
             int newSize = m_Input.readLine(m_Line, m_MaxLineLength,
                     Math.max(  Math.min(Integer.MAX_VALUE, (int) (m_End - m_Current)),
                             m_MaxLineLength));
-            m_Current += newSize;
             if (newSize == 0)
-                return null;
+                  return null;
+            m_Current += newSize; // new position
             return m_Line.toString();
         }
 
