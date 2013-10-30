@@ -12,6 +12,7 @@ import java.util.*;
 public class PeptideBondDigester extends PeptideDigester {
     public static final PeptideBondDigester[] EMPTY_ARRAY = {};
 
+    public static final int MAX_NUMBER_MISSED_CLEAVAGES = 5;
     public static final int NUMBER_LETTERS = 26;
 
     public static final PeptideBondDigester TRYPSIN  = new Trypsin();
@@ -100,8 +101,8 @@ public class PeptideBondDigester extends PeptideDigester {
     public void setNumberMissedCleavages(final int pNumberMissedCleavages) {
         if (pNumberMissedCleavages < 0)
             throw new IllegalArgumentException("NumberMissedCleavages must be positive");
-        if (pNumberMissedCleavages > 2)
-            throw new UnsupportedOperationException("Only 0-2 missed cleavage supported");
+        if (pNumberMissedCleavages > MAX_NUMBER_MISSED_CLEAVAGES)
+            throw new UnsupportedOperationException("Only 0-" + MAX_NUMBER_MISSED_CLEAVAGES + " missed cleavage supported");
 
         m_NumberMissedCleavages = pNumberMissedCleavages;
     }
@@ -190,10 +191,10 @@ public class PeptideBondDigester extends PeptideDigester {
             // a little debug code
             String seq = pp.getSequence();
 
-            if (seq.contains("AIQFLEI" ))
-                 XTandemUtilities.breakHere();
-            if (seq.contains("YREERNADSGLC" ))
-                 XTandemUtilities.breakHere();
+//            if (seq.contains("AIQFLEI" ))
+//                 XTandemUtilities.breakHere();
+//            if (seq.contains("YREERNADSGLC" ))
+//                 XTandemUtilities.breakHere();
 
              addSemiCleavages(allpolys, holder, pp);
 
