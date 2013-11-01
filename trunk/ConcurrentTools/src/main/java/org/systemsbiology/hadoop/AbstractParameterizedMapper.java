@@ -30,7 +30,7 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
     }
 
     @Override
-    protected void setup(final Mapper.Context context) throws IOException, InterruptedException {
+    protected void setup(final Mapper<T, Text, Text, Text>.Context context) throws IOException, InterruptedException {
         //noinspection unchecked
         super.setup(context);
 
