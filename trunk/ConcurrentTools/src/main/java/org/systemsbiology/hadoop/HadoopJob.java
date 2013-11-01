@@ -1,6 +1,7 @@
 package org.systemsbiology.hadoop;
 
 import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.util.*;
 import org.systemsbiology.remotecontrol.*;
 
 import java.io.*;
@@ -56,11 +57,11 @@ public class HadoopJob implements IHadoopJob {
         return name + "_" + getStepNumber() + ".jar";
     }
 
-    public static HadoopJob buildJob(Class mainClass, String inputDirectory, String jobDirectory, String outDir, String... added) {
+    public static HadoopJob buildJob(Class  mainClass, String inputDirectory, String jobDirectory, String outDir, String... added) {
         return buildJob2(mainClass, inputDirectory, jobDirectory, outDir,   added);
     }
 
-    public static HadoopJob buildJob2(Class mainClass, String inputDirectory, String jobDirectory, String outDir, String[] added) {
+    public static HadoopJob buildJob2(Class  mainClass, String inputDirectory, String jobDirectory, String outDir, String[] added) {
         HadoopJob ret = new HadoopJob();
         ret.setMainClass(mainClass.getName());
         ret.setJobDirectory(jobDirectory);
@@ -77,7 +78,7 @@ public class HadoopJob implements IHadoopJob {
         return ret;
     }
 
-    public static HadoopJob buildJob3(Class mainClass, String inputDirectory, String jobDirectory, String outDir, String jar, String... added) {
+    public static HadoopJob buildJob3(Class  mainClass, String inputDirectory, String jobDirectory, String outDir, String jar, String... added) {
         HadoopJob ret = new HadoopJob();
         ret.setMainClass(mainClass.getName());
         ret.setJarFile(jar);
