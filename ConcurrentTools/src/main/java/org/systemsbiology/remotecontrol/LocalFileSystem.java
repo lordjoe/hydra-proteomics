@@ -12,8 +12,6 @@ import java.io.*;
  * Date: May 13, 2011
  */
 public class LocalFileSystem implements IFileSystem {
-    public static final LocalFileSystem[] EMPTY_ARRAY = {};
-
 
     private File m_BaseDirectory;
 

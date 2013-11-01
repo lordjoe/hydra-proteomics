@@ -17,6 +17,11 @@ import java.io.*;
 
 public abstract class AbstractParameterizedReducer extends Reducer<Text, Text, Text, Text> {
 
+
+    public static boolean isKeySpecial(String s) {
+       return s.startsWith("#");
+   }
+
     public static final boolean WRITING_PARAMETERS = true;
 
     private ISetableParameterHolder m_Application;
@@ -124,18 +129,13 @@ public abstract class AbstractParameterizedReducer extends Reducer<Text, Text, T
     }
 
 
-    @SuppressWarnings("UnusedDeclaration")
-    protected boolean isKeySpecial(String s) {
-        return s.startsWith("#");
-    }
-
     @Override
     public void reduce(Text key, Iterable<Text> values,
                        Context context) throws IOException, InterruptedException {
         // keys starting with # come BEFORE ALL other keys
         String sequence = key.toString();
         // these are special and will ALL behandled FIRST
-        if (sequence.startsWith("#"))
+        if (isKeySpecial(sequence))
             reduceSpecial(key, values, context);
         else {
             // we will get NO MORE special keys
