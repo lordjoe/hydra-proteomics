@@ -20,7 +20,7 @@ public class HadoopDeployer {
             //          core-3.1.1.jar,\
             "hadoop-",
             "commons-logging-",
-            "commons-lang-",
+      //      "commons-lang-",
             "commons-codec-",
             "commons-httpclient-",
             "commons-net-",
@@ -52,13 +52,13 @@ public class HadoopDeployer {
             "jetty-",
             "snappy",
             "servlet",
-            "google",
+    //      "google",
             "jfreechart",
             "core",
             "gdata",
             "netty",
-            "guava",
-            "protobuf",
+     //       "guava",
+     //       "protobuf",
             "jaxb",
             "jettison",
             "jsr305",
@@ -159,6 +159,8 @@ public class HadoopDeployer {
         for (int i = 0; i < pathItems.length; i++) {
             String item = pathItems[i];
             String jarName = new File(item).getName();
+            if(jarName.contains("guava"))
+                 jarName = new File(item).getName();
             if (".".equals(item))
                 continue;
             if (EXCLUDED_JARS.contains(item))
@@ -183,6 +185,9 @@ public class HadoopDeployer {
             String item = pathItems[i];
             File itemFile = new File(item);
             String jarName = itemFile.getName();
+            if(jarName.contains("guava"))
+                jarName = itemFile.getName(); // break here
+
             if (".".equals(item))
                 continue;
             if (inExcludedJars(jarName))
