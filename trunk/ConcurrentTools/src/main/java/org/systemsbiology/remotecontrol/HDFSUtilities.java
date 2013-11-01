@@ -5,7 +5,6 @@ import org.apache.hadoop.fs.*;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
-import org.apache.log4j.lf5.viewer.*;
 import org.systemsbiology.common.*;
 import org.systemsbiology.hadoop.*;
 
