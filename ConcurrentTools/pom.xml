@@ -63,8 +63,17 @@
             <version>4.4</version>
             <scope>test</scope>
         </dependency>
-
-         <!-- SAMTools and Hadoop-BAM (from Artifactory) -->
+        <dependency>
+          	<groupId>org.eclipse.jetty</groupId>
+          	<artifactId>jetty-server</artifactId>
+          	<version>9.0.6.v20130930</version>
+          </dependency>
+          <dependency>
+          	<groupId>org.eclipse.jetty</groupId>
+          	<artifactId>jetty-servlet</artifactId>
+          	<version>9.0.6.v20130930</version>
+          </dependency>
+          <!-- SAMTools and Hadoop-BAM (from Artifactory) -->
         <!--
           <dependency>
             <groupId>org.mortbay.jetty</groupId>

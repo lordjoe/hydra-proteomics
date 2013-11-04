@@ -28,7 +28,6 @@ public class RestianServer extends HttpServlet {
 
     protected void doPost(HttpServletRequest req, HttpServletResponse rsp)
             throws ServletException, IOException {
-        String ret = null;
         String s1 = req.getParameter("i1");
         String s2 = req.getParameter("i2");
         Integer sum = new Integer(s1) + new Integer(s2);
