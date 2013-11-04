@@ -53,6 +53,7 @@ public class MzXMLPeaksHandler extends AbstractXTandemElementSaxHandler<ISpectru
         if (value != null)
             if (!"m/z-int".equals(value))
                 throw new UnsupportedOperationException("m/z-int is the only order we can handle");
+        //noinspection UnnecessaryReturnStatement
         return;
     }
 

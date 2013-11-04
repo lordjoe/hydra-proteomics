@@ -1,7 +1,6 @@
 package org.systemsbiology.xtandem.hadoop;
 
 import com.lordjoe.utilities.*;
-import com.lordjoe.utilities.ElapsedTimer;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.*;
@@ -17,8 +16,6 @@ import org.systemsbiology.xtandem.sax.*;
 import org.systemsbiology.xtandem.taxonomy.*;
 
 import java.io.*;
-import java.lang.reflect.*;
-import java.security.*;
 import java.util.*;
 import java.util.prefs.*;
 
@@ -129,6 +126,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         File parentFile = ret.getParentFile();
         if (parentFile != null) {
             if (!parentFile.exists())
+                //noinspection ResultOfMethodCallIgnored
                 parentFile.mkdirs();
             else {
                 if (parentFile.isFile())
@@ -254,7 +252,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     }
 
     public String[] getPerformanceKeys() {
-        String[] ret = m_PerformanceParameters.keySet().toArray(new String[0]);
+        String[] ret = m_PerformanceParameters.keySet().toArray(new String[m_PerformanceParameters.keySet().size()]);
         Arrays.sort(ret);
         return ret;
     }
@@ -525,14 +523,17 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
         if (path != null) {
             InputStream is = open(path);
+            //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
             String[] peptideFiles = XTandemUtilities.parseFile(is, taxonHandler, path);
             taxonHandler = new TaxonHandler(null, "saps", taxonomyName);
             is = open(path);
+            //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
             String[] sapFiles = XTandemUtilities.parseFile(is, taxonHandler, path);
 
             // This step is called load annotation in XTandem
             taxonHandler = new TaxonHandler(null, "mods", taxonomyName);
             is = open(path);
+            //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
             String[] annotationfiles = XTandemUtilities.parseFile(is, taxonHandler, path);
 
         } else {
@@ -615,6 +616,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         accessor.guaranteeDirectory(remotepath);
         File[] files = file.listFiles();
         int ret = 0;
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < files.length; i++) {
             File file1 = files[i];
             if (file1.isFile()) {
@@ -862,6 +864,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             }
         }
 
+        //noinspection StatementWithEmptyBody
         if (getPassedJarFile() != null) {
 
         }
@@ -904,7 +907,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 long existingLength = accessor.fileLength(remotepath);
                 // for very large data files we will tolerate a lot of error to avoid recopying them
                 if (existingLength == length
-                        || existingLength > (3 * 1000 * 1000 * 1000)      // todo HACK HACK if you have a gig or more do NOT recopy
+                        || existingLength > (3 * 1000 * 1000 * 1000L)      // HACK HACK if you have a gig or more do NOT recopy
                         ) {
                     return 1; // todo check md5 hash
                 }
@@ -1083,7 +1086,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 continue;
             counters = job.getAllCounterValues();
             String sizeText = buildSizeText(counters);
-            HadoopTandemMain application = (HadoopTandemMain) getApplication();
+            HadoopTandemMain application = getApplication();
             XTandemHadoopUtilities.writeDatabaseSizes(application, sizeText);
 
         }
@@ -1100,6 +1103,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 long value = pCounters.get(key);
                 total += value;
                 max = Math.max(value, max);
+                //noinspection StringConcatenationInsideStringBufferAppend
                 sb.append("\t" + value);
                 sb.append("\n");
             }
@@ -1156,6 +1160,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     protected void cleanFileSystem() {
         HadoopTandemMain application = getApplication();
         String databaseName = application.getDatabaseName();
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         Path dpath2 = XTandemHadoopUtilities.getRelativePath(databaseName);
         Path dpath = XTandemHadoopUtilities.getRelativePath(".");
         try {
@@ -1263,6 +1268,73 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         return job;
     }
 
+
+    protected IHadoopJob buildJobSequenceFinderPart1() {
+
+          IMainData application = getApplication();
+          Taxonomy taxonomy = (Taxonomy) application.getTaxonomy();
+          String[] taxomonyFiles = taxonomy.getTaxomonyFiles();
+          if (taxomonyFiles == null || taxomonyFiles.length == 0)
+              throw new IllegalStateException("no taxonomy files defined");
+          String spectumFile = taxomonyFiles[0];
+          spectumFile = new File(spectumFile).getName();
+          String remoteHost = getRemoteHost();
+          int p = getRemoteHostPort();
+          //         Taxonomy taxonomy = getTaxonomy();
+  //        String[] files = taxonomy.getTaxomonyFiles();
+  //        if(files != null && files.length > 0)
+  //            spectumFile = files[0];
+          Class<JXTandemParserPart1> mainClass = JXTandemParserPart1.class;
+          String outputLocation = getOutputLocation();
+          String remoteBaseDirectory = getRemoteBaseDirectory();
+          if (!spectumFile.startsWith(remoteBaseDirectory))
+              spectumFile = remoteBaseDirectory + "/" + spectumFile;
+          String[] added = buildJobStrings();
+
+          IHadoopJob job = HadoopJob.buildJob(
+                  mainClass,
+                  spectumFile,     // data on hdfs
+                  "jobs",      // jar location
+                  outputLocation,
+                  added
+          );
+          String jarFile = job.getJarFile();
+          setJarFile(jarFile);
+          incrementPassNumber();
+          return job;
+      }
+
+
+
+    protected IHadoopJob buildJobSequenceFinderPart2() {
+
+        // jar is same as parser
+        HadoopJob.setJarRequired(false);
+        File taskFile = getTaskFile();
+
+//         Taxonomy taxonomy = getTaxonomy();
+//        String[] files = taxonomy.getTaxomonyFiles();
+//        if(files != null && files.length > 0)
+//            spectumFile = files[0];
+        Class<JXTandemParserPart2> mainClass = JXTandemParserPart2.class;
+        String lastOutputLocation = getLastOutputLocation();
+        String outputLocation = getOutputLocation();
+        String[] added = buildJobStrings();
+        IHadoopJob job = HadoopJob.buildJob(
+                mainClass,
+                lastOutputLocation,     // data on hdfs
+                "jobs",      // jar location
+                outputLocation,
+                added
+//                  "-D",
+//                  "org.systemsbiology.reportfile=YeastReports/yeastreport.xml"  // report file
+        );
+        // reuse the only jar file
+        job.setJarFile(getJarFile());
+
+        incrementPassNumber();
+        return job;
+    }
     /**
      * build definitions to pass to Hadoop jobs
      *
@@ -1544,7 +1616,6 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         }
         if (pArg.startsWith("remoteBaseDirectory=")) {
             gPassedBaseDirctory = pArg.substring("remoteBaseDirectory=".length());
-            return;
         } else {
             throw new IllegalArgumentException("wrong argument provided: " + pArg);
         }
@@ -1926,6 +1997,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
             if (isRemote) {
                 if (isAmazon) {
+                    //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
                     Object[] cargs = {"MyJobName"};
                     Class lClass = Class.forName("org.systemsbiology.aws.AWSMapReduceLauncher");
                     launcher = (IHadoopController) lClass.newInstance();
@@ -2059,6 +2131,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         if (!isVersion1) {
             workingMain(args);
         } else {
+            //noinspection ConstantConditions
             if (!isVersion1)
                 throw new IllegalStateException("This Code will not work under Version 0.2");
 
