@@ -120,14 +120,29 @@ public abstract class AbstractParameterizedReducer extends Reducer<Text, Text, T
         return m_Application;
     }
 
-    public final Text getOnlyKey() {
+    private final Text getOnlyKey() {
         return m_OnlyKey;
     }
 
-    public final Text getOnlyValue() {
+    private final Text getOnlyValue() {
         return m_OnlyValue;
     }
 
+
+
+    protected void writeKeyValue(String key, String value, Context context) {
+        Text onlyKey = getOnlyKey();
+        onlyKey.set(key);
+        Text onlyValue = getOnlyValue();
+        onlyValue.set(value);
+        try {
+            context.write(onlyKey,onlyValue);
+        } catch (IOException e) {
+            throw new UnsupportedOperationException(e);
+        } catch (InterruptedException e) {
+            throw new UnsupportedOperationException(e);
+        }
+    }
 
     @Override
     public void reduce(Text key, Iterable<Text> values,

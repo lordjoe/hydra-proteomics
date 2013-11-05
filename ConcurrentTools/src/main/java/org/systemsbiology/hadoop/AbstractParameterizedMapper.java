@@ -22,7 +22,7 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
     private final Text m_OnlyValue = new Text();
     private long m_MinimumFreeMemory = Long.MAX_VALUE;
     private final ElapsedTimer m_Elapsed = new ElapsedTimer();
-     private Mapper.Context m_Context;
+    private Mapper.Context m_Context;
 
     @SuppressWarnings("UnusedDeclaration")
     public final Mapper.Context getContext() {
@@ -38,17 +38,17 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
         // read configuration lines
         Configuration conf = context.getConfiguration();
 
-         // debugging code to show my keys
+        // debugging code to show my keys
         //noinspection SimplifiableIfStatement,ConstantIfStatement
-        if(false)  {
+        if (false) {
             Iterator<Map.Entry<String, String>> iterator = conf.iterator();
             //noinspection WhileLoopReplaceableByForEach
-            while(iterator.hasNext())   {
+            while (iterator.hasNext()) {
                 Map.Entry<String, String> next = iterator.next();
                 String key = next.getKey();
-             //   if(key.startsWith("org.systemsbiology")) {
-                    System.err.println(key + "=" + next.getValue());
-             //`   }
+                //   if(key.startsWith("org.systemsbiology")) {
+                System.err.println(key + "=" + next.getValue());
+                //`   }
             }
             System.err.println("Done showing my keys");
 
@@ -61,29 +61,28 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
 //        XTandemMain.setRequiredPathPrefix(forcePathPrefix);
 
 
-
         IAnalysisParameters ap = AnalysisParameters.getInstance();
         ap.setJobName(context.getJobName());
 
 
         // m_Factory.setValidationStringency(SAMFileReader.ValidationStringency.LENIENT)
 
-        m_Application =  HadoopUtilities.loadFromContext(context);
+        m_Application = HadoopUtilities.loadFromContext(context);
 
 
         if (WRITING_PARAMETERS) {
             ISetableParameterHolder application = getApplication();
 
 
-              String[] keys = application.getParameterKeys();
-              for (String key : keys) {
-                  if (key.startsWith("org.")) {
-                      System.err.println(key + " = " + application.getParameter(key));
-                  }
-              }
-          }
+            String[] keys = application.getParameterKeys();
+            for (String key : keys) {
+                if (key.startsWith("org.")) {
+                    System.err.println(key + " = " + application.getParameter(key));
+                }
+            }
+        }
 
-      }
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     protected long setMinimalFree() {
@@ -109,11 +108,11 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
         return m_Application;
     }
 
-    public final Text getOnlyKey() {
+    private  final Text getOnlyKey() {
         return m_OnlyKey;
     }
 
-    public final Text getOnlyValue() {
+    private final Text getOnlyValue() {
         return m_OnlyValue;
     }
 
@@ -126,6 +125,18 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
         super.cleanup(context);
     }
 
-
+    protected void writeKeyValue(String key, String value, Context context) {
+        Text onlyKey = getOnlyKey();
+        onlyKey.set(key);
+        Text onlyValue = getOnlyValue();
+        onlyValue.set(value);
+        try {
+            context.write(onlyKey,onlyValue);
+        } catch (IOException e) {
+            throw new UnsupportedOperationException(e);
+        } catch (InterruptedException e) {
+            throw new UnsupportedOperationException(e);
+        }
+    }
 
 }

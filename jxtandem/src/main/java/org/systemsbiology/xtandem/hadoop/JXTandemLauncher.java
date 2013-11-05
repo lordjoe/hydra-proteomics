@@ -102,6 +102,15 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
     private static boolean gDatabaseRebuildForced;
     private static boolean gDatabaseBuildOnly;
+    private static boolean gSplitDatabaseBuild;
+
+    public static boolean isSplitDatabaseBuild() {
+        return gSplitDatabaseBuild;
+    }
+
+    public static void setSplitDatabaseBuild(boolean gSplitDatabaseBuild) {
+        JXTandemLauncher.gSplitDatabaseBuild = gSplitDatabaseBuild;
+    }
 
     public static boolean isDatabaseRebuildForced() {
         return gDatabaseRebuildForced;
@@ -675,17 +684,45 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             clearAllParams(application);  // make sure we get a new params file
 
             statistics.startJob("Build Database");
-            statistics.startJob("SequenceFinder");
-            job = buildJobSequenceFinder();
+            if (isSplitDatabaseBuild()) {
+                statistics.startJob("SequenceFinderPart1");
+                job = buildJobSequenceFinderPart1();
 
-            ret = launcher.runJob(job);
-            if (!ret)
-                throw new IllegalStateException("SequenceFinder failed");
-            handleCounters(job);
+                ret = launcher.runJob(job);
+                if (!ret)
+                    throw new IllegalStateException("SequenceFinderPart1 failed");
+                handleCounters(job);
 
-            elapsed.showElapsed("Finished SequenceFinder");
-            statistics.endJob("SequenceFinder");
-            elapsed.reset();
+                elapsed.showElapsed("Finished SequenceFinderPart1");
+                statistics.endJob("SequenceFinderPart1");
+                elapsed.reset();
+
+                statistics.startJob("SequenceFinderPart2");
+                job = buildJobSequenceFinderPart2();
+
+                ret = launcher.runJob(job);
+                if (!ret)
+                    throw new IllegalStateException("SequenceFinderPart2 failed");
+                handleCounters(job);
+
+                elapsed.showElapsed("Finished SequenceFinderPart2");
+                statistics.endJob("SequenceFinderPart2");
+                elapsed.reset();
+
+            } else {
+                statistics.startJob("SequenceFinder");
+                job = buildJobSequenceFinder();
+
+                ret = launcher.runJob(job);
+                if (!ret)
+                    throw new IllegalStateException("SequenceFinder failed");
+                handleCounters(job);
+
+                elapsed.showElapsed("Finished SequenceFinder");
+                statistics.endJob("SequenceFinder");
+                elapsed.reset();
+
+            }
             statistics.startJob("MassFinder");
             job = buildJobMassFinder();
             ret = launcher.runJob(job);
@@ -937,10 +974,11 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     }
 
     public static final String[] EXCLUDED_PROPERTIES = {
-            "io.sort.mb", "java.net.preferIPv4Stack","io.sort.factor",
+            "io.sort.mb", "java.net.preferIPv4Stack", "io.sort.factor",
     };
 
-    public static final Set<String> EXCLUDED_PROPERTY_SET = new HashSet<String>(Arrays.asList(EXCLUDED_PROPERTIES)) ;
+    public static final Set<String> EXCLUDED_PROPERTY_SET = new HashSet<String>(Arrays.asList(EXCLUDED_PROPERTIES));
+
     /**
      * add params from Launcher properties into the version of tandem.xml which is uploaded
      *
@@ -966,12 +1004,12 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         }
         Properties addedProps = XTandemHadoopUtilities.getHadoopProperties();
         for (String key : addedProps.stringPropertyNames()) {
-            if(EXCLUDED_PROPERTY_SET.contains(key))
+            if (EXCLUDED_PROPERTY_SET.contains(key))
                 continue;
             String paramLine = "<note type=\"input\" label=\"" + key + "\">" + addedProps.getProperty(key) + "</note>";
             sb.append(paramLine);
             sb.append("\n");
-         }
+        }
 
         sb.append(lastLine);
         sb.append("\n");
@@ -1271,39 +1309,38 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
     protected IHadoopJob buildJobSequenceFinderPart1() {
 
-          IMainData application = getApplication();
-          Taxonomy taxonomy = (Taxonomy) application.getTaxonomy();
-          String[] taxomonyFiles = taxonomy.getTaxomonyFiles();
-          if (taxomonyFiles == null || taxomonyFiles.length == 0)
-              throw new IllegalStateException("no taxonomy files defined");
-          String spectumFile = taxomonyFiles[0];
-          spectumFile = new File(spectumFile).getName();
-          String remoteHost = getRemoteHost();
-          int p = getRemoteHostPort();
-          //         Taxonomy taxonomy = getTaxonomy();
-  //        String[] files = taxonomy.getTaxomonyFiles();
-  //        if(files != null && files.length > 0)
-  //            spectumFile = files[0];
-          Class<JXTandemParserPart1> mainClass = JXTandemParserPart1.class;
-          String outputLocation = getOutputLocation();
-          String remoteBaseDirectory = getRemoteBaseDirectory();
-          if (!spectumFile.startsWith(remoteBaseDirectory))
-              spectumFile = remoteBaseDirectory + "/" + spectumFile;
-          String[] added = buildJobStrings();
+        IMainData application = getApplication();
+        Taxonomy taxonomy = (Taxonomy) application.getTaxonomy();
+        String[] taxomonyFiles = taxonomy.getTaxomonyFiles();
+        if (taxomonyFiles == null || taxomonyFiles.length == 0)
+            throw new IllegalStateException("no taxonomy files defined");
+        String spectumFile = taxomonyFiles[0];
+        spectumFile = new File(spectumFile).getName();
+        String remoteHost = getRemoteHost();
+        int p = getRemoteHostPort();
+        //         Taxonomy taxonomy = getTaxonomy();
+        //        String[] files = taxonomy.getTaxomonyFiles();
+        //        if(files != null && files.length > 0)
+        //            spectumFile = files[0];
+        Class<JXTandemParserPart1> mainClass = JXTandemParserPart1.class;
+        String outputLocation = getOutputLocation();
+        String remoteBaseDirectory = getRemoteBaseDirectory();
+        if (!spectumFile.startsWith(remoteBaseDirectory))
+            spectumFile = remoteBaseDirectory + "/" + spectumFile;
+        String[] added = buildJobStrings();
 
-          IHadoopJob job = HadoopJob.buildJob(
-                  mainClass,
-                  spectumFile,     // data on hdfs
-                  "jobs",      // jar location
-                  outputLocation,
-                  added
-          );
-          String jarFile = job.getJarFile();
-          setJarFile(jarFile);
-          incrementPassNumber();
-          return job;
-      }
-
+        IHadoopJob job = HadoopJob.buildJob(
+                mainClass,
+                spectumFile,     // data on hdfs
+                "jobs",      // jar location
+                outputLocation,
+                added
+        );
+        String jarFile = job.getJarFile();
+        setJarFile(jarFile);
+        incrementPassNumber();
+        return job;
+    }
 
 
     protected IHadoopJob buildJobSequenceFinderPart2() {
@@ -1335,6 +1372,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         incrementPassNumber();
         return job;
     }
+
     /**
      * build definitions to pass to Hadoop jobs
      *
@@ -1414,7 +1452,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     protected IHadoopJob buildJobPass1() {
         // guaranteeRemoteFiles();
         String spectumFile = getSpectrumPath();
-        Class<JXTantemPass1Runner> mainClass = JXTantemPass1Runner.class;
+        Class<JXTandemParserPart1> mainClass = JXTandemParserPart1.class;
         File taskFile = getTaskFile();
         boolean buildJar = isBuildJar();
         HadoopJob.setJarRequired(buildJar);
@@ -1450,7 +1488,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
     protected IHadoopJob buildJobPass2() {
         //  guaranteeRemoteFiles();
-        Class<JXTantemPass2Runner> mainClass = JXTantemPass2Runner.class;
+        Class<JXTandemParserPart2> mainClass = JXTandemParserPart2.class;
         File taskFile = getTaskFile();
         int p = getRemoteHostPort();
         //  if (p <= 0)
@@ -1610,7 +1648,11 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
             setDatabaseRebuildForced(true);
             return;
         }
-        if (pArg.toLowerCase().equals("builddatabaseonly")) {
+        if (pArg.toLowerCase().equals("splitdatabasebuild")) {
+             setSplitDatabaseBuild(true);
+             return;
+         }
+         if (pArg.toLowerCase().equals("builddatabaseonly")) {
             setDatabaseBuildOnly(true);
             return;
         }

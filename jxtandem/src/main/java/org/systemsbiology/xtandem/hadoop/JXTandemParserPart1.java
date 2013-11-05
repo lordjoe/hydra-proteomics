@@ -25,14 +25,16 @@ public class JXTandemParserPart1 extends ConfiguredJobRunner implements IJobRunn
     /**
      * do almost nothing
      */
-    public static class ProteinIdentityMapper extends AbstractTandemMapper<Text> {
+    public static class ProteinIdentityMapper extends AbstractTandemMapper<Writable>  {
 
 
         @Override
-        public void map(Text key, Text value, Context context
+        public void map(Writable key, Text value, Context context
         ) throws IOException, InterruptedException {
 
-            context.write(key, value);
+            Text onlyKey = getOnlyKey();
+            onlyKey.set(key.toString());
+            context.write(onlyKey, value);
         }
     }
 
@@ -182,6 +184,7 @@ public class JXTandemParserPart1 extends ConfiguredJobRunner implements IJobRunn
         }
 
 
+
         private void showStatistics() {
             ElapsedTimer elapsed = getElapsed();
             elapsed.showElapsed("Processed " + (m_Proteins - m_ProteinsReported) + " proteins at " + XTandemUtilities.nowTimeString() +
@@ -235,7 +238,7 @@ public class JXTandemParserPart1 extends ConfiguredJobRunner implements IJobRunn
 //            System.exit(2);
 //        }
 
-            Job job = new Job(conf, "Fasta Format");
+            Job job = new Job(conf, "Fasta Format Part 1");
             setJob(job);
             conf = job.getConfiguration(); // NOTE JOB Copies the configuraton
             // make default settings
@@ -276,6 +279,8 @@ public class JXTandemParserPart1 extends ConfiguredJobRunner implements IJobRunn
             // Do not set reduce tasks - ue whatever cores are available
             // this does not work just set a number for now
             XTandemHadoopUtilities.setRecommendedMaxReducers(job);
+
+            job.setNumReduceTasks(32);  // should not need more
 
             if (otherArgs.length > 1) {
                 for (int i = 0; i < otherArgs.length - 1; i++) {
