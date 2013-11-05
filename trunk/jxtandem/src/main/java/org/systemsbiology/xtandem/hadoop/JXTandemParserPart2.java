@@ -215,7 +215,7 @@ public class JXTandemParserPart2 extends ConfiguredJobRunner implements IJobRunn
 //            System.exit(2);
 //        }
 
-              Job job = new Job(conf, "Fasta Format");
+              Job job = new Job(conf, "Fasta Format Part2");
             setJob(job);
             conf = job.getConfiguration(); // NOTE JOB Copies the configuraton
             // make default settings
