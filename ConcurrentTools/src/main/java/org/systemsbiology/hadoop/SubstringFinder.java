@@ -284,7 +284,7 @@ public class SubstringFinder extends ConfiguredJobRunner implements IJobRunner {
         job.setOutputValueClass(Text.class);
 
 
-          job.setNumReduceTasks(HadoopUtilities.DEFAULT_REDUCE_TASKS);
+        job.setNumReduceTasks(HadoopUtilities.DEFAULT_REDUCE_TASKS);
 
         Path inputPath = new Path(otherArgs[0]);
         if (otherArgs.length > 1) {

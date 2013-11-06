@@ -1452,7 +1452,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
     protected IHadoopJob buildJobPass1() {
         // guaranteeRemoteFiles();
         String spectumFile = getSpectrumPath();
-        Class<JXTandemParserPart1> mainClass = JXTandemParserPart1.class;
+        Class<JXTantemPass1Runner> mainClass = JXTantemPass1Runner.class;
         File taskFile = getTaskFile();
         boolean buildJar = isBuildJar();
         HadoopJob.setJarRequired(buildJar);
@@ -1488,7 +1488,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
 
     protected IHadoopJob buildJobPass2() {
         //  guaranteeRemoteFiles();
-        Class<JXTandemParserPart2> mainClass = JXTandemParserPart2.class;
+        Class<JXTantemPass2Runner> mainClass = JXTantemPass2Runner.class;
         File taskFile = getTaskFile();
         int p = getRemoteHostPort();
         //  if (p <= 0)
