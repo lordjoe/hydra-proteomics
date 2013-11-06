@@ -48,7 +48,32 @@ public class HadoopUtilities {
     public static final String REPORT_KEY = SYSBIO_KEY_BASE + ".reportfile"; // "Report";
     public static final int IN_POSITION_START = 4;
     public static final String JAR_PROPERTY = "org.systemsbiology.tandem.hadoop.PrebuiltJar";
- 
+
+
+    public static final String PARAMS_PROPERTY = "params";
+    public static final String REMOTE_HOST_PROPERTY = "remoteHost";
+    public static final String REMOTE_PORT_PROPERTY = "remotePort";
+    public static final String REMOTE_USER_PROPERTY = "remoteUser";
+    public static final String REMOTE_JOBTRACKER_PROPERTY = "remoteJobTracker";
+    public static final String REMOTE_ENCRYPTED_PASSWORD_PROPERTY = "encryptedRemotePassword";
+    public static final String REMOTE_PLAINTEXT_PASSWORD_PROPERTY = "plainTextRemotePassword";
+    public static final String REMOTEDIRECTORY_PROPERTY = "remoteBaseDirectory";
+    public static final String COMPRESS_INTERMEDIATE_FILES_PROPERTY = "compressIntermediateFiles";
+    public static final String MAX_SPLIT_SIZE_PROPERTY = "maxSplitSize";
+    public static final String MAX_REDUCE_TASKS_PROPERTY = "maxReduceTasks";
+    public static final String DELETE_OUTPUT_DIRECTORIES_PROPERTY = "deleteOutputDirectories";
+    public static final String MAX_CLUSTER_MEMORY_PROPERTY = "maxClusterMemory";
+    public static final String CLUSTER_SIZE_PROPERTY = "clusterSize";
+    public static final String HADOOP02_HOST = "hadoop02Host";
+    public static final String HADOOP02_PORT = "hadoop02Port";
+    public static final String HADOOP02_JOBTRACKER = "hadoop02remoteJobTracker";
+    public static final String HADOOP10_HOST = "hadoop10Host";
+    public static final String HADOOP10_PORT = "hadoop10Port";
+    public static final String HADOOP10_JOBTRACKER = "hadoop10remoteJobTracker";
+
+    // Hard code this so we can debug partitioner code
+    public static final int DEFAULT_NUMBER_REDUCERS = 2400;
+
     public static final int DEFAULT_REDUCE_TASKS = 14;
     // in development to speed up
     public static String gReuseJar; //"Mar231041_0.jar";   //  null; //
@@ -153,6 +178,36 @@ public class HadoopUtilities {
             throw new RuntimeException(e);
 
         }
+
+    }
+
+    public static final int DEFAULT_CLUSTER_SIZE = 16;
+
+    /**
+     * return the current cluster size which should be set somewhere
+     * @return  as above
+     */
+    public static int getClusterSize()
+    {
+        String property = getProperty(CLUSTER_SIZE_PROPERTY);
+        if(property != null)
+            return Integer.parseInt(property);
+        else
+            return DEFAULT_CLUSTER_SIZE;
+    }
+
+    public static final JobSizeEnum DEFAULT_JOB_SIZE = JobSizeEnum.Medium;
+    /**
+      * return the jobsize estimate - otherwise return JobSizeEnum.Medium
+      * @return  as above
+      */
+    public static JobSizeEnum getJobSize()
+    {
+        String property = getProperty(CLUSTER_SIZE_PROPERTY);
+        if(property != null)
+            return JobSizeEnum.valueOf(property);
+        else
+            return DEFAULT_JOB_SIZE;
 
     }
 //
