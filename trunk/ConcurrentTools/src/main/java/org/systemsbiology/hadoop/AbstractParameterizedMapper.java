@@ -81,6 +81,8 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
                 }
             }
         }
+        JobSizeEnum jobSize = m_Application.getEnumParameter(HadoopUtilities.JOB_SIZE_PROPERTY, JobSizeEnum.class, JobSizeEnum.Medium);
+        HadoopUtilities.setHadoopProperty(HadoopUtilities.JOB_SIZE_PROPERTY, jobSize.toString());
 
     }
 
@@ -108,7 +110,7 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
         return m_Application;
     }
 
-    private  final Text getOnlyKey() {
+    private final Text getOnlyKey() {
         return m_OnlyKey;
     }
 
@@ -131,7 +133,7 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
         Text onlyValue = getOnlyValue();
         onlyValue.set(value);
         try {
-            context.write(onlyKey,onlyValue);
+            context.write(onlyKey, onlyValue);
         } catch (IOException e) {
             throw new UnsupportedOperationException(e);
         } catch (InterruptedException e) {

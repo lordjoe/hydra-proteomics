@@ -111,6 +111,8 @@ public abstract class AbstractParameterizedReducer extends Reducer<Text, Text, T
             }
         }
 
+        JobSizeEnum jobSize = m_Application.getEnumParameter(HadoopUtilities.JOB_SIZE_PROPERTY, JobSizeEnum.class, JobSizeEnum.Medium);
+          HadoopUtilities.setHadoopProperty(HadoopUtilities.JOB_SIZE_PROPERTY, jobSize.toString());
 
 
     }

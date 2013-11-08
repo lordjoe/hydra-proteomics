@@ -60,8 +60,7 @@ public class HadoopUtilities {
     public static final String REMOTEDIRECTORY_PROPERTY = "remoteBaseDirectory";
     public static final String COMPRESS_INTERMEDIATE_FILES_PROPERTY = "compressIntermediateFiles";
     public static final String MAX_SPLIT_SIZE_PROPERTY = "maxSplitSize";
-    public static final String MAX_REDUCE_TASKS_PROPERTY = "maxReduceTasks";
-    public static final String DELETE_OUTPUT_DIRECTORIES_PROPERTY = "deleteOutputDirectories";
+     public static final String DELETE_OUTPUT_DIRECTORIES_PROPERTY = "deleteOutputDirectories";
     public static final String MAX_CLUSTER_MEMORY_PROPERTY = "maxClusterMemory";
     public static final String CLUSTER_SIZE_PROPERTY = "clusterSize";
     public static final String HADOOP02_HOST = "hadoop02Host";
@@ -70,14 +69,14 @@ public class HadoopUtilities {
     public static final String HADOOP10_HOST = "hadoop10Host";
     public static final String HADOOP10_PORT = "hadoop10Port";
     public static final String HADOOP10_JOBTRACKER = "hadoop10remoteJobTracker";
+    public static final String JOB_SIZE_PROPERTY = "job_size";
 
     // Hard code this so we can debug partitioner code
-    public static final int DEFAULT_NUMBER_REDUCERS = 2400;
+     public static final int DEFAULT_TEST_NUMBER_REDUCERS = 64;
 
     public static final int DEFAULT_REDUCE_TASKS = 14;
     // in development to speed up
     public static String gReuseJar; //"Mar231041_0.jar";   //  null; //
-
 
 
     private static Properties gRemoteProperties = new Properties();
@@ -196,14 +195,18 @@ public class HadoopUtilities {
             return DEFAULT_CLUSTER_SIZE;
     }
 
-    public static final JobSizeEnum DEFAULT_JOB_SIZE = JobSizeEnum.Medium;
+    public static void setClusterSize(int size)  {
+        setProperty(CLUSTER_SIZE_PROPERTY,Integer.toString(size));
+    }
+
+    public static final JobSizeEnum DEFAULT_JOB_SIZE = JobSizeEnum.Enormous;
     /**
       * return the jobsize estimate - otherwise return JobSizeEnum.Medium
       * @return  as above
       */
     public static JobSizeEnum getJobSize()
     {
-        String property = getProperty(CLUSTER_SIZE_PROPERTY);
+        String property = getProperty(JOB_SIZE_PROPERTY);
         if(property != null)
             return JobSizeEnum.valueOf(property);
         else
@@ -669,6 +672,57 @@ public class HadoopUtilities {
         setLastKeepAlive(now);
     }
 
+
+
+    public static int numberReducersFromJobSize(JobSizeEnum size,int clusterSize)
+    {
+        switch (size) {
+            case Micro:
+                return 1;
+            case Small:
+                return 8;
+            case Medium:
+                return 4 * clusterSize;
+            case Large:
+                return 8 * clusterSize;
+            case Enormous:
+                 return 2400;
+            default:
+                throw new IllegalArgumentException("unknown size");
+        }
+    }
+
+
+
+    public static void setRecommendedMaxReducers(Job job,JobSizeEnum jobSize ) {
+         try {
+             final Configuration conf = job.getConfiguration();
+             if ( isLocal(conf))
+                 return; // local = 1 reducer
+ // Specify the number of reduces if defined as a non-negative param.
+             // Otherwise, use 9/10 of the maximum reduce tasks (as mentioned by Aalto Cloud,
+             // there appears to be no non-deprecated way to do this).
+             JobClient jobClient = new JobClient(new JobConf());
+             ClusterStatus clusterStatus = jobClient.getClusterStatus();
+             @SuppressWarnings("deprecation")
+
+
+             int maxReduceTasks = clusterStatus.getMaxReduceTasks();
+
+             maxReduceTasks = Math.max(maxReduceTasks,numberReducersFromJobSize(jobSize,getClusterSize()));
+             int reduces = conf.getInt("reduces", -1);
+             if (reduces >= 0) {
+                 job.setNumReduceTasks(reduces);
+             } else {
+                 reduces = (int) Math.ceil((double) maxReduceTasks * 9.0 / 10.0);
+             }
+              job.setNumReduceTasks(reduces);
+
+         } catch (IOException e) {
+             throw new RuntimeException(e);
+         }
+
+     }
 //    /**
 //     * Writes the record to disk.  Sort order has been taken care of by the time
 //     * this method is called.
