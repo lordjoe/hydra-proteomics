@@ -30,6 +30,7 @@ import java.util.prefs.*;
 public class JXTandemLauncher implements IStreamOpener { //extends AbstractParameterHolder implements IParameterHolder {
     public static final JXTandemLauncher[] EMPTY_ARRAY = {};
 
+
     public static final String HYDRA_VERSION = "1.0.0";
 
     public static final String USE_SEPARATE_FILES_STRING = "full_tandem_output_path";

@@ -545,16 +545,18 @@ public class XTandemHadoopUtilities {
         System.err.println("Rebuilding Size database");
         ElapsedTimer et = new ElapsedTimer();
 
-        Map<Integer, Integer> dbSizes = XTandemHadoopUtilities.buildFileSystemDatabaseSizes(pApplication);
+        Map<Integer, SearchDatabaseCounts> dbSizes = XTandemHadoopUtilities.buildFileSystemDatabaseSizes(pApplication);
 
         Map<Integer, Integer> integerIntegerMap = writeDatabaseSizes(pApplication, dbSizes);
         et.showElapsed("Rebuilt size  database");
         return integerIntegerMap;
     }
 
-    public static Map<Integer, Integer> writeDatabaseSizes(final HadoopTandemMain pApplication, final Map<Integer, Integer> pDbSizes) {
-        if (pDbSizes.size() == 0)
-            return pDbSizes; // DO not wipe out a potentially better solution
+    public static Map<Integer, Integer> writeDatabaseSizes(final HadoopTandemMain pApplication, final Map<Integer, SearchDatabaseCounts> pDbSizes) {
+        Map<Integer, Integer> ret = new HashMap<Integer, Integer>();
+        if (pDbSizes.size() == 0) {
+             return ret; // DO not wipe out a potentially better solution
+        }
         Configuration cfg = pApplication.getContext();
         String paramsFile = pApplication.getDatabaseName() + ".sizes";
         Path dd = XTandemHadoopUtilities.getRelativePath(paramsFile);
@@ -563,12 +565,15 @@ public class XTandemHadoopUtilities {
             FileSystem fs = FileSystem.get(cfg);
             OutputStream fsout = fs.create(dd);
             out = new PrintWriter(new OutputStreamWriter(fsout));
-            String[] lines = sizesToStringList(pDbSizes);
+            if(true)
+                throw new UnsupportedOperationException("Fix This"); // ToDo
+            ret = convertSearchDatabaseCounts(  pDbSizes);
+            String[] lines = sizesToStringList(ret);
             for (int i = 0; i < lines.length; i++) {
                 String line = lines[i];
                 out.println(line);
             }
-            return pDbSizes;
+            return ret;
         } catch (IOException e) {
             throw new RuntimeException(e);
 
@@ -577,6 +582,28 @@ public class XTandemHadoopUtilities {
                 out.close();
         }
     }
+
+
+
+    public static void sizesToStringList(PrintWriter out,final Map<Integer, SearchDatabaseCounts> pDbSizes) {
+        // convert to a list of strings
+        List<String> holder = new ArrayList<String>();
+        for (Integer key : pDbSizes.keySet()) {
+            SearchDatabaseCounts sc = pDbSizes.get(key) ;
+            String sizeLine = key.toString() + "\t" + sc.getEntries( ) + "\t" + sc.getModified( ) + "\t" + sc.getUnmodified( );
+            out.println(sizeLine);
+        }
+            }
+
+    public static  Map<Integer, Integer> convertSearchDatabaseCounts(final Map<Integer, SearchDatabaseCounts> pDbSizes) {
+        HashMap<Integer, Integer> ret = new HashMap<Integer, Integer>();
+        for (Integer key : ret.keySet()) {
+            SearchDatabaseCounts sc = pDbSizes.get(key) ;
+            ret.put(key,sc.getEntries());
+        }
+        return ret;
+    }
+
 
     public static String[] sizesToStringList(final Map<Integer, Integer> pDbSizes) {
         // convert to a list of strings
@@ -1361,9 +1388,9 @@ public class XTandemHadoopUtilities {
      * @param conf         - defined the file system
      * @return
      */
-    public static Map<Integer, Integer> getDatabaseSizes(final Path databasePath, Configuration conf) {
+    public static Map<Integer, SearchDatabaseCounts> getDatabaseSizes(final Path databasePath, Configuration conf) {
         try {
-            Map<Integer, Integer> ret = new HashMap<Integer, Integer>();
+            Map<Integer, SearchDatabaseCounts> ret = new HashMap<Integer, SearchDatabaseCounts>();
             FileSystem fs = FileSystem.get(conf);
             FileStatus[] fileStatuses = fs.globStatus(new Path(databasePath + "/M0*.peptide"));
             for (int i = 0; i < fileStatuses.length; i++) {
@@ -1378,11 +1405,18 @@ public class XTandemHadoopUtilities {
         }
     }
 
-    protected static void addPathSize(final Map<Integer, Integer> mapp, final FileSystem pFs, final Path pPath) {
+    public static SearchDatabaseCounts buildFromPath(final FileSystem pFs, final Path pPath)
+    {
+         throw new UnsupportedOperationException("Fix This"); // ToDo
+    }
+
+    protected static void addPathSize(final Map<Integer, SearchDatabaseCounts> mapp, final FileSystem pFs, final Path pPath) {
         int nlines = XTandemHadoopUtilities.getNumberLines(pPath, pFs);
+        SearchDatabaseCounts dc = buildFromPath(pFs,   pPath);
+
         String mass = pPath.getName().replace("M0", "").replace(".peptide", "");
         int imass = Integer.parseInt(mass);
-        mapp.put(imass, nlines);
+        mapp.put(imass, dc);
     }
 
 
@@ -1523,12 +1557,12 @@ public class XTandemHadoopUtilities {
      * @param application
      * @return
      */
-    protected static Map<Integer, Integer> buildFileSystemDatabaseSizes(final HadoopTandemMain application) {
+    protected static Map<Integer, SearchDatabaseCounts> buildFileSystemDatabaseSizes(final HadoopTandemMain application) {
         try {
             Configuration cfg = application.getContext();
             Path databasePath = XTandemHadoopUtilities.getRelativePath(application.getDatabaseName());
             FileSystem fs = FileSystem.get(cfg);
-            Map<Integer, Integer> ret = getDatabaseSizes(databasePath, cfg);
+            Map<Integer, SearchDatabaseCounts> ret = getDatabaseSizes(databasePath, cfg);
             return ret;
         } catch (IOException e) {
             throw new RuntimeException(e);

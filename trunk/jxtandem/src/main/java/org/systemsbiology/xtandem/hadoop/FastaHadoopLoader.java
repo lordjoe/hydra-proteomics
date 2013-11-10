@@ -65,6 +65,7 @@ public class FastaHadoopLoader {
     private PeptideModification[] m_Modifications = PeptideModification.EMPTY_ARRAY;
     private Text m_OnlyKey = new Text();
     private Text m_OnlyValue = new Text();
+    private boolean m_GenerateDecoysForModifiedPeptides;
 
 
     public FastaHadoopLoader(HadoopTandemMain app) {
@@ -77,7 +78,17 @@ public class FastaHadoopLoader {
         PeptideModification[] modifications = scoringMods.getModifications();
         m_Modifications = modifications;
 
+        setGenerateDecoysForModifiedPeptides(app.getBooleanParameter(XTandemUtilities.CREATE_DECOY_FOR_MODIFIED_PEPTIDES_PROPERTY, Boolean.FALSE));
+
         // hard code modifications of cystein
+    }
+
+    public boolean isGenerateDecoysForModifiedPeptides() {
+        return m_GenerateDecoysForModifiedPeptides;
+    }
+
+    public void setGenerateDecoysForModifiedPeptides(boolean generateDecoysForModifiedPeptides) {
+        m_GenerateDecoysForModifiedPeptides = generateDecoysForModifiedPeptides;
     }
 
     public DigesterDescription getDescription() {
@@ -167,7 +178,7 @@ public class FastaHadoopLoader {
             //       continue; // skip the rest of the loop
 
             // if it is decoy, don't add modifications to it
-            if (!isDecoy) {
+            if (!isDecoy || isGenerateDecoysForModifiedPeptides()) {
                 //  generate modified peptides and add to the output
                 IModifiedPeptide[] modifications = ModifiedPolypeptide.buildModifications(pp, modifications1);
                 for (int m = 0; m < modifications.length; m++) {
