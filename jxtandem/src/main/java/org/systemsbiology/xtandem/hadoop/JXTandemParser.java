@@ -32,7 +32,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
         private int m_Proteins;
         private int m_ProteinsReported;
         private boolean m_GenerateDecoys;
-        private boolean m_ShowProteins;
+         private boolean m_ShowProteins;
 
         public FastaHadoopLoader getLoader() {
             return m_Loader;
@@ -107,7 +107,7 @@ public class JXTandemParser extends ConfiguredJobRunner implements IJobRunner {
             m_Loader = new FastaHadoopLoader(application);
 
             setGenerateDecoys(application.getBooleanParameter(XTandemUtilities.CREATE_DECOY_PEPTIDES_PROPERTY, Boolean.FALSE));
-            long freemem = setMinimalFree();
+              long freemem = setMinimalFree();
             Configuration configuration = context.getConfiguration();
 
             setShowProteins(application.getBooleanParameter("org.systemsbiology.useSingleFastaItemSplit",false));

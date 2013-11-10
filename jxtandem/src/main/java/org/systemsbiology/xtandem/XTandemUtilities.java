@@ -37,6 +37,7 @@ public class XTandemUtilities {
     public static final String WRITING_MGF_PROPERTY = "org.systemsbiology.xtandem.hadoop.WriteMGFSpectraWithHyperscoreGreaterThan";
     public static final String WRITING_MGF_PROPERTY_2 = "org.systemsbiology.xtandem.hadoop.WriteMGFSpectraWithExpectValueLowerThan";
     public static final String CREATE_DECOY_PEPTIDES_PROPERTY = "org.systemsbiology.xtandem.CreateDecoyPeptides";
+    public static final String CREATE_DECOY_FOR_MODIFIED_PEPTIDES_PROPERTY = "org.systemsbiology.xtandem.CreateDecoyPeptidesForModifiedPeptides";
 
 
 

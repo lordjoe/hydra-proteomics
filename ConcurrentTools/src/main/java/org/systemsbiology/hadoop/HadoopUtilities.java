@@ -686,7 +686,7 @@ public class HadoopUtilities {
             case Large:
                 return 8 * clusterSize;
             case Enormous:
-                 return 2400;
+                 return 3500;
             default:
                 throw new IllegalArgumentException("unknown size");
         }
