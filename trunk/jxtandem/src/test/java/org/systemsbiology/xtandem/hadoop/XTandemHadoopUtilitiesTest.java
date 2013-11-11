@@ -1,6 +1,10 @@
 package org.systemsbiology.xtandem.hadoop;
 
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.fs.*;
 import org.junit.*;
+
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -71,6 +75,23 @@ public class XTandemHadoopUtilitiesTest {
         Assert.assertEquals(post_label, XTandemHadoopUtilities.asDecoy(label9));
 
 
+    }
+
+    @Test
+    public void testDatabaseStatistics()
+    {
+        Configuration conf = new Configuration();
+        Path testPath = new Path("C:/hydra_data/modpilot/yeast");
+        final Map<Integer,SearchDatabaseCounts> ans = XTandemHadoopUtilities.getDatabaseSizes(testPath, conf);
+
+        SearchDatabaseCounts summary = XTandemHadoopUtilities.buildFromSubCounts(ans.values());
+        System.out.println(summary);
+        System.out.println("fraction modified " + (double)summary.getModified() / summary.getEntries());
+        final double fUnMod = (double) summary.getUnmodified() / summary.getEntries();
+        System.out.println("fraction unmodified " + fUnMod);
+        System.out.println("1/fraction unmodified " +  1.0 / fUnMod);
+
+        Assert.assertEquals(0,ans.size());
     }
 
 

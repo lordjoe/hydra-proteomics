@@ -70,10 +70,15 @@ public class JXTandemParserPart2 extends ConfiguredJobRunner implements IJobRunn
 
         private long m_NumberUniquePeptides;
 
-        public void incrementNumberReducedFragments(Context context) {
+        public void incrementNumberReducedFragments(Context context,boolean isModified) {
             Counter counter = context.getCounter("Parser", "NumberUniqueFragments");
             counter.increment(1);
             m_NumberUniquePeptides++;
+            if(isModified)
+                 counter = context.getCounter("Parser", "NumberModifiedFragments");
+            else
+                counter = context.getCounter("Parser", "NumberUnmodifiedFragments");
+            counter.increment(1);
         }
 
         /**
@@ -152,7 +157,7 @@ public class JXTandemParserPart2 extends ConfiguredJobRunner implements IJobRunn
                     break;
 
             }
-            incrementNumberReducedFragments(context);
+            incrementNumberReducedFragments(context,pp.isModified());
             context.write(onlyKey, onlyValue);
             if (m_NumberUniquePeptides % REPORT_INTERVAL_PROTEINS == 0) {
                 showReduceStatistics();

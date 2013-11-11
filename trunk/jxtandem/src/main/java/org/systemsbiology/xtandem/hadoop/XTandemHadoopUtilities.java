@@ -99,7 +99,7 @@ public class XTandemHadoopUtilities {
                 // if protein accession is prefix then we cannot handle the case
                 if (processed_label.length() == 0) {
                     throw new IllegalArgumentException("The protein accession is the same as the decoy prefix!");
-                                }
+                }
 
                 // standard DECOY_ prefix gets added to label and return that
 
@@ -555,7 +555,7 @@ public class XTandemHadoopUtilities {
     public static Map<Integer, Integer> writeDatabaseSizes(final HadoopTandemMain pApplication, final Map<Integer, SearchDatabaseCounts> pDbSizes) {
         Map<Integer, Integer> ret = new HashMap<Integer, Integer>();
         if (pDbSizes.size() == 0) {
-             return ret; // DO not wipe out a potentially better solution
+            return ret; // DO not wipe out a potentially better solution
         }
         Configuration cfg = pApplication.getContext();
         String paramsFile = pApplication.getDatabaseName() + ".sizes";
@@ -565,9 +565,9 @@ public class XTandemHadoopUtilities {
             FileSystem fs = FileSystem.get(cfg);
             OutputStream fsout = fs.create(dd);
             out = new PrintWriter(new OutputStreamWriter(fsout));
-            if(true)
+            if (true)
                 throw new UnsupportedOperationException("Fix This"); // ToDo
-            ret = convertSearchDatabaseCounts(  pDbSizes);
+            ret = convertSearchDatabaseCounts(pDbSizes);
             String[] lines = sizesToStringList(ret);
             for (int i = 0; i < lines.length; i++) {
                 String line = lines[i];
@@ -584,22 +584,21 @@ public class XTandemHadoopUtilities {
     }
 
 
-
-    public static void sizesToStringList(PrintWriter out,final Map<Integer, SearchDatabaseCounts> pDbSizes) {
+    public static void sizesToStringList(PrintWriter out, final Map<Integer, SearchDatabaseCounts> pDbSizes) {
         // convert to a list of strings
         List<String> holder = new ArrayList<String>();
         for (Integer key : pDbSizes.keySet()) {
-            SearchDatabaseCounts sc = pDbSizes.get(key) ;
-            String sizeLine = key.toString() + "\t" + sc.getEntries( ) + "\t" + sc.getModified( ) + "\t" + sc.getUnmodified( );
+            SearchDatabaseCounts sc = pDbSizes.get(key);
+            String sizeLine = key.toString() + "\t" + sc.getEntries() + "\t" + sc.getModified() + "\t" + sc.getUnmodified();
             out.println(sizeLine);
         }
-            }
+    }
 
-    public static  Map<Integer, Integer> convertSearchDatabaseCounts(final Map<Integer, SearchDatabaseCounts> pDbSizes) {
+    public static Map<Integer, Integer> convertSearchDatabaseCounts(final Map<Integer, SearchDatabaseCounts> pDbSizes) {
         HashMap<Integer, Integer> ret = new HashMap<Integer, Integer>();
         for (Integer key : ret.keySet()) {
-            SearchDatabaseCounts sc = pDbSizes.get(key) ;
-            ret.put(key,sc.getEntries());
+            SearchDatabaseCounts sc = pDbSizes.get(key);
+            ret.put(key, sc.getEntries());
         }
         return ret;
     }
@@ -823,7 +822,7 @@ public class XTandemHadoopUtilities {
                 throw new RuntimeException(e);
 
             }
-            if(rawPeptideScan == null)   {
+            if (rawPeptideScan == null) {
                 handler = new TopLevelScanHandler();
                 rawPeptideScan = parseXMLString(text, handler);  // repeat
                 return null; // ignore level 1 scans
@@ -1138,11 +1137,11 @@ public class XTandemHadoopUtilities {
         safeWrite(context, "Output File", paramsFile);
         HDFSAccessor accesor = opener.getAccesor();
         // use a counter to see what we do
-        context.getCounter("outputfile",paramsFile).increment(1);
+        context.getCounter("outputfile", paramsFile).increment(1);
         Path path = new Path(paramsFile);
         OutputStream os = accesor.openFileForWrite(path);
 
-        context.getCounter("outputfile","total_files").increment(1);
+        context.getCounter("outputfile", "total_files").increment(1);
         return os;
     }
 
@@ -1405,14 +1404,57 @@ public class XTandemHadoopUtilities {
         }
     }
 
-    public static SearchDatabaseCounts buildFromPath(final FileSystem pFs, final Path pPath)
-    {
-         throw new UnsupportedOperationException("Fix This"); // ToDo
+    public static SearchDatabaseCounts buildFromPath(final FileSystem pFs, final Path pPath) {
+        int nPeptides = 0;
+        int nModifiedPeptides = 0;
+        int nUnModifiedPeptides = 0;
+        try {
+            final FSDataInputStream open = pFs.open(pPath);
+            LineNumberReader rdr = new LineNumberReader(new InputStreamReader(open));
+            String line = rdr.readLine();
+            while (line != null) {
+                nPeptides++;
+                if (!line.contains("]"))
+                    nUnModifiedPeptides++;
+                else
+                    nModifiedPeptides++;
+                line = rdr.readLine();
+            }
+            int bin = pathStringToBin(pPath.getName());
+            SearchDatabaseCounts ret = new SearchDatabaseCounts(bin, nPeptides, nModifiedPeptides, nUnModifiedPeptides);
+            return ret;
+
+        } catch (IOException e) {
+            throw new UnsupportedOperationException(e);
+        }
+
+
+    }
+
+
+    public static SearchDatabaseCounts buildFromSubCounts(Collection<SearchDatabaseCounts> subcounts) {
+        int nPeptides = 0;
+        int nModifiedPeptides = 0;
+        int nUnModifiedPeptides = 0;
+        for (SearchDatabaseCounts subcount : subcounts) {
+            nPeptides += subcount.getEntries();
+            nModifiedPeptides += subcount.getModified();
+            nUnModifiedPeptides += subcount.getUnmodified();
+        }
+        SearchDatabaseCounts ret = new SearchDatabaseCounts(0, nPeptides, nModifiedPeptides, nUnModifiedPeptides);
+        return ret;
+    }
+
+
+    protected static int pathStringToBin(String name) {
+        name = name.replace(".peptide", "");
+        name = name.replace("M0", "");
+        return Integer.parseInt(name);
     }
 
     protected static void addPathSize(final Map<Integer, SearchDatabaseCounts> mapp, final FileSystem pFs, final Path pPath) {
         int nlines = XTandemHadoopUtilities.getNumberLines(pPath, pFs);
-        SearchDatabaseCounts dc = buildFromPath(pFs,   pPath);
+        SearchDatabaseCounts dc = buildFromPath(pFs, pPath);
 
         String mass = pPath.getName().replace("M0", "").replace(".peptide", "");
         int imass = Integer.parseInt(mass);
@@ -1558,16 +1600,11 @@ public class XTandemHadoopUtilities {
      * @return
      */
     protected static Map<Integer, SearchDatabaseCounts> buildFileSystemDatabaseSizes(final HadoopTandemMain application) {
-        try {
-            Configuration cfg = application.getContext();
-            Path databasePath = XTandemHadoopUtilities.getRelativePath(application.getDatabaseName());
-            FileSystem fs = FileSystem.get(cfg);
-            Map<Integer, SearchDatabaseCounts> ret = getDatabaseSizes(databasePath, cfg);
-            return ret;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        Configuration cfg = application.getContext();
+        Path databasePath = XTandemHadoopUtilities.getRelativePath(application.getDatabaseName());
+        Map<Integer, SearchDatabaseCounts> ret = getDatabaseSizes(databasePath, cfg);
+        return ret;
 
-        }
     }
 
     public static final String[] EXCLUDED_LIBRARIES =
