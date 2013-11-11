@@ -230,6 +230,7 @@ public class FastaHadoopLoader {
         if (proteinPositions.length != 1)
             throw new IllegalStateException("should be only one protein here");
 
+
         m_OnlyValue.set(proteinPositions[0].asPeptidePosition()); // I guess we can pass in the protein
         if (context != null)
             context.write(m_OnlyKey, m_OnlyValue);
