@@ -19,10 +19,9 @@ import java.io.*;
  * @author Steve Lewis
  * @date Oct 23, 2010
  */
-public class WordCountConsolidator extends SingleOutputTextConsolidator
-{
+public class WordCountConsolidator extends SingleOutputTextConsolidator {
     public static WordCountConsolidator[] EMPTY_ARRAY = {};
-    public static  final Class THIS_CLASS = WordCountConsolidator.class;
+    public static final Class THIS_CLASS = WordCountConsolidator.class;
 
     public static final String SINGLE_FILE_OUT_KEY =
             "org.systemsbiology.hadoop.consolidator.SingleOutputTextConsolidator.Path";
@@ -30,7 +29,7 @@ public class WordCountConsolidator extends SingleOutputTextConsolidator
             "org.systemsbiology.hadoop.consolidator.SingleOutputTextConsolidator.FileSystem";
 
 
-     public static class WordCountConsolidatorMapper
+    public static class WordCountConsolidatorMapper
             extends Mapper<LongWritable, Text, Text, LongWritable>
 
     {
@@ -40,8 +39,7 @@ public class WordCountConsolidator extends SingleOutputTextConsolidator
 
         @Override
         protected void setup(Context context)
-                throws IOException, InterruptedException
-        {
+                throws IOException, InterruptedException {
             super.setup(context);
 
         }
@@ -49,19 +47,17 @@ public class WordCountConsolidator extends SingleOutputTextConsolidator
         @Override
         protected void map(LongWritable key, Text value,
                            Context context)
-                throws IOException, InterruptedException
-        {
-             String[] items = value.toString().split("\t");
+                throws IOException, InterruptedException {
+            String[] items = value.toString().split("\t");
             m_Out.set(items[0]);
             m_Count.set(Integer.parseInt(items[1]));
-             context.write(m_Out,m_Count);
+            context.write(m_Out, m_Count);
 
         }
 
         @Override
         protected void cleanup(Context context)
-                throws IOException, InterruptedException
-        {
+                throws IOException, InterruptedException {
             super.cleanup(context);
 
         }
@@ -69,8 +65,7 @@ public class WordCountConsolidator extends SingleOutputTextConsolidator
 
 
     public static class WordCountReducer
-            extends Reducer<Text, LongWritable, Text, Text>
-    {
+            extends Reducer<Text, LongWritable, Text, Text> {
         private Path m_OutputPath;
         private FileSystem m_OutputFileSystem;
         private FSDataOutputStream m_OutStream;
@@ -78,8 +73,7 @@ public class WordCountConsolidator extends SingleOutputTextConsolidator
 
         @Override
         protected void setup(Context context)
-                throws IOException, InterruptedException
-        {
+                throws IOException, InterruptedException {
             super.setup(context);
             String outputStr = context.getConfiguration().get(SINGLE_FILE_OUT_KEY);
             m_OutputPath = new Path(outputStr);
@@ -91,8 +85,7 @@ public class WordCountConsolidator extends SingleOutputTextConsolidator
 
         public void reduce(Text key, Iterable<Text> values,
                            Context context
-        ) throws IOException, InterruptedException
-        {
+        ) throws IOException, InterruptedException {
             int sum = 0;
             for (Text val : values) {
                 m_Out.println(val);
@@ -101,8 +94,7 @@ public class WordCountConsolidator extends SingleOutputTextConsolidator
 
         @Override
         protected void cleanup(Context context)
-                throws IOException, InterruptedException
-        {
+                throws IOException, InterruptedException {
             super.cleanup(context);
             m_Out.close();
 
@@ -110,50 +102,48 @@ public class WordCountConsolidator extends SingleOutputTextConsolidator
     }
 
     public static void main(String[] args) throws Exception {
-         Configuration conf = new Configuration();
-         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
+        Configuration conf = new Configuration();
+        String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 //        if (otherArgs.length != 2) {
 //            System.err.println("Usage: wordcount <in> <out>");
 //            System.exit(2);
 //        }
-         Job job = new Job(conf, "word count consolidator");
-         conf = job.getConfiguration(); // NOTE JOB Copies the configuraton
-         job.setJarByClass(THIS_CLASS);
-         job.setMapperClass(WordCountConsolidatorMapper.class);
-          job.setReducerClass(WordCountReducer.class);
+        Job job = new Job(conf, "word count consolidator");
+        conf = job.getConfiguration(); // NOTE JOB Copies the configuraton
+        job.setJarByClass(THIS_CLASS);
+        job.setMapperClass(WordCountConsolidatorMapper.class);
+        job.setReducerClass(WordCountReducer.class);
 
-         job.setMapOutputKeyClass(Text.class);
-         job.setMapOutputValueClass(LongWritable.class);
-         job.setOutputKeyClass(Text.class);
-         job.setOutputValueClass(Text.class);
-
-
-
-         // added Slewis
-         job.setNumReduceTasks(1);
-
-         if(otherArgs.length > 1)    {
-             FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
-         }
-
-         String athString = otherArgs[otherArgs.length - 1];
-         File out = new File(athString);
-         if (out.exists()) {
-             FileUtilities.expungeDirectory(out);
-             out.delete();
-         }
-
-         Path outputDir = new Path(athString);
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(LongWritable.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
 
 
-         FileOutputFormat.setOutputPath(job, outputDir);
+        // added Slewis
+        job.setNumReduceTasks(1);
+
+        if (otherArgs.length > 1) {
+            FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
+        }
+
+        String athString = otherArgs[otherArgs.length - 1];
+        File out = new File(athString);
+        if (out.exists()) {
+            FileUtilities.expungeDirectory(out);
+            out.delete();
+        }
+
+        Path outputDir = new Path(athString);
 
 
-         boolean ans = job.waitForCompletion(true);
-         int ret = ans ? 0 : 1;
-         System.exit(ret);
-     }
+        FileOutputFormat.setOutputPath(job, outputDir);
 
+
+        boolean ans = job.waitForCompletion(true);
+        int ret = ans ? 0 : 1;
+        System.exit(ret);
+    }
 
 
 }

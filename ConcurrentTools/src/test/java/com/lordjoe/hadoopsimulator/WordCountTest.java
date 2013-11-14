@@ -18,12 +18,11 @@ import java.util.Properties;
 public class WordCountTest {
 
 
-    public static String cleanUpWord(String in)
-    {
+    public static String cleanUpWord(String in) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < in.length(); i++) {
             char c = in.charAt(i);
-            if(!Character.isLetter(c))
+            if (!Character.isLetter(c))
                 continue; // ignore space, punctuation, numbers
             sb.append(Character.toUpperCase(c)); // capitalize for consitency
 
@@ -68,19 +67,18 @@ public class WordCountTest {
             for (String value : values) {
                 count += Integer.parseInt(value);
             }
-            TextKeyValue sumCount = new TextKeyValue(word,Integer.toString(count));
+            TextKeyValue sumCount = new TextKeyValue(word, Integer.toString(count));
             //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
-            TextKeyValue[] ret = { sumCount};
+            TextKeyValue[] ret = {sumCount};
             return ret;
         }
-     }
+    }
 
     /**
      * count the worde in the Gettysberg address - make sure we have all nultuword uses
      */
     @Test
-    public void testWordCount()
-    {
+    public void testWordCount() {
 //        String[] lines = GETTYSBERG_ADDRESS.split("\n");
 //        List<TextKeyValue> holder = new ArrayList<TextKeyValue>();
 //        for (int i = 0; i < lines.length; i++) {
@@ -108,12 +106,12 @@ public class WordCountTest {
 
     public static final String[] MULTI_USE_WORDS =
             {
-                    "A","AND","ARE","BE","BUT","CAN","CONCEIVED","DEAD",
-                    "DEDICATE","DEDICATED","FAR","FOR","FROM","GAVE","GREAT",
-                    "HAVE","HERE","IN","IS","IT","LIVING","LONG","MEN","NATION",
-                    "NEW","NOT","OF","ON","OR","OUR","PEOPLE","RATHER","SHALL","SO",
-                    "THAT","THE","THESE","THEY",
-                    "THIS","TO","US","WAR","WE","WHAT","WHICH","WHO"
+                    "A", "AND", "ARE", "BE", "BUT", "CAN", "CONCEIVED", "DEAD",
+                    "DEDICATE", "DEDICATED", "FAR", "FOR", "FROM", "GAVE", "GREAT",
+                    "HAVE", "HERE", "IN", "IS", "IT", "LIVING", "LONG", "MEN", "NATION",
+                    "NEW", "NOT", "OF", "ON", "OR", "OUR", "PEOPLE", "RATHER", "SHALL", "SO",
+                    "THAT", "THE", "THESE", "THEY",
+                    "THIS", "TO", "US", "WAR", "WE", "WHAT", "WHICH", "WHO"
             };
 
 

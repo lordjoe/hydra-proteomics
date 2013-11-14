@@ -1,7 +1,6 @@
 package org.systemsbiology.windowedanalysis;
 
 
-
 import java.io.*;
 
 /**

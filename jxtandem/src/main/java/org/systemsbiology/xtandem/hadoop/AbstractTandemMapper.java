@@ -36,6 +36,11 @@ public abstract class AbstractTandemMapper<T> extends Mapper<T, Text, Text, Text
         super.setup(context);
 
         m_Context = context;
+
+
+        // This allows non-hadoop code to report progress
+        ProgressManager.INSTANCE.addProgressHandler(new HadoopProgressManager(context));
+
         // read configuration lines
         Configuration conf = context.getConfiguration();
 

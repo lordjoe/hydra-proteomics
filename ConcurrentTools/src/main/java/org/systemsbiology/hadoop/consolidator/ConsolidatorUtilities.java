@@ -12,25 +12,23 @@ import java.io.*;
  * @author Steve Lewis
  * @date Oct 23, 2010
  */
-public class ConsolidatorUtilities
-{
+public class ConsolidatorUtilities {
     public static ConsolidatorUtilities[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = ConsolidatorUtilities.class;
 
-    public static FileSystem buildFileSystem(String name,TaskInputOutputContext context) {
+    public static FileSystem buildFileSystem(String name, TaskInputOutputContext context) {
         try {
-            if("s3".equals(name)) {
+            if ("s3".equals(name)) {
                 final FileSystem fileSystem = new S3FileSystem(null);
-                  return fileSystem;
+                return fileSystem;
             }
-            if("local".equals(name)) {
-                final FileSystem fileSystem = new LocalFileSystem( );
-                  return fileSystem;
+            if ("local".equals(name)) {
+                final FileSystem fileSystem = new LocalFileSystem();
+                return fileSystem;
             }
 
             return FileSystem.get(context.getConfiguration());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

@@ -26,7 +26,7 @@ public class HelloWorldExecutableReducer extends AbstractExecutableReducer<Text,
                     "  return 0;\n" +
                     "}\n";
 
-    public static final  String TARGET_SOURCE_FILE = "HelloWorld.cc";
+    public static final String TARGET_SOURCE_FILE = "HelloWorld.cc";
 
     public static final String PROGRAM_RESOURCE = "MotifLocator_linux.x";
     public static final String PROGRAM_FILE = "MotifLocator_linux";
@@ -69,8 +69,7 @@ public class HelloWorldExecutableReducer extends AbstractExecutableReducer<Text,
                 String s = "HelloCPP.exe";
                 setExecName(s);
                 HadoopUtilities.writeResourceAsFile(getClass(), "HelloCPP.exe", localFs, s);
-            }
-            else {
+            } else {
                 if (HadoopUtilities.isLinux()) {
                     HadoopUtilities.writeStringAsFile(localFs, TARGET_SOURCE_FILE, HELLO_WORLD_PROGRAM);
                     HadoopUtilities.writeStringAsFile(localFs, HELLO_WORLD_PERL_FILE, HELLO_WORLD_PERL);
@@ -87,8 +86,7 @@ public class HelloWorldExecutableReducer extends AbstractExecutableReducer<Text,
                     //Runtime.getRuntime().exec("chmod a+x Hello");
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (e instanceof RuntimeException) throw (RuntimeException) e;
             throw new RuntimeException(e);
 
@@ -120,13 +118,11 @@ public class HelloWorldExecutableReducer extends AbstractExecutableReducer<Text,
                     File file1 = system.pathToFile(file);
                     sb.append("Path is " + file1.getAbsolutePath());
                 }
-            }
-            else {
+            } else {
                 sb.append("No Local Files");
             }
             return sb.toString();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -162,55 +158,54 @@ public class HelloWorldExecutableReducer extends AbstractExecutableReducer<Text,
             File f = system.pathToFile(new Path(e));
 
 
-             String apath = f.getAbsolutePath();
-            runProcess(sb, f, "g++","-v");
-            runProcess(sb, f, "g++",TARGET_SOURCE_FILE,"-o","HelloWorld");    
+            String apath = f.getAbsolutePath();
+            runProcess(sb, f, "g++", "-v");
+            runProcess(sb, f, "g++", TARGET_SOURCE_FILE, "-o", "HelloWorld");
 
-            runProcess(sb, f,  "./HelloWorld");
-       //     runProcess(sb, f, "ls","-l");
-       //       runProcess(sb, f, "chmod","a+x","Hello");
-            runProcess(sb, f, "ls","-l");
+            runProcess(sb, f, "./HelloWorld");
+            //     runProcess(sb, f, "ls","-l");
+            //       runProcess(sb, f, "chmod","a+x","Hello");
+            runProcess(sb, f, "ls", "-l");
 
-            runProcess(sb, f, "perl",HELLO_WORLD_PERL_FILE);
+            runProcess(sb, f, "perl", HELLO_WORLD_PERL_FILE);
 
 
 //            sb.append("\n");
 //            sb.append(apath);
 //            sb.append("\nCalling " + apath + (f.exists() ? " exists" : " not there"));
 //
-              runProcess(sb, f, "./" +  PROGRAM_FILE);
-            
-            runProcess(sb, f, "ps","-a");
+            runProcess(sb, f, "./" + PROGRAM_FILE);
+
+            runProcess(sb, f, "ps", "-a");
             sb.append("\n");
-            
-             Text t = new Text();
+
+            Text t = new Text();
             String val = sb.toString();
             t.set(val);
             context.write(key, t);
             return val;
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (e instanceof RuntimeException) throw (RuntimeException) e;
             throw new RuntimeException(e);
 
         }
     }
 
-    private void runProcess(final StringBuilder pSb, final File pF, String ... pCommand) throws IOException, InterruptedException {
-          ProcessBuilder builder = new ProcessBuilder(pCommand);
+    private void runProcess(final StringBuilder pSb, final File pF, String... pCommand) throws IOException, InterruptedException {
+        ProcessBuilder builder = new ProcessBuilder(pCommand);
         pSb.append("\n");
         for (int i = 0; i < pCommand.length; i++) {
             String s = pCommand[i];
             pSb.append(s);
             pSb.append(" ");
-          }
-         pSb.append("\n");
+        }
+        pSb.append("\n");
 
         Map<String, String> environ = builder.environment();
 
- //       File directory = pF.getParentFile();
- //       builder.directory(directory);
+        //       File directory = pF.getParentFile();
+        //       builder.directory(directory);
 
         final Process process = builder.start();
         InputStream is = process.getInputStream();
@@ -230,14 +225,14 @@ public class HelloWorldExecutableReducer extends AbstractExecutableReducer<Text,
         pSb.append("errors\n");
 
         InputStream iserr = process.getErrorStream();
-         InputStreamReader isrer = new InputStreamReader(iserr);
-         LineNumberReader brerr = new LineNumberReader(isrer);
-           while ((line = brerr.readLine()) != null) {
-             if (pSb.length() > 0) pSb.append("\n");
-             pSb.append(line);
-         }
+        InputStreamReader isrer = new InputStreamReader(iserr);
+        LineNumberReader brerr = new LineNumberReader(isrer);
+        while ((line = brerr.readLine()) != null) {
+            if (pSb.length() > 0) pSb.append("\n");
+            pSb.append(line);
+        }
 
-         pSb.append("\n");
+        pSb.append("\n");
 
     }
 //

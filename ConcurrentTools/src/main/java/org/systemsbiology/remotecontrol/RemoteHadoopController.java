@@ -186,18 +186,18 @@ public class RemoteHadoopController implements IHadoopController {
                 IJobRunner realMain = mClass.newInstance();
 
                 int result = realMain.runJob(conf, allArgs);
-                 job.setJob(realMain.getJob());
+                job.setJob(realMain.getJob());
                 return result == 0;
             } else {
                 if (Tool.class.isAssignableFrom(mainCls)) {
                     Tool realMain = (Tool) mainCls.newInstance();
                     String[] args = buildArgsFromConf(emptyOutputDirectory, conf, allArgs);
                     realMain.setConf(conf);
-                    int result = ToolRunner.run(conf,realMain,args);
+                    int result = ToolRunner.run(conf, realMain, args);
 
-                 //   WrappedToolRunner tr = new WrappedToolRunner(realMain);
-                 //   int result = tr.runJob(conf, args);
-                 //   ((HadoopJob) job).setJob(tr.getJob());
+                    //   WrappedToolRunner tr = new WrappedToolRunner(realMain);
+                    //   int result = tr.runJob(conf, args);
+                    //   ((HadoopJob) job).setJob(tr.getJob());
                     return result == 0;
                 } else {
                     throw new UnsupportedOperationException("Fix This"); // ToDo
@@ -281,7 +281,7 @@ public class RemoteHadoopController implements IHadoopController {
         return conf;
     }
 
-     @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings("UnusedDeclaration")
     private void guaranteeEmptyDirectory(String dir) {
         IFileSystem accessor = getHDFSAccessor();
         accessor.expunge(dir);
@@ -293,7 +293,6 @@ public class RemoteHadoopController implements IHadoopController {
         copyDirectoryToHDFS(dest, hdfsdest);
 
     }
-
 
 
     @Override
@@ -460,7 +459,7 @@ public class RemoteHadoopController implements IHadoopController {
 
     @Override
     public void guaranteeHDFSDirectory(String dst) {
-            //noinspection UnusedDeclaration
+        //noinspection UnusedDeclaration
         String result = executeCommand(HADOOP_COMMAND + "fs -mkdir " + dst);
     }
 
@@ -472,7 +471,7 @@ public class RemoteHadoopController implements IHadoopController {
         guaranteeHDFSDirectory(dst);
         //noinspection UnusedDeclaration
         ExecChannel ech = new ExecChannel(getSession());
-       //noinspection UnusedDeclaration
+        //noinspection UnusedDeclaration
         String result = executeCommand(HADOOP_COMMAND + "fs -copyFromLocal " + dst1 + "/" + file.getName() + " " + dst);
     }
 

@@ -14,7 +14,7 @@ public interface IFtpManager {
     public static final IFtpManager[] EMPTY_ARRAY = {};
 
     public String getHome();
-    
+
     public void quit();
 
     public void exit();
@@ -27,21 +27,21 @@ public interface IFtpManager {
 
     public void put(String src, String dst, int mode) throws SftpException;
 
-    public void put(String src, String dst, 
-            SftpProgressMonitor monitor) throws SftpException;
+    public void put(String src, String dst,
+                    SftpProgressMonitor monitor) throws SftpException;
 
-    public void put(String src, String dst, 
+    public void put(String src, String dst,
                     SftpProgressMonitor monitor, int mode) throws SftpException;
 
     public void put(InputStream src, String dst) throws SftpException;
 
     public void put(InputStream src, String dst, int mode) throws SftpException;
 
-    public void put(InputStream src, String dst, 
-                            SftpProgressMonitor monitor) throws SftpException;
+    public void put(InputStream src, String dst,
+                    SftpProgressMonitor monitor) throws SftpException;
 
-    public void put(InputStream src, String dst, 
-                                    SftpProgressMonitor monitor, int mode) throws SftpException;
+    public void put(InputStream src, String dst,
+                    SftpProgressMonitor monitor, int mode) throws SftpException;
 
     public OutputStream put(String dst) throws SftpException;
 
@@ -54,18 +54,18 @@ public interface IFtpManager {
     public void get(String src, String dst) throws SftpException;
 
     public void get(String src, String dst,
-                                            SftpProgressMonitor monitor) throws SftpException;
+                    SftpProgressMonitor monitor) throws SftpException;
 
     public void get(String src, String dst,
-                                                    SftpProgressMonitor monitor, int mode) throws SftpException;
+                    SftpProgressMonitor monitor, int mode) throws SftpException;
 
     public void get(String src, OutputStream dst) throws SftpException;
 
     public void get(String src, OutputStream dst,
-                                                            SftpProgressMonitor monitor) throws SftpException;
+                    SftpProgressMonitor monitor) throws SftpException;
 
     public void get(String src, OutputStream dst,
-                                                                     SftpProgressMonitor monitor, int mode, long skip) throws SftpException;
+                    SftpProgressMonitor monitor, int mode, long skip) throws SftpException;
 
     public InputStream get(String src) throws SftpException;
 

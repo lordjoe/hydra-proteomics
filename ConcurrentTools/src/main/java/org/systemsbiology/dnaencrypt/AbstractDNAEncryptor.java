@@ -13,21 +13,21 @@ public abstract class AbstractDNAEncryptor implements IDNAEncryptor {
 
     // treat A = 0, C = 1, G = 10, T = 11 binary
     // xor 0
-    private static final char[] DECRYPT0 = { 'A','C','G','T' } ;
+    private static final char[] DECRYPT0 = {'A', 'C', 'G', 'T'};
     // xor 1
-    private static final char[] DECRYPT1 = { 'C','A','T','G' } ;
+    private static final char[] DECRYPT1 = {'C', 'A', 'T', 'G'};
     // xor 10
-    private static final char[] DECRYPT2 = { 'G','T','A','C' } ;
+    private static final char[] DECRYPT2 = {'G', 'T', 'A', 'C'};
     // xor 11
-    private static final char[] DECRYPT3 = { 'T','G','C','A' } ;
+    private static final char[] DECRYPT3 = {'T', 'G', 'C', 'A'};
 
-    private static final char[][] DECRYPTORS = { DECRYPT0,DECRYPT1,DECRYPT2,DECRYPT3 } ;
+    private static final char[][] DECRYPTORS = {DECRYPT0, DECRYPT1, DECRYPT2, DECRYPT3};
 
     private final byte[] m_Key;
 
     public AbstractDNAEncryptor(final byte[] pKey) {
-        m_Key = new byte[  pKey.length];
-        System.arraycopy(pKey,0,m_Key,0, m_Key.length);
+        m_Key = new byte[pKey.length];
+        System.arraycopy(pKey, 0, m_Key, 0, m_Key.length);
 
     }
 
@@ -62,7 +62,7 @@ public abstract class AbstractDNAEncryptor implements IDNAEncryptor {
             case 'T':
                 return DECRYPTORS[key][3];
 
-                // all non ACGT return the original character
+            // all non ACGT return the original character
             default:
                 return inp;
 

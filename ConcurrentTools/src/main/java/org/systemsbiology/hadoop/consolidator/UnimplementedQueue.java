@@ -4,20 +4,19 @@ import java.util.*;
 
 /**
  * org.systemsbiology.hadoop.consolidator.UnimplementedQueue
- *  This Queue does nothing but a subclass might add seriour methods
+ * This Queue does nothing but a subclass might add seriour methods
+ *
  * @author Steve Lewis
  * @date Nov 1, 2010
  */
-public abstract class UnimplementedQueue<K> extends UniimplementedCollection<K> implements Queue<K>
-{
+public abstract class UnimplementedQueue<K> extends UniimplementedCollection<K> implements Queue<K> {
     public static UnimplementedQueue[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = UnimplementedQueue.class;
 
-     @Override
-    public boolean offer(K e)
-    {
-         throw new UnsupportedOperationException("UninplementedQueue does not support this");
-     }
+    @Override
+    public boolean offer(K e) {
+        throw new UnsupportedOperationException("UninplementedQueue does not support this");
+    }
 
     /**
      * Retrieves and removes the head of this queue.  This method differs
@@ -29,10 +28,9 @@ public abstract class UnimplementedQueue<K> extends UniimplementedCollection<K> 
      *          if this queue is empty
      */
     @Override
-    public K remove()
-    {
-         throw new UnsupportedOperationException("UninplementedQueue does not support this");
- 
+    public K remove() {
+        throw new UnsupportedOperationException("UninplementedQueue does not support this");
+
     }
 
     /**
@@ -42,10 +40,9 @@ public abstract class UnimplementedQueue<K> extends UniimplementedCollection<K> 
      * @return the head of this queue, or <tt>null</tt> if this queue is empty
      */
     @Override
-    public K poll()
-    {
-         throw new UnsupportedOperationException("UninplementedQueue does not support this");
- 
+    public K poll() {
+        throw new UnsupportedOperationException("UninplementedQueue does not support this");
+
     }
 
     /**
@@ -58,10 +55,9 @@ public abstract class UnimplementedQueue<K> extends UniimplementedCollection<K> 
      *          if this queue is empty
      */
     @Override
-    public K element()
-    {
-         throw new UnsupportedOperationException("UninplementedQueue does not support this");
- 
+    public K element() {
+        throw new UnsupportedOperationException("UninplementedQueue does not support this");
+
     }
 
     /**
@@ -71,9 +67,8 @@ public abstract class UnimplementedQueue<K> extends UniimplementedCollection<K> 
      * @return the head of this queue, or <tt>null</tt> if this queue is empty
      */
     @Override
-    public K peek()
-    {
-         throw new UnsupportedOperationException("UninplementedQueue does not support this");
- 
+    public K peek() {
+        throw new UnsupportedOperationException("UninplementedQueue does not support this");
+
     }
 }

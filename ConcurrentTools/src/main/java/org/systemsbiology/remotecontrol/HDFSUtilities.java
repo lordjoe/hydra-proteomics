@@ -34,11 +34,12 @@ public class HDFSUtilities {
 
     /**
      * make sure you cam access an hdfs on
+     *
      * @param nameNode !null name node
-     * @param port   posr for hdfs
-     * @throws  IllegalStateException or error
+     * @param port     posr for hdfs
+     * @throws IllegalStateException or error
      */
-    public static  void hDFSSanityTest(String nameNode, int port) {
+    public static void hDFSSanityTest(String nameNode, int port) {
         IHDFSFileSystem access = HDFSAccessor.getFileSystem(nameNode, port);
         String filePath = BASE_DIRECTORY + FILE_NAME;
         access.guaranteeDirectory(BASE_DIRECTORY);
@@ -47,7 +48,7 @@ public class HDFSUtilities {
 
         if (!TEST_CONTENT.equals(result)) {
             throw new IllegalStateException("The combination " + nameNode + ":" + port +
-              " is not an accessible hdfs system" );
+                    " is not an accessible hdfs system");
         }
 
         access.deleteFile(filePath);
@@ -95,8 +96,7 @@ public class HDFSUtilities {
         Properties ret = new Properties();
         try {
             ret.load(inp);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -151,8 +151,7 @@ public class HDFSUtilities {
             }
             fs.close();
             return inp.toByteArray();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -169,12 +168,10 @@ public class HDFSUtilities {
         Text key = new Text(txt);
         try {
             ctx.write(key, result);
-        }
-        catch (IOException e1) {
+        } catch (IOException e1) {
             throw new RuntimeException(e1);
 
-        }
-        catch (InterruptedException e1) {
+        } catch (InterruptedException e1) {
             throw new RuntimeException(e1);
 
         }
@@ -198,8 +195,7 @@ public class HDFSUtilities {
             Configuration cnfg = ctx.getConfiguration();
             FileSystem dfs = FileSystem.get(cnfg);
             return dfs;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -227,6 +223,7 @@ public class HDFSUtilities {
 //            }
 //        }
 //    }
+
     /**
      * retuen an empty directory on the hadoop fs -
      * this is needed by jobs
@@ -253,20 +250,21 @@ public class HDFSUtilities {
 
     /**
      * return the size of a file or the total size of a directory
-     * @param file  !null file might not exist
-     * @param fs !null file system
-     * @return  size of the file - 0 if it does not exist or total size of files in directory
+     *
+     * @param file !null file might not exist
+     * @param fs   !null file system
+     * @return size of the file - 0 if it does not exist or total size of files in directory
      */
     public static long size(String file, IFileSystem fs) {
-        if(!fs.exists(file))
-             return 0;
-        if(!fs.isDirectory(file))
-             return fs.fileLength(file);
-        final String[] files   = fs.ls(file);
+        if (!fs.exists(file))
+            return 0;
+        if (!fs.isDirectory(file))
+            return fs.fileLength(file);
+        final String[] files = fs.ls(file);
         long ret = 0;
         for (int i = 0; i < files.length; i++) {
             String s = file + "/" + files[i];
-            ret += size(s,fs);
+            ret += size(s, fs);
 
         }
         return ret;
@@ -291,7 +289,7 @@ public class HDFSUtilities {
 
 
     public static void main(String[] args) {
-        hDFSSanityTest("glados",9000);
+        hDFSSanityTest("glados", 9000);
     }
 
 

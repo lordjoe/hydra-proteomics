@@ -17,14 +17,14 @@ import java.util.*;
 
 /**
  * org.systemsbiology.hadoopgenerated.NShotTest
- *   Locally the arguments are
- *         -DNumberKeys=100000  - number of keys
- *         -DNumberSplits=50
- *         -DNumberReducers=3
- *         SomeEmptyLocalDirectory
- *
- *      Use the following command line
- *         /home/www/hadoop/bin/hadoop  jar jobs/HadoopTest.jar  org.systemsbiology.hadoopgenerated.HadoopTest -DNumberKeys=100000 -DNumberSplits=50 -DNumberReducers=3 FeeFie.txt /user/howdah/NShot/output1
+ * Locally the arguments are
+ * -DNumberKeys=100000  - number of keys
+ * -DNumberSplits=50
+ * -DNumberReducers=3
+ * SomeEmptyLocalDirectory
+ * <p/>
+ * Use the following command line
+ * /home/www/hadoop/bin/hadoop  jar jobs/HadoopTest.jar  org.systemsbiology.hadoopgenerated.HadoopTest -DNumberKeys=100000 -DNumberSplits=50 -DNumberReducers=3 FeeFie.txt /user/howdah/NShot/output1
  *
  * @author Steve Lewis
  * @date Oct 11, 2010
@@ -52,12 +52,10 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
             key.set(keyText);
             value.set(valueStr);
             context.write(key, value);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
 
         }
@@ -96,8 +94,7 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
                 String name = df.format(new Date());
                 try {
                     df.parse(name);
-                }
-                catch (ParseException e) {
+                } catch (ParseException e) {
                     throw new RuntimeException(e);
 
                 }
@@ -170,8 +167,7 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
             File Test = new File(TheDir, items[i]);
             if (Test.isFile()) {
                 Test.delete();
-            }
-            else {
+            } else {
                 expungeDirectory(Test);
             }
         }
@@ -192,8 +188,7 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
                 boolean doneOK = fs.delete(src, false);
                 return;
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -245,7 +240,7 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
         }
 
         String athString = "NShotOutput";
-        if(otherArgs.length > 0)
+        if (otherArgs.length > 0)
             athString = otherArgs[otherArgs.length - 1];
         File out = new File(athString);
         if (out.exists()) {
@@ -257,7 +252,6 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
 
 
         FileOutputFormat.setOutputPath(job, outputDir);
-
 
 
         boolean ans = job.waitForCompletion(true);
@@ -275,12 +269,12 @@ public class NShotTest extends ConfiguredJobRunner implements IJobRunner {
     @Override
     public int run(final String[] args) throws Exception {
         Configuration conf = getConf();
-         if(conf == null)
-             conf = new Configuration();
+        if (conf == null)
+            conf = new Configuration();
 
         System.err.println(conf.get("user1 " + "user.name"));
 
-         //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
+        //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
         return runJob(conf, args);
     }
 

@@ -38,6 +38,10 @@ public class AbstractParameterizedMapper<T> extends Mapper<T, Text, Text, Text> 
         // read configuration lines
         Configuration conf = context.getConfiguration();
 
+
+        // This allows non-hadoop code to report progress
+        ProgressManager.INSTANCE.addProgressHandler(new HadoopProgressManager(context));
+
         // debugging code to show my keys
         //noinspection SimplifiableIfStatement,ConstantIfStatement
         if (false) {

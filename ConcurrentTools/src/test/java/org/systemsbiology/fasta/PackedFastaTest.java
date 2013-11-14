@@ -27,7 +27,7 @@ public class PackedFastaTest {
 
     public void testPackedFasta() {
         for (int i = 0; i < NUMBER_TESTS; i++) {
-           runOneTest();
+            runOneTest();
         }
 
 
@@ -39,7 +39,7 @@ public class PackedFastaTest {
         int end = start + 100 + RND.nextInt(len - start - 100);
         String original = FastaPacker.getFastaData(ORIGINAL, start, end);
         String packed = FastaPacker.getPackedFastaData(PACKED, start, end);
-        Assert.assertEquals(original,packed);
+        Assert.assertEquals(original, packed);
     }
 
 

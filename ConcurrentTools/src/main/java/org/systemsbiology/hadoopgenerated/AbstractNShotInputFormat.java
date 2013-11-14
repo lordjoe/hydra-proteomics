@@ -21,8 +21,7 @@ import java.util.*;
  * @author Steve Lewis
  * @date Oct 10, 2010
  */
-public abstract class AbstractNShotInputFormat<K, V> extends InputFormat<K, V>
-{
+public abstract class AbstractNShotInputFormat<K, V> extends InputFormat<K, V> {
     public static AbstractNShotInputFormat[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = AbstractNShotInputFormat.class;
 
@@ -34,13 +33,11 @@ public abstract class AbstractNShotInputFormat<K, V> extends InputFormat<K, V>
      *
      * @return
      */
-    public static int getNumberKeys()
-    {
+    public static int getNumberKeys() {
         return gNumberKeys;
     }
 
-    public static void setNumberKeys(int pNumberKeys)
-    {
+    public static void setNumberKeys(int pNumberKeys) {
         gNumberKeys = pNumberKeys;
     }
 
@@ -50,13 +47,11 @@ public abstract class AbstractNShotInputFormat<K, V> extends InputFormat<K, V>
      *
      * @return
      */
-    public static int getNumberSplits()
-    {
+    public static int getNumberSplits() {
         return gNumberSplits;
     }
 
-    public static void setNumberSplits(int pNumberSplits)
-    {
+    public static void setNumberSplits(int pNumberSplits) {
         gNumberSplits = pNumberSplits;
     }
 
@@ -94,8 +89,7 @@ public abstract class AbstractNShotInputFormat<K, V> extends InputFormat<K, V>
      */
     @Override
     public List<InputSplit> getSplits(JobContext context)
-            throws IOException, InterruptedException
-    {
+            throws IOException, InterruptedException {
         int numSplits = getNumberSplits();
 
         ArrayList<InputSplit> splits = new ArrayList<InputSplit>(numSplits);
@@ -125,8 +119,7 @@ public abstract class AbstractNShotInputFormat<K, V> extends InputFormat<K, V>
     public RecordReader<K, V> createRecordReader(
             InputSplit split,
             TaskAttemptContext context)
-            throws IOException, InterruptedException
-    {
+            throws IOException, InterruptedException {
         return new NShotDataRecordReader((NShotInputSplit) split, this);
     }
 
@@ -136,15 +129,13 @@ public abstract class AbstractNShotInputFormat<K, V> extends InputFormat<K, V>
      * In this sample we use simple code to generate keys but a
      * different version might use a more sophistocated scheme
      */
-    public static class NShotDataRecordReader<K, V> extends RecordReader<K, V>
-    {
+    public static class NShotDataRecordReader<K, V> extends RecordReader<K, V> {
 
         private long m_NFired;
         private final NShotInputSplit m_Splitter;
         private final AbstractNShotInputFormat<K, V> m_Parent;
 
-        public NShotDataRecordReader(NShotInputSplit split, AbstractNShotInputFormat<K, V> parent)
-        {
+        public NShotDataRecordReader(NShotInputSplit split, AbstractNShotInputFormat<K, V> parent) {
             m_Parent = parent;
             m_Splitter = split;
             m_NFired = m_Splitter.getIndex(); // start each recorder at different value
@@ -160,38 +151,31 @@ public abstract class AbstractNShotInputFormat<K, V> extends InputFormat<K, V>
          */
         @Override
         public void initialize(InputSplit split, TaskAttemptContext context)
-                throws IOException, InterruptedException
-        {
+                throws IOException, InterruptedException {
 
         }
 
-        public NShotInputSplit getSplitter()
-        {
+        public NShotInputSplit getSplitter() {
             return m_Splitter;
         }
 
-        public long getNFired()
-        {
+        public long getNFired() {
             return m_NFired;
         }
 
 
-        public void close()
-        {
+        public void close() {
         }
 
-        public float getProgress()
-        {
-            return getNFired() / (float)getNumberKeys();
+        public float getProgress() {
+            return getNFired() / (float) getNumberKeys();
         }
 
-        public long getPos()
-        {
+        public long getPos() {
             return getNFired();
         }
 
-        public boolean next(LongWritable key, Text value)
-        {
+        public boolean next(LongWritable key, Text value) {
             if (getNFired() >= getNumberKeys())
                 return false;
 
@@ -208,8 +192,7 @@ public abstract class AbstractNShotInputFormat<K, V> extends InputFormat<K, V>
          * @throws InterruptedException
          */
         @Override
-        public boolean nextKeyValue() throws IOException, InterruptedException
-        {
+        public boolean nextKeyValue() throws IOException, InterruptedException {
             if (getNFired() >= getNumberKeys())
                 return false;
 
@@ -225,8 +208,7 @@ public abstract class AbstractNShotInputFormat<K, V> extends InputFormat<K, V>
          * @throws InterruptedException
          */
         @Override
-        public K getCurrentKey() throws IOException, InterruptedException
-        {
+        public K getCurrentKey() throws IOException, InterruptedException {
             return (K) m_Parent.getKeyFromIndex(m_NFired - getNumberSplits());
         }
 
@@ -238,53 +220,43 @@ public abstract class AbstractNShotInputFormat<K, V> extends InputFormat<K, V>
          * @throws InterruptedException
          */
         @Override
-        public V getCurrentValue() throws IOException, InterruptedException
-        {
+        public V getCurrentValue() throws IOException, InterruptedException {
             return (V) m_Parent.getValueFromIndex(m_NFired - getNumberSplits());
         }
     }
 
     @SuppressWarnings(value = "deprecated")
     public static class NShotInputSplit extends InputSplit
-        // NOTE IF THE DEPRECATED INTERFACE IS NOT IMP{LEMENTED THE OBJECT WILL NOT SERIALIZE
-            implements  org.apache.hadoop.mapred.InputSplit
-    {
+            // NOTE IF THE DEPRECATED INTERFACE IS NOT IMP{LEMENTED THE OBJECT WILL NOT SERIALIZE
+            implements org.apache.hadoop.mapred.InputSplit {
 
         private long m_Index;
 
-        public NShotInputSplit()
-        {
+        public NShotInputSplit() {
         }
 
-        
 
-        public long getIndex()
-        {
+        public long getIndex() {
             return m_Index;
         }
 
-        public void setIndex(long pIndex)
-        {
+        public void setIndex(long pIndex) {
             m_Index = pIndex;
         }
 
-        public long getLength()
-        {
+        public long getLength() {
             return getNumberKeys() / getNumberSplits();
         }
 
-        public String[] getLocations() throws IOException
-        {
+        public String[] getLocations() throws IOException {
             return new String[]{};
         }
 
-        public void readFields(DataInput in) throws IOException
-        {
+        public void readFields(DataInput in) throws IOException {
             setIndex(in.readLong());
         }
 
-        public void write(DataOutput out) throws IOException
-        {
+        public void write(DataOutput out) throws IOException {
             out.writeLong(this.m_Index);
         }
 

@@ -11,7 +11,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
- import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.*;
 
@@ -24,27 +24,23 @@ import java.util.*;
  * @author Steve Lewis
  * @date Oct 10, 2010
  */
-public class OneShotHadoop
-{
+public class OneShotHadoop {
     public static OneShotHadoop[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = OneShotHadoop.class;
 
 
-    public static class Map extends Mapper<LongWritable, Text, Text, Text>
-    {
- 
+    public static class Map extends Mapper<LongWritable, Text, Text, Text> {
+
         @Override
         protected void map(LongWritable key, Text value,
-                           Context context) throws IOException, InterruptedException
-        {
+                           Context context) throws IOException, InterruptedException {
 
             // Add interesting code here
             context.write(new Text("foo"), new Text("bar"));
         }
     }
 
-    public static class Reduce extends Reducer<Text, Text, Text, Text>
-    {
+    public static class Reduce extends Reducer<Text, Text, Text, Text> {
 
         /**
          * This method is called once for each key. Most applications will define
@@ -54,8 +50,7 @@ public class OneShotHadoop
         @Override
         protected void reduce(Text key, Iterable<Text> values,
                               Context context)
-                throws IOException, InterruptedException
-        {
+                throws IOException, InterruptedException {
             Iterator<Text> itr = values.iterator();
             // Add interesting code here
             while (itr.hasNext()) {
@@ -68,8 +63,7 @@ public class OneShotHadoop
 
     }
 
-    public static class OneShotInputFormat extends InputFormat<LongWritable, Text>
-    {
+    public static class OneShotInputFormat extends InputFormat<LongWritable, Text> {
 
         /**
          * Logically split the set of input files for the job.
@@ -87,8 +81,7 @@ public class OneShotHadoop
          */
         @Override
         public List<org.apache.hadoop.mapreduce.InputSplit> getSplits(JobContext context)
-                throws IOException, InterruptedException
-        {
+                throws IOException, InterruptedException {
             int numSplits = 1;
 
 
@@ -116,21 +109,18 @@ public class OneShotHadoop
         public RecordReader<LongWritable, Text> createRecordReader(
                 org.apache.hadoop.mapreduce.InputSplit split,
                 TaskAttemptContext context)
-                throws IOException, InterruptedException
-        {
+                throws IOException, InterruptedException {
             return new OneShotDataRecordReader((OneShotInputSplit) split);
         }
 
-     
 
     }
 
-    public static class OneShotDataRecordReader extends RecordReader<LongWritable, Text>
-    {
+    public static class OneShotDataRecordReader extends RecordReader<LongWritable, Text> {
 
         private boolean m_Fired;
-        public OneShotDataRecordReader(OneShotInputSplit split)
-        {
+
+        public OneShotDataRecordReader(OneShotInputSplit split) {
         }
 
         /**
@@ -143,39 +133,32 @@ public class OneShotHadoop
          */
         @Override
         public void initialize(InputSplit split, TaskAttemptContext context)
-                throws IOException, InterruptedException
-        {
+                throws IOException, InterruptedException {
 
         }
 
-        public boolean isFired()
-        {
+        public boolean isFired() {
             return m_Fired;
         }
 
-        public void setFired(boolean pFired)
-        {
+        public void setFired(boolean pFired) {
             m_Fired = pFired;
         }
 
-        public void close()
-        {
+        public void close() {
         }
 
-        public float getProgress()
-        {
+        public float getProgress() {
             return 0.0f;
         }
 
-        public long getPos()
-        {
+        public long getPos() {
             return 1;
         }
 
-        public boolean next(LongWritable key, Text value)
-        {
-             if(isFired())
-                 return false;
+        public boolean next(LongWritable key, Text value) {
+            if (isFired())
+                return false;
 
             setFired(true);
             return true;
@@ -190,14 +173,13 @@ public class OneShotHadoop
          * @throws InterruptedException
          */
         @Override
-        public boolean nextKeyValue() throws IOException, InterruptedException
-        {
-            if(isFired())
-                 return false;
+        public boolean nextKeyValue() throws IOException, InterruptedException {
+            if (isFired())
+                return false;
 
             setFired(true);
             return true;
-         }
+        }
 
         /**
          * Get the current key
@@ -207,8 +189,7 @@ public class OneShotHadoop
          * @throws InterruptedException
          */
         @Override
-        public LongWritable getCurrentKey() throws IOException, InterruptedException
-        {
+        public LongWritable getCurrentKey() throws IOException, InterruptedException {
             return new LongWritable(1);
         }
 
@@ -220,46 +201,38 @@ public class OneShotHadoop
          * @throws InterruptedException
          */
         @Override
-        public Text getCurrentValue() throws IOException, InterruptedException
-        {
+        public Text getCurrentValue() throws IOException, InterruptedException {
             return new Text("foo");
         }
     }
 
     @SuppressWarnings(value = "deprecated")
     public static class OneShotInputSplit extends InputSplit implements
-            org.apache.hadoop.mapred.InputSplit
-    {
+            org.apache.hadoop.mapred.InputSplit {
 
-        public OneShotInputSplit()
-        {
+        public OneShotInputSplit() {
         }
 
 
-        public long getLength()
-        {
+        public long getLength() {
             return 1;
         }
 
-        public String[] getLocations() throws IOException
-        {
+        public String[] getLocations() throws IOException {
             return new String[]{};
         }
 
-        public void readFields(DataInput in) throws IOException
-        {
+        public void readFields(DataInput in) throws IOException {
         }
 
-        public void write(DataOutput out) throws IOException
-        {
+        public void write(DataOutput out) throws IOException {
         }
 
 
     }
 
 
-    public static void main(String[] args) throws Exception
-    {
+    public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 //        if (otherArgs.length != 2) {
@@ -291,7 +264,7 @@ public class OneShotHadoop
         }
 
         // make sure output does not exist
-        String base = "Oneshot"  + (System.currentTimeMillis() / 1000) % 1000;
+        String base = "Oneshot" + (System.currentTimeMillis() / 1000) % 1000;
         Path outputDir = new Path(base);
 
 

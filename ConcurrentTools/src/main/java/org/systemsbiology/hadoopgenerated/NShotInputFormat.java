@@ -11,18 +11,17 @@ import java.io.*;
 
 /**
  * org.systemsbiology.hadoopgenerated.NSHotInputFormat
- *    code sample showing how to override AbstractNShotInputFormat
- *    to make real keys
+ * code sample showing how to override AbstractNShotInputFormat
+ * to make real keys
+ *
  * @author Steve Lewis
  * @date Oct 23, 2010
  */
-public class NShotInputFormat extends AbstractNShotInputFormat<LongWritable,Text>
-{
+public class NShotInputFormat extends AbstractNShotInputFormat<LongWritable, Text> {
     public static NShotInputFormat[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = NShotInputFormat.class;
 
-    public NShotInputFormat()
-    {
+    public NShotInputFormat() {
     }
 
     /**
@@ -32,8 +31,7 @@ public class NShotInputFormat extends AbstractNShotInputFormat<LongWritable,Text
      * @return non-null key
      */
     @Override
-    protected LongWritable getKeyFromIndex(long index)
-    {
+    protected LongWritable getKeyFromIndex(long index) {
         return new LongWritable(index);
     }
 
@@ -44,15 +42,12 @@ public class NShotInputFormat extends AbstractNShotInputFormat<LongWritable,Text
      * @return non-null key
      */
     @Override
-    protected Text getValueFromIndex(long index)
-    {
-         return new Text("Shot " + index);
+    protected Text getValueFromIndex(long index) {
+        return new Text("Shot " + index);
     }
 
 
-
-    public static void main(String[] args) throws Exception
-    {
+    public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 //        if (otherArgs.length != 2) {
@@ -96,5 +91,5 @@ public class NShotInputFormat extends AbstractNShotInputFormat<LongWritable,Text
         boolean ans = job.waitForCompletion(true);
         int ret = ans ? 0 : 1;
     }
-    
+
 }

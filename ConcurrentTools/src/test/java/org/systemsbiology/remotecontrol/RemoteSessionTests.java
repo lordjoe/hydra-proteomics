@@ -13,7 +13,7 @@ import org.systemsbiology.hadoopgenerated.*;
 public class RemoteSessionTests {
 
 
-//    @Test
+    //    @Test
     @SuppressWarnings("UnusedDeclaration")
     public void testConnectionException() {
         RemoteSession rs = getRemoteSession();
@@ -30,9 +30,8 @@ public class RemoteSessionTests {
             RemoteSession rs = new RemoteSession(host, user, password);
             rs.setConnected(true);
             return rs;
-        }
-        catch (Throwable e) {
-            while(e.getCause() != null)
+        } catch (Throwable e) {
+            while (e.getCause() != null)
                 e = e.getCause();
             String localizedMessage = e.getLocalizedMessage();
             if (localizedMessage.contains("Connection timed out: connect"))
@@ -43,7 +42,7 @@ public class RemoteSessionTests {
         }
     }
 
-//    @Test
+    //    @Test
     @SuppressWarnings("UnusedDeclaration")
     public void testController() throws Exception {
         RemoteSession rs = getRemoteSession();
@@ -67,8 +66,7 @@ public class RemoteSessionTests {
             // use exec to delete it
             controller.executeCommand("rmdir foobar");
             Assert.assertFalse(ftpAccessor.exists("foobar"));
-        }
-        finally {
+        } finally {
             rs.setConnected(false);
         }
 
@@ -76,7 +74,7 @@ public class RemoteSessionTests {
 
     @Test
     public void testNShotRunner() throws Exception {
-        if(!RemoteTestConfiguration.isHDFSAccessible())
+        if (!RemoteTestConfiguration.isHDFSAccessible())
             return;
         try {
             String user = RemoteUtilities.getUser(); // "training";  //
@@ -98,9 +96,8 @@ public class RemoteSessionTests {
             );
             //noinspection UnusedDeclaration
             boolean ret = hc.runJob(job);
-        }
-        catch (Exception e) {
-           // throw new RuntimeException(e);  // todo run the test
+        } catch (Exception e) {
+            // throw new RuntimeException(e);  // todo run the test
 
         }
     }

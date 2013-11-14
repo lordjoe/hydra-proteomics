@@ -47,8 +47,7 @@ public class EncryptTests {
         for (int i = 0; i < length; i++) {
             if (RND.nextFloat() < fractionNonACGT) {
                 sb.append(nonACGTChar());
-            }
-            else {
+            } else {
                 switch (RND.nextInt(4)) {
                     case 0:
                         sb.append("A");
@@ -132,10 +131,10 @@ public class EncryptTests {
         for (int i = 0; i < NUMBER_REPEATS; i++) {
             int length = 50 + RND.nextInt(50); // 50 - 100
             String pureACGT = generateDNAString(length);
-             String encrypted = decryptor.encrypt(pureACGT);
+            String encrypted = decryptor.encrypt(pureACGT);
             // assert encryption chenged the string
             Assert.assertFalse(pureACGT.equals(encrypted));
-              // now make sure we get the original back
+            // now make sure we get the original back
             String decrypted = decryptor.decrypt(encrypted);
 
             Assert.assertEquals(decrypted, pureACGT);

@@ -8,7 +8,7 @@ import org.systemsbiology.hadoop.*;
 import java.util.*;
 
 /**
- *  org.systemsbiology.remotecontrol.FTPWrapperTest
+ * org.systemsbiology.remotecontrol.FTPWrapperTest
  * User: steven
  * Date: 5/12/11
  */
@@ -26,9 +26,9 @@ public class FTPWrapperTest {
                     "the lamb was sure to go.";
 
 
- //   @Test
+    //   @Test
     public void testLS() {
-        if(!RemoteTestConfiguration.isHDFSAccessible())
+        if (!RemoteTestConfiguration.isHDFSAccessible())
             return;
         IFileSystem wrapper = buildFTPWrapper();
         String[] items = wrapper.ls("/");
@@ -39,9 +39,9 @@ public class FTPWrapperTest {
         ((FTPWrapper) wrapper).exit();
     }
 
- //   @Test
+    //   @Test
     public void testGuaranteeDirectory() {
-        if(!RemoteTestConfiguration.isHDFSAccessible())
+        if (!RemoteTestConfiguration.isHDFSAccessible())
             return;
         IFileSystem fs = buildFTPWrapper();
         String myHome = fs.pwd();
@@ -57,20 +57,19 @@ public class FTPWrapperTest {
         fs.guaranteeDirectory(newDir);
         fs.writeToFileSystem(newDir + "/mary.txt", TEST_CONTENT);
 
-        String[] files =  fs.ls(newDir);
-        Assert.assertEquals(1,files.length );
-        Assert.assertEquals(files[0],"mary.txt" );
+        String[] files = fs.ls(newDir);
+        Assert.assertEquals(1, files.length);
+        Assert.assertEquals(files[0], "mary.txt");
         fs.expunge(newDir);
         Assert.assertFalse(fs.exists(newDir));
-
 
 
         ((FTPWrapper) fs).exit();
     }
 
-  //  @Test
+    //  @Test
     public void testFileReadWrite() {
-        if(!RemoteTestConfiguration.isHDFSAccessible())
+        if (!RemoteTestConfiguration.isHDFSAccessible())
             return;
         IFileSystem fs = buildFTPWrapper();
         String myHome = fs.pwd();
@@ -91,24 +90,24 @@ public class FTPWrapperTest {
         ((FTPWrapper) fs).exit();
     }
 
- //       @Test
+    //       @Test
     public void testHDFSLS() {
-            if(!RemoteTestConfiguration.isHDFSAccessible())
-                return;
-            IFileSystem fs = HDFSAccessor.getFileSystem( );
-           String[] items = fs.ls("/");
+        if (!RemoteTestConfiguration.isHDFSAccessible())
+            return;
+        IFileSystem fs = HDFSAccessor.getFileSystem();
+        String[] items = fs.ls("/");
         Assert.assertTrue(items.length > 3);
         Set<String> fileSet = new HashSet<String>(Arrays.asList(items));
         Assert.assertTrue(fileSet.contains("user"));
 
-     }
+    }
 
-//   @Test
+    //   @Test
     public void testHDFSGuaranteeDirectory() {
-        if(!RemoteTestConfiguration.isHDFSAccessible())
+        if (!RemoteTestConfiguration.isHDFSAccessible())
             return;
-        IFileSystem fs = HDFSAccessor.getFileSystem( );
-          String myHome = fs.pwd();
+        IFileSystem fs = HDFSAccessor.getFileSystem();
+        String myHome = fs.pwd();
         String newDir = myHome + "/foo";
         if (!fs.exists(newDir))
             fs.guaranteeDirectory(newDir);
@@ -121,20 +120,20 @@ public class FTPWrapperTest {
         fs.guaranteeDirectory(newDir);
         fs.writeToFileSystem(newDir + "/mary.txt", TEST_CONTENT);
 
-        String[] files =  fs.ls(newDir);
-        Assert.assertEquals(1,files.length );
-        Assert.assertEquals(files[0],"mary.txt" );
+        String[] files = fs.ls(newDir);
+        Assert.assertEquals(1, files.length);
+        Assert.assertEquals(files[0], "mary.txt");
         fs.expunge(newDir);
         Assert.assertFalse(fs.exists(newDir));
 
 
-     }
+    }
 
-//    @Test
+    //    @Test
     public void testHDFSFileReadWrite() {
-        if(!RemoteTestConfiguration.isHDFSAccessible())
+        if (!RemoteTestConfiguration.isHDFSAccessible())
             return;
-        IFileSystem fs = HDFSAccessor.getFileSystem( );
+        IFileSystem fs = HDFSAccessor.getFileSystem();
         String myHome = fs.pwd();
         String newDir = myHome + "/mary.txt";
         if (fs.exists(newDir))
@@ -150,7 +149,7 @@ public class FTPWrapperTest {
         Assert.assertFalse(fs.exists(newDir));
         Assert.assertFalse(fs.exists(newDir));
 
-      }
+    }
 
     private FTPWrapper buildFTPWrapper() {
         // todo handle as preferences

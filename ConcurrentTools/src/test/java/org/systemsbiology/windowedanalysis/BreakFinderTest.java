@@ -1,7 +1,6 @@
 package org.systemsbiology.windowedanalysis;
 
 
-
 /**
  * org.systemsbiology.windowedanalysis.BreakFinderTest
  * User: steven

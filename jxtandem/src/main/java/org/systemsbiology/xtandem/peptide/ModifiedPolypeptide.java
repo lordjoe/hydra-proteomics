@@ -1,7 +1,7 @@
 package org.systemsbiology.xtandem.peptide;
 
 import com.lordjoe.utilities.*;
- import org.systemsbiology.xtandem.*;
+import org.systemsbiology.xtandem.*;
 
 import java.util.*;
 
@@ -48,8 +48,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
 
             return ret;
 
-        }
-        else
+        } else
             return pp;
     }
 
@@ -143,8 +142,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
                     XTandemUtilities.breakHere();
                 mods[charNumber] = mod;
                 i = index;
-            }
-            else {
+            } else {
                 lastChar = Character.toString(c);
                 charNumber++;
             }
@@ -253,6 +251,9 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         return ret;
     }
 
+
+    private static int totalAppliedModifications = 0;
+
     private static void applyPotentialModifications(IPolypeptide peptide, PeptideModification[] potantialModArray, Set<IPolypeptide> withPotentialMods, String sequence) {
         Set<IPolypeptide> newMods = new HashSet<IPolypeptide>();
         Set<IPolypeptide> currentMods = new HashSet<IPolypeptide>();
@@ -260,6 +261,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         for (int modNum = 0; modNum < getMaxPeptideModifications(); modNum++) {
             for (int i = 0; i < potantialModArray.length; i++) {
                 PeptideModification potentialMod = potantialModArray[i];
+                totalAppliedModifications++;
                 for (IPolypeptide pm : currentMods) {
                     applyModification(pm, potentialMod, newMods, sequence);
                 }
@@ -436,8 +438,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         if (peptide instanceof IModifiedPeptide) {
             IModifiedPeptide eptide = (IModifiedPeptide) peptide;
             mods = eptide.getModifications();
-        }
-        else {
+        } else {
             mods = new PeptideModification[sequence.length()];
         }
         if (mods[index] == pm)
@@ -445,6 +446,9 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         mods[index] = pm;
         ModifiedPolypeptide modifiedPolypeptide = new ModifiedPolypeptide(sequence, peptide.getMissedCleavages(), mods);
         modifiedPolypeptide.setContainedInProteins(peptide.getProteinPositions());
+
+        // this way hadoop will not kill the job for lack of progress
+        ProgressManager.showProgress();
         return modifiedPolypeptide;
 
     }
@@ -659,22 +663,22 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
 
     public String getModifiedSequence() {
         if (m_ModifiedString == null) {
-        StringBuilder sb = new StringBuilder();
-        String sequence = getSequence();
-        for (int i = 0; i < sequence.length(); i++) {
-            char c = sequence.charAt(i);
-            sb.append(c);
-            PeptideModification mod = m_SequenceModifications[i];
-            if (mod != null)
-                sb.append("[" + mod.getMassStepChange() + "]");
+            StringBuilder sb = new StringBuilder();
+            String sequence = getSequence();
+            for (int i = 0; i < sequence.length(); i++) {
+                char c = sequence.charAt(i);
+                sb.append(c);
+                PeptideModification mod = m_SequenceModifications[i];
+                if (mod != null)
+                    sb.append("[" + mod.getMassStepChange() + "]");
 
+
+            }
+            m_ModifiedString = sb.toString();
 
         }
-            m_ModifiedString =  sb.toString();
-
-         }
-         return m_ModifiedString;
-     }
+        return m_ModifiedString;
+    }
 
     public String getTotalModifiedSequence() {
         StringBuilder sb = new StringBuilder();
@@ -714,7 +718,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
                     sb.append(Integer.toString(i) + ":" + mod.toString());
                 }
             }
-            m_ModificationString =  sb.toString();
+            m_ModificationString = sb.toString();
 
         }
         return m_ModificationString;
@@ -750,7 +754,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        return toString().equals(o.toString()) ;
+        return toString().equals(o.toString());
     }
 
     @Override

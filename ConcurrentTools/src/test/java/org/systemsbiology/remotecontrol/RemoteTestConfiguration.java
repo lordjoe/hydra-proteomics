@@ -20,14 +20,13 @@ public class RemoteTestConfiguration {
             try {
                 new FTPWrapper(RemoteUtilities.getUser(), RemoteUtilities.getPassword(), RemoteUtilities.getHost());
                 ret = Boolean.TRUE;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 ret = Boolean.FALSE;
 
             }
             gConditionToAvailability.put(connStr, ret);
         }
         return ret;
-     }
+    }
 
 }
