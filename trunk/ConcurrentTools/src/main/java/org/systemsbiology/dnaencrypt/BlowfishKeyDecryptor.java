@@ -11,29 +11,29 @@ import java.util.*;
  * User: steven
  * Date: Jun 1, 2010
  */
-public class BlowfishKeyDecryptor extends AbstractDNAEncryptor
-{
+public class BlowfishKeyDecryptor extends AbstractDNAEncryptor {
     public static final BlowfishKeyDecryptor[] EMPTY_ARRAY = {};
 
     private static String BLOWSFISH_KEY = "The secret of life";
     public static final Random RND = new Random();
+
     /**
      * make a random key
+     *
      * @return
      */
-    public static String makeKey()
-    {
+    public static String makeKey() {
         byte[] values = new byte[Encrypt.CYPHER_LENGTH]; // 2 bytes per char
         for (int i = 0; i < values.length; i++) {
-             RND.nextBytes(values);
+            RND.nextBytes(values);
 
         }
         return Base64.encode(values);
     }
 
     private static byte[] decryptDeclaredKey(String theKey) {
-       byte[] bytes =  Base64.decode(theKey);
-       byte[] ret = Encrypt.decryptBytes(bytes, BLOWSFISH_KEY);
+        byte[] bytes = Base64.decode(theKey);
+        byte[] ret = Encrypt.decryptBytes(bytes, BLOWSFISH_KEY);
         return ret;
     }
 

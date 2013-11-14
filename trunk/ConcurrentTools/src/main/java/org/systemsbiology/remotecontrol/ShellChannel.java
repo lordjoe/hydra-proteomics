@@ -13,15 +13,13 @@ import java.util.*;
 public class ShellChannel extends AbstractChannel {
     public static final ShellChannel[] EMPTY_ARRAY = {};
 
-    
 
     public ShellChannel(final RemoteSession pSession) {
         super(pSession);
     }
 
-    public Channel getChannel()
-    {
-        return (ChannelSftp)getBaseChannel();
+    public Channel getChannel() {
+        return (ChannelSftp) getBaseChannel();
     }
 
     @Override
@@ -34,19 +32,16 @@ public class ShellChannel extends AbstractChannel {
         return "shell";
     }
 
-    public String execCommand(String command)   {
+    public String execCommand(String command) {
         final Channel channel = getChannel();
         command += "\n";
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-   //     byteArrayOutputStream.
-    //    channel.setExtOutputStream(byteArrayOutputStream,true);
+        //     byteArrayOutputStream.
+        //    channel.setExtOutputStream(byteArrayOutputStream,true);
 
-    //    channel.setInputStream(new ByteArrayInputStream());
+        //    channel.setInputStream(new ByteArrayInputStream());
         throw new UnsupportedOperationException("Fix This"); // ToDo
     }
-
-
-
 
 
 }

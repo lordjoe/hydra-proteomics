@@ -14,10 +14,8 @@ import org.apache.hadoop.mapreduce.lib.input.*;
  * <p/>
  * Maps each observed word in a line to a (filename@offset) string.
  */
-public class LineIndexMapper extends Mapper<LongWritable, Text, Text, Text>
-{
-    public LineIndexMapper()
-    {
+public class LineIndexMapper extends Mapper<LongWritable, Text, Text, Text> {
+    public LineIndexMapper() {
     }
 
     private static final Text OUT_KEY = new Text();
@@ -26,8 +24,7 @@ public class LineIndexMapper extends Mapper<LongWritable, Text, Text, Text>
     protected void map(
             LongWritable key,
             Text value,
-            Context context) throws IOException, InterruptedException
-    {
+            Context context) throws IOException, InterruptedException {
         FileSplit fileSplit = (FileSplit) context.getInputSplit();
         String fileName = fileSplit.getPath().getName();
         OUT_KEY.set(fileName + "@" + key.get());
@@ -43,8 +40,7 @@ public class LineIndexMapper extends Mapper<LongWritable, Text, Text, Text>
     }
 
 
-    public static String cleanWord(String s)
-    {
+    public static String cleanWord(String s) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -62,10 +58,9 @@ public class LineIndexMapper extends Mapper<LongWritable, Text, Text, Text>
      *
      * @throws java.io.IOException if an I/O error occurs
      */
-    public void close() throws IOException
-    {
+    public void close() throws IOException {
     }
 
- 
+
 }
 

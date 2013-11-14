@@ -23,8 +23,7 @@ public abstract class AbstractChannel {
             RemoteSession session = getSession();
             Session session1 = session.getSession();
             return session1.openChannel(getChannelType());
-        }
-        catch (JSchException e) {
+        } catch (JSchException e) {
             throw new RuntimeException(e);
         }
     }
@@ -52,13 +51,11 @@ public abstract class AbstractChannel {
         if (pConnected) {
             try {
                 m_Channel.connect();
-            }
-            catch (JSchException e) {
+            } catch (JSchException e) {
                 throw new RuntimeException(e);
             }
             m_Connected = true;
-        }
-        else {
+        } else {
             m_Channel.disconnect();
             m_Connected = false;
 

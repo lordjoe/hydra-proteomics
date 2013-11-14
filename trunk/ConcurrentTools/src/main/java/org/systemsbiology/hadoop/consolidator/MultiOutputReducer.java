@@ -10,24 +10,23 @@ import java.util.*;
 
 /**
  * org.systemsbiology.hadoop.consolidator.MultiOutputReducer
- *    Copying Toms code with  MultiOutputReducer to test
+ * Copying Toms code with  MultiOutputReducer to test
+ *
  * @author Steve Lewis
  * @date Nov 9, 2010
  */
-public class MultiOutputReducer   extends  Reducer<Text,MapWritable,Text,MapWritable>
-{
+public class MultiOutputReducer extends Reducer<Text, MapWritable, Text, MapWritable> {
     public static MultiOutputReducer[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = MultiOutputReducer.class;
 
-         //! @note outFiles will equal null iff setup is not called. Currently, the only case for this is testing.
-         private MultipleOutputs m_OutFiles = null;
+    //! @note outFiles will equal null iff setup is not called. Currently, the only case for this is testing.
+    private MultipleOutputs m_OutFiles = null;
 
-         @Override
-         public void setup(Reducer.Context context) throws IOException
-         {
-             m_OutFiles = new MultipleOutputs((JobConf)context.getConfiguration());
-             writeFileHeaders(m_OutFiles);
-         }
+    @Override
+    public void setup(Reducer.Context context) throws IOException {
+        m_OutFiles = new MultipleOutputs((JobConf) context.getConfiguration());
+        writeFileHeaders(m_OutFiles);
+    }
 
     /**
      * This method is called once for each key. Most applications will define
@@ -37,8 +36,7 @@ public class MultiOutputReducer   extends  Reducer<Text,MapWritable,Text,MapWrit
     @Override
     protected void reduce(Text key, Iterable<MapWritable> values,
                           Context context)
-            throws IOException, InterruptedException
-    {
+            throws IOException, InterruptedException {
         super.reduce(key, values, context);
 
     }
@@ -216,13 +214,13 @@ public class MultiOutputReducer   extends  Reducer<Text,MapWritable,Text,MapWrit
 //             context.write(key, reducedResult);
 //         }
 
-         /**
-          * Helper methods of inner class MakeTilesReducer
-          */
-         @SuppressWarnings(value="unchecked")
-         private void writeTile(String tileKey, String rName, Integer startPos,
-                                Integer tileReads, Integer tileWindow)
-             throws IOException {
+    /**
+     * Helper methods of inner class MakeTilesReducer
+     */
+    @SuppressWarnings(value = "unchecked")
+    private void writeTile(String tileKey, String rName, Integer startPos,
+                           Integer tileReads, Integer tileWindow)
+            throws IOException {
 //
 //             OutputCollector tileCov = m_OutFiles.getCollector("tilecov", null);
 //             tileCov.collect(new Text(tileKey), new Text(tileReads.toString() + ","));
@@ -234,12 +232,12 @@ public class MultiOutputReducer   extends  Reducer<Text,MapWritable,Text,MapWrit
 //             // @note Gather these during serialization post-processing
 //             tile.collect(new Text(tileKey),
 //                     new Text("variableStep chrom=" + rName + " span=" + tileWindow.toString() + "\n"));
-         }
+    }
 
-         @SuppressWarnings(value="unchecked")
-         private void writeTile10(String tileKey, String rName, Integer startPos,
-                                  Integer tileReads, Integer tileWindow)
-             throws IOException {
+    @SuppressWarnings(value = "unchecked")
+    private void writeTile10(String tileKey, String rName, Integer startPos,
+                             Integer tileReads, Integer tileWindow)
+            throws IOException {
 
 //             OutputCollector tileCov = m_OutFiles.getCollector("tile10cov", null);
 //             tileCov.collect(new Text(tileKey), new Text(tileReads.toString() + ","));
@@ -251,39 +249,39 @@ public class MultiOutputReducer   extends  Reducer<Text,MapWritable,Text,MapWrit
 //             // @note Gather these during serialization post-processing
 //             tile.collect(new Text(tileKey),
 //                     new Text("variableStep chrom=" + rName + " span=" + tileWindow.toString() + "\n"));
-         }
+    }
 
-         @SuppressWarnings(value="unchecked")
-         private void writeWig(String tileKey, String rName, Integer startPos, Double rangeReads,
-                                      Double rangeSameChrTransCount, Double rangeDiffChrTransCount,
-                                      Integer tileWindow) throws IOException {
+    @SuppressWarnings(value = "unchecked")
+    private void writeWig(String tileKey, String rName, Integer startPos, Double rangeReads,
+                          Double rangeSameChrTransCount, Double rangeDiffChrTransCount,
+                          Integer tileWindow) throws IOException {
 
-             Double sameRangeProb = rangeSameChrTransCount / rangeReads;
-             Double diffRangeProb = rangeDiffChrTransCount / rangeReads;
+        Double sameRangeProb = rangeSameChrTransCount / rangeReads;
+        Double diffRangeProb = rangeDiffChrTransCount / rangeReads;
 
-             //! @note Below is a generalization of the original logic defining each wig line
-             OutputCollector wigSame = m_OutFiles.getCollector("wigsame", null);
-             wigSame.collect(new Text(tileKey),
-                     new Text(Integer.toString(startPos) +
-                             "\t" + sameRangeProb.toString() + "\n"));
+        //! @note Below is a generalization of the original logic defining each wig line
+        OutputCollector wigSame = m_OutFiles.getCollector("wigsame", null);
+        wigSame.collect(new Text(tileKey),
+                new Text(Integer.toString(startPos) +
+                        "\t" + sameRangeProb.toString() + "\n"));
 
-             // @note Gather these during serialization post-processing
-             wigSame.collect(new Text(tileKey),
-                     new Text("variableStep chrom=" + rName + " span=" + tileWindow.toString() + "\n"));
+        // @note Gather these during serialization post-processing
+        wigSame.collect(new Text(tileKey),
+                new Text("variableStep chrom=" + rName + " span=" + tileWindow.toString() + "\n"));
 
-             OutputCollector wigDiff = m_OutFiles.getCollector("wigdiff", null);
-             wigDiff.collect(new Text(tileKey), new Text(Integer.toString(startPos) +
-                     "\t" + diffRangeProb.toString() + "\n"));
+        OutputCollector wigDiff = m_OutFiles.getCollector("wigdiff", null);
+        wigDiff.collect(new Text(tileKey), new Text(Integer.toString(startPos) +
+                "\t" + diffRangeProb.toString() + "\n"));
 
-             // @note Gather these during serialization post-processing
-             wigDiff.collect(new Text(tileKey),
-                     new Text("variableStep chrom=" + rName + " span=" + tileWindow.toString() + "\n"));
-         }
+        // @note Gather these during serialization post-processing
+        wigDiff.collect(new Text(tileKey),
+                new Text("variableStep chrom=" + rName + " span=" + tileWindow.toString() + "\n"));
+    }
 
-         @SuppressWarnings(value="unchecked")
-         private void outputStatTiles(String tileKey, String rName, Integer binStart, String mRnm, Integer bin,
-                                      String type, Integer count, Double score, Double tileReads)
-             throws IOException {
+    @SuppressWarnings(value = "unchecked")
+    private void outputStatTiles(String tileKey, String rName, Integer binStart, String mRnm, Integer bin,
+                                 String type, Integer count, Double score, Double tileReads)
+            throws IOException {
 
 //             // Configuration variables
 //             final Integer tileWindow                    = (Integer)localConfMap.get("tileWindow");
@@ -341,15 +339,16 @@ public class MultiOutputReducer   extends  Reducer<Text,MapWritable,Text,MapWrit
 //
 //                 }
 //             }
-         }
+    }
 
-         /**
-          * Write headers for files that require it
-          * @param mo Supplied MultipleOutputs class object
-          * @throws IOException Thrown when an OutputCollector lookup fails
-          */
-         @SuppressWarnings(value="unchecked")
-         private static void writeFileHeaders(MultipleOutputs mo) throws IOException {
+    /**
+     * Write headers for files that require it
+     *
+     * @param mo Supplied MultipleOutputs class object
+     * @throws IOException Thrown when an OutputCollector lookup fails
+     */
+    @SuppressWarnings(value = "unchecked")
+    private static void writeFileHeaders(MultipleOutputs mo) throws IOException {
 
 //             final Integer tileWindow = (Integer)localConfMap.get("tileWindow");
 //             final Boolean saveSkippedInfo = (Boolean)localConfMap.get("saveSkippedInfo");
@@ -409,12 +408,12 @@ public class MultiOutputReducer   extends  Reducer<Text,MapWritable,Text,MapWrit
 //                 mo.getCollector("skipped", null).collect(new Text("header"),
 //                         new Text(StringUtils.join(headerSkippedReads) + "\n"));
 //             }
-         }
+    }
 
-         @Override
-         public void cleanup(Reducer.Context context) throws IOException {
-             m_OutFiles.close();
-         }
-     }
+    @Override
+    public void cleanup(Reducer.Context context) throws IOException {
+        m_OutFiles.close();
+    }
+}
 
 

@@ -24,22 +24,19 @@ import org.apache.hadoop.mapred.Reporter;
  * @author Steve Lewis
  * @date Jul 1, 2010
  */
-public class AverageWordLength
-{
+public class AverageWordLength {
     public static AverageWordLength[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = AverageWordLength.class;
 
     @SuppressWarnings("deprecation")
     public static class MapClass extends MapReduceBase implements
-            Mapper<LongWritable, Text, Text, IntWritable>
-    {
+            Mapper<LongWritable, Text, Text, IntWritable> {
 
         private IntWritable len = new IntWritable(1);
         private Text word = new Text();
 
         public void map(LongWritable key, Text value, OutputCollector<Text, IntWritable> output,
-                        Reporter reporter) throws IOException
-        {
+                        Reporter reporter) throws IOException {
             String line = value.toString();
             StringTokenizer itr = new StringTokenizer(line);
 
@@ -53,42 +50,35 @@ public class AverageWordLength
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public static class WordLenValue implements Writable
-    {
+    public static class WordLenValue implements Writable {
         private int m_Leangth;
         private int m_Count;
 
-        public int getLength()
-        {
+        public int getLength() {
             return m_Leangth;
         }
 
-        public int getCount()
-        {
+        public int getCount() {
             return m_Count;
         }
 
-        public void setLength(int v)
-        {
+        public void setLength(int v) {
             m_Leangth = v;
         }
 
         @SuppressWarnings("UnusedDeclaration")
-        public void setCount(int v)
-        {
+        public void setCount(int v) {
             m_Count = v;
         }
 
         @Override
-        public void readFields(DataInput in) throws IOException
-        {
+        public void readFields(DataInput in) throws IOException {
             m_Leangth = in.readInt();
             m_Count = in.readInt();
         }
 
         @Override
-        public void write(DataOutput out) throws IOException
-        {
+        public void write(DataOutput out) throws IOException {
             out.writeInt(m_Leangth);
             out.writeInt(m_Count);
 
@@ -97,15 +87,13 @@ public class AverageWordLength
 
     @SuppressWarnings("deprecation")
     public static class Reduce extends MapReduceBase implements
-            Reducer<Text, IntWritable, Text, FloatWritable>
-    {
+            Reducer<Text, IntWritable, Text, FloatWritable> {
 
         private FloatWritable avg = new FloatWritable();
 
         public void reduce(Text key, Iterator<IntWritable> values,
                            OutputCollector<Text, FloatWritable> output, Reporter reporter)
-                throws IOException
-        {
+                throws IOException {
             int sum = 0;
             int cnt = 0;
             while (values.hasNext()) {
@@ -118,8 +106,7 @@ public class AverageWordLength
         }
     }
 
-    public static void main(String[] args) throws Exception
-    {
+    public static void main(String[] args) throws Exception {
         if (args.length != 2) {
             System.out.println("usage: [input] [output]");
             System.exit(-1);

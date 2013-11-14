@@ -64,6 +64,12 @@ public abstract class AbstractTandemReducer extends Reducer<Text, Text, Text, Te
     protected void setup(final Context context) throws IOException, InterruptedException {
         super.setup(context);
         m_Context = context;
+
+
+        // This allows non-hadoop code to report progress
+        ProgressManager.INSTANCE.addProgressHandler(new HadoopProgressManager(context));
+
+
         // read configuration lines
         Configuration conf = context.getConfiguration();
 

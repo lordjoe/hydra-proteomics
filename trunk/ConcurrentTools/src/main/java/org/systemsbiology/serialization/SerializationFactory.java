@@ -7,8 +7,7 @@ import java.util.*;
  * written by Steve Lewis
  * on Apr 9, 2010
  */
-public class SerializationFactory implements ISerializerFactory
-{
+public class SerializationFactory implements ISerializerFactory {
     public static final SerializationFactory[] EMPTY_ARRAY = {};
     public static final Class THIS_CLASS = SerializationFactory.class;
 
@@ -16,13 +15,13 @@ public class SerializationFactory implements ISerializerFactory
     private static ISerializerFactory gInstance;
 
     public static synchronized ISerializerFactory getInstance() {
-        if(gInstance == null)
-              gInstance = new SerializationFactory(); // default implementation
+        if (gInstance == null)
+            gInstance = new SerializationFactory(); // default implementation
         return gInstance;
     }
 
     public static synchronized void setInstance(ISerializerFactory pInstance) {
-        if(gInstance != null)
+        if (gInstance != null)
             throw new UnsupportedOperationException("Can only set singleton once");
         gInstance = pInstance;
     }
@@ -52,20 +51,19 @@ public class SerializationFactory implements ISerializerFactory
     }
 
     public Object deserialize(String name) {
-         ISerializer ser = getMatchingSerializer(name);
-        if(ser != null)
+        ISerializer ser = getMatchingSerializer(name);
+        if (ser != null)
             return ser.Deserialize(name);
         else
             return null;
     }
 
-    public boolean serialize(String name,Object target) {
-         ISerializer ser = getMatchingSerializer(name);
-        if(ser != null) {
-             ser.SerializeTo(target,name);
+    public boolean serialize(String name, Object target) {
+        ISerializer ser = getMatchingSerializer(name);
+        if (ser != null) {
+            ser.SerializeTo(target, name);
             return true;
-        }
-         else
+        } else
             return false;
     }
- }
+}

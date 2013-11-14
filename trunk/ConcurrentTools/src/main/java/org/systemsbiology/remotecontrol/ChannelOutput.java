@@ -49,15 +49,15 @@ public class ChannelOutput {
                     if (listeners != null && !listeners.isEmpty()) {
                         String s = new String(bsout.toByteArray());
 
-                        if(!OK_RSA && s.contains(CACHE_REQUEST)) {
+                        if (!OK_RSA && s.contains(CACHE_REQUEST)) {
                             psout.println("yes");
                             OK_RSA = true;
                         }
 
-                        if(s.length() > inputLength) {
+                        if (s.length() > inputLength) {
                             String newRead = s.substring(inputLength);
                             inputLength = newRead.length();
-                            for(IOutputListener l : listeners)
+                            for (IOutputListener l : listeners)
                                 l.onOutput(newRead);
                         }
                     }
@@ -66,14 +66,14 @@ public class ChannelOutput {
                 if (readStream(bserr, err)) {
                     dataRead = true;
                     if (listeners != null && !listeners.isEmpty()) {
-                          String s = new String(bserr.toByteArray());
-                          if(s.length() > errorLength) {
-                              String newRead = s.substring(errorLength);
-                              errorLength = s.length();
-                              for(IOutputListener l : listeners)
-                                  l.onErrorOutput(newRead);
-                          }
-                      }
+                        String s = new String(bserr.toByteArray());
+                        if (s.length() > errorLength) {
+                            String newRead = s.substring(errorLength);
+                            errorLength = s.length();
+                            for (IOutputListener l : listeners)
+                                l.onErrorOutput(newRead);
+                        }
+                    }
 
                 }
                 if (!dataRead)
@@ -90,8 +90,7 @@ public class ChannelOutput {
 //            }
 
             return m_Status;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -21,6 +21,7 @@ public interface IHadoopController {
 
     /**
      * true is success
+     *
      * @param job
      * @return
      */
@@ -35,7 +36,7 @@ public interface IHadoopController {
 
     @SuppressWarnings("UnusedDeclaration")
     public void copyToHDFS(File localFile, String hdfsdest);
- 
+
     public void copyDirectoryToHDFS(String src, String hdfsdest);
 
     @SuppressWarnings("UnusedDeclaration")
@@ -65,7 +66,7 @@ public interface IHadoopController {
 
     public void uploadFile(String fname, String dst);
 
-   public  void uploadFile(File fname, String dst);
+    public void uploadFile(File fname, String dst);
 
     @SuppressWarnings("UnusedDeclaration")
     public boolean isSingleCore();
@@ -74,4 +75,4 @@ public interface IHadoopController {
      * shut down all running sessions
      */
     public void disconnect();
- }
+}

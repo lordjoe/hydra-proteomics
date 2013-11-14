@@ -26,7 +26,7 @@ public class KeyValueXMLTagInputFormat extends XMLTagInputFormat {
 
     @Override
     public RecordReader<Text, Text> createRecordReader(InputSplit split,
-                       TaskAttemptContext context) {
+                                                       TaskAttemptContext context) {
         return new XMLTagReaderWithKey();
     }
 
@@ -37,13 +37,13 @@ public class KeyValueXMLTagInputFormat extends XMLTagInputFormat {
      * Value is the entire file
      * Key is the file name
      */
-    public   class XMLTagReaderWithKey extends RecordReader<Text, Text> {
+    public class XMLTagReaderWithKey extends RecordReader<Text, Text> {
 
         private CompressionCodecFactory compressionCodecs = null;
         private long start;
         private long end;
         private long current;
-              private LineReader in;
+        private LineReader in;
         private Text key = null;
         private Text value = null;
         private Text buffer = new Text();
@@ -61,14 +61,13 @@ public class KeyValueXMLTagInputFormat extends XMLTagInputFormat {
             // open the file and seek to the start of the split
             FileSystem fs = file.getFileSystem(job);
             FSDataInputStream fileIn = fs.open(split.getPath());
-            if(start > 0)
-                   fileIn.seek(start);
+            if (start > 0)
+                fileIn.seek(start);
 
             if (codec != null) {
                 in = new LineReader(codec.createInputStream(fileIn), job);
                 end = Long.MAX_VALUE;
-            }
-            else {
+            } else {
                 in = new LineReader(fileIn, job);
             }
             current = start;
@@ -84,7 +83,8 @@ public class KeyValueXMLTagInputFormat extends XMLTagInputFormat {
 
         /**
          * look for a <scan tag then read until it closes
-         * @return   true if there is data
+         *
+         * @return true if there is data
          * @throws java.io.IOException
          */
         public boolean nextKeyValue() throws IOException {
@@ -93,38 +93,37 @@ public class KeyValueXMLTagInputFormat extends XMLTagInputFormat {
             newSize = in.readLine(buffer);
             String str = null;
             while (newSize > 0) {
-                 str = buffer.toString();
-                 if(str.contains(getStartTag()))
-                     break;
+                str = buffer.toString();
+                if (str.contains(getStartTag()))
+                    break;
                 newSize = in.readLine(buffer);
-             }
-            if(newSize == 0)   {
+            }
+            if (newSize == 0) {
                 key = null;
-                 value = null;
-                 return false;
+                value = null;
+                return false;
 
             }
-             while (newSize > 0) {
+            while (newSize > 0) {
                 str = buffer.toString();
-                 sb.append(str);
-                 sb.append("\n");
-                 if(str.contains(getEndTag()))
-                     break;
-                 newSize = in.readLine(buffer);
-             }
+                sb.append(str);
+                sb.append("\n");
+                if (str.contains(getEndTag()))
+                    break;
+                newSize = in.readLine(buffer);
+            }
 
             String s = sb.toString();
             // up to tab is the key
             int index = s.indexOf("\t");
-            key.set(s.substring(0,index));
-            value.set(s.substring( index + 1));
+            key.set(s.substring(0, index));
+            value.set(s.substring(index + 1));
 
             if (sb.length() == 0) {
                 key = null;
                 value = null;
                 return false;
-            }
-            else {
+            } else {
                 return true;
             }
         }
@@ -139,15 +138,14 @@ public class KeyValueXMLTagInputFormat extends XMLTagInputFormat {
             return value;
         }
 
-           /**
-          * Get the progress within the split
-          */
-         public float getProgress() {
-             long totalBytes = end - start ;
-             long totalhandled = current -  start ;
-              return ((float)totalhandled) / totalBytes;
-         }
-
+        /**
+         * Get the progress within the split
+         */
+        public float getProgress() {
+            long totalBytes = end - start;
+            long totalhandled = current - start;
+            return ((float) totalhandled) / totalBytes;
+        }
 
 
         public synchronized void close() throws IOException {

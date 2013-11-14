@@ -182,7 +182,7 @@ public class RemoteUtilities {
         if (g_DefaultPath == null)
             g_DefaultPath = getProperty(DEFAULT_PATH_STRING);
         return g_DefaultPath;
-     }
+    }
 
     public static void setDefaultPath(String defaultPath) {
         g_DefaultPath = defaultPath;

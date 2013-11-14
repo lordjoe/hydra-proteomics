@@ -9,12 +9,12 @@ import java.util.*;
  */
 public interface IOutputListener {
 
-    public static final IOutputListener[] DEFAULT_ARRAY  = { CommandOutputLogger.INSTANCE };
-    public static final List<IOutputListener> DEFAULT_LISTENERS = new ArrayList<IOutputListener>(Arrays.asList( DEFAULT_ARRAY ));
+    public static final IOutputListener[] DEFAULT_ARRAY = {CommandOutputLogger.INSTANCE};
+    public static final List<IOutputListener> DEFAULT_LISTENERS = new ArrayList<IOutputListener>(Arrays.asList(DEFAULT_ARRAY));
 
     public static final IOutputListener[] EMPTY_ARRAY = {};
 
-    public void onCompletion(int status ,String out);
+    public void onCompletion(int status, String out);
 
     public void onOutput(String out);
 

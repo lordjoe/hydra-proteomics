@@ -31,9 +31,8 @@ public class JUnitUtilities {
         if (f.exists())
             throw new IllegalStateException("cannot overwrite file " + resource);
         try {
-            FileUtilities.copyStream(is,new FileOutputStream(out));
-        }
-        catch (IOException e) {
+            FileUtilities.copyStream(is, new FileOutputStream(out));
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }

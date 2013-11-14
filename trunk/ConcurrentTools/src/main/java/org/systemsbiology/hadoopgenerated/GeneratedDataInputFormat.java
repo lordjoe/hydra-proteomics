@@ -15,12 +15,12 @@ import org.apache.hadoop.mapreduce.RecordReader;
 
 /**
  * org.systemsbiology.hadoopgenerated.GeneratedDataInputFormat
- *   see http://codedemigod.com/blog/?p=120
+ * see http://codedemigod.com/blog/?p=120
+ *
  * @author Steve Lewis
  * @date Oct 10, 2010
  */
-public class GeneratedDataInputFormat extends InputFormat<LongWritable, LongWritable>  
-{
+public class GeneratedDataInputFormat extends InputFormat<LongWritable, LongWritable> {
     public static GeneratedDataInputFormat[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = GeneratedDataInputFormat.class;
 
@@ -40,33 +40,30 @@ public class GeneratedDataInputFormat extends InputFormat<LongWritable, LongWrit
      */
     @Override
     public List<org.apache.hadoop.mapreduce.InputSplit> getSplits(JobContext context)
-            throws IOException, InterruptedException
-    {
-         int numSplits = 5;
+            throws IOException, InterruptedException {
+        int numSplits = 5;
 
         long startingNumber = 2; //from
-         long endingNumber = 265; // to, exclusive
+        long endingNumber = 265; // to, exclusive
 
-         long numbersInSplit = (long)Math.floor((endingNumber - startingNumber)/numSplits);
-         long startingNumberInSplit = startingNumber;
-         long endingNumberInSplit = startingNumberInSplit + numbersInSplit;
-         long remainderInLastSplit = (endingNumber - startingNumber) - numSplits*numbersInSplit;
+        long numbersInSplit = (long) Math.floor((endingNumber - startingNumber) / numSplits);
+        long startingNumberInSplit = startingNumber;
+        long endingNumberInSplit = startingNumberInSplit + numbersInSplit;
+        long remainderInLastSplit = (endingNumber - startingNumber) - numSplits * numbersInSplit;
 
-         ArrayList<InputSplit> splits = new ArrayList<InputSplit>(numSplits);
+        ArrayList<InputSplit> splits = new ArrayList<InputSplit>(numSplits);
 
-         for(int i = 0; i < numSplits - 1; i++)
-         {
-             splits.add(new GeneratedInputSplit(startingNumberInSplit, endingNumberInSplit));
-             startingNumberInSplit = endingNumberInSplit;
-             endingNumberInSplit = startingNumberInSplit + numbersInSplit;
-         }
+        for (int i = 0; i < numSplits - 1; i++) {
+            splits.add(new GeneratedInputSplit(startingNumberInSplit, endingNumberInSplit));
+            startingNumberInSplit = endingNumberInSplit;
+            endingNumberInSplit = startingNumberInSplit + numbersInSplit;
+        }
 
-         //add last split, with remainder if any
-         splits.add(new GeneratedInputSplit(startingNumberInSplit, endingNumberInSplit + remainderInLastSplit));
+        //add last split, with remainder if any
+        splits.add(new GeneratedInputSplit(startingNumberInSplit, endingNumberInSplit + remainderInLastSplit));
 
-         return splits;
-     }
-
+        return splits;
+    }
 
 
     /**
@@ -84,17 +81,14 @@ public class GeneratedDataInputFormat extends InputFormat<LongWritable, LongWrit
     public RecordReader<LongWritable, LongWritable> createRecordReader(
             org.apache.hadoop.mapreduce.InputSplit split,
             TaskAttemptContext context)
-            throws IOException, InterruptedException
-    {
-        return new GeneratedDataRecordReader((GeneratedInputSplit)split);
+            throws IOException, InterruptedException {
+        return new GeneratedDataRecordReader((GeneratedInputSplit) split);
     }
 
- @SuppressWarnings("UnusedDeclaration")
-    public RecordReader<LongWritable, LongWritable> getRecordReader(InputSplit split, JobConf job, Reporter reporter)
-    {
-        return new GeneratedDataRecordReader((GeneratedInputSplit)split);
+    @SuppressWarnings("UnusedDeclaration")
+    public RecordReader<LongWritable, LongWritable> getRecordReader(InputSplit split, JobConf job, Reporter reporter) {
+        return new GeneratedDataRecordReader((GeneratedInputSplit) split);
     }
-
 
 
 }

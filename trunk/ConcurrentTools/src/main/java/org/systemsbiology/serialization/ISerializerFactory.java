@@ -5,8 +5,7 @@ package org.systemsbiology.serialization;
  * written by Steve Lewis
  * on Apr 9, 2010
  */
-public interface ISerializerFactory
-{
+public interface ISerializerFactory {
     public static final ISerializerFactory[] EMPTY_ARRAY = {};
     public static final Class THIS_CLASS = ISerializerFactory.class;
 
@@ -17,5 +16,5 @@ public interface ISerializerFactory
 
     public Object deserialize(String name);
 
-    public boolean serialize(String name,Object target);
+    public boolean serialize(String name, Object target);
 }

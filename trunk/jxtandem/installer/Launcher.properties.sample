@@ -117,7 +117,7 @@ DEFINE_org.systemsbiology.jxtandem.ModifiedPolypeptide.MaxPeptideModifications=6
 # algorithms
 #DEFINE_org.systemsbiology.algorithm=org.systemsbiology.xtandem.TandemKScoringAlgorithm
 
-# define thios is yes for large numbers of miodifications
+# define this is yes for large numbers of miodifications
 # it causes each protein to be a different map job
 #DEFINE_org.systemsbiology.useSingleFastaItemSplit=yes
 

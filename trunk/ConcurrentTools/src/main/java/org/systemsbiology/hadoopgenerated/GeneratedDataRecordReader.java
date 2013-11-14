@@ -11,8 +11,7 @@ import java.io.*;
  * @author Steve Lewis
  * @date Oct 10, 2010
  */
-public class GeneratedDataRecordReader extends RecordReader<LongWritable, LongWritable>
-{
+public class GeneratedDataRecordReader extends RecordReader<LongWritable, LongWritable> {
     public static GeneratedDataRecordReader[] EMPTY_ARRAY = {};
     public static Class THIS_CLASS = GeneratedDataRecordReader.class;
 
@@ -20,45 +19,36 @@ public class GeneratedDataRecordReader extends RecordReader<LongWritable, LongWr
     private long m_Index;
     private long m_Start;
 
-    public GeneratedDataRecordReader(GeneratedInputSplit split)
-    {
+    public GeneratedDataRecordReader(GeneratedInputSplit split) {
         this.m_End = split.getEndNum();
         this.m_Index = split.getStartNum(); //index at starting number of split
         this.m_Start = split.getStartNum();
     }
 
 
-    public void close(){}
+    public void close() {
+    }
 
-    public float getProgress()
-    {
-        if(this.m_Index  == this.m_End)
-        {
+    public float getProgress() {
+        if (this.m_Index == this.m_End) {
             return 0.0f;
-        }
-        else
-        {
-            return Math.min(1.0f, (this.m_Index - this.m_Start) / (float)(this.m_End - this.m_Start));
+        } else {
+            return Math.min(1.0f, (this.m_Index - this.m_Start) / (float) (this.m_End - this.m_Start));
         }
     }
 
-    public long getPos()
-    {
+    public long getPos() {
         return this.m_End - this.m_Index;
     }
 
-    public boolean next(LongWritable key, LongWritable value)
-    {
-        if(this.m_Index < this.m_End)
-        {
+    public boolean next(LongWritable key, LongWritable value) {
+        if (this.m_Index < this.m_End) {
             key.set(this.m_Index);
             value.set(this.m_Index);
             this.m_Index++;
 
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -73,9 +63,8 @@ public class GeneratedDataRecordReader extends RecordReader<LongWritable, LongWr
      */
     @Override
     public void initialize(InputSplit split, TaskAttemptContext context)
-            throws IOException, InterruptedException
-    {
-    //    if (true) throw new UnsupportedOperationException("Fix This");
+            throws IOException, InterruptedException {
+        //    if (true) throw new UnsupportedOperationException("Fix This");
 
     }
 
@@ -87,16 +76,12 @@ public class GeneratedDataRecordReader extends RecordReader<LongWritable, LongWr
      * @throws InterruptedException
      */
     @Override
-    public boolean nextKeyValue() throws IOException, InterruptedException
-    {
-        if(this.m_Index < this.m_End)
-        {
-             this.m_Index++;
+    public boolean nextKeyValue() throws IOException, InterruptedException {
+        if (this.m_Index < this.m_End) {
+            this.m_Index++;
 
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -109,8 +94,7 @@ public class GeneratedDataRecordReader extends RecordReader<LongWritable, LongWr
      * @throws InterruptedException
      */
     @Override
-    public LongWritable getCurrentKey() throws IOException, InterruptedException
-    {
+    public LongWritable getCurrentKey() throws IOException, InterruptedException {
         return new LongWritable(m_Index - 1);
     }
 
@@ -122,8 +106,7 @@ public class GeneratedDataRecordReader extends RecordReader<LongWritable, LongWr
      * @throws InterruptedException
      */
     @Override
-    public LongWritable getCurrentValue() throws IOException, InterruptedException
-    {
+    public LongWritable getCurrentValue() throws IOException, InterruptedException {
         return new LongWritable(m_Index - 1);
-     }
+    }
 }

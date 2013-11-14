@@ -7,15 +7,14 @@ import org.junit.*;
  * written by Steve Lewis
  * on Apr 16, 2010
  */
-public class GeneTest
-{
+public class GeneTest {
     public static final GeneTest[] EMPTY_ARRAY = {};
     public static final Class THIS_CLASS = GeneTest.class;
 
 
     @Test
     public void testGene() {
-        
+
     }
 
 

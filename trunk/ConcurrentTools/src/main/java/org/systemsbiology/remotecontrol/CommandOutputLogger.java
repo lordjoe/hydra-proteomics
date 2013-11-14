@@ -18,7 +18,7 @@ public class CommandOutputLogger implements IOutputListener {
 
     @Override
     public void onCompletion(final int status, final String out) {
-        if(status == 0)
+        if (status == 0)
             System.out.println(out);
         else
             System.err.println(out);

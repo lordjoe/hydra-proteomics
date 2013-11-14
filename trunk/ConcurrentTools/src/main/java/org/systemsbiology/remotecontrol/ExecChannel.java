@@ -39,13 +39,12 @@ public class ExecChannel extends AbstractChannel {
             ChannelExec channel = getExecChannel();
             ChannelOutput out = new ChannelOutput(this);
             channel.setCommand(command);
-              int answer = out.runUntilEnd(listeners);
-            if(answer != 0)
+            int answer = out.runUntilEnd(listeners);
+            if (answer != 0)
                 return out.getErrors();
             return out.getOutput();
 
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
 
@@ -72,8 +71,7 @@ public class ExecChannel extends AbstractChannel {
             String command = "C0644 " + filesize + " ";
             if (lfile.lastIndexOf('/') > 0) {
                 command += lfile.substring(lfile.lastIndexOf('/') + 1);
-            }
-            else {
+            } else {
                 command += lfile;
             }
             command += "\n";
@@ -104,13 +102,11 @@ public class ExecChannel extends AbstractChannel {
 
             setConnected(false);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e);
             try {
                 if (fis != null) fis.close();
-            }
-            catch (Exception ignored) {
+            } catch (Exception ignored) {
             }
         }
     }

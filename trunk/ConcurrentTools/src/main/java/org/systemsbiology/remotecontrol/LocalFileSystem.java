@@ -30,7 +30,7 @@ public class LocalFileSystem implements IFileSystem {
      */
     @Override
     public boolean isLocal() {
-          return true;
+        return true;
     }
 
     /**
@@ -45,10 +45,10 @@ public class LocalFileSystem implements IFileSystem {
 
     /**
      * some file systems simply delete emptydirectories - others allow them
+     *
      * @return
      */
-    public boolean isEmptyDirectoryAllowed()
-    {
+    public boolean isEmptyDirectoryAllowed() {
         return true;
     }
 
@@ -211,11 +211,10 @@ public class LocalFileSystem implements IFileSystem {
      * @return !null stream
      */
     @SuppressWarnings("UnusedDeclaration")
-     public InputStream openFileForRead(final String hdfsPath) {
+    public InputStream openFileForRead(final String hdfsPath) {
         try {
             return new FileInputStream(new File(hdfsPath));
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
 
         }
@@ -227,11 +226,10 @@ public class LocalFileSystem implements IFileSystem {
      * @param hdfsPath !null path -
      * @return !null stream
      */
-     public OutputStream openFileForWrite(final String hdfsPath) {
+    public OutputStream openFileForWrite(final String hdfsPath) {
         try {
             return new FileOutputStream(new File(hdfsPath));
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
 
         }
@@ -275,8 +273,7 @@ public class LocalFileSystem implements IFileSystem {
         try {
             OutputStream os = new FileOutputStream(file);
             FileUtilities.copyStream(content, os);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }

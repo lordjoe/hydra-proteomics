@@ -12,7 +12,7 @@ public class GenomePartitionKeyComparatorTest {
 
     @Test
     public void testX() {
-        
+
     }
 
 }

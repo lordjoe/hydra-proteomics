@@ -29,7 +29,7 @@ public class BinnerTests {
     }
 
     @Test
-    public void testLinearBinner() throws Exception{
+    public void testLinearBinner() throws Exception {
 
         IBinner binner = new LinearBinner(MAX_VALUE, BIN_SIZE);
 

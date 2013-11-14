@@ -1,4 +1,5 @@
 package org.systemsbiology.hadoopgenerated;
+
 import java.io.*;
 import java.util.*;
 
@@ -6,10 +7,10 @@ import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 
- import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
- import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.*;
 
@@ -21,41 +22,35 @@ import org.apache.hadoop.util.*;
  */
 
 
-public class GeneratedMapper
-{
+public class GeneratedMapper {
 
 
-    public static class Map extends Mapper<LongWritable,LongWritable,LongWritable, LongWritable>
-    {
+    public static class Map extends Mapper<LongWritable, LongWritable, LongWritable, LongWritable> {
         private final static LongWritable truePrime = new LongWritable(0);
         private final static LongWritable falsePrime = new LongWritable(1);
 
         @Override
         protected void map(LongWritable key, LongWritable value,
-                     Context context) throws IOException, InterruptedException {
+                           Context context) throws IOException, InterruptedException {
             long suspectPrimeValue = value.get();
             boolean isComposite = false;
 
-            for(long i = 2; i < suspectPrimeValue - 1 ; i++)
-            {
-                if(suspectPrimeValue % i == 0)
-                {
+            for (long i = 2; i < suspectPrimeValue - 1; i++) {
+                if (suspectPrimeValue % i == 0) {
                     context.write(falsePrime, value);
                     isComposite = true;
                     break;
                 }
             }
 
-            if(!isComposite)
-            {
+            if (!isComposite) {
                 context.write(truePrime, value);
             }
             System.out.println(suspectPrimeValue);
         }
     }
 
-    public static class Reduce extends Reducer<LongWritable, LongWritable, LongWritable, LongWritable>
-    {
+    public static class Reduce extends Reducer<LongWritable, LongWritable, LongWritable, LongWritable> {
 
         /**
          * This method is called once for each key. Most applications will define
@@ -65,18 +60,16 @@ public class GeneratedMapper
         @Override
         protected void reduce(LongWritable key, Iterable<LongWritable> values,
                               Context context)
-                throws IOException, InterruptedException
-        {
-            Iterator<LongWritable>   itr = values.iterator();
-            while(itr.hasNext())
-              {
-                  LongWritable vCheck = itr.next();
-                  context.write(key,vCheck);
-              }
+                throws IOException, InterruptedException {
+            Iterator<LongWritable> itr = values.iterator();
+            while (itr.hasNext()) {
+                LongWritable vCheck = itr.next();
+                context.write(key, vCheck);
+            }
 
         }
 
-  
+
     }
 
 //    public static void main(String[] args) throws Exception
@@ -125,14 +118,14 @@ public class GeneratedMapper
 
         // added Slewis
 
-         if(otherArgs.length > 1)    {
+        if (otherArgs.length > 1) {
             org.apache.hadoop.mapreduce.lib.input.FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
         }
 
         // make sure output does not exist
         int index = 1;
-         String s = "e:/foo";
-        while(new File(s).exists()) {
+        String s = "e:/foo";
+        while (new File(s).exists()) {
             s = s + index++;
         }
         Path outputDir = new Path(s);

@@ -21,8 +21,8 @@ public class RemoteLinuxFile {
     private Date m_ModificationDate;
 
     public RemoteLinuxFile(String s) {
-        while(s.contains("  "))
-            s = s.replace("  "," "); // drop double spaces
+        while (s.contains("  "))
+            s = s.replace("  ", " "); // drop double spaces
 
         String[] items = s.split(" ");
         String fileName = items[items.length - 1];
@@ -37,8 +37,7 @@ public class RemoteLinuxFile {
 
         try {
             m_Length = Long.parseLong(lenStr);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             m_Length = 0;
         }
 

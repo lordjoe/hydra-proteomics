@@ -38,15 +38,14 @@ public class HDFSFile {
 
         try {
             m_ModificationDate = new SimpleDateFormat(HADOOP_DATE_FORMAT).parse(dateStr + " " + timeStr);
-        }
-        catch (ParseException e) {
+        } catch (ParseException e) {
             throw new RuntimeException(e);
         }
 
-      //  throw new UnsupportedOperationException("Fix This"); // ToDo
+        //  throw new UnsupportedOperationException("Fix This"); // ToDo
     }
 
-    public HDFSFile(String fileName,long length,Date modificationDate) {
+    public HDFSFile(String fileName, long length, Date modificationDate) {
 
         String[] nameItems = parseFileName(fileName);
         m_Parent = nameItems[0];
@@ -58,22 +57,21 @@ public class HDFSFile {
 
         m_File = m_Length > 0;
 
-      //  throw new UnsupportedOperationException("Fix This"); // ToDo
+        //  throw new UnsupportedOperationException("Fix This"); // ToDo
     }
 
 
-    public boolean equivalent(File f)
-    {
+    public boolean equivalent(File f) {
         String n = getName();
-        if(!n.equals(f.getName()))
+        if (!n.equals(f.getName()))
             return false;
 
         long l = getLength();
-        if(l != f.length())
+        if (l != f.length())
             return false;
 
         long t = getModificationDate().getTime();
-        if(t != f.lastModified() )
+        if (t != f.lastModified())
             return false;
 
         return true;

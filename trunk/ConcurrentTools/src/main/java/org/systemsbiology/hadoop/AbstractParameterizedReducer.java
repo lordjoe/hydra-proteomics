@@ -19,8 +19,8 @@ public abstract class AbstractParameterizedReducer extends Reducer<Text, Text, T
 
 
     public static boolean isKeySpecial(String s) {
-       return s.startsWith("#");
-   }
+        return s.startsWith("#");
+    }
 
     public static final boolean WRITING_PARAMETERS = true;
 
@@ -71,6 +71,11 @@ public abstract class AbstractParameterizedReducer extends Reducer<Text, Text, T
     protected void setup(final Context context) throws IOException, InterruptedException {
         super.setup(context);
         m_Context = context;
+
+
+        // This allows non-hadoop code to report progress
+        ProgressManager.INSTANCE.addProgressHandler(new HadoopProgressManager(context));
+
         // read configuration lines
         //noinspection UnusedDeclaration
         Configuration conf = context.getConfiguration();
@@ -89,7 +94,6 @@ public abstract class AbstractParameterizedReducer extends Reducer<Text, Text, T
         // sneaky trick to extract the user
         String uname = System.getProperty("user.name");
         context.getCounter("Performance", "User-" + uname).increment(1);
-
 
 
 //        // sometimes we need to add a prefix to a file
@@ -112,7 +116,7 @@ public abstract class AbstractParameterizedReducer extends Reducer<Text, Text, T
         }
 
         JobSizeEnum jobSize = m_Application.getEnumParameter(HadoopUtilities.JOB_SIZE_PROPERTY, JobSizeEnum.class, JobSizeEnum.Medium);
-          HadoopUtilities.setHadoopProperty(HadoopUtilities.JOB_SIZE_PROPERTY, jobSize.toString());
+        HadoopUtilities.setHadoopProperty(HadoopUtilities.JOB_SIZE_PROPERTY, jobSize.toString());
 
 
     }
@@ -131,14 +135,13 @@ public abstract class AbstractParameterizedReducer extends Reducer<Text, Text, T
     }
 
 
-
     protected void writeKeyValue(String key, String value, Context context) {
         Text onlyKey = getOnlyKey();
         onlyKey.set(key);
         Text onlyValue = getOnlyValue();
         onlyValue.set(value);
         try {
-            context.write(onlyKey,onlyValue);
+            context.write(onlyKey, onlyValue);
         } catch (IOException e) {
             throw new UnsupportedOperationException(e);
         } catch (InterruptedException e) {

@@ -40,8 +40,7 @@ public class FTPWrapper implements IFileSystem {
             channel.connect();
             m_FtpChannel = (ChannelSftp) channel;
             setConnected(true);
-        }
-        catch (JSchException e) {
+        } catch (JSchException e) {
             setConnected(false);
             throw new RuntimeException(e);
 
@@ -49,14 +48,14 @@ public class FTPWrapper implements IFileSystem {
     }
 
     /**
-      * true of you aer running on a local disk
-      *
-      * @return as above
-      */
-     @Override
-     public boolean isLocal() {
-           return false;
-     }
+     * true of you aer running on a local disk
+     *
+     * @return as above
+     */
+    @Override
+    public boolean isLocal() {
+        return false;
+    }
 
     /**
      * shut down all running sessions   on local file systems
@@ -64,20 +63,19 @@ public class FTPWrapper implements IFileSystem {
      */
     @Override
     public void disconnect() {
-       setConnected(false);
+        setConnected(false);
 
     }
 
 
     /**
      * some file systems simply delete emptydirectories - others allow them
+     *
      * @return
      */
-    public boolean isEmptyDirectoryAllowed()
-    {
+    public boolean isEmptyDirectoryAllowed() {
         return true;
     }
-
 
 
     public boolean isConnected() {
@@ -98,7 +96,6 @@ public class FTPWrapper implements IFileSystem {
     }
 
 
-
     public void exit() {
         ChannelSftp channel = getFtpChannel();
         channel.exit();
@@ -110,8 +107,7 @@ public class FTPWrapper implements IFileSystem {
         ChannelSftp channel = getFtpChannel();
         try {
             channel.cd(path);
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -122,18 +118,17 @@ public class FTPWrapper implements IFileSystem {
         try {
             Vector ls = channel.ls(path);
             List<String> holder = new ArrayList<String>();
-            for (Iterator<ChannelSftp.LsEntry> iterator = ls.iterator(); iterator.hasNext();) {
+            for (Iterator<ChannelSftp.LsEntry> iterator = ls.iterator(); iterator.hasNext(); ) {
                 ChannelSftp.LsEntry next = iterator.next();
                 String s = next.getFilename();
-                if(".".equals(s) || "..".equals(s))
+                if (".".equals(s) || "..".equals(s))
                     continue;
                 holder.add(s);
             }
             String[] ret = new String[holder.size()];
             holder.toArray(ret);
             return ret;
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -143,8 +138,7 @@ public class FTPWrapper implements IFileSystem {
         ChannelSftp channel = getFtpChannel();
         try {
             channel.chown(values, path);
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -154,8 +148,7 @@ public class FTPWrapper implements IFileSystem {
         ChannelSftp channel = getFtpChannel();
         try {
             channel.chmod(values, path);
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -166,8 +159,7 @@ public class FTPWrapper implements IFileSystem {
         try {
             if (!exists(path))
                 channel.mkdir(path);
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -179,12 +171,10 @@ public class FTPWrapper implements IFileSystem {
         try {
             InputStream in = new FileInputStream(localPath);
             channel.put(in, hdfsPath);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
 
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -201,8 +191,7 @@ public class FTPWrapper implements IFileSystem {
     public void writeToFileSystem(final String hdfsPath, final File content) {
         try {
             writeToFileSystem(hdfsPath, new FileInputStream(content));
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
 
         }
@@ -219,8 +208,7 @@ public class FTPWrapper implements IFileSystem {
         OutputStream os = put(path);
         try {
             FileUtilities.copyStream(in, os);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -249,26 +237,24 @@ public class FTPWrapper implements IFileSystem {
                 for (int i = 0; i < strings.length; i++) {
 
                     String string = strings[i];
-                    if("..".equals(string))
-                           continue;
-                    if(".".equals(string))
-                           continue;
-                         expunge(hdfsPath + "/" + string);
+                    if ("..".equals(string))
+                        continue;
+                    if (".".equals(string))
+                        continue;
+                    expunge(hdfsPath + "/" + string);
                 }
                 strings = ls(hdfsPath);
             }
             try {
                 channel.rmdir(hdfsPath);
                 return true;
-            }
-            catch (SftpException e) {
+            } catch (SftpException e) {
                 throw new RuntimeException(e);
 
             }
         }
         throw new IllegalStateException("neven get here");
     }
-
 
 
     /**
@@ -283,8 +269,7 @@ public class FTPWrapper implements IFileSystem {
         try {
             SftpATTRS attrs = channel.lstat(hdfsPath);
             return attrs.getSize();
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -302,8 +287,7 @@ public class FTPWrapper implements IFileSystem {
         try {
             channel.rm(hdfsPath);
             return true;
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             return false;
 
         }
@@ -330,16 +314,15 @@ public class FTPWrapper implements IFileSystem {
      * @param path !null path - probably of an existing file
      * @return !null stream
      */
-     protected InputStream openFileForRead(final String path) {
+    protected InputStream openFileForRead(final String path) {
         ChannelSftp channel = getFtpChannel();
         try {
             return channel.get(path);
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
-     }
+    }
 
     /**
      * open a file for writing
@@ -349,14 +332,13 @@ public class FTPWrapper implements IFileSystem {
      */
 
     protected OutputStream openFileForWrite(final String path) {
-         ChannelSftp channel = getFtpChannel();
+        ChannelSftp channel = getFtpChannel();
         try {
             return channel.put(path);
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
         }
-     }
+    }
 
     /**
      * write text to a remote file system
@@ -382,8 +364,7 @@ public class FTPWrapper implements IFileSystem {
         try {
             InputStream is = channel.get(hdfsPath);
             return FileUtilities.readInFile(is);
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -394,8 +375,7 @@ public class FTPWrapper implements IFileSystem {
         try {
             channel.mkdir(path);
             return true;
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -404,8 +384,7 @@ public class FTPWrapper implements IFileSystem {
     public void put(String path, File in) {
         try {
             put(path, new FileInputStream(in));
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
 
         }
@@ -415,8 +394,7 @@ public class FTPWrapper implements IFileSystem {
         InputStream in = get(path);
         try {
             FileUtilities.copyStream(in, os);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -427,8 +405,7 @@ public class FTPWrapper implements IFileSystem {
         ChannelSftp channel = getFtpChannel();
         try {
             return channel.get(path);
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -438,8 +415,7 @@ public class FTPWrapper implements IFileSystem {
     public void get(File in, String path) {
         try {
             get(new FileOutputStream(in), path);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
 
         }
@@ -454,8 +430,7 @@ public class FTPWrapper implements IFileSystem {
         ChannelSftp channel = getFtpChannel();
         try {
             return channel.put(path);
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -466,8 +441,7 @@ public class FTPWrapper implements IFileSystem {
         ChannelSftp channel = getFtpChannel();
         try {
             return channel.pwd();
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -477,8 +451,7 @@ public class FTPWrapper implements IFileSystem {
         ChannelSftp channel = getFtpChannel();
         try {
             channel.rm(path);
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -489,8 +462,7 @@ public class FTPWrapper implements IFileSystem {
         try {
             SftpATTRS stat = channel.stat(path);
             return stat;
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -501,11 +473,10 @@ public class FTPWrapper implements IFileSystem {
         ChannelSftp channel = getFtpChannel();
         try {
             SftpATTRS stat = channel.stat(path);
-            if(stat != null)
+            if (stat != null)
                 return stat.isDir();
             return false;
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -515,11 +486,10 @@ public class FTPWrapper implements IFileSystem {
         ChannelSftp channel = getFtpChannel();
         try {
             SftpATTRS stat = channel.stat(path);
-            if(stat != null)
+            if (stat != null)
                 return !stat.isDir();
             return false;
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
@@ -530,8 +500,7 @@ public class FTPWrapper implements IFileSystem {
         try {
             SftpATTRS stat = channel.stat(path);
             return stat != null;
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             return false;
 
         }
@@ -543,14 +512,13 @@ public class FTPWrapper implements IFileSystem {
             SftpATTRS stat = channel.stat(path);
             int mTime = stat.getMTime();
             return mTime;
-        }
-        catch (SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
 
         }
     }
 
- 
+
     /**
      * dummy progress monitor
      */

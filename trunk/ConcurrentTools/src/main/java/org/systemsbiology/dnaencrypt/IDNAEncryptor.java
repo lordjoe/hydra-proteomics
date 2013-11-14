@@ -15,7 +15,8 @@ public interface IDNAEncryptor {
 
     /**
      * map a string assumed to be largely ACGT into an encrypted version
-     * @param s  !null input
+     *
+     * @param s !null input
      * @return !null output - this will be of the same length as the input
      */
     public String encrypt(String s);
@@ -23,7 +24,8 @@ public interface IDNAEncryptor {
     /**
      * map an encrypted string assumed to be largely ACGT into an decrypted version
      * NOTE for XOR versions of the algorithm this may repeat the operation
-     * @param s  !null input
+     *
+     * @param s !null input
      * @return !null output - this will be of the same length as the input
      */
     public String decrypt(String s);
@@ -33,7 +35,9 @@ public interface IDNAEncryptor {
      */
     public static class NullDecryptor implements IDNAEncryptor {
 
-        private NullDecryptor() {}
+        private NullDecryptor() {
+        }
+
         /**
          * map a string assumed to be largely ACGT into an encrypted version
          *

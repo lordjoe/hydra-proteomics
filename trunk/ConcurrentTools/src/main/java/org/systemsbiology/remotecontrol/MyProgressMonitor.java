@@ -10,8 +10,8 @@ import com.jcraft.jsch.*;
 
 
 public class MyProgressMonitor implements SftpProgressMonitor {
-    private long count ;
-    private long max ;
+    private long count;
+    private long max;
     private long percent = -1;
 
     public MyProgressMonitor(final long pMax) {
@@ -33,10 +33,10 @@ public class MyProgressMonitor implements SftpProgressMonitor {
             return true;
         }
         long newPercent = (this.count * 100) / mx;
-        if(percent == newPercent)
+        if (percent == newPercent)
             return true;
         percent = newPercent;
-        if(percent % 10 == 0)
+        if (percent % 10 == 0)
             System.out.println("pct done - " + percent);
         return true;
     }

@@ -23,8 +23,8 @@ import java.util.*;
  * SomeEmptyLocalDirectory
  * <p/>
  * Use the following command line on the cluster
- *    /home/www/hadoop/bin/hadoop  jar jobs/HadoopTest.jar  org.systemsbiology.hadoopgenerated.HadoopTest -DNumberKeys=100000000 -DNumberSplits=50 -DNUmberReducers=5 /user/howdah/NShot/output1
- *
+ * /home/www/hadoop/bin/hadoop  jar jobs/HadoopTest.jar  org.systemsbiology.hadoopgenerated.HadoopTest -DNumberKeys=100000000 -DNumberSplits=50 -DNUmberReducers=5 /user/howdah/NShot/output1
+ * <p/>
  * /home/www/hadoop/bin/hadoop  - path to hadoop
  * jar jobs/HadoopTest.jar     - path to jar
  * org.systemsbiology.hadoopgenerated.HadoopTest  - main class DO NOT CHANGE
@@ -129,12 +129,10 @@ public class HadoopTest extends Configured implements Tool {
                 valueStr = "null";
             value.set(valueStr);
             context.write(key, value);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
 
         }
@@ -220,8 +218,7 @@ public class HadoopTest extends Configured implements Tool {
                 if (!doneOK)
                     throw new IllegalStateException("could not delete file");
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
 
         }
@@ -453,7 +450,7 @@ public class HadoopTest extends Configured implements Tool {
      */
     @Override
     public int run(final String[] args) throws Exception {
-        Configuration conf =  getConf();
+        Configuration conf = getConf();
         //      conf.set(BamHadoopUtilities.CONF_KEY,"config/MotifLocator.config");
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 
@@ -500,10 +497,9 @@ public class HadoopTest extends Configured implements Tool {
         Path outputDir = new Path(athString);
 
 
-
         FileSystem fileSystem = outputDir.getFileSystem(conf);
-         expunge(outputDir,fileSystem);    // make sure thia does not exist
-         FileOutputFormat.setOutputPath(job, outputDir);
+        expunge(outputDir, fileSystem);    // make sure thia does not exist
+        FileOutputFormat.setOutputPath(job, outputDir);
 
 
         boolean ans = job.waitForCompletion(true);
@@ -512,34 +508,34 @@ public class HadoopTest extends Configured implements Tool {
     }
 
     /**
-      * kill a directory and all contents
-      * @param src
-      * @param fs
-      * @return
-      */
-         public static  boolean expunge(Path src,FileSystem fs) {
+     * kill a directory and all contents
+     *
+     * @param src
+     * @param fs
+     * @return
+     */
+    public static boolean expunge(Path src, FileSystem fs) {
 
 
-           try {
-               if (!fs.exists(src))
-                   return true;
-               // break these out
-               if (fs.getFileStatus(src).isDir()) {
-                   boolean doneOK = fs.delete(src, true);
-                   doneOK = !fs.exists(src);
-                   return doneOK;
-               }
-               if (fs.isFile(src)) {
-                   boolean doneOK = fs.delete(src, false);
-                   return doneOK;
-               }
-               throw new IllegalStateException("should be file of directory if it exists");
-           }
-           catch (IOException e) {
-               throw new RuntimeException(e);
-           }
+        try {
+            if (!fs.exists(src))
+                return true;
+            // break these out
+            if (fs.getFileStatus(src).isDir()) {
+                boolean doneOK = fs.delete(src, true);
+                doneOK = !fs.exists(src);
+                return doneOK;
+            }
+            if (fs.isFile(src)) {
+                boolean doneOK = fs.delete(src, false);
+                return doneOK;
+            }
+            throw new IllegalStateException("should be file of directory if it exists");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-       }
+    }
 
 
     /**
