@@ -31,6 +31,9 @@ public class PeptideBondDigester extends PeptideDigester {
 
     public static final String TRYPSIN_LOGIC = "[RK]|{P}";
 
+    // adding LysC Specificity: Serine protease that specifically hydrolyzes amide, ester, and peptide bonds at the carboxylic side of Lys
+    public static final String LYSC_LOGIC = "[K]";
+
     private int m_NumberMissedCleavages;
     private boolean m_SemiTryptic;
     private String m_LogicString;
@@ -47,8 +50,16 @@ public class PeptideBondDigester extends PeptideDigester {
                 )
 
             return new Trypsin();
+        if ("lysC".equalsIgnoreCase(logic)
+            //            || "[KR]|{P}".equalsIgnoreCase(logic)
+            //           ||  "[RK]|{P}".equalsIgnoreCase(logic)
+                )
+
+            return new LysineC();
         if (TRYPSIN_LOGIC.equalsIgnoreCase(logic))
            return new Trypsin();
+        if (LYSC_LOGIC.equalsIgnoreCase(logic))
+            return new LysineC();
 
         PeptideBondDigester ret = new PeptideBondDigester();
         ret.setLogic(logic);
@@ -422,6 +433,33 @@ public class PeptideBondDigester extends PeptideDigester {
                 case 'R':
                     return true;
                 case 'K':
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+    }
+
+    /**
+     * for speed and because it is the most common case the logic for trypsin is
+     * hard coded
+     */
+    public static class LysineC extends PeptideBondDigester {
+
+        public LysineC() {
+            setLogic("[K]");
+        }
+
+        public LysineC(int numberMissed) {
+            this();
+            setNumberMissedCleavages(numberMissed);
+        }
+
+        @Override
+        protected boolean canCleave(final char nTerminal, final char cterminal) {
+              switch (nTerminal) {
+                 case 'K':
                     return true;
                 default:
                     return false;
