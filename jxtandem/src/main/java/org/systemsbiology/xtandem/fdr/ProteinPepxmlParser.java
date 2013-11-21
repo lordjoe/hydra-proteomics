@@ -42,7 +42,7 @@ public class ProteinPepxmlParser {
     /**
      *
      */
-    public void readFileAndGenerate(  ISpectrumDataFilter... filters) {
+    public void readFileAndGenerate(ISpectrumDataFilter... filters) {
         @SuppressWarnings("UnusedDeclaration")
         int numberProcessed = 0;
         @SuppressWarnings("UnusedDeclaration")
@@ -58,14 +58,14 @@ public class ProteinPepxmlParser {
                     if (processed) {
                         for (int i = 0; i < searchHitLines.length; i++) {
                             String searchHitLine = searchHitLines[i];
-                           }
+                        }
                         numberProcessed++;
                     }
                     else
                         numberUnProcessed++;
                 }
                 else {
-                  }
+                }
                 line = rdr.readLine();
 
             }
@@ -104,21 +104,24 @@ public class ProteinPepxmlParser {
 
     @SuppressWarnings({"UnusedParameters", "UnusedAssignment"})
     protected boolean handleSearchHit(String[] lines, ISpectrumDataFilter... filters) {
-       //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
+        //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         Double expectedValue = null;
         //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         Double hyperScoreValue = null;
         int index = 0;
         String line = lines[index++];   // handle first line
-        while(!line.contains("<search_hit"))
+        while (!line.contains("<search_hit")) {
             line = lines[index++];
+            if (index >= lines.length)
+                return false;
+        }
         boolean trueHit = !line.contains("protein=\"DECOY_");
         boolean processSpectrum = parseHitValue(line) <= 2;
         //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         boolean isUnique = true;
         //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         boolean isModified = false;
-        if(!line.contains("hit_rank=\"1\""))
+        if (!line.contains("hit_rank=\"1\""))
             return false;
         Polypeptide peptide = processPeptide(line);
 
@@ -132,8 +135,7 @@ public class ProteinPepxmlParser {
                 break;         // we are done
 
             if (line.contains(" modified_peptide="))
-                isUnique = true;
-
+                peptide = processModifiedPeptide(line);
 
             if (line.contains("<alternative_protein"))
                 isUnique = true;
@@ -181,7 +183,14 @@ public class ProteinPepxmlParser {
         String peptide = XMLUtil.extractAttribute(line, "peptide");
         if (peptide == null)
             throw new IllegalArgumentException("bad line " + line);
-        return  Polypeptide.fromString(peptide);
+        return Polypeptide.fromString(peptide);
+    }
+
+    public static Polypeptide processModifiedPeptide(final String line) {
+        String peptide = XMLUtil.extractAttribute(line, "modified_peptide");
+        if (peptide == null)
+            throw new IllegalArgumentException("bad line " + line);
+        return Polypeptide.fromString(peptide);
     }
 
     public static IProtein processProtein(final String line) {
@@ -263,14 +272,40 @@ public class ProteinPepxmlParser {
             Collections.sort(proteins);
             for (String protein : proteins) {
                 Set<Polypeptide> pps = proteinToHits.get(protein);
-                List<Polypeptide> peptides = new ArrayList<Polypeptide>(pps );
+                List<Polypeptide> peptides = new ArrayList<Polypeptide>(pps);
+                Collections.sort(peptides);
+
+                for (Polypeptide peptide : peptides) {
+                    IPolypeptide unModified = peptide; // .getUnModified();
+                    out.append(unModified.toString());
+                    out.append("\t");
+                    out.append(protein);
+                    out.append("\n");
+                }
+
+
+            }
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public void appendProteins(Appendable out) {
+        try {
+            List<String> proteins = new ArrayList<String>(proteinToHits.keySet());
+            Collections.sort(proteins);
+            for (String protein : proteins) {
+                Set<Polypeptide> pps = proteinToHits.get(protein);
+                List<Polypeptide> peptides = new ArrayList<Polypeptide>(pps);
                 Collections.sort(peptides);
 
                 out.append(protein);
-                  for (Polypeptide peptide : peptides) {
-                     out.append("\t");
-                      IPolypeptide unModified = peptide.getUnModified();
-                      out.append(unModified.toString());
+                for (Polypeptide peptide : peptides) {
+                    out.append("\t");
+                    IPolypeptide unModified = peptide; // .getUnModified();
+                    out.append(unModified.toString());
 
                 }
                 out.append("\n");
@@ -293,8 +328,11 @@ public class ProteinPepxmlParser {
             String arg = args[i];
             ProteinPepxmlParser fdrParser = new ProteinPepxmlParser(arg);
             fdrParser.readFileAndGenerate();
-            fdrParser.appendPeptides(px);
+            fdrParser.appendProteins(px);
             px.close();
+            PrintWriter ppx = new PrintWriter(new FileWriter("UniquePeptides.tsv"));
+            fdrParser.appendPeptides(ppx);
+            ppx.close();
         }
 
     }
