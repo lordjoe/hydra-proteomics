@@ -107,7 +107,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
      * @param s !null string
      * @return !null peptide
      */
-    public static IPolypeptide fromModifiedString(String s) {
+    public static ModifiedPolypeptide fromModifiedString(String s) {
         return fromModifiedString(s, 0);
     }
 
@@ -117,7 +117,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
      * @param s !null string
      * @return !null peptide
      */
-    public static IPolypeptide fromModifiedString(String s, int missed_cleavages) {
+    public static ModifiedPolypeptide fromModifiedString(String s, int missed_cleavages) {
         String unmods = buildUnmodifiedSequence(s);
         PeptideModification[] mods = new PeptideModification[unmods.length()];
         int charNumber = -1;

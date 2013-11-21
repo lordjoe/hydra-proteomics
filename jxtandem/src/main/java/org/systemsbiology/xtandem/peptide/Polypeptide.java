@@ -143,7 +143,7 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
      * @param s
      * @return
      */
-    public static IPolypeptide fromString(String s) {
+    public static Polypeptide fromString(String s) {
         s = s.trim();
         // has modifications so make a modified peptide
         if (s.contains("["))

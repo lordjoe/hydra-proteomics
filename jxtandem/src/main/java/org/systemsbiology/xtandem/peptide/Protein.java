@@ -12,7 +12,6 @@ import java.util.*;
  */
 public class Protein extends Polypeptide implements IProtein {
     public static Protein[] EMPTY_ARRAY = {};
-    public static Class THIS_CLASS = Protein.class;
 
 //    private static int gNextId = 1;
 //    public static synchronized int getNextId() {
