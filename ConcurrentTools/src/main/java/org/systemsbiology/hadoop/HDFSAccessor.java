@@ -5,7 +5,6 @@ import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.*;
 import org.systemsbiology.remotecontrol.*;
-import org.systemsbiology.remotecontrol.LocalFileSystem;
 
 import java.io.*;
 import java.lang.reflect.*;

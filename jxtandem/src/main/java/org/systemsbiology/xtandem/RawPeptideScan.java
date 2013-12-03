@@ -133,7 +133,7 @@ public class RawPeptideScan implements IMeasuredSpectrum, ISpectralScan, Compara
 //        adder.appendAttribute("polarity", getPolarity());
 //        adder.appendAttribute("scantype", getScanType());
 //        adder.appendAttribute("filterLine", getFilterLine());
-//        adder.appendAttribute("retentionTime", getRetentionTime());
+//        adder.appendAttribute("retentionTime", getRetentionTimeString());
 //        adder.appendAttribute("lowMz", XTandemUtilities.formatDouble(getLowMz(), 3));
 //        adder.appendAttribute("highMz", XTandemUtilities.formatDouble(getHighMz(), 3));
 //        adder.appendAttribute(

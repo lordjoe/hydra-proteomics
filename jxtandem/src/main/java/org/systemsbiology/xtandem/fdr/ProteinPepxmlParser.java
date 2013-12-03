@@ -8,7 +8,7 @@ import java.util.*;
 
 
 /**
- * org.systemsbiology.xtandem.fdr.FDRParser
+ * org.systemsbiology.xtandem.fdr.ProteinPepxmlParser
  *
  * @author attilacsordas
  * @date 09/05/13
@@ -46,15 +46,31 @@ public class ProteinPepxmlParser {
         @SuppressWarnings("UnusedDeclaration")
         int numberProcessed = 0;
         @SuppressWarnings("UnusedDeclaration")
+        double lastRetentionTime = 0;
         int numberUnProcessed = 0;
         try {
             LineNumberReader rdr = new LineNumberReader(new FileReader(m_File));
             String line = rdr.readLine();
             while (line != null) {
+                if (line.contains("<spectrum_query")) {
+                    String retention_time_sec = XMLUtil.extractAttribute(line, "retention_time_sec");
+                    if(retention_time_sec == null)    {
+                        lastRetentionTime = 0;
+                    }
+                    else {
+                        try {
+                            lastRetentionTime = Double.parseDouble(retention_time_sec.trim());
+                        }
+                        catch (NumberFormatException e) {
+                            lastRetentionTime = 0;
+                         }
+                    }
+                }
+
                 if (line.contains("<search_result")) {
                     String[] searchHitLines = readSearchHitLines(line, rdr);
                     //              System.out.println(line);
-                    boolean processed = handleSearchHit(searchHitLines, filters);
+                    boolean processed = handleSearchHit(searchHitLines,lastRetentionTime, filters);
                     if (processed) {
                         for (int i = 0; i < searchHitLines.length; i++) {
                             String searchHitLine = searchHitLines[i];
@@ -103,7 +119,7 @@ public class ProteinPepxmlParser {
 
 
     @SuppressWarnings({"UnusedParameters", "UnusedAssignment"})
-    protected boolean handleSearchHit(String[] lines, ISpectrumDataFilter... filters) {
+    protected boolean handleSearchHit(String[] lines,double retentionTime, ISpectrumDataFilter... filters) {
         //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         Double expectedValue = null;
         //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
@@ -123,7 +139,7 @@ public class ProteinPepxmlParser {
         boolean isModified = false;
         if (!line.contains("hit_rank=\"1\""))
             return false;
-        Polypeptide peptide = processPeptide(line);
+        Polypeptide peptide = processPeptide(line,retentionTime);
 
         IProtein protein = null;
 
@@ -135,7 +151,7 @@ public class ProteinPepxmlParser {
                 break;         // we are done
 
             if (line.contains(" modified_peptide="))
-                peptide = processModifiedPeptide(line);
+                peptide = processModifiedPeptide(line,retentionTime);
 
             if (line.contains("<alternative_protein"))
                 isUnique = true;
@@ -179,18 +195,22 @@ public class ProteinPepxmlParser {
 
     }
 
-    public static Polypeptide processPeptide(final String line) {
+    public static Polypeptide processPeptide(final String line,double retentionTime) {
         String peptide = XMLUtil.extractAttribute(line, "peptide");
         if (peptide == null)
             throw new IllegalArgumentException("bad line " + line);
-        return Polypeptide.fromString(peptide);
+        Polypeptide polypeptide = Polypeptide.fromString(peptide);
+        polypeptide.setRetentionTime(retentionTime);
+        return polypeptide;
     }
 
-    public static Polypeptide processModifiedPeptide(final String line) {
+    public static Polypeptide processModifiedPeptide(final String line,double retentionTime) {
         String peptide = XMLUtil.extractAttribute(line, "modified_peptide");
         if (peptide == null)
             throw new IllegalArgumentException("bad line " + line);
-        return Polypeptide.fromString(peptide);
+        Polypeptide polypeptide = Polypeptide.fromString(peptide);
+        polypeptide.setRetentionTime(retentionTime);
+        return polypeptide;
     }
 
     public static IProtein processProtein(final String line) {
@@ -280,7 +300,10 @@ public class ProteinPepxmlParser {
                     out.append(unModified.toString());
                     out.append("\t");
                     out.append(protein);
-                    out.append("\n");
+                    out.append("\t");
+                    String rt = String.format("%11.3f",peptide.getRetentionTime()).trim();
+                     out.append(rt);
+                     out.append("\n");
                 }
 
 
@@ -320,6 +343,9 @@ public class ProteinPepxmlParser {
 
 
     public static void main(String[] args) throws Exception {
+
+        Class me = ProteinPepxmlParser.class;
+
 
         if (args.length == 0)
             throw new IllegalArgumentException("pass in pep.xml files to process");

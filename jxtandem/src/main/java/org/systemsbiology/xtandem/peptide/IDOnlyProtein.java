@@ -378,4 +378,16 @@ public class IDOnlyProtein implements IProtein {
         return 0;
     }
 
+
+    @Override
+    public double getRetentionTime() {
+        return 0;
+    }
+
+    @Override
+    public void setRetentionTime(final double pRetentionTime) {
+       throw new UnsupportedOperationException("Cannot Do");
+    }
+
+
 }

@@ -234,6 +234,39 @@ public class OriginatingScoredScan implements IScoredScan, IAddable<IScoredScan>
         return m_Raw;
     }
 
+    @Override
+     public String getRetentionTimeString() {
+         RawPeptideScan raw = getRaw();
+         if(raw != null)
+             return raw.getRetentionTime();
+         return null;
+     }
+
+
+    /**
+     * rention time as a seconds
+     *
+     * @return possibly null 0
+     */
+    @Override
+    public double getRetentionTime() {
+        String str = getRetentionTimeString();
+        if(str != null) {
+              str = str.replace("S","");   // handle PT5.5898S"
+            str = str.replace("PT","");
+            str =  str.trim();
+            if(str.length() > 0) {
+                try {
+                    double ret = Double.parseDouble(str);
+                    return ret;
+                }
+                catch (NumberFormatException e) {
+                    return 0;
+                 }
+             }
+        }
+        return 0;
+    }
 
     @Override
     public IMeasuredSpectrum getConditionedScan() {

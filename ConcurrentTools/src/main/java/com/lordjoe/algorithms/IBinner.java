@@ -18,6 +18,14 @@ public interface IBinner {
     public int asBin(double value);
 
     /**
+     * Describe the assigned bin
+     * @param value
+     * @return either a valid bin number or  null if  isOverflowBinned() is false and the
+     *     data is outside the range handled
+     */
+    public String asBinString(double value);
+
+    /**
      *
      * @param bin between
      * @return a number which when sent to asBin will return bin
@@ -68,4 +76,10 @@ public interface IBinner {
      * @return
      */
     public boolean isOverflowBinned();
+
+    /**
+     * return this binner but with bins offset by half a bin
+     * @return
+     */
+    public IBinner offSetHalf();
 }

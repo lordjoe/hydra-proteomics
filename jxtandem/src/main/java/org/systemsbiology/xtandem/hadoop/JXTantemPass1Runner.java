@@ -194,7 +194,17 @@ public class JXTantemPass1Runner extends ConfiguredJobRunner implements IJobRunn
             FileSystem fileSystem = outputDir.getFileSystem(pConf);
 
 
-            boolean ans = job.waitForCompletion(true);
+            boolean ans = false;
+            try {
+                ans = job.waitForCompletion(true);
+            }
+            catch (ClassNotFoundException e) {
+                 Throwable trr = e;
+                while(trr.getCause() != null && trr.getCause() != trr)
+                    trr = trr.getCause();
+                trr.printStackTrace();
+                throw e;
+            }
             if(ans)
                    XTandemHadoopUtilities.saveCounters(fileSystem,  XTandemHadoopUtilities.buildCounterFileName(this, pConf),job);
              else

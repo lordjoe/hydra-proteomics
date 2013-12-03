@@ -6,20 +6,20 @@ import org.systemsbiology.common.*;
 import java.io.*;
 
 /**
- * org.systemsbiology.remotecontrol.LocalFileSystem
+ * org.systemsbiology.remotecontrol.LocalMachineFileSystem
  * implementation of IFileSystem in the  local machine
  * User: Steve
  * Date: May 13, 2011
  */
-public class LocalFileSystem implements IFileSystem {
+public class LocalMachineFileSystem implements IFileSystem {
 
     private File m_BaseDirectory;
 
-    public LocalFileSystem(final File pBaseDirectory) {
+    public LocalMachineFileSystem(final File pBaseDirectory) {
         m_BaseDirectory = pBaseDirectory;
     }
 
-    public LocalFileSystem() {
+    public LocalMachineFileSystem() {
         this(new File(System.getProperty("user.dir")));
     }
 

@@ -273,6 +273,9 @@ public class PepXMLWriter {
          out.print(" spectrum=\"" + path +  "." + idString +"." + idString + "." + charge + "\"");
         out.print(" start_scan=\""   + id + "\" end_scan=\""   + id + "\" ");
         out.print(" precursor_neutral_mass=\"" + String.format("%10.4f", precursorMass).trim() + "\"");
+        double rt = scan.getRetentionTime();
+        if(rt != 0)
+            out.print(" retention_time_sec=\"" + String.format("%10.3f",rt).trim() + "\"");
         out.print(" assumed_charge=\"" + scan.getCharge() + "\"");
         out.println(" >");
     }

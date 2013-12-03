@@ -7,7 +7,7 @@ import org.apache.hadoop.fs.*;
 import org.systemsbiology.common.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.remotecontrol.*;
-import org.systemsbiology.remotecontrol.LocalFileSystem;
+import org.systemsbiology.remotecontrol.LocalMachineFileSystem;
 import org.systemsbiology.xml.*;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.peptide.*;
@@ -675,6 +675,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         if (organism != null)
             statistics.setData("Taxonomy database", organism);
 
+        Configuration context = application.getContext();
+        Class<?> clazz = context.getClass("fs.file.impl", null);
         cleanFileSystem();
         boolean buildDatabase = isDatabaseBuildRequired();
         IHadoopJob job = null;
@@ -1203,7 +1205,8 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
         Path dpath2 = XTandemHadoopUtilities.getRelativePath(databaseName);
         Path dpath = XTandemHadoopUtilities.getRelativePath(".");
         try {
-            FileSystem fs = dpath.getFileSystem(application.getContext());
+            Configuration context = application.getContext();
+             FileSystem fs = dpath.getFileSystem(context);
             fs.delete(new Path(dpath, "full_tandem_output"), true);
             XTandemHadoopUtilities.cleanFileSystem(fs, dpath);
         } catch (IOException e) {
@@ -2062,7 +2065,7 @@ public class JXTandemLauncher implements IStreamOpener { //extends AbstractParam
                 main.setRemoteBaseDirectory(passedBaseDirctory);
 
             } else {
-                IFileSystem access = new LocalFileSystem(new File(main.getRemoteBaseDirectory()));
+                IFileSystem access = new LocalMachineFileSystem(new File(main.getRemoteBaseDirectory()));
                 main.setAccessor(access);
                 main.setBuildJar(false);
                 HadoopJob.setJarRequired(false);
