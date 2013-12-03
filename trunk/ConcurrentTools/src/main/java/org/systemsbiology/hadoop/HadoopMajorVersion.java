@@ -36,7 +36,11 @@ public enum HadoopMajorVersion {
         // force the class loader to load a class in the package so we can read the package
         Class hadoopVersionAnnotation = HadoopVersionAnnotation.class; // make cure the class loader know about packages
         Package aPackage = Package.getPackage("org.apache.hadoop");
+        if(aPackage == null)
+             return Version0;
         HadoopVersionAnnotation annotation = (HadoopVersionAnnotation) aPackage.getAnnotation(HadoopVersionAnnotation.class);
+        if(annotation == null)
+            return Version0;
         String version = annotation.version();
         HadoopMajorVersion[] versions = values();
         for (HadoopMajorVersion v : versions) {

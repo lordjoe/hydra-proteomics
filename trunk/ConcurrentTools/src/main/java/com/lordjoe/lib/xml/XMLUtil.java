@@ -23,7 +23,17 @@ public abstract class XMLUtil {
 
     public static final ITagHandler IGNORE_TAG_HANDLER = new IgnoreXMLTag();
 
-    public static final SAXParserFactory SAX_FACTORY = SAXParserFactory.newInstance();
+    private static SAXParserFactory getSaxParserFactory()
+    {
+        try {
+          return SAXParserFactory.newInstance();
+        }
+        catch (Exception e) {
+          return   (SAXParserFactory)new   com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl();
+         }
+     }
+//
+//    public static final SAXParserFactory SAX_FACTORY = getSaxParserFactory();
 
     /**
     * string to make a tag as having been handled
@@ -153,9 +163,10 @@ public abstract class XMLUtil {
          SAXParser TheParser = null;
 
          try {
-             SAX_FACTORY.setNamespaceAware(false);
-             SAX_FACTORY.setValidating(false);
-             TheParser = SAX_FACTORY.newSAXParser();
+             SAXParserFactory saxParserFactory = getSaxParserFactory();
+             saxParserFactory.setNamespaceAware(false);
+             saxParserFactory.setValidating(false);
+             TheParser = saxParserFactory.newSAXParser();
          }
          catch (Exception ex) {
             throw new RuntimeException(ex);

@@ -16,7 +16,7 @@ public class FileSystemTests {
     public void testFileSize() throws Exception {
         File top = new File("/");
         String path = top.getAbsolutePath();
-        LocalFileSystem fs = new LocalFileSystem(top);
+        LocalMachineFileSystem fs = new LocalMachineFileSystem(top);
         long len = HDFSUtilities.size("/tmp", fs);
         Assert.assertTrue(len > 0);
 

@@ -66,6 +66,18 @@ public interface IScoredScan extends IonTypeScorer , Comparable<IScoredScan>
 
     public RawPeptideScan getRaw();
 
+    /**
+     * rention time as a string
+     * @return  possibly null string representation
+     */
+    public String getRetentionTimeString();
+
+    /**
+      * rention time as a seconds
+      * @return  possibly null 0
+      */
+     public double getRetentionTime();
+
     public IMeasuredSpectrum getNormalizedRawScan();
 
     public IMeasuredSpectrum getConditionedScan();

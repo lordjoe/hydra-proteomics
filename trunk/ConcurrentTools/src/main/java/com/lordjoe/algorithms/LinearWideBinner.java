@@ -39,4 +39,55 @@ public class LinearWideBinner extends LinearBinner implements IWideBinner {
           }
         return ret;
     }
+
+
+    /**
+      * turn a bin into a string
+      * @param pBin
+      * @return
+      */
+     protected String formatBin(final int pBin) {
+         if(pBin == -1)
+             return null;
+         double bnv = fromBin(pBin);
+         if(true )
+             throw new UnsupportedOperationException("Fix This"); // ToDo
+         double v = getBinSize() / 2 ;// + getOverlapWidth();
+         double minv = bnv - v;
+         double maxv = bnv + v;
+         StringBuilder sb = new StringBuilder();
+         sb.append(formatBinValue(minv));
+         sb.append("-");
+         sb.append(formatBinValue(maxv));
+         return sb.toString();
+     }
+
+    /**
+     * Describe the assigned bins
+     *
+     * @param value
+     * @return either a valid bin number or  null if  isOverflowBinned() is false and the
+     *         data is outside the range handled
+     */
+    @Override
+    public String[] asBinStrings(final double value) {
+        int[] bins = asBins(value);
+        String[] ret = new String[bins.length];
+        for (int i = 0; i < ret.length; i++) {
+             ret[i] = formatBin(bins[i]);
+
+        }
+        return ret;
+    }
+
+    /**
+     * return this binner but with bins offset by half a bin
+     *
+     * @return
+     */
+    @Override
+    public IBinner offSetHalf() {
+        return new LinearWideBinner(getMaxValue(),getBinSize(),getMinValue() - getBinSize() / 2,isOverflowBinned(),getNumberOverlapBins());
+
+    }
 }

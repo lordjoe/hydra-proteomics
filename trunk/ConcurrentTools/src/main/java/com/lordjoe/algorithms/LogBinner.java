@@ -94,6 +94,45 @@ public class LogBinner implements IBinner {
         return ret;
     }
 
+    /**
+        * Describe the assigned bin
+        *
+        * @param value
+        * @return either a valid bin number or  null if  isOverflowBinned() is false and the
+        *         data is outside the range handled
+        */
+       @Override
+       public String asBinString(final double value) {
+           int bin = asBin(value);
+           if(bin == -1)
+               return null;
+
+           return formatBin(bin);
+
+       }
+
+       /**
+        * turn a bin into a string
+        * @param pBin
+        * @return
+        */
+       protected String formatBin(final int pBin) {
+           if(pBin == -1)
+               return null;
+           double bnv = fromBin(pBin);
+           // todo this is wrong
+           double minv = bnv -  getBinSize() / 2;
+           double maxv = bnv +  getBinSize() / 2;
+           StringBuilder sb = new StringBuilder();
+           sb.append(formatBinValue(minv));
+           sb.append("-");
+           sb.append(formatBinValue(maxv));
+           return sb.toString();
+       }
+
+      protected String formatBinValue(double value)  {
+          return String.format("%10.3f",value).trim();
+      }
 
 
 
@@ -188,4 +227,16 @@ public class LogBinner implements IBinner {
     public int getNumberBins() {
         return m_NumberBins;
     }
+
+    /**
+      * return this binner but with bins offset by half a bin
+      *
+      * @return
+      */
+     @Override
+     public IBinner offSetHalf() {
+          throw new UnsupportedOperationException("Fix This"); // ToDo
+     }
+
+
 }

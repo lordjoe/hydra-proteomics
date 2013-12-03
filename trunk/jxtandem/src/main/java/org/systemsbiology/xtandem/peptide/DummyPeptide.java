@@ -305,6 +305,16 @@ public class DummyPeptide implements IPolypeptide {
 
 
     @Override
+    public double getRetentionTime() {
+        return 0;
+    }
+
+    @Override
+    public void setRetentionTime(final double pRetentionTime) {
+       throw new UnsupportedOperationException("Cannot Do");
+    }
+
+    @Override
     public String toString() {
         return getId();    //To change body of overridden methods use File | Settings | File Templates.
     }

@@ -70,6 +70,7 @@ public class HadoopUtilities {
     public static final String HADOOP10_PORT = "hadoop10Port";
     public static final String HADOOP10_JOBTRACKER = "hadoop10remoteJobTracker";
     public static final String JOB_SIZE_PROPERTY = "job_size";
+    public static final String MAX_REDUCE_TASKS_PROPERTY = "maxReduceTasks";
 
     // Hard code this so we can debug partitioner code
      public static final int DEFAULT_TEST_NUMBER_REDUCERS = 64;

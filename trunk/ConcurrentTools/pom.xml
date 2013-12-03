@@ -15,7 +15,7 @@
     <name>Concurrent Tools</name>
 
     <dependencies>
-         <dependency>
+        <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
             <version>0.1.44-1</version>
@@ -24,39 +24,50 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-core</artifactId>
             <version>0.20.2</version>
-               <!--
-            <version>0.20.2</version>
-            <version>1.0.3</version>
-            -->
-         </dependency>
-        <dependency>
-        	<groupId>commons-io</groupId>
-        	<artifactId>commons-io</artifactId>
-        	<version>2.4</version>
-        </dependency>
-
-        <dependency>
-        	<groupId>com.google.gdata</groupId>
-        	<artifactId>core</artifactId>
-        	<version>1.47.1</version>
-        </dependency>
-        <dependency>
-        	<groupId>com.google.api.client</groupId>
-        	<artifactId>google-api-data-spreadsheet-v3</artifactId>
-        	<version>1.0.10-alpha</version>
-        </dependency>
-     <!--
-        <dependency>
-             <groupId>com.google.gdata</groupId>
-             <artifactId>gdata-spreadsheet-3.0</artifactId>
-             <version>1.41.5</version>
-         </dependency>
+            <!--
+         <version>0.20.2</version>
+         <version>1.0.3</version>
          -->
+        </dependency>
         <dependency>
-         	<groupId>javax.mail</groupId>
-         	<artifactId>mail</artifactId>
-         	<version>1.4</version>
-         </dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.0-beta9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.0-beta9</version>
+        </dependency>
+           -->
+        <dependency>
+            <groupId>com.google.gdata</groupId>
+            <artifactId>core</artifactId>
+            <version>1.47.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.api.client</groupId>
+            <artifactId>google-api-data-spreadsheet-v3</artifactId>
+            <version>1.0.10-alpha</version>
+        </dependency>
+        <!--
+           <dependency>
+                <groupId>com.google.gdata</groupId>
+                <artifactId>gdata-spreadsheet-3.0</artifactId>
+                <version>1.41.5</version>
+            </dependency>
+            -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -64,16 +75,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-          	<groupId>org.eclipse.jetty</groupId>
-          	<artifactId>jetty-server</artifactId>
-          	<version>9.0.6.v20130930</version>
-          </dependency>
-          <dependency>
-          	<groupId>org.eclipse.jetty</groupId>
-          	<artifactId>jetty-servlet</artifactId>
-          	<version>9.0.6.v20130930</version>
-          </dependency>
-          <!-- SAMTools and Hadoop-BAM (from Artifactory) -->
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.0.6.v20130930</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>9.0.6.v20130930</version>
+        </dependency>
+        <!-- SAMTools and Hadoop-BAM (from Artifactory) -->
         <!--
           <dependency>
             <groupId>org.mortbay.jetty</groupId>

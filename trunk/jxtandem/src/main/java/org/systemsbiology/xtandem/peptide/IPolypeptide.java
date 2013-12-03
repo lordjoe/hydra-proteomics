@@ -205,4 +205,10 @@ public interface  IPolypeptide {
        * @return
        */
       public int getNumberModifications();
+
+
+    public double getRetentionTime();
+
+    public void setRetentionTime(final double pRetentionTime);
+
 }

@@ -172,6 +172,7 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
     private double m_MatchingMass;
     private String m_Sequence;
     private int m_SequenceLength;
+    private double m_RetentionTime;
     private PeptideValidity m_Validity;
     //    private IProtein m_ParentProtein;   // not final since proteins need to set later
     //   private   int m_StartPosition = -1;
@@ -265,6 +266,14 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
     @Override
     public boolean isModified() {
         return false;
+    }
+
+    public double getRetentionTime() {
+        return m_RetentionTime;
+    }
+
+    public void setRetentionTime(final double pRetentionTime) {
+        m_RetentionTime = pRetentionTime;
     }
 
     /**

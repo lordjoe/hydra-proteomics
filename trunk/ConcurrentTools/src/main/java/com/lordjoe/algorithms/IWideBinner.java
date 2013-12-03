@@ -16,4 +16,12 @@ public interface IWideBinner extends IBinner {
     public int[] asBins(double value);
 
 
+    /**
+     * Describe the assigned bins
+     * @param value
+     * @return either a valid bin number or  null if  isOverflowBinned() is false and the
+     *     data is outside the range handled
+     */
+    public String[] asBinStrings(double value);
+
 }
