@@ -119,7 +119,7 @@ public class ProteinPepxmlParser {
 
 
     @SuppressWarnings({"UnusedParameters", "UnusedAssignment"})
-    protected boolean handleSearchHit(String[] lines,double retentionTime, ISpectrumDataFilter... filters) {
+    protected   boolean handleSearchHit(String[] lines,double retentionTime, ISpectrumDataFilter... filters) {
         //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         Double expectedValue = null;
         //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment

@@ -9,15 +9,17 @@ package org.systemsbiology.xtandem.fdr;
 public class SpectrumData {
     private final double expectedValue;
     private final double hyperScoreValue;
+    private final double retentionTime;
     private final boolean trueHit;
     private final boolean modified;
 
-    public SpectrumData(double expectedValue, double hyperScoreValue, boolean trueHit, boolean modified) {
+    public SpectrumData(double expectedValue, double hyperScoreValue, boolean trueHit, boolean modified,double retentionTime) {
         this.expectedValue = expectedValue;
         this.hyperScoreValue = hyperScoreValue;
         this.trueHit = trueHit;
         this.modified = modified;
-    }
+        this.retentionTime = retentionTime;
+     }
 
     public double getExpectedValue() {
         return expectedValue;
@@ -33,5 +35,9 @@ public class SpectrumData {
 
     public double getHyperScoreValue() {
         return hyperScoreValue;
+    }
+
+    public double getRetentionTime() {
+        return retentionTime;
     }
 }

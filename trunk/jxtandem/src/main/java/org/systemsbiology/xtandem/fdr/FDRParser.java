@@ -87,7 +87,7 @@ public class FDRParser {
                 if (line.contains("<search_hit")) {
                     String[] searchHitLines = readSearchHitLines(line, rdr);
                     //              System.out.println(line);
-                    boolean processed = handleSearchHit(searchHitLines, filters);
+                    boolean processed = handleSearchHit(searchHitLines,lastRetentionTime, filters);
                     if (processed) {
                         for (int i = 0; i < searchHitLines.length; i++) {
                             String searchHitLine = searchHitLines[i];
@@ -134,7 +134,7 @@ public class FDRParser {
     }
 
 
-    protected boolean handleSearchHit(String[] lines, ISpectrumDataFilter... filters) {
+    protected boolean handleSearchHit(String[] lines,double retentionTime, ISpectrumDataFilter... filters) {
 
         Double expectedValue = null;
         Double hyperScoreValue = null;
@@ -175,7 +175,8 @@ public class FDRParser {
             boolean processData = true;
             // apply any filters
             //noinspection ConstantConditions
-            SpectrumData spectrum = new SpectrumData(expectedValue, hyperScoreValue, trueHit, isModified);
+            SpectrumData spectrum = new SpectrumData(expectedValue, hyperScoreValue, trueHit, isModified, retentionTime);
+
             for (int i = 0; i < filters.length; i++) {
                 ISpectrumDataFilter s = filters[i];
                 processData &= s.isSpectrumKept(spectrum);
