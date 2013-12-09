@@ -1,5 +1,7 @@
 package org.systemsbiology.xtandem.fdr;
 
+import com.lordjoe.lib.xml.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -63,10 +65,25 @@ public class FDRParser {
     public void readFileAndGenerateFDR(PrintWriter out,ISpectrumDataFilter... filters) {
         int numberProcessed = 0;
         int numberUnProcessed = 0;
+        double lastRetentionTime = 0;
         try {
             LineNumberReader rdr = new LineNumberReader(new FileReader(m_File));
             String line = rdr.readLine();
             while (line != null) {
+                if (line.contains("<spectrum_query")) {
+                     String retention_time_sec = XMLUtil.extractAttribute(line, "retention_time_sec");
+                     if(retention_time_sec == null)    {
+                         lastRetentionTime = 0;
+                     }
+                     else {
+                         try {
+                             lastRetentionTime = Double.parseDouble(retention_time_sec.trim());
+                         }
+                         catch (NumberFormatException e) {
+                             lastRetentionTime = 0;
+                          }
+                     }
+                 }
                 if (line.contains("<search_hit")) {
                     String[] searchHitLines = readSearchHitLines(line, rdr);
                     //              System.out.println(line);
