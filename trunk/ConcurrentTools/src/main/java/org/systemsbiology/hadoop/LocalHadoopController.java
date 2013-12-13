@@ -1,6 +1,7 @@
 package org.systemsbiology.hadoop;
 
 import com.lordjoe.utilities.*;
+import com.lordjoe.utilities.ExceptionUtilities;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.util.*;
 import org.systemsbiology.common.*;
@@ -126,7 +127,7 @@ public class LocalHadoopController implements IHadoopController {
 
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+            ExceptionUtilities.printAllStacks(ex,System.err);
             throw new RuntimeException(e);
 
         }
