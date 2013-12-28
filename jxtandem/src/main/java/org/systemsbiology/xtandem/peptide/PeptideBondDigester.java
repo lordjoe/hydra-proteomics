@@ -16,8 +16,8 @@ public class PeptideBondDigester extends PeptideDigester {
     public static final int NUMBER_LETTERS = 26;
 
     public static final PeptideBondDigester TRYPSIN  = new Trypsin();
-    public static final PeptideBondDigester TRYPSIN1  = new Trypsin(1);
-    public static final PeptideBondDigester TRYPSIN2  = new Trypsin(2);
+   // public static final PeptideBondDigester TRYPSIN1  = new Trypsin(1);
+  //  public static final PeptideBondDigester TRYPSIN2  = new Trypsin(2);
 
     private static IPeptideDigester gDefaultDigester = TRYPSIN;
 
@@ -58,8 +58,11 @@ public class PeptideBondDigester extends PeptideDigester {
             return new LysineC();
         if (TRYPSIN_LOGIC.equalsIgnoreCase(logic))
            return new Trypsin();
-        if (LYSC_LOGIC.equalsIgnoreCase(logic))
-            return new LysineC();
+        if (LYSC_LOGIC.equalsIgnoreCase(logic)) {
+            LysineC lysineC = new LysineC();
+            setDefaultDigester(lysineC);
+            return lysineC;
+        }
 
         PeptideBondDigester ret = new PeptideBondDigester();
         ret.setLogic(logic);
