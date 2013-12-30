@@ -65,7 +65,7 @@ public class HadoopFileTaxonomy implements ITaxonomy {
     public IPeptideDigester getDigester() {
         if (m_Digester != null)
             return m_Digester;
-        return PeptideBondDigester.TRYPSIN;
+        return PeptideBondDigester.getDefaultDigester();
     }
 
 
