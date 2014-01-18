@@ -162,10 +162,9 @@ public class FastaInputFormat extends FileInputFormat<Text, Text> {
     }
 
     /**
-     * Custom RecordReader which returns the entire file as a
-     * single m_Value with the name as a m_Key
-     * Value is the entire file
-     * Key is the file name
+     *
+     * Value is the fasta record  minus the comment line
+     * Key is the comment line
      */
     public   class FastaFileReader extends RecordReader<Text, Text> {
 
