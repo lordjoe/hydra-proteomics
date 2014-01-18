@@ -1451,12 +1451,12 @@ public abstract class XMLUtil {
 	        }
     	    
 	        // The DOM parser will have an ErrorReport associated with it.
-	      /*  if ( parser.getErrorReport().getCount() > 0 ) {
+	      /*  if ( parser.getErrorReport().getValue() > 0 ) {
 		        ErrorReport error;
         		
 		        error = parser.getErrorReport();
-		        System.out.println( "Errors parsing document: " + error.getCount() + " errors:" );
-		        for ( int i = 0 ; i < error.getCount() ; ++i ) {
+		        System.out.println( "Errors parsing document: " + error.getValue() + " errors:" );
+		        for ( int i = 0 ; i < error.getValue() ; ++i ) {
 		            report( error.getException( i ) );
 		        }
 	        }*/

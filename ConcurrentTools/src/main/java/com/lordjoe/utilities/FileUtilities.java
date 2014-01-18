@@ -19,6 +19,8 @@
 package com.lordjoe.utilities;
 
 
+import com.google.common.io.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -177,17 +179,17 @@ public abstract class FileUtilities {
 
     /**
      * make sure a file f exists, is  a file and can be read
-     * @param f  !null file
+     *
+     * @param f !null file
      */
-    public static void guaranteeExistingFile(File f)  throws IllegalArgumentException
-    {
-        if(f == null)
+    public static void guaranteeExistingFile(File f) throws IllegalArgumentException {
+        if (f == null)
             throw new IllegalArgumentException("null argument to guaranteeExistingFile");
-        if(!f.exists())
+        if (!f.exists())
             throw new IllegalArgumentException("File " + f.getAbsolutePath() + " does not exist");
-        if(!f.isFile())
+        if (!f.isFile())
             throw new IllegalArgumentException("File " + f.getAbsolutePath() + " is not a file");
-        if(!f.canRead())
+        if (!f.canRead())
             throw new IllegalArgumentException("File " + f.getAbsolutePath() + " cannot be read");
     }
 
@@ -398,7 +400,7 @@ public abstract class FileUtilities {
      *
      * @param directory <Add Comment Here>
      * @return the files
-     *         }
+     * }
      * @name getAllFiles
      * @function get all the files in the directory
      * @UnusedParam> FileName starting directory
@@ -470,7 +472,7 @@ public abstract class FileUtilities {
     public static void saveProperties
     (String
              propName, Properties
-            props)
+             props)
             throws IllegalArgumentException {
         try {
             FileOutputStream fs = new FileOutputStream(propName);
@@ -516,6 +518,7 @@ public abstract class FileUtilities {
 
     /**
      * internam method to rename tmp to in and remove in
+     *
      * @param in
      * @param tmp
      */
@@ -524,8 +527,8 @@ public abstract class FileUtilities {
             throw new IllegalArgumentException("Temp File " + tmp.getAbsolutePath() + " does not exist");
         File holding = makeTempHoldingFile(in);
         if (!tmp.renameTo(in))
-             throw new IllegalStateException("cannot rename " + tmp.getAbsolutePath() + " to " + in);
-          holding.delete();
+            throw new IllegalStateException("cannot rename " + tmp.getAbsolutePath() + " to " + in);
+        holding.delete();
     }
 
 
@@ -744,7 +747,7 @@ public abstract class FileUtilities {
      *
      * @param DirectoryName <Add Comment Here>
      * @return the files
-     *         }
+     * }
      * @name getAllFiles
      * @function get all the files in the directory
      * @UnusedParam> FileName starting directory
@@ -758,7 +761,7 @@ public abstract class FileUtilities {
      *
      * @param DirectoryName <Add Comment Here>
      * @return the files
-     *         }
+     * }
      * @name getFiles
      * @function get all the files in the directory
      * @UnusedParam> FileName starting directory
@@ -826,7 +829,7 @@ public abstract class FileUtilities {
      * @param DirectoryName <Add Comment Here>
      * @param Extension     test extension
      * @return the Files
-     *         }
+     * }
      * @name getAllDirectoriesWithExtension
      * @function get all files ending in ext at current level
      * @UnusedParam> FileName start directory
@@ -857,7 +860,7 @@ public abstract class FileUtilities {
      * @param DirectoryName <Add Comment Here>
      * @param Extension     test extension
      * @return the Files
-     *         }
+     * }
      * @name getAllDirectoriesWithExtension
      * @function get all files ending in ext at current level
      * @UnusedParam> FileName start directory
@@ -865,10 +868,10 @@ public abstract class FileUtilities {
     protected static void getAllDirectoriesWithExtension
     (File
              Base, String
-            DirectoryName,
+             DirectoryName,
      String
              Extension, Vector
-            holder) {
+             holder) {
         File TestFile = new File(Base, DirectoryName);
         if (!TestFile.isDirectory()) {
             return;
@@ -889,14 +892,14 @@ public abstract class FileUtilities {
      * @param DirectoryName non-null name of the base directory
      * @param Name          non-null requested file name
      * @return the Files
-     *         }
+     * }
      * @name getAllFilesWithName
      * @function get all files ending in ext at current level
      */
     public static String[] getAllFilesWithName
     (String
              DirectoryName, String
-            Name) {
+             Name) {
         return (getAllFilesWithName(new File(DirectoryName), Name));
     }
 
@@ -906,7 +909,7 @@ public abstract class FileUtilities {
      * @param DirectoryName non-null File of the base directory
      * @param Name          non-null requested file name
      * @return the Files
-     *         }
+     * }
      * @name getAllFilesWithName
      * @function get all files ending in ext at current level
      */
@@ -918,14 +921,15 @@ public abstract class FileUtilities {
 
     /**
      * read up to MaxLines fron the file
-     * @param f  existing readable text file
-     * @param maxLines   maximim lines to read
+     *
+     * @param f        existing readable text file
+     * @param maxLines maximim lines to read
      * @return !null array of line contents
      * @throws RuntimeException on error
      */
-    public static String[] readNLines(File f,int maxLines)  throws  RuntimeException {
+    public static String[] readNLines(File f, int maxLines) throws RuntimeException {
         try {
-            return readNLines(new FileInputStream(f),maxLines);
+            return readNLines(new FileInputStream(f), maxLines);
         }
         catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -935,20 +939,21 @@ public abstract class FileUtilities {
 
     /**
      * read up to MaxLines fron the file
-     * @param f  open Stream
-     * @param maxLines   maximim lines to read
+     *
+     * @param f        open Stream
+     * @param maxLines maximim lines to read
      * @return !null array of line contents
      * @throws RuntimeException on error
      */
-    public static String[] readNLines(InputStream f,int maxLines)     {
+    public static String[] readNLines(InputStream f, int maxLines) {
         try {
             LineNumberReader rdr = new LineNumberReader(new InputStreamReader(f));
             List<String> holder = new ArrayList<String>();
             String line = rdr.readLine();
             int nLines = 0;
-            while(line != null) {
+            while (line != null) {
                 holder.add(line);
-                if(++nLines > maxLines)
+                if (++nLines > maxLines)
                     break;
                 line = rdr.readLine();
             }
@@ -965,7 +970,7 @@ public abstract class FileUtilities {
                 f.close();
             }
             catch (IOException e) {
-               // ignore issues
+                // ignore issues
 
             }
         }
@@ -1016,7 +1021,7 @@ public abstract class FileUtilities {
      * @param DirectoryName <Add Comment Here>
      * @param Extension     test extension
      * @return the Files
-     *         }
+     * }
      * @name getAllFilesWithExtension
      * @function get all files ending in ext at current level
      * @UnusedParam> FileName start directory
@@ -1037,7 +1042,7 @@ public abstract class FileUtilities {
      * @param DirectoryName <Add Comment Here>
      * @param Extension     test extension
      * @return the Files
-     *         }
+     * }
      * @name getAllFilesWithExtension
      * @function get all files ending in ext at current level
      * @UnusedParam> FileName start directory
@@ -1045,7 +1050,7 @@ public abstract class FileUtilities {
     public static String[] getAllFilesWithExtension
     (File
              Directory, String
-            Extension) {
+             Extension) {
         if (Extension != null && Extension.length() > 0) {
             FilenameFilter TheFilter = (FilenameFilter) (new HasExtensionFilter(Extension));
             return (getAllFilesWithFilter(Directory, TheFilter));
@@ -1058,7 +1063,7 @@ public abstract class FileUtilities {
     public static void renameAllFilesWithExtension
             (String
                      DirectoryName, String
-                    Extension,
+                     Extension,
              String
                      NewExtension) {
         String[] files = getAllFilesWithExtension(DirectoryName, Extension);
@@ -1069,7 +1074,7 @@ public abstract class FileUtilities {
     public static void setExtension
             (String
                      FileName, String
-                    NewExtension) {
+                     NewExtension) {
         File TheFile = new File(FileName);
         String NewName = getBaseName(FileName) + "." + NewExtension;
         TheFile.renameTo(new File(NewName));
@@ -1129,7 +1134,7 @@ public abstract class FileUtilities {
      * @param DirectoryName <Add Comment Here>
      * @param Extension     filter to apply
      * @return true if ends in extension
-     *         }
+     * }
      * @name hasFileWithExtension
      * @function get all files at the current level passing the filter
      * @UnusedParam> FileName start directory
@@ -1137,7 +1142,7 @@ public abstract class FileUtilities {
     public static boolean hasFileWithExtension
     (String
              DirectoryName, String
-            Extension) {
+             Extension) {
         File TestFile = new File(DirectoryName);
         return (hasFileWithExtension(TestFile, Extension));
     }
@@ -1149,7 +1154,7 @@ public abstract class FileUtilities {
      * @param DirectoryName <Add Comment Here>
      * @param Extension     filter to apply
      * @return true if ends in extension
-     *         }
+     * }
      * @name hasFileWithExtension
      * @function get all files at the current level passing the filter
      * @UnusedParam> FileName start directory
@@ -1157,7 +1162,7 @@ public abstract class FileUtilities {
     public static boolean hasFileWithExtension
     (File
              TestFile, String
-            Extension) {
+             Extension) {
         if (!TestFile.exists()) {
             return (false);
         }
@@ -1178,7 +1183,7 @@ public abstract class FileUtilities {
      * @param Directory the directory
      * @param Extension test extension
      * @return latest modifiaction time
-     *         }
+     * }
      * @name getLatestModifiedWithExtension
      * @function return the latest date on a file in the directory having
      * This was written as a utility to help makefile like programs
@@ -1204,7 +1209,7 @@ public abstract class FileUtilities {
      * @param Directory the directory
      * @param testNames File names to test
      * @return latest modifiaction time
-     *         }
+     * }
      * @name getLatestFileFromList
      * @function return the latest date on a file in the directory having
      * This was written as a utility to help makefile like programs
@@ -1228,7 +1233,7 @@ public abstract class FileUtilities {
      *
      * @param BuildBase directory of build path
      * @return the array of classes present
-     *         }
+     * }
      * @name getAllFullClasses
      * @function find classes in BuildBase path and not in CaptureBase path
      */
@@ -1252,14 +1257,14 @@ public abstract class FileUtilities {
      * @param IncludedFile   non-null existing file in UpperDirectory
      * @param UpperDirectory non-null existing directory
      * @return string representing the path of the fiel relatove to the directory
-     *         }
+     * }
      * @name relativePath
      * @function return a string representing the path of included file ret
      */
     public static String relativePath
     (File
              IncludedFile, File
-            UpperDirectory) {
+             UpperDirectory) {
         if (!IncludedFile.exists())
             throw new IllegalArgumentException(
                     "requested file '" + IncludedFile.getAbsolutePath() + "' does not exist");
@@ -1289,14 +1294,14 @@ public abstract class FileUtilities {
      * @param BuildBase directory of build path
      * @param BuildBase directory of capture path
      * @return the array of classes present in BuildBase path and not CaptureBase
-     *         }
+     * }
      * @name differenceJavaPaths
      * @function find classes in BuildBase path and not in CaptureBase path
      */
     public static String[] differenceJavaPaths
     (String
              BuildBase, String
-            CaptureBase) {
+             CaptureBase) {
         String[] BuildClasses = getAllFullClasses(BuildBase);
         String[] CapturedClasses = getAllFullClasses(CaptureBase);
         String[] UnCaptured = Util.differenceStringArrays(CapturedClasses, BuildClasses);
@@ -1309,7 +1314,7 @@ public abstract class FileUtilities {
      * @param DirectoryName <Add Comment Here>
      * @param Extension     test extension
      * @return the array of files or null if none
-     *         }
+     * }
      * @name getFilesWithExtension
      * @function recursively get all files ending in ext
      * @UnusedParam> FileName start directory
@@ -1317,7 +1322,7 @@ public abstract class FileUtilities {
     public static String[] getFilesWithExtension
     (String
              DirectoryName, String
-            Extension) {
+             Extension) {
         if (Extension != null) {
             FilenameFilter TheFilter = (FilenameFilter) (new EndsWithFilter(Extension));
             return (getFilesWithFilter(DirectoryName, TheFilter));
@@ -1333,7 +1338,7 @@ public abstract class FileUtilities {
      * @param DirectoryName <Add Comment Here>
      * @param Extension     test extension
      * @return the array of files or null if none
-     *         }
+     * }
      * @name getFilesWithExtension
      * @function recursively get all files ending in ext
      * @UnusedParam> FileName start directory
@@ -1341,7 +1346,7 @@ public abstract class FileUtilities {
     public static String[] getFilesWithExtension
     (File
              dir, String
-            Extension) {
+             Extension) {
         if (Extension != null) {
             FilenameFilter TheFilter = (FilenameFilter) (new EndsWithFilter(Extension));
             return (getFilesWithFilter(dir, dir.getName(), TheFilter));
@@ -1357,7 +1362,7 @@ public abstract class FileUtilities {
      * @param DirectoryName    <Add Comment Here>
      * @param SubDirectoryName test name
      * @return the array of files or null if none
-     *         }
+     * }
      * @name getDirectoriesWithName the idea is to put all resources in a subdirectory called res and then
      * package all the contents in these subdirectories
      * @function recursively get all files ending in ext
@@ -1365,7 +1370,7 @@ public abstract class FileUtilities {
     public static String[] getDirectoriesWithName
     (String
              DirectoryName, String
-            SubDirectoryName) {
+             SubDirectoryName) {
         if (SubDirectoryName != null) {
             FilenameFilter TheFilter = (FilenameFilter) (new DirectoryNamedFilter(
                     SubDirectoryName));
@@ -1382,7 +1387,7 @@ public abstract class FileUtilities {
      * @param DirectoryName <Add Comment Here>
      * @param Filter        test to apply
      * @return the array of files or null if none
-     *         }
+     * }
      * @name getAllFilesWithFilter
      * @function recursively get all files passing the filter
      * @UnusedParam> FileName start directory
@@ -1390,7 +1395,7 @@ public abstract class FileUtilities {
     public static String[] getAllFilesWithFilter
     (String
              DirectoryName, FilenameFilter
-            Filter) {
+             Filter) {
         File TestFile = new File(DirectoryName);
         return (getAllFilesWithFilter(TestFile, Filter));
     }
@@ -1401,7 +1406,7 @@ public abstract class FileUtilities {
      * @param DirectoryName <Add Comment Here>
      * @param Filter        test to apply
      * @return the array of files or null if none
-     *         }
+     * }
      * @name getAllFilesWithFilter
      * @function recursively get all files passing the filter
      * @UnusedParam> FileName start directory
@@ -1409,7 +1414,7 @@ public abstract class FileUtilities {
     public static String[] getAllFilesWithFilter
     (File
              TestFile, FilenameFilter
-            Filter) {
+             Filter) {
         String test;
         File Subfile;
         String SubFiles[];
@@ -1502,7 +1507,7 @@ public abstract class FileUtilities {
      * @param DirectoryName <Add Comment Here>
      * @param Filter        filter to apply
      * @return the array of files or null if none
-     *         }
+     * }
      * @name getFilesWithFilter
      * @function get all files at the current level passing the filter
      * @UnusedParam> FileName start directory
@@ -1510,7 +1515,7 @@ public abstract class FileUtilities {
     public static String[] getFilesWithFilter
     (String
              DirectoryName, FilenameFilter
-            Filter) {
+             Filter) {
         File TestFile = new File(DirectoryName);
         return getFilesWithFilter(TestFile, DirectoryName, Filter);
     }
@@ -1518,7 +1523,7 @@ public abstract class FileUtilities {
     public static String[] getFilesWithFilter
             (File
                      pTestFile, String
-                    DirectoryName,
+                     DirectoryName,
              FilenameFilter
                      Filter) {
         String test;
@@ -1555,7 +1560,7 @@ public abstract class FileUtilities {
      *
      * @param DirectoryName <Add Comment Here>
      * @return the array of files or null if none
-     *         }
+     * }
      * @name getAllSubDirectories
      * @function return the names of all subdirectories at all levels
      * @UnusedParam> FileName starting directory
@@ -1611,7 +1616,7 @@ public abstract class FileUtilities {
     public static File findSubDirectory
     (File
              pTestFile, String
-            name) {
+             name) {
         File SubFiles[];
         String Files[];
         List ret = new ArrayList();
@@ -1654,7 +1659,7 @@ public abstract class FileUtilities {
     public static File findSubDirectoryBreadthFirst
     (File
              pTestFile, String
-            name) {
+             name) {
         File[] thislevel = {pTestFile};
         List<File> nextLevel = new ArrayList<File>();
         File ret = findSubDirectoryBreadthFirst(thislevel, nextLevel, name);
@@ -1716,7 +1721,7 @@ public abstract class FileUtilities {
      * @name findWildCardFile
      * @function Search a directory for files matching a name with wild cards - i.e. *.java
      * @see #findWildCardFile
-     *      }
+     * }
      */
     static public String findWildCardFile
     (String
@@ -1735,12 +1740,12 @@ public abstract class FileUtilities {
      * @name findWildCardFile
      * @function Search a directory for files matching a name with wild cards - i.e. *.java
      * @see #findWildCardFile
-     *      }
+     * }
      */
     static public String findWildCardFile
     (String
              DirectoryName, String
-            FileStub) {
+             FileStub) {
         File Directory = new File(DirectoryName);
         if (!Directory.exists() || !Directory.isDirectory()) {
             return (null);
@@ -1760,7 +1765,7 @@ public abstract class FileUtilities {
      *
      * @param FileName file name to parse
      * @return directory name
-     *         }
+     * }
      * @name fileNameToDirectoryName
      * @function get the directory of a file name i.e. C:/foo/bar/myfile.txt -> C:/foo/bar
      */
@@ -1779,7 +1784,7 @@ public abstract class FileUtilities {
      *
      * @param FileName the file name
      * @return - array or strings - null if file empty or does not exist
-     *         }
+     * }
      * @name readInParagraphs
      * @function reads all the data in a file into an array of strings - one per
      * paragraph where paragraphs are a blank line
@@ -1818,7 +1823,7 @@ public abstract class FileUtilities {
      *
      * @param FileName the file name
      * @return - array or strings - null if file empty or does not exist
-     *         }
+     * }
      * @name readInLines
      * @function reads all the data in a file into an array of strings - one per line
      * Empty strings are dropped
@@ -1841,7 +1846,7 @@ public abstract class FileUtilities {
      *
      * @param FileName the file name
      * @return - array or strings - null if file empty or does not exist
-     *         }
+     * }
      * @name readInLines
      * @function reads all the data in a file into an array of strings - one per line
      * Empty strings are dropped
@@ -1878,7 +1883,7 @@ public abstract class FileUtilities {
      *
      * @param FileName the file name
      * @return - array or strings - null if file empty or does not exist
-     *         }
+     * }
      * @name readInLines
      * @function reads all the data in a file into an array of strings - one per line
      * Empty strings are retained
@@ -1899,7 +1904,7 @@ public abstract class FileUtilities {
      *
      * @param FileName the file name
      * @return - array or strings - null if file empty or does not exist
-     *         }
+     * }
      * @name readInLines
      * @function reads all the data in a file into an array of strings - one per line
      */
@@ -1920,7 +1925,7 @@ public abstract class FileUtilities {
      *
      * @param FileName the file name
      * @return - array or strings - null if file empty or does not exist
-     *         }
+     * }
      * @name readInLines
      * @function reads all the data in a file into an array of strings - one per line
      */
@@ -1969,14 +1974,14 @@ public abstract class FileUtilities {
      * @param source   - class for resource
      * @param FileName the file name
      * @return - array or strings - null if file empty or does not exist
-     *         }
+     * }
      * @name readInResourceLines
      * @function reads all the data in a file into an array of strings - one per line
      */
     public static String[] readInResourceLines
     (Class
              source, String
-            FileName) {
+             FileName) {
         String s = readInResource(source, FileName);
         if (s != null) {
             String[] Lines = Util.parseLines(s);
@@ -1991,7 +1996,7 @@ public abstract class FileUtilities {
      *
      * @param FileName the file name
      * @return StringBuilder holding file bytes
-     *         }
+     * }
      * @name readInFile
      * @function reads all the data in a file into a StringBuilder
      */
@@ -2008,7 +2013,7 @@ public abstract class FileUtilities {
      *
      * @param TestFile non-null Test file - may not exist
      * @return String holding file bytes
-     *         }
+     * }
      * @name readInFile
      * @function reads all the data in a file into a StringBuilder
      */
@@ -2043,7 +2048,7 @@ public abstract class FileUtilities {
      * @param Source - class for resource
      * @param name   the file name
      * @return StringBuilder holding file bytes - null if resource not found
-     *         }
+     * }
      * @name readInResource
      * @function reads all the data in a resource into a StringBuilder
      */
@@ -2059,7 +2064,7 @@ public abstract class FileUtilities {
      *
      * @param TheFile the file stream
      * @return StringBuilder holding file bytes
-     *         }
+     * }
      * @name readInFile
      * @function reads all the data in a file into a StringBuilder
      */
@@ -2073,7 +2078,7 @@ public abstract class FileUtilities {
      * @param TheFile the file stream
      * @param len     the file length or a good guess
      * @return StringBuilder holding file bytes
-     *         }
+     * }
      * @name readInFile
      * @function reads all the data in a file into a StringBuilder
      */
@@ -2106,7 +2111,7 @@ public abstract class FileUtilities {
      *
      * @param TheFile the file stream
      * @return StringBuilder holding file bytes
-     *         }
+     * }
      * @name readInFile
      * @function reads all the data in a file into a StringBuilder
      */
@@ -2128,7 +2133,7 @@ public abstract class FileUtilities {
      *
      * @param TheFile the file stream
      * @return StringBuilder holding file bytes
-     *         }
+     * }
      * @name readInFile
      * @function reads all the data in a file into a StringBuilder
      */
@@ -2144,7 +2149,7 @@ public abstract class FileUtilities {
      * @param TheFile the file stream
      * @param len     the file length or a good guess
      * @return StringBuilder holding file bytes
-     *         }
+     * }
      * @name readInFile
      * @function reads all the data in a file into a StringBuilder
      */
@@ -2185,7 +2190,7 @@ public abstract class FileUtilities {
      * @param target -  Object holding resource
      * @param name   the file name
      * @return Icon for the resource possibly null
-     *         }
+     * }
      * @name getResourceIcon
      * @function read an Icon as a Resource
      */
@@ -2199,14 +2204,14 @@ public abstract class FileUtilities {
      * @param target -  Class holding resource
      * @param name   the file name
      * @return Icon for the resource possibly null
-     *         }
+     * }
      * @name getResourceIcon
      * @function read an Icon as a Resource
      */
     public static Icon getResourceIcon
     (Class
              target, String
-            name) {
+             name) {
         try {
             // Netscape appears not to support getResource so this
             // reads an image from a resource
@@ -2242,7 +2247,7 @@ public abstract class FileUtilities {
      * @param FileName the file name
      * @param lines    the file data - useing toString method
      * @return - true for success
-     *         }
+     * }
      * @name stringsToFile
      * @function reads all the data in a file into an array of strings - one per line
      */
@@ -2266,7 +2271,7 @@ public abstract class FileUtilities {
      *
      * @param TheStream the stream
      * @return the char
-     *         }
+     * }
      * @name readChar
      * @function get one char from an input stream without throwing an exception
      */
@@ -2286,7 +2291,7 @@ public abstract class FileUtilities {
      *
      * @param Name input name
      * @return Filtered file name
-     *         }
+     * }
      * @name UnixNameFilter
      * @function convert pc style filenames foo\bar to unix style foo/bar
      */
@@ -2304,7 +2309,7 @@ public abstract class FileUtilities {
      *
      * @param Name the full path
      * @return the base name
-     *         }
+     * }
      * @name baseFileName
      * @function peal off name+extension of a full path i.e. C:/foo/bar/myFile.txt => myFile.txt
      */
@@ -2334,7 +2339,7 @@ public abstract class FileUtilities {
      * @param Name full path
      * @param Base part to drop
      * @return filtered name
-     *         }
+     * }
      * @name baseFromName
      * @function given the base directory (part of full path)
      * return the rest of the path - for example if Name = "C:/foo/bar/pickle/Myfile.txt"
@@ -2343,7 +2348,7 @@ public abstract class FileUtilities {
     public static String baseFromName
     (String
              Name, String
-            Base) {
+             Base) {
         if (Name.indexOf(Base) == -1) {
             return (Name);
         }
@@ -2364,7 +2369,7 @@ public abstract class FileUtilities {
      *
      * @param Name full path
      * @return filtered name
-     *         }
+     * }
      * @name pathName
      * @function pull out all directories dropping filename + ext
      * for example if Name = "C:/foo/bar/pickle/Myfile.txt" return
@@ -2397,7 +2402,7 @@ public abstract class FileUtilities {
      * @param s1 path
      * @param s2 file
      * @return filtered name
-     *         }
+     * }
      * @name pathConcat
      * @function add path and file name or path and subpath adding separator
      * if needed For example if s1 = "C:/foo/bar" and s2 = "Myfile.txt"
@@ -2406,7 +2411,7 @@ public abstract class FileUtilities {
     static public String pathConcat
     (String
              s1, String
-            s2) {
+             s2) {
         if (s1 == null || s1.length() == 0) {
             return (s2);
         }
@@ -2427,7 +2432,7 @@ public abstract class FileUtilities {
      *
      * @param FileName path with directory
      * @return true for success
-     *         }
+     * }
      * @name guaranteeDirectory
      * @function given a path which should represent a directory
      * create as many levels of directory as needed to make the
@@ -2465,16 +2470,16 @@ public abstract class FileUtilities {
     public static void changeExtension
     (String
              dir, String
-            oldExtension, String
-            newExtension) {
+             oldExtension, String
+             newExtension) {
         changeExtension(new File(dir), oldExtension, newExtension);
     }
 
     public static void changeExtension
             (File
                      dir, String
-                    oldExtension, String
-                    newExtension) {
+                     oldExtension, String
+                     newExtension) {
         File[] files = dir.listFiles();
         if (files == null)
             return;
@@ -2492,7 +2497,7 @@ public abstract class FileUtilities {
      *
      * @param name name of file
      * @return the stream - null for failure
-     *         }
+     * }
      * @name openPrintWriter
      * @function open a PrintWriter to a file with name
      */
@@ -2517,7 +2522,7 @@ public abstract class FileUtilities {
      *
      * @param name name of file
      * @return the stream - null for failure
-     *         }
+     * }
      * @name openPrintWriter
      * @function open a PrintWriter to a file with name
      */
@@ -2542,7 +2547,7 @@ public abstract class FileUtilities {
      *
      * @param name name of file
      * @return the stream - null for failure
-     *         }
+     * }
      * @name openPrintWriter
      * @function open a PrintWriter to a file with name
      */
@@ -2566,7 +2571,7 @@ public abstract class FileUtilities {
      *
      * @param name name of file
      * @return the stream - null for failure
-     *         }
+     * }
      * @name openPrintWriter
      * @function open a PrintStream to a file with name
      */
@@ -2587,7 +2592,7 @@ public abstract class FileUtilities {
      * @param FileName name of file to create
      * @param data     date to write
      * @return true = success
-     *         }
+     * }
      * @name writeFile
      * @function write the string data to the file Filename
      */
@@ -2614,7 +2619,7 @@ public abstract class FileUtilities {
      * @param FileName name of file to create
      * @param data     date to write
      * @return true = success
-     *         }
+     * }
      * @name writeFile
      * @function write the string data to the file Filename
      */
@@ -2647,7 +2652,7 @@ public abstract class FileUtilities {
      * @param FileName name of file to create
      * @param data     date to write
      * @return true = success
-     *         }
+     * }
      * @name writeFile
      * @function write the string data to the file Filename
      */
@@ -2678,7 +2683,7 @@ public abstract class FileUtilities {
      * @param FileName non-null name of file to create
      * @param data     non-null array of lines to write
      * @return true = success
-     *         }
+     * }
      * @name writeFileLines
      * @function write the string data to the file Filename
      */
@@ -2705,7 +2710,7 @@ public abstract class FileUtilities {
      * @param f    non-null  of file to create
      * @param data non-null array of lines to write
      * @return true = success
-     *         }
+     * }
      * @name writeFileLines
      * @function write the string data to the file Filename
      */
@@ -2732,7 +2737,7 @@ public abstract class FileUtilities {
      * @param f    non-null  of file to create
      * @param data non-null array of lines to write
      * @return true = success
-     *         }
+     * }
      * @name appendFileLines
      * @function append the string data to the file Filename
      */
@@ -2746,7 +2751,7 @@ public abstract class FileUtilities {
      * @param f    non-null  of file to create
      * @param data non-null array of lines to write
      * @return true = success
-     *         }
+     * }
      * @name writeFileLines
      * @function write the string data to the file Filename
      */
@@ -2827,14 +2832,14 @@ public abstract class FileUtilities {
      * @param dst destination file name
      * @param src source file name
      * @return true for success
-     *         }
+     * }
      * @name copyFile
      * @function copy file named src into new file named dst
      */
     public static boolean copyFile
     (String
              src, String
-            dst) {
+             dst) {
         int bufsize = 1024;
         try {
             RandomAccessFile srcFile = new RandomAccessFile(src, "r");
@@ -2934,7 +2939,7 @@ public abstract class FileUtilities {
      * @param dst destination file name
      * @param src source file name
      * @return true for success
-     *         }
+     * }
      * @name copyFile
      * @function copy file named src into new file named dst
      */
@@ -2953,7 +2958,7 @@ public abstract class FileUtilities {
      * @param dst destination file name
      * @param src source file name
      * @return true for success
-     *         }
+     * }
      * @name copyFile
      * @function copy file named src into new file named dst
      */
@@ -3018,7 +3023,7 @@ public abstract class FileUtilities {
     public static void recursiveCopy
     (File
              copyFromDir, File
-            copyToDir, boolean overwrite) {
+             copyToDir, boolean overwrite) {
         try {
             //Create the copy to directory and any m_ParentStream directories
             //if needed.
@@ -3066,7 +3071,7 @@ public abstract class FileUtilities {
     public static void safeFileWrite
     (String
              fileName, String
-            text, int numberCopies) {
+             text, int numberCopies) {
         guaranteeWritable(fileName);
         for (int i = 0; i < numberCopies; i++) {
             guaranteeWritable(fileName + "." + (i + 1));
@@ -3150,14 +3155,14 @@ public abstract class FileUtilities {
      * @param newFileName <Add Comment Here>
      * @param overwrite   <Add Comment Here>
      * @return <Add Comment Here>
-     *         }
+     * }
      * @name renameFile
      * @function <Add Comment Here>
      */
     public static boolean renameFile
     (String
              oldFile, String
-            newFileName, boolean overwrite) {
+             newFileName, boolean overwrite) {
         try {
             File realOldFile = new File(oldFile);
             boolean ret = false;
@@ -3203,7 +3208,7 @@ public abstract class FileUtilities {
     public static void alphabetizeFile
     (String
              inFileName, String
-            outFileName) {
+             outFileName) {
         String s = FileUtilities.readInFile(inFileName);
         if (s != null) {
             String[] Lines = Util.parseLines(s);
@@ -3222,7 +3227,7 @@ public abstract class FileUtilities {
     public static boolean hasExtension
             (File
                      TheFile, String
-                    ext) {
+                     ext) {
         String Test = ext;
         if (!ext.startsWith("."))
             Test = "." + ext;
@@ -3264,7 +3269,7 @@ public abstract class FileUtilities {
      *
      * @param Lines <Add Comment Here>
      * @return <Add Comment Here>
-     *         }
+     * }
      * @name nonEmptyStrings
      * @function <Add Comment Here>
      */
@@ -3296,7 +3301,7 @@ public abstract class FileUtilities {
     public static void dupFile
             (String
                      infile, String
-                    outfile) throws IOException {
+                     outfile) throws IOException {
         FileReader in = new FileReader(infile);
         FileWriter out = new FileWriter(outfile);
         copyStream(in, out);
@@ -3305,7 +3310,7 @@ public abstract class FileUtilities {
     public static void dupFile
             (String
                      infile, Writer
-                    out) throws IOException {
+                     out) throws IOException {
         FileReader in = new FileReader(infile);
         copyStream(in, out);
     }
@@ -3313,7 +3318,7 @@ public abstract class FileUtilities {
     public static void dupFile
             (Reader
                      in, String
-                    outfile) throws IOException {
+                     outfile) throws IOException {
         FileWriter out = new FileWriter(outfile);
         copyStream(in, out);
     }
@@ -3321,7 +3326,7 @@ public abstract class FileUtilities {
     public static void copyStream
             (Reader
                      in, Writer
-                    out) throws IOException {
+                     out) throws IOException {
         char[] buffer = new char[2048];
         int nread;
         int col = 0;
@@ -3348,7 +3353,7 @@ public abstract class FileUtilities {
     public static void copyStream
             (InputStream
                      in, OutputStream
-                    out) throws IOException {
+                     out) throws IOException {
         byte[] buffer = new byte[2048];
         int nread;
         int col = 0;
@@ -3365,7 +3370,7 @@ public abstract class FileUtilities {
             }
         }
         finally {
-        //    System.out.println();
+            //    System.out.println();
             in.close();
             out.close();
         }
@@ -3376,7 +3381,7 @@ public abstract class FileUtilities {
      *
      * @param DirectoryName - non-null Directory name will not recurse
      * @return largest lastModified Date - 0 for empty or nonexistant directories
-     *         }
+     * }
      * @name getMostRecentFileDate
      * @function get all the files in the directory
      */
@@ -3392,7 +3397,7 @@ public abstract class FileUtilities {
      * @param DirectoryName - non-null Directory name will not recurse
      * @param recurse       - if true recurse to subdirectories - else ignore subdirectories
      * @return largest lastModified Date - 0 for empty or nonexistant directories
-     *         }
+     * }
      * @name getMostRecentFileDate
      * @function get all the files in the directory
      */
@@ -3429,7 +3434,7 @@ public abstract class FileUtilities {
      * @param DirectoryName - non-null Directory name will not recurse
      * @param date          - modified date
      * @return largest lastModified Date - 0 for empty or nonexistant directories
-     *         }
+     * }
      * @name getFilesAfterDate
      * @function get all the files in the directory after date
      */
@@ -3471,7 +3476,7 @@ public abstract class FileUtilities {
      * @param date          - modified date
      * @param recurse       - if true recurse to subdirectories - else ignore subdirectories
      * @return - non-null array of qualifying files
-     *         }
+     * }
      * @name getFilesAfterDate
      * @function get all the files in the directory after date
      */
@@ -3530,7 +3535,7 @@ public abstract class FileUtilities {
     public void writeTextWithBackup
     (String
              fileName, String
-            text) {
+             text) {
         writeTextWithBackup(new File(fileName), fileName);
     }
 
@@ -3543,7 +3548,7 @@ public abstract class FileUtilities {
     public static void writeTextWithBackup
     (File
              file, String
-            text) {
+             text) {
         File parentDirectory = file.getParentFile();
         if (!parentDirectory.exists() && !parentDirectory.mkdirs())
             throw new IllegalStateException(
@@ -3614,7 +3619,7 @@ public abstract class FileUtilities {
     public static void serializeObject
     (Serializable
              in, String
-            FileName) {
+             FileName) {
         try {
             FileOutputStream fout = new FileOutputStream(FileName);
             ObjectOutputStream out = new ObjectOutputStream(fout);
@@ -3661,7 +3666,7 @@ public abstract class FileUtilities {
     public static void serializeObject
     (Serializable
              in, File
-            TheFile) {
+             TheFile) {
         try {
             FileOutputStream fout = new FileOutputStream(TheFile);
             ObjectOutputStream out = new ObjectOutputStream(fout);
@@ -3726,8 +3731,8 @@ public abstract class FileUtilities {
     public static void downloadBinary
             (URL
                      BaseURL, String
-                    Name, File
-                    TargetDirectory)
+                     Name, File
+                     TargetDirectory)
             throws IOException {
         URL TheURL = new URL(BaseURL, Name);
         File TestFile = new File(TargetDirectory, Name);
@@ -3737,7 +3742,7 @@ public abstract class FileUtilities {
     public static void downloadBinary
             (URL
                      TheURL, File
-                    TestFile) throws IOException {
+                     TestFile) throws IOException {
         OutputStream outf = new FileOutputStream(TestFile);
         String test = TheURL.toString();
         System.out.println(test);
@@ -3749,7 +3754,7 @@ public abstract class FileUtilities {
     public static void downloadBinary
             (InputStream
                      ins, OutputStream
-                    outf) throws IOException {
+                     outf) throws IOException {
         byte[] holder = new byte[4096];
         InputStream in = new BufferedInputStream(ins);
         OutputStream out = new BufferedOutputStream(outf);
@@ -3822,7 +3827,7 @@ public abstract class FileUtilities {
     public static boolean filesAreIdentical
     (File
              t1, File
-            t2) {
+             t2) {
         guaranteeReadableFile(t1);
         guaranteeReadableFile(t2);
         try {
@@ -3967,7 +3972,7 @@ public abstract class FileUtilities {
     public static String getURLRespouse
     (String
              theMessage, URL
-            dest) {
+             dest) {
         try {
             HttpURLConnection conn = (HttpURLConnection) dest.openConnection();
             conn.setDoInput(true);
@@ -4005,7 +4010,7 @@ public abstract class FileUtilities {
     public static void sendURLText
     (String
              theMessage, URL
-            dest) {
+             dest) {
         try {
             HttpURLConnection conn = (HttpURLConnection) dest.openConnection();
             conn.setDoInput(false);
@@ -4079,6 +4084,39 @@ public abstract class FileUtilities {
     public static void removeWhiteSpace(File[] args) {
         for (int i = 0; i < args.length; i++) {
             removeWhiteSpace(args[i]);
+        }
+    }
+
+    public static void appendToAppendable(final String fileName, final Appendable pOut) {
+        appendToAppendable(new File(fileName), pOut);
+
+    }
+
+    public static void appendToAppendable(final File pFile, final Appendable pOut) {
+        try {
+            System.out.println(pFile.getName());
+            LineReader rdr = new LineReader(new FileReader(pFile));
+            appendToAppendable(rdr, pOut);
+        }
+        catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+
+        }
+
+    }
+
+    public static void appendToAppendable(final LineReader pRdr, final Appendable pOut) {
+        try {
+            String line = pRdr.readLine();
+            while (line != null) {
+                pOut.append(line);
+                pOut.append("\n");
+                line = pRdr.readLine();
+            }
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+
         }
     }
 
