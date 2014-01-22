@@ -55,7 +55,7 @@ public class SelectedProteinFastaBuilder implements IFastaHandler {
     }
 
 
-    public static final int FASTA_LINE_LENGTH = 80;
+    public static final int FASTA_LINE_LENGTH = 60;
 
     /**
      * @param out where to write
