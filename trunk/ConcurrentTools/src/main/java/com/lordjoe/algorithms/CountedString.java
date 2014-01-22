@@ -15,6 +15,7 @@ public class CountedString implements Comparable<CountedString> {
     /**
      * return an array of CountedString  sorted to by occurance count then
      * alphabetically
+     *
      * @param lst !null list of strings - no nulls duplicates OK
      * @return
      */
@@ -52,16 +53,18 @@ public class CountedString implements Comparable<CountedString> {
 
 
     /**
-     *  the strings in a list sorted first by occurance count then   alphabetically
+     * the strings in a list sorted first by occurance count then   alphabetically
+     *
      * @param lst !null list of strings - no nulls duplicates OK
      * @return as above
      */
     public static String[] getStringsByOccurance(String[] lst) {
-         return getStringsByOccurance(Arrays.asList(lst));
+        return getStringsByOccurance(Arrays.asList(lst));
     }
 
     /**
-     *  the strings in a list sorted first by occurance count then   alphabetically
+     * the strings in a list sorted first by occurance count then   alphabetically
+     *
      * @param lst !null list of strings - no nulls duplicates OK
      * @return as above
      */
@@ -74,7 +77,6 @@ public class CountedString implements Comparable<CountedString> {
         }
         return ret;
     }
-
 
 
     private final String m_Value;

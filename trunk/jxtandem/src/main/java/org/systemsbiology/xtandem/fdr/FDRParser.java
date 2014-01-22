@@ -62,7 +62,7 @@ public class FDRParser {
     /**
      *
      */
-    public void readFileAndGenerateFDR(PrintWriter out,ISpectrumDataFilter... filters) {
+    public void readFileAndGenerateFDR(PrintWriter out, ISpectrumDataFilter... filters) {
         int numberProcessed = 0;
         int numberUnProcessed = 0;
         double lastRetentionTime = 0;
@@ -71,30 +71,31 @@ public class FDRParser {
             String line = rdr.readLine();
             while (line != null) {
                 if (line.contains("<spectrum_query")) {
-                     String retention_time_sec = XMLUtil.extractAttribute(line, "retention_time_sec");
-                     if(retention_time_sec == null)    {
-                         lastRetentionTime = 0;
-                     }
-                     else {
-                         try {
-                             lastRetentionTime = Double.parseDouble(retention_time_sec.trim());
-                         }
-                         catch (NumberFormatException e) {
-                             lastRetentionTime = 0;
-                          }
-                     }
-                 }
+                    String retention_time_sec = XMLUtil.extractAttribute(line, "retention_time_sec");
+                    if (retention_time_sec == null) {
+                        lastRetentionTime = 0;
+                    }
+                    else {
+                        try {
+                            lastRetentionTime = Double.parseDouble(retention_time_sec.trim());
+                        }
+                        catch (NumberFormatException e) {
+                            lastRetentionTime = 0;
+                        }
+                    }
+                }
                 if (line.contains("<search_hit")) {
                     String[] searchHitLines = readSearchHitLines(line, rdr);
                     //              System.out.println(line);
-                    boolean processed = handleSearchHit(searchHitLines,lastRetentionTime, filters);
+                    boolean processed = handleSearchHit(searchHitLines, lastRetentionTime, filters);
                     if (processed) {
                         for (int i = 0; i < searchHitLines.length; i++) {
                             String searchHitLine = searchHitLines[i];
                             out.println(searchHitLine);
                         }
                         numberProcessed++;
-                    } else
+                    }
+                    else
                         numberUnProcessed++;
                 }
                 else {
@@ -106,7 +107,8 @@ public class FDRParser {
 
             //noinspection UnnecessaryReturnStatement
             return;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -124,7 +126,8 @@ public class FDRParser {
                 line = rdr.readLine();  // read next line
 
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -134,7 +137,7 @@ public class FDRParser {
     }
 
 
-    protected boolean handleSearchHit(String[] lines,double retentionTime, ISpectrumDataFilter... filters) {
+    protected boolean handleSearchHit(String[] lines, double retentionTime, ISpectrumDataFilter... filters) {
 
         Double expectedValue = null;
         Double hyperScoreValue = null;
@@ -152,6 +155,9 @@ public class FDRParser {
 
             if (line.contains(" modified_peptide="))
                 isModified = true;
+
+            if (line.contains("<modification_info>"))
+                 isModified = true;
 
 
             if (line.contains("<search_score name=\"hyperscore\" value=\"")) {
@@ -206,7 +212,8 @@ public class FDRParser {
                 m_ModifiedHandler.addTrueDiscovery(score);
             else
                 m_UnModifiedHandler.addTrueDiscovery(score);
-        } else {
+        }
+        else {
             hd.addFalseDiscovery(score);
             if (spectrum.isModified())
                 m_ModifiedHandler.addFalseDiscovery(score);
@@ -268,16 +275,24 @@ public class FDRParser {
             out.append("====================================\n");
             final String sunmod = FDRUtilities.listFDRAndRates(getUnModifiedHandler());
             out.append(sunmod);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
 
     }
 
+    private static void usage() {
+        System.out.println("usage <fdr file1> ... ");
+    }
 
     public static void main(String[] args) throws Exception {
+        if (args.length < 1) {
+            usage();
+            return;
+        }
 
-        PrintWriter px  = new PrintWriter(new FileWriter("output.pep.xml"));
+        PrintWriter px = new PrintWriter(new FileWriter("output.pep.xml"));
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             FDRParser fdrParser = new FDRParser(arg);
