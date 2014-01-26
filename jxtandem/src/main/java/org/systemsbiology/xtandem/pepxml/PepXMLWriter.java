@@ -220,7 +220,7 @@ public class PepXMLWriter {
 
     public void writePepXMLFooter(PrintWriter out) {
         out.println("     </msms_run_summary>");
-        out.println("</msms_pipeline_analysis/>");
+        out.println("</msms_pipeline_analysis>");
     }
 
     protected void writeSummaries(IScoredScan scan, PrintWriter out) {
