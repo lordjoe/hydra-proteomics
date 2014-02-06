@@ -65,6 +65,7 @@ public class Automation {
             runMain(main,line);
             line = rdr.readLine();
         }
+        System.out.println("== DONE ==");
 
 
     }
