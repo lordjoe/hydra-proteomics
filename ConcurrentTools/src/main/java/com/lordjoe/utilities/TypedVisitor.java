@@ -3,9 +3,8 @@ package com.lordjoe.utilities;
 import javax.annotation.*;
 
 /**
- * uk.ac.ebi.pride.spectracluster.util.TypedPredicate
- * interface representing a single boolean decision - frequently
- * use to implement a filter
+ * uk.ac.ebi.pride.spectracluster.util.TypedVisitor
+ * interface tp visit a specific type
  * User: Steve
  * Date: 9/25/13
  */
