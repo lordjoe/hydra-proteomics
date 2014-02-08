@@ -42,11 +42,13 @@ public class ProteinPepxmlParser {
     /**
      *
      */
-    public void readFileAndGenerate(ISpectrumDataFilter... filters) {
+    public void readFileAndGenerate(boolean onlyUniquePeptides, ISpectrumDataFilter... filters) {
         @SuppressWarnings("UnusedDeclaration")
         int numberProcessed = 0;
         @SuppressWarnings("UnusedDeclaration")
         double lastRetentionTime = 0;
+
+        @SuppressWarnings("UnusedDeclaration")
         int numberUnProcessed = 0;
         try {
             LineNumberReader rdr = new LineNumberReader(new FileReader(m_File));
@@ -54,7 +56,7 @@ public class ProteinPepxmlParser {
             while (line != null) {
                 if (line.contains("<spectrum_query")) {
                     String retention_time_sec = XMLUtil.extractAttribute(line, "retention_time_sec");
-                    if(retention_time_sec == null)    {
+                    if (retention_time_sec == null) {
                         lastRetentionTime = 0;
                     }
                     else {
@@ -63,24 +65,24 @@ public class ProteinPepxmlParser {
                         }
                         catch (NumberFormatException e) {
                             lastRetentionTime = 0;
-                         }
+                        }
                     }
                 }
 
+                //noinspection StatementWithEmptyBody,StatementWithEmptyBody
                 if (line.contains("<search_result")) {
                     String[] searchHitLines = readSearchHitLines(line, rdr);
                     //              System.out.println(line);
-                    boolean processed = handleSearchHit(searchHitLines,lastRetentionTime, filters);
+                    boolean processed = handleSearchHit(searchHitLines, lastRetentionTime, onlyUniquePeptides,  filters);
                     if (processed) {
                         for (int i = 0; i < searchHitLines.length; i++) {
+                            @SuppressWarnings("UnusedDeclaration")
                             String searchHitLine = searchHitLines[i];
                         }
                         numberProcessed++;
                     }
                     else
                         numberUnProcessed++;
-                }
-                else {
                 }
                 line = rdr.readLine();
 
@@ -119,7 +121,7 @@ public class ProteinPepxmlParser {
 
 
     @SuppressWarnings({"UnusedParameters", "UnusedAssignment"})
-    protected   boolean handleSearchHit(String[] lines,double retentionTime, ISpectrumDataFilter... filters) {
+    protected boolean handleSearchHit(String[] lines, double retentionTime,boolean onlyUniquePeptides, ISpectrumDataFilter... filters) {
         //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
         Double expectedValue = null;
         //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
@@ -139,7 +141,7 @@ public class ProteinPepxmlParser {
         boolean isModified = false;
         if (!line.contains("hit_rank=\"1\""))
             return false;
-        Polypeptide peptide = processPeptide(line,retentionTime);
+        Polypeptide peptide = processPeptide(line, retentionTime);
 
         IProtein protein = null;
 
@@ -151,10 +153,13 @@ public class ProteinPepxmlParser {
                 break;         // we are done
 
             if (line.contains(" modified_peptide="))
-                peptide = processModifiedPeptide(line,retentionTime);
+                peptide = processModifiedPeptide(line, retentionTime);
 
-            if (line.contains("<alternative_protein"))
-                isUnique = true;
+            if (line.contains("<alternative_protein")) {
+                isUnique = false;
+                if(onlyUniquePeptides)
+                     processSpectrum = false; // only process unique hits
+            }
 
             if (line.contains("<search_score name=\"hyperscore\" value=\"")) {
                 hyperScoreValue = parseValue(line);
@@ -195,7 +200,7 @@ public class ProteinPepxmlParser {
 
     }
 
-    public static Polypeptide processPeptide(final String line,double retentionTime) {
+    public static Polypeptide processPeptide(final String line, double retentionTime) {
         String peptide = XMLUtil.extractAttribute(line, "peptide");
         if (peptide == null)
             throw new IllegalArgumentException("bad line " + line);
@@ -204,7 +209,7 @@ public class ProteinPepxmlParser {
         return polypeptide;
     }
 
-    public static Polypeptide processModifiedPeptide(final String line,double retentionTime) {
+    public static Polypeptide processModifiedPeptide(final String line, double retentionTime) {
         String peptide = XMLUtil.extractAttribute(line, "modified_peptide");
         if (peptide == null)
             throw new IllegalArgumentException("bad line " + line);
@@ -301,9 +306,9 @@ public class ProteinPepxmlParser {
                     out.append("\t");
                     out.append(protein);
                     out.append("\t");
-                    String rt = String.format("%11.3f",peptide.getRetentionTime()).trim();
-                     out.append(rt);
-                     out.append("\n");
+                    String rt = String.format("%11.3f", peptide.getRetentionTime()).trim();
+                    out.append(rt);
+                    out.append("\n");
                 }
 
 
@@ -349,11 +354,12 @@ public class ProteinPepxmlParser {
 
         if (args.length == 0)
             throw new IllegalArgumentException("pass in pep.xml files to process");
-        PrintWriter px = new PrintWriter(new FileWriter("UniqueProteins.tsv"));
+        PrintWriter px = new PrintWriter(new FileWriter("AllTargetProteins.tsv"));
         for (int i = 0; i < args.length; i++) {
+            boolean onlyUniquePeptides = false;
             String arg = args[i];
             ProteinPepxmlParser fdrParser = new ProteinPepxmlParser(arg);
-            fdrParser.readFileAndGenerate();
+            fdrParser.readFileAndGenerate(onlyUniquePeptides);
             fdrParser.appendProteins(px);
             px.close();
             PrintWriter ppx = new PrintWriter(new FileWriter("UniquePeptides.tsv"));
