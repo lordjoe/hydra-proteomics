@@ -347,11 +347,7 @@ public class ProteinPepxmlParser {
     }
 
 
-    public static void main(String[] args) throws Exception {
-
-        Class me = ProteinPepxmlParser.class;
-
-
+    private static void originalMain(final String[] args) throws IOException {
         if (args.length == 0)
             throw new IllegalArgumentException("pass in pep.xml files to process");
         PrintWriter px = new PrintWriter(new FileWriter("AllTargetProteins.tsv"));
@@ -366,7 +362,35 @@ public class ProteinPepxmlParser {
             fdrParser.appendPeptides(ppx);
             ppx.close();
         }
+    }
+
+
+    private static void newMain(final String[] args) throws IOException {
+        if (args.length == 0)
+            throw new IllegalArgumentException("pass in pep.xml files to process");
+        PrintWriter px = new PrintWriter(new FileWriter("AllTargetProteins.tsv"));
+        for (int i = 0; i < args.length; i++) {
+            boolean onlyUniquePeptides = false;
+            String arg = args[i];
+            ProteinPepxmlParser fdrParser = new ProteinPepxmlParser(arg);
+            fdrParser.readFileAndGenerate(onlyUniquePeptides);
+            fdrParser.appendProteins(px);
+            px.close();
+            PrintWriter ppx = new PrintWriter(new FileWriter("UniquePeptides.tsv"));
+            fdrParser.appendPeptides(ppx);
+            ppx.close();
+        }
+    }
+
+
+
+    public static void main(String[] args) throws Exception {
+
+
+        newMain(args);
+        originalMain(args);
 
     }
+
 
 }
