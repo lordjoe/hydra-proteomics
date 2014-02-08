@@ -62,7 +62,7 @@ public class FDRParser {
     /**
      *
      */
-    public void readFileAndGenerateFDR(PrintWriter out, ISpectrumDataFilter... filters) {
+    public void readFileAndGenerateFDR(PrintWriter out,boolean onlyUniquePeptides, ISpectrumDataFilter... filters) {
         int numberProcessed = 0;
         int numberUnProcessed = 0;
         double lastRetentionTime = 0;
@@ -87,7 +87,7 @@ public class FDRParser {
                 if (line.contains("<search_hit")) {
                     String[] searchHitLines = readSearchHitLines(line, rdr);
                     //              System.out.println(line);
-                    boolean processed = handleSearchHit(searchHitLines, lastRetentionTime, filters);
+                    boolean processed = handleSearchHit(searchHitLines, lastRetentionTime,onlyUniquePeptides, filters);
                     if (processed) {
                         for (int i = 0; i < searchHitLines.length; i++) {
                             String searchHitLine = searchHitLines[i];
@@ -137,7 +137,7 @@ public class FDRParser {
     }
 
 
-    protected boolean handleSearchHit(String[] lines, double retentionTime, ISpectrumDataFilter... filters) {
+    protected boolean handleSearchHit(String[] lines, double retentionTime,boolean onlyUniquePeptides, ISpectrumDataFilter... filters) {
 
         Double expectedValue = null;
         Double hyperScoreValue = null;
@@ -296,7 +296,7 @@ public class FDRParser {
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             FDRParser fdrParser = new FDRParser(arg);
-            fdrParser.readFileAndGenerateFDR(px);
+            fdrParser.readFileAndGenerateFDR(px,false);
             fdrParser.appendFDRRates(System.out);
         }
 
