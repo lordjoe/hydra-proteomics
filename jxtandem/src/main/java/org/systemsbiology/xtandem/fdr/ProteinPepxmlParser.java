@@ -358,7 +358,7 @@ public class ProteinPepxmlParser {
             fdrParser.readFileAndGenerate(onlyUniquePeptides);
             fdrParser.appendProteins(px);
             px.close();
-            PrintWriter ppx = new PrintWriter(new FileWriter("UniquePeptides.tsv"));
+            PrintWriter ppx = new PrintWriter(new FileWriter("AllTargetPeptides.tsv"));
             fdrParser.appendPeptides(ppx);
             ppx.close();
         }
@@ -368,9 +368,9 @@ public class ProteinPepxmlParser {
     private static void newMain(final String[] args) throws IOException {
         if (args.length == 0)
             throw new IllegalArgumentException("pass in pep.xml files to process");
-        PrintWriter px = new PrintWriter(new FileWriter("AllTargetProteins.tsv"));
+        PrintWriter px = new PrintWriter(new FileWriter("UniqueProteins.tsv"));
         for (int i = 0; i < args.length; i++) {
-            boolean onlyUniquePeptides = false;
+            boolean onlyUniquePeptides = true;
             String arg = args[i];
             ProteinPepxmlParser fdrParser = new ProteinPepxmlParser(arg);
             fdrParser.readFileAndGenerate(onlyUniquePeptides);
