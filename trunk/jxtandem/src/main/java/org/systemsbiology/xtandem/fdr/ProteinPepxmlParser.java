@@ -350,7 +350,8 @@ public class ProteinPepxmlParser {
     private static void originalMain(final String[] args) throws IOException {
         if (args.length == 0)
             throw new IllegalArgumentException("pass in pep.xml files to process");
-        PrintWriter px = new PrintWriter(new FileWriter("AllTargetProteins.tsv"));
+        String filename = args[0];
+        PrintWriter px = new PrintWriter(new FileWriter(filename + "_AllTargetProteins.tsv"));
         for (int i = 0; i < args.length; i++) {
             boolean onlyUniquePeptides = false;
             String arg = args[i];
@@ -358,7 +359,7 @@ public class ProteinPepxmlParser {
             fdrParser.readFileAndGenerate(onlyUniquePeptides);
             fdrParser.appendProteins(px);
             px.close();
-            PrintWriter ppx = new PrintWriter(new FileWriter("AllTargetPeptides.tsv"));
+            PrintWriter ppx = new PrintWriter(new FileWriter(filename + "_AllTargetPeptides.tsv"));
             fdrParser.appendPeptides(ppx);
             ppx.close();
         }
@@ -368,7 +369,8 @@ public class ProteinPepxmlParser {
     private static void newMain(final String[] args) throws IOException {
         if (args.length == 0)
             throw new IllegalArgumentException("pass in pep.xml files to process");
-        PrintWriter px = new PrintWriter(new FileWriter("UniqueProteins.tsv"));
+        String filename = args[0];
+        PrintWriter px = new PrintWriter(new FileWriter(filename + "_UniqueProteins.tsv"));
         for (int i = 0; i < args.length; i++) {
             boolean onlyUniquePeptides = true;
             String arg = args[i];
@@ -376,7 +378,7 @@ public class ProteinPepxmlParser {
             fdrParser.readFileAndGenerate(onlyUniquePeptides);
             fdrParser.appendProteins(px);
             px.close();
-            PrintWriter ppx = new PrintWriter(new FileWriter("UniquePeptides.tsv"));
+            PrintWriter ppx = new PrintWriter(new FileWriter(filename + "_UniquePeptides.tsv"));
             fdrParser.appendPeptides(ppx);
             ppx.close();
         }
