@@ -9,15 +9,15 @@ import java.util.*;
  * @author Steve Lewis
  * @date 8/26/13
  */
-public class FilteredFDRParser {
+public class FilteredXTandemFDRParser {
 
     private final String m_InputFileName;
     private final String m_OutputFileName;
-    private final FDRParser m_Parser;
+    private final XTandemFDRParser m_Parser;
     private final Properties m_Props;
     private final OrSpectrumDataFilter m_Filters = new OrSpectrumDataFilter();
 
-    public FilteredFDRParser(String propertiesFile) {
+    public FilteredXTandemFDRParser(String propertiesFile) {
         m_Props = new Properties();
         File file = new File(propertiesFile);
         if (!file.exists() || !file.isFile())
@@ -31,11 +31,13 @@ public class FilteredFDRParser {
         m_OutputFileName = m_Props.getProperty("output_file");
 
         String minScoreStr = m_Props.getProperty("hyperscore");
+        double minScore = Double.MIN_VALUE;
         if (minScoreStr != null) {
-            double minScore = Double.parseDouble(minScoreStr);
+             minScore = Double.parseDouble(minScoreStr);
             m_Filters.addFilter(new KScoreSpectrumFilter(minScore));
         }
-        m_Parser = new FDRParser(m_InputFileName);
+        m_Parser = new XTandemFDRParser(m_InputFileName);
+        m_Parser.setMinimumHyperscore(minScore);
     }
 
     public void parse() {
@@ -59,7 +61,7 @@ public class FilteredFDRParser {
                     "output_file=A5decoy_v1.2013_08_213_11_35_03Filtered_300.pep.xml\n" +
                     "#\n" +
                     "# ignore values less than this score\n" +
-                    "minimum_kscore=300.0\n";
+                    "hyperscore=300.0\n";
 
 
     protected static void usage() {
@@ -76,7 +78,7 @@ public class FilteredFDRParser {
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
-            FilteredFDRParser fdr = new FilteredFDRParser(arg);
+            FilteredXTandemFDRParser fdr = new FilteredXTandemFDRParser(arg);
             fdr.parse();
         }
     }
