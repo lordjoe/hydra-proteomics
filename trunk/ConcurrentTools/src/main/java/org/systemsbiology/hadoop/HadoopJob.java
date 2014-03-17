@@ -90,7 +90,7 @@ public class HadoopJob implements IHadoopJob {
     }
 
     private UUID m_UID = UUID.randomUUID();
-    private String m_JarFile = "jobs" + "/" + getDefaultJarName();
+    private String m_JarFile = getDefaultJarName() != null ? "jobs" + "/" + getDefaultJarName() : null;
     private String m_MainClass;
     private String m_SourceFiles;
     private String m_JobDirectory;

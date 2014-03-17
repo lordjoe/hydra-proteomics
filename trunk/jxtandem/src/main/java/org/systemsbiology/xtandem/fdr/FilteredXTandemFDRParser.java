@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * org.systemsbiology.xtandem.fdr.FilteredFDRParser
+ * org.systemsbiology.xtandem.fdr.FilteredXTandemFDRParser
  *
  * @author Steve Lewis
  * @date 8/26/13

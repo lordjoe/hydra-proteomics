@@ -18,9 +18,9 @@ public class ProteinPepxmlParser {
     public static final boolean USE_EXPECTED = false; // otherwise use score
 
     private final File m_File;
-    private final Map<String, Set<Polypeptide>> proteinToHits = new HashMap<String, Set<Polypeptide>>();
-    private final Map<String, Set<Polypeptide>> uniqueProteinToHits = new HashMap<String, Set<Polypeptide>>();
-
+    private final Map<String, Set<IdentifiedPSM>> proteinToHits = new HashMap<String, Set<IdentifiedPSM>>();
+    private final Map<String, Set<IdentifiedPSM>> uniqueProteinToHits = new HashMap<String, Set<IdentifiedPSM>>();
+    private String scan_id;
 
     public ProteinPepxmlParser(String filename) {
         this(new File(filename));
@@ -56,7 +56,8 @@ public class ProteinPepxmlParser {
             while (line != null) {
                 if (line.contains("<spectrum_query")) {
                     String retention_time_sec = XMLUtil.extractAttribute(line, "retention_time_sec");
-                    if (retention_time_sec == null) {
+                    scan_id = XMLUtil.extractAttribute(line, "start_scan");
+                     if (retention_time_sec == null) {
                         lastRetentionTime = 0;
                     }
                     else {
@@ -133,6 +134,10 @@ public class ProteinPepxmlParser {
             if (index >= lines.length)
                 return false;
         }
+        String id = scan_id;
+        if("".equals(id))
+            throw new UnsupportedOperationException("Fix This"); // ToDo
+
         boolean trueHit = !line.contains("protein=\"DECOY_");
         boolean processSpectrum = parseHitValue(line) <= 2;
         //noinspection UnnecessaryLocalVariable,UnusedDeclaration,UnusedAssignment
@@ -141,7 +146,7 @@ public class ProteinPepxmlParser {
         boolean isModified = false;
         if (!line.contains("hit_rank=\"1\""))
             return false;
-        Polypeptide peptide = processPeptide(line, retentionTime);
+        IdentifiedPSM peptide = processPeptide(line, retentionTime,id);
 
         IProtein protein = null;
 
@@ -153,7 +158,7 @@ public class ProteinPepxmlParser {
                 break;         // we are done
 
             if (line.contains(" modified_peptide="))
-                peptide = processModifiedPeptide(line, retentionTime);
+                peptide = processModifiedPeptide(line, retentionTime,id);
 
             if (line.contains("<alternative_protein")) {
                 isUnique = false;
@@ -184,13 +189,13 @@ public class ProteinPepxmlParser {
 
         if (processSpectrum) {
             @SuppressWarnings("ConstantConditions")
-            String id = protein.getId();
+            String idP = protein.getId();
             if (id.contains("DECOY"))
                 return false;
-            Set<Polypeptide> pps = proteinToHits.get(id);
+            Set<IdentifiedPSM> pps = proteinToHits.get(idP);
             if (pps == null) {
-                pps = new HashSet<Polypeptide>();
-                proteinToHits.put(id, pps);
+                pps = new HashSet<IdentifiedPSM>();
+                proteinToHits.put(idP, pps);
             }
             pps.add(peptide);
             return true; // processed
@@ -200,23 +205,23 @@ public class ProteinPepxmlParser {
 
     }
 
-    public static Polypeptide processPeptide(final String line, double retentionTime) {
+    public static IdentifiedPSM processPeptide(final String line, double retentionTime,String id) {
         String peptide = XMLUtil.extractAttribute(line, "peptide");
         if (peptide == null)
             throw new IllegalArgumentException("bad line " + line);
         Polypeptide polypeptide = Polypeptide.fromString(peptide);
         polypeptide.setRetentionTime(retentionTime);
-        return polypeptide;
+        return new IdentifiedPSM(id,polypeptide);
     }
 
-    public static Polypeptide processModifiedPeptide(final String line, double retentionTime) {
+    public static IdentifiedPSM processModifiedPeptide(final String line, double retentionTime,String id) {
         String peptide = XMLUtil.extractAttribute(line, "modified_peptide");
         if (peptide == null)
             throw new IllegalArgumentException("bad line " + line);
         Polypeptide polypeptide = Polypeptide.fromString(peptide);
         polypeptide.setRetentionTime(retentionTime);
-        return polypeptide;
-    }
+        return new IdentifiedPSM(id,polypeptide);
+     }
 
     public static IProtein processProtein(final String line) {
         String peptide = XMLUtil.extractAttribute(line, "protein_descr");
@@ -296,13 +301,15 @@ public class ProteinPepxmlParser {
             List<String> proteins = new ArrayList<String>(proteinToHits.keySet());
             Collections.sort(proteins);
             for (String protein : proteins) {
-                Set<Polypeptide> pps = proteinToHits.get(protein);
-                List<Polypeptide> peptides = new ArrayList<Polypeptide>(pps);
+                Set<IdentifiedPSM> pps = proteinToHits.get(protein);
+                List<IdentifiedPSM> peptides = new ArrayList<IdentifiedPSM>(pps);
                 Collections.sort(peptides);
 
-                for (Polypeptide peptide : peptides) {
-                    IPolypeptide unModified = peptide; // .getUnModified();
-                    out.append(unModified.toString());
+                for (IdentifiedPSM psm : peptides) {
+                     Polypeptide peptide = (Polypeptide)psm.getPeptide(); // .getUnModified();
+                    out.append(peptide.toString());
+                    out.append("\t");
+                    out.append(psm.getId());
                     out.append("\t");
                     out.append(protein);
                     out.append("\t");
@@ -325,15 +332,17 @@ public class ProteinPepxmlParser {
             List<String> proteins = new ArrayList<String>(proteinToHits.keySet());
             Collections.sort(proteins);
             for (String protein : proteins) {
-                Set<Polypeptide> pps = proteinToHits.get(protein);
-                List<Polypeptide> peptides = new ArrayList<Polypeptide>(pps);
-                Collections.sort(peptides);
+                Set<IdentifiedPSM> pps = proteinToHits.get(protein);
+                List<IdentifiedPSM> psms = new ArrayList<IdentifiedPSM>(pps);
+                Collections.sort(psms);
 
                 out.append(protein);
-                for (Polypeptide peptide : peptides) {
+                for (IdentifiedPSM psm : psms) {
                     out.append("\t");
-                    IPolypeptide unModified = peptide; // .getUnModified();
+                    IPolypeptide unModified = psm.getPeptide(); // .getUnModified();
                     out.append(unModified.toString());
+                    out.append("\t");
+                   out.append(psm.getId());
 
                 }
                 out.append("\n");
