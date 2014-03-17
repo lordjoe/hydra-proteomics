@@ -48,7 +48,8 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
 
             return ret;
 
-        } else
+        }
+        else
             return pp;
     }
 
@@ -142,7 +143,8 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
                     XTandemUtilities.breakHere();
                 mods[charNumber] = mod;
                 i = index;
-            } else {
+            }
+            else {
                 lastChar = Character.toString(c);
                 charNumber++;
             }
@@ -414,20 +416,49 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
                                                final Collection<IPolypeptide> pHolder,
                                                final String pSequence) {
         PeptideModification pm = pPeptideModification;
-        String test = pm.applyTo();
-        int start = 0;
-        int index = pSequence.indexOf(test, start);
-        if (index == -1)
-            return false; // no mods applied
-        while (index > -1) {
-            IModifiedPeptide e = buildModification(peptide, pm, index);
-            if (!pHolder.contains(e))
-                pHolder.add(e);
-            if (index > pSequence.length() - 1)
-                break;
-            index = pSequence.indexOf(test, index + 1);
+        PeptideModificationRestriction restriction = pm.getRestriction();
+        int index;
+        FastaAminoAcid aminoAcid = pm.getAminoAcid();
+        switch (restriction) {
+            case NTerminal:
+                  index = pSequence.length() - 1;
+                  if(aminoAcid == null) {
+                      IModifiedPeptide e = buildModification(peptide, pm, index);
+                       if (!pHolder.contains(e))
+                           pHolder.add(e);
+                      return true;
+                  }
+                else {
+                      throw new UnsupportedOperationException("Fix This"); // ToDo
+                  }
+            case CTerminal:
+                  index = 0;
+                  if(aminoAcid == null) {
+                      IModifiedPeptide e = buildModification(peptide, pm, index);
+                       if (!pHolder.contains(e))
+                           pHolder.add(e);
+                      return true;
+                  }
+                else {
+                      throw new UnsupportedOperationException("Fix This"); // ToDo
+                  }
+            case Global:
+             default:
+                String test = pm.applyTo();
+                int start = 0;
+                 index = pSequence.indexOf(test, start);
+                if (index == -1)
+                    return false; // no mods applied
+                while (index > -1) {
+                    IModifiedPeptide e = buildModification(peptide, pm, index);
+                    if (!pHolder.contains(e))
+                        pHolder.add(e);
+                    if (index > pSequence.length() - 1)
+                        break;
+                    index = pSequence.indexOf(test, index + 1);
+                }
+                return true; // mods applied
         }
-        return true; // mods applied
     }
 
     public static IModifiedPeptide buildModification(final IPolypeptide peptide,
@@ -438,7 +469,8 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         if (peptide instanceof IModifiedPeptide) {
             IModifiedPeptide eptide = (IModifiedPeptide) peptide;
             mods = eptide.getModifications();
-        } else {
+        }
+        else {
             mods = new PeptideModification[sequence.length()];
         }
         if (mods[index] == pm)
