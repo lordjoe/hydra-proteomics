@@ -1,5 +1,6 @@
 package org.systemsbiology.xtandem.hadoop;
 
+import com.lordjoe.utilities.*;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.*;
@@ -213,18 +214,22 @@ public class JXTantemPass1Runner extends ConfiguredJobRunner implements IJobRunn
               return ret;
         }
         catch (IOException e) {
+            ExceptionUtilities.printCausalStacks(e);
             throw new RuntimeException(e);
 
         }
         catch (IllegalStateException e) {
+            ExceptionUtilities.printCausalStacks(e);
             throw new RuntimeException(e);
 
         }
         catch (InterruptedException e) {
+            ExceptionUtilities.printCausalStacks(e);
             throw new RuntimeException(e);
 
         }
         catch (ClassNotFoundException e) {
+            ExceptionUtilities.printCausalStacks(e);
             throw new RuntimeException(e);
 
         }
