@@ -248,21 +248,26 @@ public class PeptideModification implements Comparable<PeptideModification> {
     }
 
     private PeptideModification(String value, PeptideModificationRestriction restriction, boolean fixed) {
-        if (value.endsWith("[")) {
+        if (value.endsWith(PeptideModificationRestriction.NTERMINAL_STRING)) {
             restriction = PeptideModificationRestriction.NTerminal;
             value = value.substring(0, value.length() - 1);
         }
-        if (value.endsWith("]")) {
+        if (value.endsWith(PeptideModificationRestriction.CTERMINAL_STRING)) {
             restriction = PeptideModificationRestriction.CTerminal;
             value = value.substring(0, value.length() - 1);
         }
         String[] items = value.split("@");
         if (items.length > 1) {
-            m_AminoAcid = FastaAminoAcid.valueOf(items[1]);
+            try {
+                m_AminoAcid = FastaAminoAcid.valueOf(items[1]);
+            }
+            catch (IllegalArgumentException e) {
+                throw new RuntimeException(e);
 
+            }
         }
         else {
-            if (restriction != PeptideModificationRestriction.NTerminal ||
+            if (restriction != PeptideModificationRestriction.NTerminal &&
                     restriction != PeptideModificationRestriction.CTerminal)
                 throw new IllegalStateException("Any Animo Acid can only apply to terminal modifications ");
             m_AminoAcid = null;
@@ -305,7 +310,21 @@ public class PeptideModification implements Comparable<PeptideModification> {
 
     public boolean isApplicable(IPolypeptide pep)
     {
-        return pep.hasUnmodifiedAminoAcid(getAminoAcid());
+        FastaAminoAcid aminoAcid = getAminoAcid();
+        switch(getRestriction())  {
+            case CTerminal:
+                if(aminoAcid != null)
+                    return pep.getCTerminal() == aminoAcid;
+                 else
+                    return true; // always
+            case NTerminal:
+                if(aminoAcid != null)
+                    return pep.getNTerminal() == aminoAcid;
+                 else
+                    return true; // always
+            default:
+             return pep.hasUnmodifiedAminoAcid(aminoAcid);
+        }
     }
     /**
      * if true this is always applied
@@ -317,8 +336,12 @@ public class PeptideModification implements Comparable<PeptideModification> {
     }
 
     public String applyTo() {
-        return getAminoAcid().toString();
+        FastaAminoAcid aminoAcid = getAminoAcid();
+        if(aminoAcid == null)
+            return "";
+        return aminoAcid.toString();
     }
+
 
     /**
      * null says any
@@ -338,7 +361,24 @@ public class PeptideModification implements Comparable<PeptideModification> {
     }
 
     private double computePeptideMass() {
-        String abbreviation = getAminoAcid().toString();
+        FastaAminoAcid aminoAcid = getAminoAcid();
+
+        String abbreviation;
+        if(aminoAcid != null)  {
+            abbreviation= aminoAcid.toString();
+        }
+        else {
+            switch(m_Restriction)  {
+                case CTerminal:
+                    abbreviation = PeptideModificationRestriction.CTERMINAL_STRING;
+                    break;
+                case NTerminal:
+                     abbreviation = PeptideModificationRestriction.NTERMINAL_STRING;
+                     break;
+                 default:
+                     throw new UnsupportedOperationException("Any "); // ToDo
+            }
+        }
         char aa = abbreviation.charAt(0);
         MassCalculator defaultCalculator = MassCalculator.getDefaultCalculator();
         double aminoAcidMass = defaultCalculator.getAminoAcidMass(aa);

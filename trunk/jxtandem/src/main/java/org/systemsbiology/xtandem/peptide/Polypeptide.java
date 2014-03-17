@@ -298,6 +298,34 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
     }
 
     /**
+     * return the N Terminal amino acid
+     *
+     * @return
+     */
+    @Override
+    public FastaAminoAcid getNTerminal() {
+        int sequenceLength = getSequenceLength();
+        if(sequenceLength == 0)
+            return null;
+         String aas = getSequence().substring(sequenceLength -1, sequenceLength) ;
+        return FastaAminoAcid.valueOf(aas);
+    }
+
+    /**
+     * return the C Terminal amino acid
+     *
+     * @return
+     */
+    @Override
+    public FastaAminoAcid getCTerminal() {
+        int sequenceLength = getSequenceLength();
+        if(sequenceLength == 0)
+            return null;
+         String aas = getSequence().substring(1) ;
+        return FastaAminoAcid.valueOf(aas);
+    }
+
+    /**
      * count the occurrance of an unmodified amino acid in the sequence
      *
      * @param aa !null amino acid

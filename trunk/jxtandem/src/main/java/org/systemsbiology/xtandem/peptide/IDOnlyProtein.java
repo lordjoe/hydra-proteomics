@@ -209,6 +209,25 @@ public class IDOnlyProtein implements IProtein {
         return false;
     }
 
+    /**
+     * return the N Terminal amino acid
+     *
+     * @return
+     */
+    @Override
+    public FastaAminoAcid getNTerminal() {
+        return null;
+    }
+
+    /**
+     * return the C Terminal amino acid
+     *
+     * @return
+     */
+    @Override
+    public FastaAminoAcid getCTerminal() {
+        return null;
+    }
 
     /**
      * count the occurrance of an amino acid in the sequence
