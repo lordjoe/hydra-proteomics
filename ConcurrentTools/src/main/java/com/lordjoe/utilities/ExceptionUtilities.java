@@ -34,4 +34,16 @@ public class ExceptionUtilities {
         }
     }
 
+    public static void printCausalStacks(Throwable t) {
+        printCausalStacks(t, System.out);
+    }
+
+
+    public static void printCausalStacks(Throwable t, Appendable out) {
+        Throwable next = t.getCause();
+        if(next == null || next == t)
+            printAllStacks(t,out);
+        printCausalStacks(next,out);
+    }
+
 }

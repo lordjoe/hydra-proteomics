@@ -10,6 +10,7 @@ import java.util.*;
 public class CompareTo {
 
     public static final double MINIMUM_DOUBLE_DIFFERENCE = 0.0000001;
+    public static final double MINIMUM_FLOAT_DIFFERENCE = 0.00001;
 
     public static Comparator<Double> COMPARE_DOUBLES = new Comparator<Double>() {
 
@@ -31,7 +32,7 @@ public class CompareTo {
     public static int compare(final float o1, final float o2) {
         double del = o1 - o2;
         double abs = Math.abs(del);
-        if (abs < MINIMUM_DOUBLE_DIFFERENCE)
+        if (abs < MINIMUM_FLOAT_DIFFERENCE)
             return 0;
         return del < 0 ? -1 : 1;
     }
