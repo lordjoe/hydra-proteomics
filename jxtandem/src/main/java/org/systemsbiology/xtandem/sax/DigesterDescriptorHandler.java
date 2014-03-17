@@ -18,13 +18,10 @@ public class DigesterDescriptorHandler extends AbstractElementSaxHandler<Digeste
     public static final String TAG = DigesterDescription.TAG;
 
 
-
-    public DigesterDescriptorHandler( DelegatingSaxHandler parent,DigesterDescription obj) {
+    public DigesterDescriptorHandler(DelegatingSaxHandler parent, DigesterDescription obj) {
         super(TAG, parent);
         setElementObject(obj);
-     }
-
-
+    }
 
 
     @Override
@@ -35,15 +32,15 @@ public class DigesterDescriptorHandler extends AbstractElementSaxHandler<Digeste
         PeptideBondDigester digester = PeptideBondDigester.getDigester(rules);
         dig.setDigester(digester);
 
-        boolean semi = XTandemSaxUtilities.getRequiredBooleanAttribute( "semityptic", attr);
+        boolean semi = XTandemSaxUtilities.getRequiredBooleanAttribute("semityptic", attr);
         digester.setSemiTryptic(semi);
         String version = attr.getValue("version");
-        if(version != null)
+        if (version != null)
             getElementObject().setVersion(version);
-        int missedCleavages = XTandemSaxUtilities.getRequiredIntegerAttribute( "numberMissedCleavages", attr);
-         digester.setNumberMissedCleavages(missedCleavages);
+        int missedCleavages = XTandemSaxUtilities.getRequiredIntegerAttribute("numberMissedCleavages", attr);
+        digester.setNumberMissedCleavages(missedCleavages);
 
-        boolean hasDecoys = XTandemSaxUtilities.getBooleanAttribute("hasDecoys", attr,false);
+        boolean hasDecoys = XTandemSaxUtilities.getBooleanAttribute("hasDecoys", attr, false);
         dig.setHasDecoys(hasDecoys);
 
         return;
@@ -80,17 +77,31 @@ public class DigesterDescriptorHandler extends AbstractElementSaxHandler<Digeste
             return;
         }
         if ("modifications".equals(el)) {
-             return;
+            return;
         }
         if ("modification".equals(el)) {
-            FastaAminoAcid fs = XTandemSaxUtilities.getRequiredEnumAttribute("aminoacid", attributes,FastaAminoAcid.class);
-              String masschange = attributes.getValue( "massChange" );
-            PeptideModificationRestriction restrict = XTandemSaxUtilities.getRequiredEnumAttribute("restriction", attributes,PeptideModificationRestriction.class);
-            PeptideModification pm = PeptideModification.fromString(masschange + "@" + fs,restrict,false);
+            PeptideModificationRestriction restrict = XTandemSaxUtilities.getRequiredEnumAttribute("restriction", attributes, PeptideModificationRestriction.class);
+            FastaAminoAcid fs;
+
+            switch (restrict) {
+                case NTerminal:
+                case CTerminal:
+                    fs = XTandemSaxUtilities.getEnumAttribute("aminoacid", attributes, FastaAminoAcid.class, (FastaAminoAcid) null);
+                    break;
+                default:
+                    fs = XTandemSaxUtilities.getRequiredEnumAttribute("aminoacid", attributes, FastaAminoAcid.class);
+            }
+            String masschange = attributes.getValue("massChange");
+            PeptideModification pm;
+            if(fs == null)
+                pm = PeptideModification.fromString(masschange + "@" + restrict.getRestrictionString(), restrict, false);
+            else
+                pm = PeptideModification.fromString(masschange + "@" + fs, restrict, false);
+
             getElementObject().addModification(pm);
-             return;
+            return;
         }
-          super.startElement(uri, localName, el, attributes);
+        super.startElement(uri, localName, el, attributes);
 
     }
 
@@ -102,11 +113,11 @@ public class DigesterDescriptorHandler extends AbstractElementSaxHandler<Digeste
         }
         if ("modifications".equals(el)) {
             return;
-           }
+        }
         if ("modification".equals(el)) {
-             return;
-           }
-         super.endElement(elx, localName, el);
+            return;
+        }
+        super.endElement(elx, localName, el);
     }
 
 
