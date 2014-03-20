@@ -323,7 +323,7 @@ public class PeptideModification implements Comparable<PeptideModification> {
                  else
                     return true; // always
             default:
-             return pep.hasUnmodifiedAminoAcid(aminoAcid);
+                return pep.hasUnmodifiedAminoAcid(aminoAcid);
         }
     }
     /**
@@ -434,14 +434,17 @@ public class PeptideModification implements Comparable<PeptideModification> {
     public int compareTo(final PeptideModification o) {
         if (this == o)
             return 0;
+        FastaAminoAcid aminoAcid = o.getAminoAcid();
         if (getAminoAcid() != null) {
-            int ret = getAminoAcid().compareTo(o.getAminoAcid());
+            if(aminoAcid == null)
+                return -1;
+            int ret = getAminoAcid().compareTo(aminoAcid);
             if (ret != 0)
                 return ret;
 
         }
         else {
-            if (o.getAminoAcid() != null)
+            if (aminoAcid != null)
                 return 1;
         }
         PeptideModificationRestriction r1 = getRestriction();
