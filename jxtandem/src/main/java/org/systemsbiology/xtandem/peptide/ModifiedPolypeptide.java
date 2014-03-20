@@ -421,7 +421,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
         FastaAminoAcid aminoAcid = pm.getAminoAcid();
         switch (restriction) {
             case NTerminal:
-                  index = pSequence.length() - 1;
+                  index = 0;
                   if(aminoAcid == null) {
                       IModifiedPeptide e = buildModification(peptide, pm, index);
                        if (!pHolder.contains(e))
@@ -432,7 +432,7 @@ public class ModifiedPolypeptide extends Polypeptide implements IModifiedPeptide
                       throw new UnsupportedOperationException("Fix This"); // ToDo
                   }
             case CTerminal:
-                  index = 0;
+                  index = pSequence.length() - 1;
                   if(aminoAcid == null) {
                       IModifiedPeptide e = buildModification(peptide, pm, index);
                        if (!pHolder.contains(e))

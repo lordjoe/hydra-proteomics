@@ -307,8 +307,8 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         int sequenceLength = getSequenceLength();
         if(sequenceLength == 0)
             return null;
-         String aas = getSequence().substring(sequenceLength -1, sequenceLength) ;
-        return FastaAminoAcid.valueOf(aas);
+        String aas = getSequence().substring(1) ;
+         return FastaAminoAcid.valueOf(aas);
     }
 
     /**
@@ -321,7 +321,7 @@ public class Polypeptide implements IPolypeptide, Comparable<IPolypeptide> {
         int sequenceLength = getSequenceLength();
         if(sequenceLength == 0)
             return null;
-         String aas = getSequence().substring(1) ;
+         String aas = getSequence().substring(sequenceLength -1, sequenceLength) ;
         return FastaAminoAcid.valueOf(aas);
     }
 
