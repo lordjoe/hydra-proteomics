@@ -129,8 +129,71 @@ public class HadoopDeployer {
             //   "xml-apis-1.0.b2.jar",
             //    "xml-apis-ext-1.3.04.jar",
             "tools.jar",
+    //        "jsch-0.1.44-1.jar",
+            "junit-4.5.jar",
+            "phoenix-2.0.2.jar",
+            "antlr-3.5.jar",
+            "antlr-runtime-3.5.jar",
+            "stringtemplate-3.2.1.jar",
+            "antlr-2.7.7.jar",
+            "ST4-4.0.7.jar",
+            "opencsv-2.3.jar",
+            "pig-0.11.0.jar",
+            "hbase-0.94.12.jar",
+            "metrics-core-2.1.2.jar",
+            "guava-15.0.jar",
+  //          "commons-configuration-1.6.jar",
+  //          "commons-collections-3.2.1.jar",
+   //         "commons-lang-2.5.jar",
+ //           "commons-digester-1.8.jar",
+ //           "commons-beanutils-1.7.0.jar",
+ //           "commons-beanutils-core-1.8.0.jar",
+            "high-scale-lib-1.1.1.jar",
+//            "log4j-1.2.17.jar",
+            "zookeeper-3.4.5.jar",
+            "libthrift-0.8.0.jar",
+            "httpclient-4.1.2.jar",
+            "httpcore-4.1.3.jar",
+            "jruby-complete-1.6.5.jar",
+            "jamon-runtime-2.3.1.jar",
+            "protobuf-java-2.4.0a.jar",
+            "activation-1.1.jar",
+            "asm-3.1.jar",
+            "jline-2.11.jar",
+            "sqlline-1.1.2.jar",
+            "annotations-1.3.2.jar",
+            "commons-dbcp-1.2.2.jar",
+            "commons-pool-1.3.jar",
+            "google-oauth-client-jetty-1.11.0-beta.jar",
+            "google-oauth-client-java6-1.11.0-beta.jar",
+            "google-oauth-client-1.11.0-beta.jar",
+            "google-http-client-1.11.0-beta.jar",
+            "xpp3-1.1.4c.jar",
+            "mail-1.4.jar",
+            "google-api-data-spreadsheet-v3-1.0.10-alpha.jar",
+            "javax.servlet-3.0.0.v201112011016.jar",
+    //        "spring-jdbc-2.5.6.jar",
+            "spring-beans-2.5.6.jar",
+            "spring-core-2.5.6.jar",
+            "spring-context-2.5.6.jar",
+            "aopalliance-1.0.jar",
+            "spring-tx-2.5.6.jar",
+            "mysql-connector-java-5.1.25.jar",
+            "jcommon-1.0.16.jar",
+            "xml-apis-1.0.b2.jar",
+            "xml-apis-ext-1.3.04.jar",
             "gragent.jar"
     };
+
+    private static boolean onlyClassesInJar = false;
+
+    public static boolean isOnlyClassesInJar() {
+        return onlyClassesInJar;
+    }
+
+    public static void setOnlyClassesInJar(boolean onlyClassesInJar) {
+        HadoopDeployer.onlyClassesInJar = onlyClassesInJar;
+    }
 
     @SuppressWarnings("unchecked")
     public static final Set<String> EXCLUDED_JARS = new HashSet(Arrays.asList(EXCLUDED_JARS_LIST));
@@ -228,6 +291,8 @@ public class HadoopDeployer {
      * @return
      */
     protected static boolean applyRulesToExclude(String item, String jarName) {
+        if(isOnlyClassesInJar())
+            return true;
         if (EXCLUDED_JARS.contains(item))
             return true;  // exclude
         if (EXCLUDED_JARS.contains(jarName))

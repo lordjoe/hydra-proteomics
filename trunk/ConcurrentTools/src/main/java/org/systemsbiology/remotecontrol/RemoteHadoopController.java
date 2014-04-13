@@ -140,7 +140,7 @@ public class RemoteHadoopController implements IHadoopController {
         job.setOutputDirectory(emptyOutputDirectory);
         hdfsAccessor.expunge(emptyOutputDirectory);
 
-        runningVersion0 = true; // todo take out
+       // runningVersion0 = true; // todo take out
         //noinspection ConstantConditions
         if (!runningVersion0) {
             String command = job.buildCommandString();

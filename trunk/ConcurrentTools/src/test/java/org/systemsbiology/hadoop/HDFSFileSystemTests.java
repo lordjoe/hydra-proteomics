@@ -33,7 +33,7 @@ public class HDFSFileSystemTests {
                     "He followed her to schoool one day";
 
 
-    @Test
+   // @Test
     public void versionTest() {
         // better be running version 0.2 of Hadoop
         HadoopMajorVersion mv = HadoopMajorVersion.CURRENT_VERSION;
