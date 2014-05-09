@@ -270,6 +270,9 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
         // note this only looks backwards SLewis
         ret[0] = defaultConverter.asInteger(scanMass - getPlusLimit());
         ret[1] = defaultConverter.asInteger(scanMass + -getMinusLimit());
+        if(ret[0] == ret[1])   {
+            ret[1]++;
+        }
 
         return ret; // break here interesting result
     }
@@ -371,8 +374,8 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
 
         double del = Math.abs(matchingMass - precursorMass);
         double massTolerance = getMassTolerance();
-        if(true)
-            return true;
+//       if(true)
+  //         return true;
         //noinspection SimplifiableIfStatement
         if(del < massTolerance)
             return true;
