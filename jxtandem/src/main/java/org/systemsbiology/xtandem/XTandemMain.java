@@ -859,12 +859,14 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
     public final String DEFAULT_SCORING_CLASS = "org.systemsbiology.xtandem.TandemKScoringAlgorithm";
 
     /**
-     * use configuration information to construct an  object
+     * use configuration information to construct an object
      * that will do scoring
      * default is an instance of
      */
     protected void buildScoringAlgorithm() {
         String defaultScoringClass = DEFAULT_SCORING_CLASS;
+        if(getScorer() != null)
+            return;
         final String configuredAlgorithm = getParameter("scoring, algorithm");
         if (configuredAlgorithm != null) {
             buildScoringAlgorithm(configuredAlgorithm); // do configurable scoring here
@@ -872,7 +874,7 @@ public class XTandemMain extends AbstractParameterHolder implements IMainData {
         }
 
         ITandemScoringAlgorithm scorer = XTandemUtilities.buildObject(ITandemScoringAlgorithm.class, defaultScoringClass);
-        scorer.configure(this); // let the scorer ste its parameters
+        scorer.configure(this); // let the scorer set its parameters
         addAlgorithm(scorer);
         return;
     }
