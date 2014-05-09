@@ -426,8 +426,8 @@ public abstract  class AbstractScoringAlgorithm implements ITandemScoringAlgorit
 
 
     /**
-     * an algorithm may choose not to score a petide - for example high resolution algorithms may
-     * choose not to score ppetides too far away
+     * an algorithm may choose not to score a peptide - for example high resolution algorithms may
+     * choose not to score petides too far away
      * @param ts !null peptide spectrum
      * @param pScan  !null scan to score
      * @return true if scoring is desired

@@ -354,8 +354,8 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
 
 
     /**
-     * an algorithm may choose not to score a petide - for example high resolution algorithms may
-     * choose not to score ppetides too far away
+     * an algorithm may choose not to score a peptide - for example high resolution algorithms may
+     * choose not to score peptides too far away
      * @param ts !null peptide spectrum
      * @param pScan  !null scan to score
      * @return true if scoring is desired
@@ -371,6 +371,8 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
 
         double del = Math.abs(matchingMass - precursorMass);
         double massTolerance = getMassTolerance();
+        if(true)
+            return true;
         //noinspection SimplifiableIfStatement
         if(del < massTolerance)
             return true;
