@@ -36,7 +36,7 @@ public class MarkedNumber<T> implements Comparable<MarkedNumber<T>> {
         Map<Integer, Integer> ret = new HashMap<Integer, Integer>();
         for (int i = binner.getMinBin(); i < binner.getMaxBin(); i++) {
             double mz = binner.fromBin(i);
-            String s = ClusterUtilities.describeDaltons(mz);
+            String s = describeDaltons(mz);
             int thisBin = findBestBin(totals);
             MarkedNumber thisMark = toTotal.get(s);
             if(thisMark == null)
@@ -45,6 +45,10 @@ public class MarkedNumber<T> implements Comparable<MarkedNumber<T>> {
             totals[thisBin] += thisMark.getValue(); // put in this partition
         }
         return ret; // map from index to partition
+    }
+
+    public static String describeDaltons(double precursorMZ) {
+        return "MZ" + String.format("%05d", (int) (precursorMZ + 0.5));
     }
 
     /**
