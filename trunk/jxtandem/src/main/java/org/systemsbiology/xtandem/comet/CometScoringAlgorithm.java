@@ -467,6 +467,7 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
     }
 
 
+    public static final int MINIMUM_SCORED_PEAKS = 4;
     /**
      * test for acceptability and generate a new conditioned spectrum for
      * scoring
@@ -477,11 +478,11 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
      */
     @Override
     public IMeasuredSpectrum conditionSpectrum(final IScoredScan pScan, final SpectrumCondition sc) {
-        OriginatingScoredScan scan = (OriginatingScoredScan) pScan;
-        RawPeptideScan raw = pScan.getRaw();
+         RawPeptideScan raw = pScan.getRaw();
+        if(raw.getPeaksCount() < MINIMUM_SCORED_PEAKS)
+            return null; // not scored
         IMeasuredSpectrum in = new MutableMeasuredSpectrum(raw);
-        //     IMeasuredSpectrum iMeasuredSpectrum = truncatePeakList(in);
-        in = normalize(in.asMmutable());
+             in = normalize(in.asMmutable());
         return in;
     }
 
@@ -559,6 +560,8 @@ public class CometScoringAlgorithm extends AbstractScoringAlgorithm {
 
     private void windowedNormalize(MutableSpectrumPeak[] peaks) {
         double maxPeak = 0;
+        if(peaks.length == 0)
+            return;
         // peaks are in order
         double maxMz = peaks[peaks.length - 1].getMassChargeRatio();
 
