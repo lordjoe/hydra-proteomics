@@ -1,0 +1,1427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <option name="DEFAULT_COMPILER" value="Javac" />
+    <excludeFromCompile>
+      <file url="file://$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/HDFWithNameAccessor.java" />
+      <file url="file://$PROJECT_DIR$/ConcurrentTools/src/main/java/org/apache/hadoop/fs/FileUtil.java" />
+      <file url="file://$PROJECT_DIR$/ConcurrentTools/src/main/java/org/systemsbiology/hadoop/HDFSAsUserAccessor.java" />
+      <file url="file://$PROJECT_DIR$/jxtandem/src/main/java/org/systemsbiology/hadoop/RunAsUserUseWithReflection.java" />
+      <file url="file://$PROJECT_DIR$/jxtandem/src/test/java/org/systemsbiology/xtandem/JXTandemTestConfiguration.java" />
+      <file url="file://$PROJECT_DIR$/jxtandem/src/test/java/org/systemsbiology/hadoop/HDFS1_0_ONLYTests.java" />
+    </excludeFromCompile>
+    <resourceExtensions />
+    <wildcardResourcePatterns>
+      <entry name="!?*.java" />
+      <entry name="!?*.form" />
+      <entry name="!?*.class" />
+      <entry name="!?*.groovy" />
+      <entry name="!?*.scala" />
+      <entry name="!?*.flex" />
+      <entry name="!?*.kt" />
+      <entry name="!?*.clj" />
+    </wildcardResourcePatterns>
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="false">
+        <processorPath useClasspath="true" />
+      </profile>
+      <profile default="false" name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="concurrenttools" />
+        <module name="jxtandem" />
+        <module name="models3d" />
+        <module name="UsedJarLoader" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="concurrenttools" target="1.6" />
+      <module name="jxtandem" target="1.6" />
+      <module name="mapreduce" target="1.6" />
+      <module name="models3d" target="1.6" />
+      <module name="proteos" target="1.6" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="CopyrightManager" default="">
+    <module2copyright />
+  </component>
+  <component name="DependencyValidationManager">
+    <option name="SKIP_IMPORT_STATEMENTS" value="false" />
+  </component>
+  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
+  </component>
+  <component name="IdProvider" IDEtalkID="79AF9E5B91A2AEF10B9CE639CBC79A81" />
+  <component name="InspectionProjectProfileManager">
+    <profiles>
+      <profile version="1.0" is_locked="false">
+        <option name="myName" value="Project Default" />
+        <option name="myLocal" value="false" />
+        <inspection_tool class="CheckDtdRefs" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="CheckXmlFileWithXercesValidator" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="ConstantIfStatement" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+        <inspection_tool class="FieldCanBeLocal" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+        <inspection_tool class="ForCanBeForeach" enabled="false" level="WARNING" enabled_by_default="false">
+          <option name="REPORT_INDEXED_LOOP" value="true" />
+          <option name="ignoreUntypedCollections" value="false" />
+        </inspection_tool>
+        <inspection_tool class="GWTStyleCheck" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="HibernateConfigDomInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="HibernateMappingDatasourceDomInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="HibernateMappingDomInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="JavaDoc" enabled="false" level="WARNING" enabled_by_default="false">
+          <option name="TOP_LEVEL_CLASS_OPTIONS">
+            <value>
+              <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
+              <option name="REQUIRED_TAGS" value="" />
+            </value>
+          </option>
+          <option name="INNER_CLASS_OPTIONS">
+            <value>
+              <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
+              <option name="REQUIRED_TAGS" value="" />
+            </value>
+          </option>
+          <option name="METHOD_OPTIONS">
+            <value>
+              <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
+              <option name="REQUIRED_TAGS" value="@return@param@throws or @exception" />
+            </value>
+          </option>
+          <option name="FIELD_OPTIONS">
+            <value>
+              <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
+              <option name="REQUIRED_TAGS" value="" />
+            </value>
+          </option>
+          <option name="IGNORE_DEPRECATED" value="false" />
+          <option name="IGNORE_JAVADOC_PERIOD" value="true" />
+          <option name="IGNORE_DUPLICATED_THROWS" value="false" />
+          <option name="IGNORE_POINT_TO_ITSELF" value="false" />
+          <option name="myAdditionalJavadocTags" value="" />
+        </inspection_tool>
+        <inspection_tool class="JavadocReference" enabled="false" level="INFO" enabled_by_default="false" />
+        <inspection_tool class="SpringModelInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="StringConcatenationInsideStringBufferAppend" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+        <inspection_tool class="UNUSED_SYMBOL" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+          <option name="LOCAL_VARIABLE" value="true" />
+          <option name="FIELD" value="false" />
+          <option name="METHOD" value="false" />
+          <option name="CLASS" value="false" />
+          <option name="PARAMETER" value="true" />
+          <option name="REPORT_PARAMETER_FOR_PUBLIC_METHODS" value="true" />
+        </inspection_tool>
+        <inspection_tool class="UnnecessaryLocalVariable" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+          <option name="m_ignoreImmediatelyReturnedVariables" value="false" />
+          <option name="m_ignoreAnnotatedVariables" value="false" />
+        </inspection_tool>
+        <inspection_tool class="UnnecessaryQualifierForThis" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="UnusedAssignment" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+          <option name="REPORT_PREFIX_EXPRESSIONS" value="false" />
+          <option name="REPORT_POSTFIX_EXPRESSIONS" value="true" />
+          <option name="REPORT_REDUNDANT_INITIALIZER" value="true" />
+        </inspection_tool>
+        <inspection_tool class="UnusedProperty" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="WhileCanBeForeach" enabled="false" level="WARNING" enabled_by_default="false" />
+      </profile>
+    </profiles>
+    <option name="PROJECT_PROFILE" value="Project Default" />
+    <option name="USE_PROJECT_PROFILE" value="true" />
+    <version value="1.0" />
+  </component>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="E:/UsedJarPackager/pom.xml" />
+      </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/proteos/pom.xml" />
+      </set>
+    </option>
+  </component>
+  <component name="Palette2">
+    <group name="Swing">
+      <item class="com.intellij.uiDesigner.HSpacer" tooltip-text="Horizontal Spacer" icon="/com/intellij/uiDesigner/icons/hspacer.png" removable="false" auto-create-binding="false" can-attach-label="false">
+        <default-constraints vsize-policy="1" hsize-policy="6" anchor="0" fill="1" />
+      </item>
+      <item class="com.intellij.uiDesigner.VSpacer" tooltip-text="Vertical Spacer" icon="/com/intellij/uiDesigner/icons/vspacer.png" removable="false" auto-create-binding="false" can-attach-label="false">
+        <default-constraints vsize-policy="6" hsize-policy="1" anchor="0" fill="2" />
+      </item>
+      <item class="javax.swing.JPanel" icon="/com/intellij/uiDesigner/icons/panel.png" removable="false" auto-create-binding="false" can-attach-label="false">
+        <default-constraints vsize-policy="3" hsize-policy="3" anchor="0" fill="3" />
+      </item>
+      <item class="javax.swing.JScrollPane" icon="/com/intellij/uiDesigner/icons/scrollPane.png" removable="false" auto-create-binding="false" can-attach-label="true">
+        <default-constraints vsize-policy="7" hsize-policy="7" anchor="0" fill="3" />
+      </item>
+      <item class="javax.swing.JButton" icon="/com/intellij/uiDesigner/icons/button.png" removable="false" auto-create-binding="true" can-attach-label="false">
+        <default-constraints vsize-policy="0" hsize-policy="3" anchor="0" fill="1" />
+        <initial-values>
+          <property name="text" value="Button" />
+        </initial-values>
+      </item>
+      <item class="javax.swing.JRadioButton" icon="/com/intellij/uiDesigner/icons/radioButton.png" removable="false" auto-create-binding="true" can-attach-label="false">
+        <default-constraints vsize-policy="0" hsize-policy="3" anchor="8" fill="0" />
+        <initial-values>
+          <property name="text" value="RadioButton" />
+        </initial-values>
+      </item>
+      <item class="javax.swing.JCheckBox" icon="/com/intellij/uiDesigner/icons/checkBox.png" removable="false" auto-create-binding="true" can-attach-label="false">
+        <default-constraints vsize-policy="0" hsize-policy="3" anchor="8" fill="0" />
+        <initial-values>
+          <property name="text" value="CheckBox" />
+        </initial-values>
+      </item>
+      <item class="javax.swing.JLabel" icon="/com/intellij/uiDesigner/icons/label.png" removable="false" auto-create-binding="false" can-attach-label="false">
+        <default-constraints vsize-policy="0" hsize-policy="0" anchor="8" fill="0" />
+        <initial-values>
+          <property name="text" value="Label" />
+        </initial-values>
+      </item>
+      <item class="javax.swing.JTextField" icon="/com/intellij/uiDesigner/icons/textField.png" removable="false" auto-create-binding="true" can-attach-label="true">
+        <default-constraints vsize-policy="0" hsize-policy="6" anchor="8" fill="1">
+          <preferred-size width="150" height="-1" />
+        </default-constraints>
+      </item>
+      <item class="javax.swing.JPasswordField" icon="/com/intellij/uiDesigner/icons/passwordField.png" removable="false" auto-create-binding="true" can-attach-label="true">
+        <default-constraints vsize-policy="0" hsize-policy="6" anchor="8" fill="1">
+          <preferred-size width="150" height="-1" />
+        </default-constraints>
+      </item>
+      <item class="javax.swing.JFormattedTextField" icon="/com/intellij/uiDesigner/icons/formattedTextField.png" removable="false" auto-create-binding="true" can-attach-label="true">
+        <default-constraints vsize-policy="0" hsize-policy="6" anchor="8" fill="1">
+          <preferred-size width="150" height="-1" />
+        </default-constraints>
+      </item>
+      <item class="javax.swing.JTextArea" icon="/com/intellij/uiDesigner/icons/textArea.png" removable="false" auto-create-binding="true" can-attach-label="true">
+        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3">
+          <preferred-size width="150" height="50" />
+        </default-constraints>
+      </item>
+      <item class="javax.swing.JTextPane" icon="/com/intellij/uiDesigner/icons/textPane.png" removable="false" auto-create-binding="true" can-attach-label="true">
+        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3">
+          <preferred-size width="150" height="50" />
+        </default-constraints>
+      </item>
+      <item class="javax.swing.JEditorPane" icon="/com/intellij/uiDesigner/icons/editorPane.png" removable="false" auto-create-binding="true" can-attach-label="true">
+        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3">
+          <preferred-size width="150" height="50" />
+        </default-constraints>
+      </item>
+      <item class="javax.swing.JComboBox" icon="/com/intellij/uiDesigner/icons/comboBox.png" removable="false" auto-create-binding="true" can-attach-label="true">
+        <default-constraints vsize-policy="0" hsize-policy="2" anchor="8" fill="1" />
+      </item>
+      <item class="javax.swing.JTable" icon="/com/intellij/uiDesigner/icons/table.png" removable="false" auto-create-binding="true" can-attach-label="false">
+        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3">
+          <preferred-size width="150" height="50" />
+        </default-constraints>
+      </item>
+      <item class="javax.swing.JList" icon="/com/intellij/uiDesigner/icons/list.png" removable="false" auto-create-binding="true" can-attach-label="false">
+        <default-constraints vsize-policy="6" hsize-policy="2" anchor="0" fill="3">
+          <preferred-size width="150" height="50" />
+        </default-constraints>
+      </item>
+      <item class="javax.swing.JTree" icon="/com/intellij/uiDesigner/icons/tree.png" removable="false" auto-create-binding="true" can-attach-label="false">
+        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3">
+          <preferred-size width="150" height="50" />
+        </default-constraints>
+      </item>
+      <item class="javax.swing.JTabbedPane" icon="/com/intellij/uiDesigner/icons/tabbedPane.png" removable="false" auto-create-binding="true" can-attach-label="false">
+        <default-constraints vsize-policy="3" hsize-policy="3" anchor="0" fill="3">
+          <preferred-size width="200" height="200" />
+        </default-constraints>
+      </item>
+      <item class="javax.swing.JSplitPane" icon="/com/intellij/uiDesigner/icons/splitPane.png" removable="false" auto-create-binding="false" can-attach-label="false">
+        <default-constraints vsize-policy="3" hsize-policy="3" anchor="0" fill="3">
+          <preferred-size width="200" height="200" />
+        </default-constraints>
+      </item>
+      <item class="javax.swing.JSpinner" icon="/com/intellij/uiDesigner/icons/spinner.png" removable="false" auto-create-binding="true" can-attach-label="true">
+        <default-constraints vsize-policy="0" hsize-policy="6" anchor="8" fill="1" />
+      </item>
+      <item class="javax.swing.JSlider" icon="/com/intellij/uiDesigner/icons/slider.png" removable="false" auto-create-binding="true" can-attach-label="false">
+        <default-constraints vsize-policy="0" hsize-policy="6" anchor="8" fill="1" />
+      </item>
+      <item class="javax.swing.JSeparator" icon="/com/intellij/uiDesigner/icons/separator.png" removable="false" auto-create-binding="false" can-attach-label="false">
+        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3" />
+      </item>
+      <item class="javax.swing.JProgressBar" icon="/com/intellij/uiDesigner/icons/progressbar.png" removable="false" auto-create-binding="true" can-attach-label="false">
+        <default-constraints vsize-policy="0" hsize-policy="6" anchor="0" fill="1" />
+      </item>
+      <item class="javax.swing.JToolBar" icon="/com/intellij/uiDesigner/icons/toolbar.png" removable="false" auto-create-binding="false" can-attach-label="false">
+        <default-constraints vsize-policy="0" hsize-policy="6" anchor="0" fill="1">
+          <preferred-size width="-1" height="20" />
+        </default-constraints>
+      </item>
+      <item class="javax.swing.JToolBar$Separator" icon="/com/intellij/uiDesigner/icons/toolbarSeparator.png" removable="false" auto-create-binding="false" can-attach-label="false">
+        <default-constraints vsize-policy="0" hsize-policy="0" anchor="0" fill="1" />
+      </item>
+      <item class="javax.swing.JScrollBar" icon="/com/intellij/uiDesigner/icons/scrollbar.png" removable="false" auto-create-binding="true" can-attach-label="false">
+        <default-constraints vsize-policy="6" hsize-policy="0" anchor="0" fill="2" />
+      </item>
+    </group>
+  </component>
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://E:/UsedJarPackager/UsedJarLoader.iml" filepath="E:/UsedJarPackager/UsedJarLoader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ConcurrentTools/concurrenttools.iml" filepath="$PROJECT_DIR$/ConcurrentTools/concurrenttools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jxtandem/jxtandem.iml" filepath="$PROJECT_DIR$/jxtandem/jxtandem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mapreduce.iml" filepath="$PROJECT_DIR$/mapreduce.iml" />
+      <module fileurl="file://$PROJECT_DIR$/models3d/models3d.iml" filepath="$PROJECT_DIR$/models3d/models3d.iml" />
+    </modules>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6 " project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/jxtandem/target/classes" />
+  </component>
+  <component name="SvnBranchConfigurationManager">
+    <option name="myConfigurationMap">
+      <map>
+        <entry key="$PROJECT_DIR$">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="trunkUrl" value="" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="mySupportsUserInfoFilter" value="true" />
+  </component>
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="svn" />
+  </component>
+  <component name="libraryTable">
+    <library name="Maven: ant:ant:1.6.5">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/ant/ant/1.6.5/ant-1.6.5.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/ant/ant/1.6.5/ant-1.6.5-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/ant/ant/1.6.5/ant-1.6.5-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: aopalliance:aopalliance:1.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/aopalliance/aopalliance/1.0/aopalliance-1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/aopalliance/aopalliance/1.0/aopalliance-1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: avalon-framework:avalon-framework:4.1.3">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/avalon-framework/avalon-framework/4.1.3/avalon-framework-4.1.3.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/avalon-framework/avalon-framework/4.1.3/avalon-framework-4.1.3-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/avalon-framework/avalon-framework/4.1.3/avalon-framework-4.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google.api.client:google-api-data-spreadsheet-v3:1.0.10-alpha">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/api/client/google-api-data-spreadsheet-v3/1.0.10-alpha/google-api-data-spreadsheet-v3-1.0.10-alpha.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/api/client/google-api-data-spreadsheet-v3/1.0.10-alpha/google-api-data-spreadsheet-v3-1.0.10-alpha-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/api/client/google-api-data-spreadsheet-v3/1.0.10-alpha/google-api-data-spreadsheet-v3-1.0.10-alpha-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google.code.findbugs:jsr305:1.3.7">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/1.3.7/jsr305-1.3.7.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/1.3.7/jsr305-1.3.7-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/1.3.7/jsr305-1.3.7-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google.gdata:core:1.47.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/gdata/core/1.47.1/core-1.47.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/gdata/core/1.47.1/core-1.47.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/gdata/core/1.47.1/core-1.47.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google.guava:guava:13.0.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/13.0.1/guava-13.0.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/13.0.1/guava-13.0.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/13.0.1/guava-13.0.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google.http-client:google-http-client:1.11.0-beta">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/http-client/google-http-client/1.11.0-beta/google-http-client-1.11.0-beta.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/http-client/google-http-client/1.11.0-beta/google-http-client-1.11.0-beta-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/http-client/google-http-client/1.11.0-beta/google-http-client-1.11.0-beta-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google.oauth-client:google-oauth-client-java6:1.11.0-beta">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client-java6/1.11.0-beta/google-oauth-client-java6-1.11.0-beta.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client-java6/1.11.0-beta/google-oauth-client-java6-1.11.0-beta-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client-java6/1.11.0-beta/google-oauth-client-java6-1.11.0-beta-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google.oauth-client:google-oauth-client-jetty:1.11.0-beta">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client-jetty/1.11.0-beta/google-oauth-client-jetty-1.11.0-beta.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client-jetty/1.11.0-beta/google-oauth-client-jetty-1.11.0-beta-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client-jetty/1.11.0-beta/google-oauth-client-jetty-1.11.0-beta-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google.oauth-client:google-oauth-client:1.11.0-beta">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client/1.11.0-beta/google-oauth-client-1.11.0-beta.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client/1.11.0-beta/google-oauth-client-1.11.0-beta-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/oauth-client/google-oauth-client/1.11.0-beta/google-oauth-client-1.11.0-beta-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.jcraft:jsch:0.1.44-1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/jcraft/jsch/0.1.44-1/jsch-0.1.44-1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/jcraft/jsch/0.1.44-1/jsch-0.1.44-1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/jcraft/jsch/0.1.44-1/jsch-0.1.44-1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-cli:commons-cli:1.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-cli/commons-cli/1.2/commons-cli-1.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-cli/commons-cli/1.2/commons-cli-1.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-cli/commons-cli/1.2/commons-cli-1.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-codec:commons-codec:1.3">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-codec/commons-codec/1.3/commons-codec-1.3.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-codec/commons-codec/1.3/commons-codec-1.3-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-codec/commons-codec/1.3/commons-codec-1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-dbcp:commons-dbcp:1.2.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-dbcp/commons-dbcp/1.2.2/commons-dbcp-1.2.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-dbcp/commons-dbcp/1.2.2/commons-dbcp-1.2.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-dbcp/commons-dbcp/1.2.2/commons-dbcp-1.2.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-el:commons-el:1.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-el/commons-el/1.0/commons-el-1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-el/commons-el/1.0/commons-el-1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-el/commons-el/1.0/commons-el-1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-httpclient:commons-httpclient:3.0.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-httpclient/commons-httpclient/3.0.1/commons-httpclient-3.0.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-httpclient/commons-httpclient/3.0.1/commons-httpclient-3.0.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-httpclient/commons-httpclient/3.0.1/commons-httpclient-3.0.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-io:commons-io:2.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-io/commons-io/2.4/commons-io-2.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-io/commons-io/2.4/commons-io-2.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-io/commons-io/2.4/commons-io-2.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-logging:commons-logging:1.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.1/commons-logging-1.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.1/commons-logging-1.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.1/commons-logging-1.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-logging:commons-logging:1.1.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-net:commons-net:1.4.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-net/commons-net/1.4.1/commons-net-1.4.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-net/commons-net/1.4.1/commons-net-1.4.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-net/commons-net/1.4.1/commons-net-1.4.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-pool:commons-pool:1.3">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-pool/commons-pool/1.3/commons-pool-1.3.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-pool/commons-pool/1.3/commons-pool-1.3-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-pool/commons-pool/1.3/commons-pool-1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: hsqldb:hsqldb:1.8.0.10">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/hsqldb/hsqldb/1.8.0.10/hsqldb-1.8.0.10.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/hsqldb/hsqldb/1.8.0.10/hsqldb-1.8.0.10-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/hsqldb/hsqldb/1.8.0.10/hsqldb-1.8.0.10-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: java3d:vecmath:1.3.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/java3d/vecmath/1.3.1/vecmath-1.3.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/java3d/vecmath/1.3.1/vecmath-1.3.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/java3d/vecmath/1.3.1/vecmath-1.3.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: javax.activation:activation:1.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: javax.mail:mail:1.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/javax/mail/mail/1.4/mail-1.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/javax/mail/mail/1.4/mail-1.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/javax/mail/mail/1.4/mail-1.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: javax.servlet:servlet-api:2.3">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.3/servlet-api-2.3-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.3/servlet-api-2.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: jfree:jcommon:1.0.16">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/jfree/jcommon/1.0.16/jcommon-1.0.16.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/jfree/jcommon/1.0.16/jcommon-1.0.16-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/jfree/jcommon/1.0.16/jcommon-1.0.16-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: jfree:jfreechart:1.0.13">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/jfree/jfreechart/1.0.13/jfreechart-1.0.13.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/jfree/jfreechart/1.0.13/jfreechart-1.0.13-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/jfree/jfreechart/1.0.13/jfreechart-1.0.13-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: junit:junit:4.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.4/junit-4.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.4/junit-4.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.4/junit-4.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: log4j:log4j:1.2.17">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.17/log4j-1.2.17.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.17/log4j-1.2.17-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.17/log4j-1.2.17-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: logkit:logkit:1.0.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/logkit/logkit/1.0.1/logkit-1.0.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/logkit/logkit/1.0.1/logkit-1.0.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/logkit/logkit/1.0.1/logkit-1.0.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: net.java.dev.jets3t:jets3t:0.7.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/net/java/dev/jets3t/jets3t/0.7.1/jets3t-0.7.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/net/java/dev/jets3t/jets3t/0.7.1/jets3t-0.7.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/net/java/dev/jets3t/jets3t/0.7.1/jets3t-0.7.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: net.sf.kosmosfs:kfs:0.3">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/net/sf/kosmosfs/kfs/0.3/kfs-0.3.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/net/sf/kosmosfs/kfs/0.3/kfs-0.3-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/net/sf/kosmosfs/kfs/0.3/kfs-0.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: net.sourceforge.jtds:jtds:1.3.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/net/sourceforge/jtds/jtds/1.3.0/jtds-1.3.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/net/sourceforge/jtds/jtds/1.3.0/jtds-1.3.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/net/sourceforge/jtds/jtds/1.3.0/jtds-1.3.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.apache.hadoop:hadoop-core:0.20.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-core/0.20.2/hadoop-core-0.20.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-core/0.20.2/hadoop-core-0.20.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-core/0.20.2/hadoop-core-0.20.2-sources.jar!/" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-rumen/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-rumen/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-distcp/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-distcp/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-extras/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-extras/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-gridmix/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-gridmix/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-archives/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-archives/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-datajoin/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-datajoin/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-streaming/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-streaming/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/ant" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/test/aop" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/test/unit" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/contrib/fuse-dfs/src/test" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/impl/pb/client" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/api/impl/pb/service" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-tests/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-web-proxy/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-web-proxy/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-auth/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-auth/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-common/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-common/src/test/aop" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-common/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-annotations/src/main/java/org/apache/hadoop/classification/tools" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-annotations/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-auth-examples/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-common/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-common/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-shuffle/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-shuffle/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs-plugins/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs-plugins/src/test/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-examples/src/main/java" />
+        <root url="file://C:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-examples/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-web-proxy/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-web-proxy/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-rumen/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-rumen/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-distcp/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-distcp/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-extras/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-extras/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-gridmix/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-gridmix/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-archives/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-archives/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-datajoin/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-datajoin/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-streaming/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-streaming/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/ant" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/test/aop" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/test/unit" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/contrib/fuse-dfs/src/test" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-web-proxy/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-web-proxy/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-auth/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-auth/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-common/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-common/src/test/aop" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-common/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-annotations/src/main/java/org/apache/hadoop/classification/tools" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-annotations/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-auth-examples/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-common/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-common/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-shuffle/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-shuffle/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs-plugins/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs-plugins/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-examples/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-examples/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/ant" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/core" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/hdfs" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/test" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/tools" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/mapred" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/index/src/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/index/src/test" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/vaidya/src/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/failmon/src/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/fuse-dfs/src/test" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/thriftfs/src/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/thriftfs/test" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/thriftfs/gen-java" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/data_join/src/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/data_join/src/test" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/data_join/src/examples" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/hdfsproxy/src/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/hdfsproxy/src/test" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/streaming/src/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/streaming/src/test" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/fairscheduler/src/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/fairscheduler/src/test" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/eclipse-plugin/src/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/capacity-scheduler/src/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/contrib/capacity-scheduler/src/test" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/examples" />
+        <root url="file://E:/ThirdParty/hadoop-0.20.2/src/benchmarks/gridmix2/src/java" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.apache.hadoop:hadoop-core:0.20.205.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-core/0.20.205.0/hadoop-core-0.20.205.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-core/0.20.205.0/hadoop-core-0.20.205.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-core/0.20.205.0/hadoop-core-0.20.205.0-sources.jar!/" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-rumen/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-rumen/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-distcp/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-distcp/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-extras/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-extras/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-gridmix/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-gridmix/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-archives/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-archives/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-datajoin/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-datajoin/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-streaming/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-tools/hadoop-streaming/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/ant" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/test/aop" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/test/unit" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs/src/contrib/fuse-dfs/src/test" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-web-proxy/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-web-proxy/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-auth/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-auth/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-common/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-common/src/test/aop" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-common/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-annotations/src/main/java/org/apache/hadoop/classification/tools" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-annotations/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-common-project/hadoop-auth-examples/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-common/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-common/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-shuffle/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-shuffle/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs-plugins/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs-plugins/src/test/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-examples/src/main/java" />
+        <root url="file://E:/ThirdParty/hadoop-0.23.9-src/hadoop-mapreduce-project/hadoop-mapreduce-examples/src/test/java" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.apache.httpcomponents:httpclient:4.0.3">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpclient/4.0.3/httpclient-4.0.3.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpclient/4.0.3/httpclient-4.0.3-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpclient/4.0.3/httpclient-4.0.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.apache.httpcomponents:httpcore:4.0.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.biojava:biojava3-alignment:3.0.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-alignment/3.0.4/biojava3-alignment-3.0.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-alignment/3.0.4/biojava3-alignment-3.0.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-alignment/3.0.4/biojava3-alignment-3.0.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.biojava:biojava3-core:3.0.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-core/3.0.4/biojava3-core-3.0.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-core/3.0.4/biojava3-core-3.0.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-core/3.0.4/biojava3-core-3.0.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.biojava:biojava3-phylo:3.0.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-phylo/3.0.4/biojava3-phylo-3.0.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-phylo/3.0.4/biojava3-phylo-3.0.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-phylo/3.0.4/biojava3-phylo-3.0.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.biojava:biojava3-structure:3.0.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-structure/3.0.4/biojava3-structure-3.0.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-structure/3.0.4/biojava3-structure-3.0.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/biojava3-structure/3.0.4/biojava3-structure-3.0.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.biojava:bytecode:1.8.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/bytecode/1.8.2/bytecode-1.8.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/bytecode/1.8.2/bytecode-1.8.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/bytecode/1.8.2/bytecode-1.8.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.biojava:core:1.8.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/core/1.8.2/core-1.8.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/core/1.8.2/core-1.8.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/biojava/core/1.8.2/core-1.8.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.eclipse.jdt:core:3.1.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jdt/core/3.1.1/core-3.1.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jdt/core/3.1.1/core-3.1.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jdt/core/3.1.1/core-3.1.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/orbit/javax.servlet/3.0.0.v201112011016/javax.servlet-3.0.0.v201112011016.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/orbit/javax.servlet/3.0.0.v201112011016/javax.servlet-3.0.0.v201112011016-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/orbit/javax.servlet/3.0.0.v201112011016/javax.servlet-3.0.0.v201112011016-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.eclipse.jetty:jetty-http:9.0.6.v20130930">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-http/9.0.6.v20130930/jetty-http-9.0.6.v20130930.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-http/9.0.6.v20130930/jetty-http-9.0.6.v20130930-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-http/9.0.6.v20130930/jetty-http-9.0.6.v20130930-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.eclipse.jetty:jetty-io:9.0.6.v20130930">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-io/9.0.6.v20130930/jetty-io-9.0.6.v20130930.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-io/9.0.6.v20130930/jetty-io-9.0.6.v20130930-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-io/9.0.6.v20130930/jetty-io-9.0.6.v20130930-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.eclipse.jetty:jetty-security:9.0.6.v20130930">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-security/9.0.6.v20130930/jetty-security-9.0.6.v20130930.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-security/9.0.6.v20130930/jetty-security-9.0.6.v20130930-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-security/9.0.6.v20130930/jetty-security-9.0.6.v20130930-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.eclipse.jetty:jetty-server:9.0.6.v20130930">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-server/9.0.6.v20130930/jetty-server-9.0.6.v20130930.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-server/9.0.6.v20130930/jetty-server-9.0.6.v20130930-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-server/9.0.6.v20130930/jetty-server-9.0.6.v20130930-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.eclipse.jetty:jetty-servlet:9.0.6.v20130930">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-servlet/9.0.6.v20130930/jetty-servlet-9.0.6.v20130930.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-servlet/9.0.6.v20130930/jetty-servlet-9.0.6.v20130930-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-servlet/9.0.6.v20130930/jetty-servlet-9.0.6.v20130930-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.eclipse.jetty:jetty-util:9.0.6.v20130930">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-util/9.0.6.v20130930/jetty-util-9.0.6.v20130930.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-util/9.0.6.v20130930/jetty-util-9.0.6.v20130930-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-util/9.0.6.v20130930/jetty-util-9.0.6.v20130930-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:jetty-security:7.0.0.pre4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-security/7.0.0.pre4/jetty-security-7.0.0.pre4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-security/7.0.0.pre4/jetty-security-7.0.0.pre4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-security/7.0.0.pre4/jetty-security-7.0.0.pre4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:jetty-util:6.1.14">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-util/6.1.14/jetty-util-6.1.14.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-util/6.1.14/jetty-util-6.1.14-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-util/6.1.14/jetty-util-6.1.14-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:jetty-util:7.0.0.pre5">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-util/7.0.0.pre5/jetty-util-7.0.0.pre5.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-util/7.0.0.pre5/jetty-util-7.0.0.pre5-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-util/7.0.0.pre5/jetty-util-7.0.0.pre5-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:jetty-webapp:7.0.0.pre4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-webapp/7.0.0.pre4/jetty-webapp-7.0.0.pre4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-webapp/7.0.0.pre4/jetty-webapp-7.0.0.pre4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-webapp/7.0.0.pre4/jetty-webapp-7.0.0.pre4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:jetty-xml:7.0.0.pre4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-xml/7.0.0.pre4/jetty-xml-7.0.0.pre4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-xml/7.0.0.pre4/jetty-xml-7.0.0.pre4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty-xml/7.0.0.pre4/jetty-xml-7.0.0.pre4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:jetty:6.1.14">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty/6.1.14/jetty-6.1.14.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty/6.1.14/jetty-6.1.14-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty/6.1.14/jetty-6.1.14-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:jetty:7.0.0.pre5">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty/7.0.0.pre5/jetty-7.0.0.pre5.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty/7.0.0.pre5/jetty-7.0.0.pre5-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jetty/7.0.0.pre5/jetty-7.0.0.pre5-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:jsp-2.1:6.1.14">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jsp-2.1/6.1.14/jsp-2.1-6.1.14.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jsp-2.1/6.1.14/jsp-2.1-6.1.14-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jsp-2.1/6.1.14/jsp-2.1-6.1.14-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:jsp-api-2.1:6.1.14">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jsp-api-2.1/6.1.14/jsp-api-2.1-6.1.14.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jsp-api-2.1/6.1.14/jsp-api-2.1-6.1.14-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/jsp-api-2.1/6.1.14/jsp-api-2.1-6.1.14-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:servlet-api-2.5:6.1.14">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/servlet-api-2.5/6.1.14/servlet-api-2.5-6.1.14.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/servlet-api-2.5/6.1.14/servlet-api-2.5-6.1.14-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/servlet-api-2.5/6.1.14/servlet-api-2.5-6.1.14-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mortbay.jetty:servlet-api:3.0.pre4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/servlet-api/3.0.pre4/servlet-api-3.0.pre4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/servlet-api/3.0.pre4/servlet-api-3.0.pre4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mortbay/jetty/servlet-api/3.0.pre4/servlet-api-3.0.pre4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.slf4j:slf4j-api:1.4.3">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.4.3/slf4j-api-1.4.3.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.4.3/slf4j-api-1.4.3-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.4.3/slf4j-api-1.4.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.slf4j:slf4j-log4j12:1.4.3">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-log4j12/1.4.3/slf4j-log4j12-1.4.3.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-log4j12/1.4.3/slf4j-log4j12-1.4.3-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-log4j12/1.4.3/slf4j-log4j12-1.4.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.springframework:spring-beans:2.0.6">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/2.0.6/spring-beans-2.0.6.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/2.0.6/spring-beans-2.0.6-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-beans/2.0.6/spring-beans-2.0.6-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.springframework:spring-context:2.0.6">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/2.0.6/spring-context-2.0.6.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/2.0.6/spring-context-2.0.6-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-context/2.0.6/spring-context-2.0.6-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.springframework:spring-core:2.0.6">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/2.0.6/spring-core-2.0.6.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/2.0.6/spring-core-2.0.6-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-core/2.0.6/spring-core-2.0.6-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.springframework:spring-dao:2.0.6">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-dao/2.0.6/spring-dao-2.0.6.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-dao/2.0.6/spring-dao-2.0.6-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-dao/2.0.6/spring-dao-2.0.6-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.springframework:spring-jdbc:2.0.6">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-jdbc/2.0.6/spring-jdbc-2.0.6.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-jdbc/2.0.6/spring-jdbc-2.0.6-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-jdbc/2.0.6/spring-jdbc-2.0.6-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.springframework:spring-test:2.5.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-test/2.5.4/spring-test-2.5.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-test/2.5.4/spring-test-2.5.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-test/2.5.4/spring-test-2.5.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org:forester:0.955">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/forester/0.955/forester-0.955.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/forester/0.955/forester-0.955-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/forester/0.955/forester-0.955-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: oro:oro:2.0.8">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/oro/oro/2.0.8/oro-2.0.8.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/oro/oro/2.0.8/oro-2.0.8-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/oro/oro/2.0.8/oro-2.0.8-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: tomcat:jasper-compiler:5.5.12">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/tomcat/jasper-compiler/5.5.12/jasper-compiler-5.5.12.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/tomcat/jasper-compiler/5.5.12/jasper-compiler-5.5.12-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/tomcat/jasper-compiler/5.5.12/jasper-compiler-5.5.12-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: tomcat:jasper-runtime:5.5.12">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/tomcat/jasper-runtime/5.5.12/jasper-runtime-5.5.12.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/tomcat/jasper-runtime/5.5.12/jasper-runtime-5.5.12-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/tomcat/jasper-runtime/5.5.12/jasper-runtime-5.5.12-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: uk.ac.ebi.pride.hydra:proteos:1.0-SNAPSHOT">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/uk/ac/ebi/pride/hydra/proteos/1.0-SNAPSHOT/proteos-1.0-20130828.160636-1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$PROJECT_DIR$/proteos/proteos-1.0-SNAPSHOT-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/uk/ac/ebi/pride/hydra/proteos/1.0-SNAPSHOT/proteos-1.0-20130828.160636-1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/proteos/proteos-1.0-SNAPSHOT-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/uk/ac/ebi/pride/hydra/proteos/1.0-SNAPSHOT/proteos-1.0-20130828.160636-1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: uk.ac.ebi.pride:jmztab:1.0.9">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/uk/ac/ebi/pride/jmztab/1.0.9/jmztab-1.0.9.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/uk/ac/ebi/pride/jmztab/1.0.9/jmztab-1.0.9-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/uk/ac/ebi/pride/jmztab/1.0.9/jmztab-1.0.9-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: xerces:xmlParserAPIs:2.6.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: xml-apis:xml-apis-ext:1.3.04">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/xml-apis/xml-apis-ext/1.3.04/xml-apis-ext-1.3.04.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/xml-apis/xml-apis-ext/1.3.04/xml-apis-ext-1.3.04-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/xml-apis/xml-apis-ext/1.3.04/xml-apis-ext-1.3.04-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: xml-apis:xml-apis:1.0.b2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: xmlenc:xmlenc:0.52">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/xmlenc/xmlenc/0.52/xmlenc-0.52.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/xmlenc/xmlenc/0.52/xmlenc-0.52-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/xmlenc/xmlenc/0.52/xmlenc-0.52-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: xpp3:xpp3:1.1.4c">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/xpp3/xpp3/1.1.4c/xpp3-1.1.4c.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/xpp3/xpp3/1.1.4c/xpp3-1.1.4c-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/xpp3/xpp3/1.1.4c/xpp3-1.1.4c-sources.jar!/" />
+      </SOURCES>
+    </library>
+  </component>
+</project>
+

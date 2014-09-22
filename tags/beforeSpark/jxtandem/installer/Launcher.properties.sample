@@ -1,0 +1,184 @@
+#
+# Sample properties file for JXTandem Launcher
+#
+#
+# may be specified on the command line as well
+#params=tandem.xml
+#
+# If using a cluster this is the hdfs directory    if unspecified
+# will run locally
+#remoteBaseDirectory=File:///user/howdah/JXTandem/data/<LOCAL_DIRECTORY>
+#remoteBaseDirectory=/user/howdah/JXTandem/data/<LOCAL_DIRECTORY>
+remoteBaseDirectory=/user/acsordas/<LOCAL_DIRECTORY>
+#remoteBaseDirectory=/user/slewis/ebi/<LOCAL_DIRECTORY>
+#  hdfs job tracker
+remoteHost=hadoop-master-03.ebi.ac.uk
+#
+#  port on the job tracker
+#remotePort=8020
+remotePort= 54310
+#
+#  Actual job tracker with port - not the same as name node port
+#remoteJobTracker= hadoop-master-02.ebi.ac.uk:9000
+remoteJobTracker= hadoop-master-04.ebi.ac.uk:54311
+#
+
+
+# when there are multiple clusters running different versions of hadoop
+# this is the 0.2 host and port
+hadoop02Host=hadoop-master-03.ebi.ac.uk
+hadoop02Port=54310
+hadoop02remoteJobTracker=hadoop-master-04.ebi.ac.uk:54311
+
+# when there are multiple clusters running different versions of hadoop
+# this is the 0.2 host and port
+hadoop10Host=hadoop-master-01.ebi.ac.uk
+hadoop10Port=8020
+hadoop10remoteJobTracker= hadoop-master-02.ebi.ac.uk:9000
+
+#
+#  user on the job tracker
+remoteUser=slewis
+#
+#  encrypted password  on the job tracker alternative is plainTextRemotePassword
+#encryptedRemotePassword=aWnQ4DbdoSGivLcfi56hGKK8tx+LnqEYory3H4ueoRiivLcfi56hGA==
+#
+#  plain password  on the job tracker alternative is encryptedRemotePassword
+#plainTextRemotePassword=
+
+#
+#
+# Maximum number of peptides to handle ina reducer - raising this will raise the memory requirements on the cluster
+# default is 1000
+maxPeptideFragmentsPerReducer=10000
+#maxPeptideFragmentsPerReducer=30000
+#maxPeptideFragmentsPerReducer=500000
+
+#
+# sets mapres.max.splt.size
+#  a lower number forces more mappers in my splitters which is good
+# the default is 64mb but for what we are doing smaller seems to be better
+# when mappers do a lot of work - this is 16 megs
+#maxSplitSize=16777216
+#maxSplitSize=20000000
+maxSplitSize=2000000
+#maxSplitSize=10000
+#maxSplitSize=50000000
+
+
+DEFINE_org.systemsbiology.xtandem.max_scored_peptides=5000
+
+#
+# MaxReduceTasks tunes the cluster - increase this number for
+# bigger clusters
+maxReduceTasks = 2400
+
+#
+#
+# delete hadoop directories after the process is finished with them
+# set fo false if debugging and the intermediate data wants to be examined
+deleteOutputDirectories=true
+ #
+ # compressed files take less space and are harder to read
+# set false if you plan to manually read intermediate files
+compressIntermediateFiles=true
+ #
+ # Maximum memory assigned to child tasks  in megabytes
+ # maps to "mapred.child.java.opts", "-Xmx" + maxMamory + "m"
+#maxClusterMemory=1500
+maxClusterMemory=3200
+
+#
+# This parameter gives a task longer to repost
+# before returning  default value is 60000
+DEFINE_mapred.task.timeout=1000000
+
+
+#
+# override specific Hadoop prepoerties - save writing specific code
+DEFINE_io.sort.factor=100
+DEFINE_io.sort.mb=1000
+# don't start reducers until most mappers done
+#DEFINE_mapred.reduce.slowstart.completed.maps=0.95
+#  number of map tasks for the database
+#DEFINE_org.systemsbiology.jxtandem.DesiredDatabaseMappers=64
+DEFINE_org.systemsbiology.jxtandem.DesiredDatabaseMappers=2000
+#  number of map tasks for the spectra
+#DEFINE_org.systemsbiology.jxtandem.DesiredXMLInputMappers=7
+# define number of allowed modifications per peptide
+DEFINE_org.systemsbiology.jxtandem.ModifiedPolypeptide.MaxPeptideModifications=6
+#DEFINE_org.systemsbiology.xtandem.DoNotCopyFilesToLocalMachine=yes
+#write out  MFGData if the hyperscore is greater than this value
+#DEFINE_org.systemsbiology.xtandem.hadoop.WriteMGFSpectraWithHyperscoreGreaterThan=500
+#DEFINE_org.systemsbiology.xtandem.hadoop.WriteMGFSpectraWithExpectValueLowerThan=0.01
+# use hard coded modification like cystein
+#DEFINE_org.systemsbiology.numberRememberedMatches=1
+#DEFINE_org.systemsbiology.xtandem.HardCodeModifications=no
+# algorithms
+#DEFINE_org.systemsbiology.algorithm=org.systemsbiology.xtandem.TandemKScoringAlgorithm
+
+# define this is yes for large numbers of miodifications
+# it causes each protein to be a different map job
+#DEFINE_org.systemsbiology.useSingleFastaItemSplit=yes
+
+#create decoy peptides by reversing the amino acids
+DEFINE_org.systemsbiology.xtandem.CreateDecoyPeptides=yes
+
+#create decoy peptides by reversing the amino acids
+DEFINE_org.systemsbiology.xtandem.CreateDecoyPeptidesForModifiedPeptides=yes
+
+
+# Write out PepXML
+DEFINE_org.systemsbiology.xtandem.hadoop.WritePepXML=yes
+# save a scans file
+#DEFINE_org.systemsbiology.xtandem.SaveScansData=yes
+# Write out MFGData if the hyperscore is greater than this value
+#DEFINE_org.systemsbiology.xtandem.hadoop.WriteMGFSpectraWithHyperscoreGreaterThan=200
+# Write out MFGData if the hyperscore is greater than this value
+#DEFINE_org.systemsbiology.xtandem.hadoop.WriteMGFSpectraWithExpectValueLowerThan=0.01
+# algorithms
+#DEFINE_org.systemsbiology.algorithm=org.systemsbiology.xtandem.morpheus.MorpheusScoringAlgorithm;org.systemsbiology.xtandem.TandemKScoringAlgorithm;org.systemsbiology.xtandem.probidx.ProbIdScoringAlgorithm
+DEFINE_org.systemsbiology.algorithm=org.systemsbiology.xtandem.TandemKScoringAlgorithm
+#DEFINE_org.systemsbiology.algorithm=org.systemsbiology.xtandem.comet.CometScoringAlgorithm
+
+#number matches that are remembered
+DEFINE_org.systemsbiology.numberRememberedMatches=1
+
+#DEFINE_org.systemsbiology.algorithm=org.systemsbiology.xtandem.comet.CometScoringAlgorithm
+
+# when yes each input file goes to a separate output file
+#DEFINE_org.systemsbiology.xtandem.MultipleOutputFiles=yes
+# fix a nasty bug in 1.03
+DEFINE_java.net.preferIPv4Stack=true
+# binning to use on fragment ions
+DEFINE_comet.fragment_bin_tol=0.03
+# offset position to start the binning
+DEFINE_comet.fragment_bin_offset=0.00
+# tolerance to mass difference  in this case 10 ppm
+DEFINE_comet.mass_tolerance=0.01
+#
+# Used only when using Amazon Elastic Map Reduce
+# try spot instances
+# try spot instances
+DEFINE_org.systemsbiology.aws.UseSpotMaster=yes
+# use 6 instances
+DEFINE_org.systemsbiology.aws.ClusterSize=9
+# keep the cluster running
+DEFINE_org.systemsbiology.aws.KeepClusterAfterJob=yes
+# use this jar
+#DEFINE_org.systemsbiology.tandem.hadoop.PrebuiltJar=Mar300846_0.jar
+DEFINE_org.systemsbiology.aws.InstanceSize=large
+#if true then leave files on server and do not copy
+#DEFINE_org.systemsbiology.xtandem.DoNotCopyFilesToLocalMachine=no
+
+# =============================================
+# Email stuff
+# =============================================
+# password to send emmail
+DEFINE_org.systemsbiology.xtandem.sender=ebihadoop@gmail.com
+# password to send emmail
+DEFINE_org.systemsbiology.xtandem.encryptedEmailPassword=zbfwtitEsHyCOiq/pRgXo6K8tx+LnqEYory3H4ueoRiivLcfi56hGA==
+# email recipient
+DEFINE_org.systemsbiology.xtandem.emailrecipient=attilacsordas@gmail.com
+
+
