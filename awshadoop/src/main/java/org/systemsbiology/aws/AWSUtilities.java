@@ -13,6 +13,7 @@ import org.systemsbiology.hadoop.*;
 import org.systemsbiology.remotecontrol.*;
 import org.systemsbiology.xtandem.*;
 
+
 import java.io.*;
 import java.util.*;
 
@@ -32,11 +33,26 @@ public class AWSUtilities {
     private static AmazonEC2 gAmazon;
     private static final Properties gAccessProperties = new Properties();
 
+    public static void setKey()
+    {
+        try {
+            final InputStream keyStream = AWSUtilities.class
+                    .getResourceAsStream("/EncryptedSecretKey.txt");
+            LineNumberReader rdr = new LineNumberReader(new InputStreamReader(keyStream)) ;
+            String key = rdr.readLine();
+            Encrypt.setDefaultKey(key);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
     public static Properties getAccessProperties() {
         if (gAccessProperties.size() == 0) {
             try {
+
+                setKey();
                 final InputStream stream = AWSUtilities.class
-                        .getResourceAsStream("AwsCredentials.properties");
+                        .getResourceAsStream("/AwsCredentials.properties");
                 gAccessProperties.load(stream);
             }
             catch (IOException e) {
@@ -113,6 +129,7 @@ public class AWSUtilities {
             conf.set("fs.s3n.awsAccessKeyId", credentials.getAWSAccessKeyId());
             conf.set("fs.s3n.awsSecretAccessKey", credentials.getAWSSecretKey());
         }
+
 
     }
 

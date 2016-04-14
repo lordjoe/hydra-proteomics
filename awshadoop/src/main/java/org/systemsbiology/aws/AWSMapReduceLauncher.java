@@ -4,6 +4,7 @@ import com.amazonaws.*;
 import com.amazonaws.auth.*;
 import com.amazonaws.services.elasticmapreduce.*;
 import com.amazonaws.services.elasticmapreduce.model.*;
+import com.lordjoe.utilities.ElapsedTimer;
 import org.systemsbiology.awscluster.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.hadoopgenerated.*;
@@ -580,6 +581,11 @@ public class AWSMapReduceLauncher implements IHadoopController {
     @Override
     public boolean isSingleCore() {
         return false;
+    }
+
+    @Override
+    public void disconnect() {
+        // I guess this is OK
     }
 
 

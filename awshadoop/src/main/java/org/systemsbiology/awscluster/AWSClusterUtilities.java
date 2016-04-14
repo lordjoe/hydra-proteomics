@@ -4,6 +4,7 @@ import com.amazonaws.auth.*;
 import com.amazonaws.services.elasticmapreduce.*;
 import com.amazonaws.services.elasticmapreduce.model.*;
 import com.amazonaws.services.elasticmapreduce.util.*;
+import com.lordjoe.utilities.ElapsedTimer;
 import org.systemsbiology.aws.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.xtandem.*;

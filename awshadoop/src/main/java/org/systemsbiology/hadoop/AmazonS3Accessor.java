@@ -77,6 +77,10 @@ public class AmazonS3Accessor implements IFileSystem {
         return m_DFS;
     }
 
+    public boolean isLocal() {
+        return false;
+    }
+
     @Override
     public void copyFromFileSystem(String hdfsPath, File localPath) {
         final FileSystem fileSystem = getDFS();
@@ -319,7 +323,7 @@ public class AmazonS3Accessor implements IFileSystem {
      * @param hdfsPath !null path - probably of an existing file
      * @return !null stream
      */
-    @Override
+  //  @Override
     public InputStream openFileForRead(String hdfsPath) {
         if (hdfsPath.contains(":") && !hdfsPath.startsWith("s3n:")) {
             try {
@@ -348,7 +352,7 @@ public class AmazonS3Accessor implements IFileSystem {
      * @param hdfsPath !null path -
      * @return !null stream
      */
-    @Override
+   // @Override
     public OutputStream openFileForWrite(String hdfsPath) {
         if (hdfsPath.contains(":") && !hdfsPath.startsWith("s3n:")) {
             try {
@@ -448,6 +452,10 @@ public class AmazonS3Accessor implements IFileSystem {
     public String readFromFileSystem(String hdfsPath) {
         InputStream is = openFileForRead(hdfsPath);
         return FileUtilities.readInFile(is);
+    }
+
+    public void disconnect() {
+
     }
 
 

@@ -36,6 +36,10 @@ public class S3Accessor implements IFileSystem {
     }
 
 
+    @Override
+    public boolean isLocal() {
+        return false;
+    }
 
     @Override
     public void copyFromFileSystem(final String hdfsPath, final File localPath) {
@@ -178,30 +182,30 @@ public class S3Accessor implements IFileSystem {
        // throw new UnsupportedOperationException("Fix This"); // ToDo
     }
 
-    /**
-     * open a file for reading
-     *
-     * @param hdfsPath !null path - probably of an existing file
-     * @return !null stream
-     */
-    @Override
-    public InputStream openFileForRead(final String hdfsPath) {
-        String name = getBucket().getName();
-        return AWSUtilities.openFileS3(name,hdfsPath);
-     }
-
-    /**
-     * open a file for writing
-     *
-     * @param hdfsPath !null path -
-     * @return !null stream
-     */
-    @Override
-    public OutputStream openFileForWrite(final String hdfsPath) {
-        String name = getBucket().getName();
-        return AWSUtilities.openFileForWrite(name,hdfsPath);
-
-    }
+//    /**
+//     * open a file for reading
+//     *
+//     * @param hdfsPath !null path - probably of an existing file
+//     * @return !null stream
+//     */
+//    @Override
+//    public InputStream openFileForRead(final String hdfsPath) {
+//        String name = getBucket().getName();
+//        return AWSUtilities.openFileS3(name,hdfsPath);
+//     }
+//
+//    /**
+//     * open a file for writing
+//     *
+//     * @param hdfsPath !null path -
+//     * @return !null stream
+//     */
+//    @Override
+//    public OutputStream openFileForWrite(final String hdfsPath) {
+//        String name = getBucket().getName();
+//        return AWSUtilities.openFileForWrite(name,hdfsPath);
+//
+//    }
 
     /**
      * write text to a remote file system
@@ -252,4 +256,9 @@ public class S3Accessor implements IFileSystem {
         String name = getBucket().getName();
         return AWSUtilities.getFileData(name, hdfsPath);
      }
+
+    @Override
+    public void disconnect() {
+
+    }
 }

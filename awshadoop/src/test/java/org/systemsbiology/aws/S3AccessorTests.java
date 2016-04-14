@@ -1,5 +1,6 @@
 package org.systemsbiology.aws;
 
+import com.lordjoe.utilities.Encrypt;
 import org.junit.*;
 import org.systemsbiology.common.*;
 
@@ -25,9 +26,12 @@ public class S3AccessorTests {
                     "the lamb was sure to go.";
 
 
-    @Test
+     @Test
     public void S3ReadTest() {
-          IFileSystem access = new S3Accessor(AWSUtilities.getDefaultBucketName());
+
+
+
+        IFileSystem access = new S3Accessor(AWSUtilities.getDefaultBucketName());
         String filePath = BASE_DIRECTORY + FILE_NAME;
         access.guaranteeDirectory(BASE_DIRECTORY);
 

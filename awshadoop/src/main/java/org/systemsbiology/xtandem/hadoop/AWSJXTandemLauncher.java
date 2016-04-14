@@ -3,11 +3,13 @@ package org.systemsbiology.xtandem.hadoop;
 import com.amazonaws.services.ec2.*;
 import com.lordjoe.utilities.*;
 import org.apache.hadoop.conf.*;
+import org.apache.hadoop.fs.LocalFileSystem;
 import org.systemsbiology.aws.*;
 import org.systemsbiology.awscluster.*;
 import org.systemsbiology.common.*;
 import org.systemsbiology.hadoop.*;
 import org.systemsbiology.remotecontrol.*;
+import org.systemsbiology.xml.XMLUtilities;
 import org.systemsbiology.xtandem.*;
 import org.systemsbiology.xtandem.taxonomy.*;
 
@@ -277,10 +279,11 @@ public class AWSJXTandemLauncher extends JXTandemLauncher {
 
             }
             else {
-                IFileSystem access = new LocalFileSystem(new File(main.getRemoteBaseDirectory()));
+                IFileSystem access = new LocalMachineFileSystem(new File(main.getRemoteBaseDirectory()));
                 main.setAccessor(access);
                 main.setBuildJar(false);
                 HadoopJob.setJarRequired(false);
+                  HadoopJob.setJarRequired(false);
                 launcher = new LocalHadoopController();
 
             }
@@ -315,7 +318,7 @@ public class AWSJXTandemLauncher extends JXTandemLauncher {
 
             File f = null;
             if (!isDatabaseBuildOnly() && passedBaseDirctory != null) {
-                String hdfsPath = passedBaseDirctory + "/" + XTandemUtilities.asLocalFile(outFile);
+                String hdfsPath = passedBaseDirctory + "/" + XMLUtilities.asLocalFile(outFile);
                 //       String asLocal = XTandemUtilities.asLocalFile("/user/howdah/JXTandem/data/SmallSample/yeast_orfs_all_REV01_short.2011_11_325_10_35_19.t.xml");
                 //       String hdfsPathEric = passedBaseDirctory + "/" + "yeast_orfs_all_REV01_short.2011_11_325_10_35_19.t.xml";
 
@@ -347,8 +350,8 @@ public class AWSJXTandemLauncher extends JXTandemLauncher {
 
             main.getElapsed().showElapsed("Capture Output", System.out);
 
-            XTandemUtilities.outputLine();
-            XTandemUtilities.outputLine();
+            XTandemUtilities.outputLine("");
+            XTandemUtilities.outputLine("");
             JXTandemStatistics stats = main.getStatistics();
             XTandemUtilities.outputLine(stats.toString());
             total.showElapsed("Total Time", System.out);
